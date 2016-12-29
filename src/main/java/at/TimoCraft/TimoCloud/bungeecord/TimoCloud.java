@@ -7,6 +7,7 @@ import at.TimoCraft.TimoCloud.bungeecord.listeners.PlayerConnect;
 import at.TimoCraft.TimoCloud.bungeecord.managers.FileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
+import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.TimeUnit;
@@ -20,6 +21,7 @@ public class TimoCloud extends Plugin {
     private ServerManager serverManager;
     private FileManager fileManager;
     private BungeeSocketServer socketServer;
+    private BungeeSocketServerHandler socketServerHandler;
     private String prefix;
     private boolean shuttingDown = false;
 
@@ -41,15 +43,7 @@ public class TimoCloud extends Plugin {
         makeInstances();
         registerCommands();
         registerListeners();
-        getProxy().getScheduler().runAsync(this, () -> {
-            info("Starting socket-server...");
-            try {
-                socketServer.init("127.0.0.1", getFileManager().getConfig().getInt("socket-port"));
-            } catch (Exception e) {
-                severe("Error while initializing socketServer:");
-                e.printStackTrace();
-            }
-        });
+        registerTasks();
         getServerManager().startAllServers();
 
         info("Successfully started TimoCloud!");
@@ -65,11 +59,26 @@ public class TimoCloud extends Plugin {
         fileManager = new FileManager();
         serverManager = new ServerManager();
         socketServer = new BungeeSocketServer();
+        socketServerHandler = new BungeeSocketServerHandler();
     }
 
     private void registerCommands() {
         getProxy().getPluginManager().registerCommand(this, new TimoCloudCommand());
         getProxy().getPluginManager().registerCommand(this, new LobbyCommand());
+    }
+
+    private void registerTasks() {
+        getProxy().getScheduler().runAsync(this, () -> {
+            info("Starting socket-server...");
+            try {
+                socketServer.init("127.0.0.1", getFileManager().getConfig().getInt("socket-port"));
+            } catch (Exception e) {
+                severe("Error while initializing socketServer:");
+                e.printStackTrace();
+            }
+        });
+
+        getProxy().getScheduler().schedule(this, () -> getSocketServerHandler().flush(), 0L, 1L, TimeUnit.SECONDS);
     }
 
     private void registerListeners() {
@@ -115,5 +124,9 @@ public class TimoCloud extends Plugin {
 
     public void setShuttingDown(boolean shuttingDown) {
         this.shuttingDown = shuttingDown;
+    }
+
+    public BungeeSocketServerHandler getSocketServerHandler() {
+        return socketServerHandler;
     }
 }

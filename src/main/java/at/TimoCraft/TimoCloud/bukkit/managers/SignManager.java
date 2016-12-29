@@ -1,8 +1,11 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.Main;
+import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,7 +55,7 @@ public class SignManager {
 
     public void setSigns(String server, List<Location> locations) {
         config.set(server + ".locations", locations);
-        File dir = new File("../../templates/" + getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/");
+        File dir = new File("../../templates/" + Main.getInstance().getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/");
         File signs = new File(dir, "signs.yml");
         dir.mkdirs();
         try {
@@ -77,14 +80,22 @@ public class SignManager {
     }
 
     public void writeSign(Location location, String server) {
-        Sign sign = (Sign) location.getWorld().getBlockAt(location).getState();
+        Block block = location.getWorld().getBlockAt(location);
+        BlockState state = block.getState();
+        if (! (state instanceof Sign)) {
+            Main.log("Error: block could not be cast to sign: " + location);
+            Main.log("Material: " + block.getType());
+            return;
+        }
+        Sign sign = (Sign) state;
         for (int i = 0; i<4; i++) {
             try {
-                sign.setLine(i, replace(layoutsConfig.getString(getGroupByServer(server) + ".layouts." + Main.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
+                sign.setLine(i, replace(layoutsConfig.getString(Main.getInstance().getGroupByServer(server) + ".layouts." + Main.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
             } catch (Exception e) {
-                Main.log("Could not find layout " + Main.getInstance().getOtherServerPingManager().getState(server) + " in group " + getGroupByServer(server));
+                Main.log("Could not find layout " + Main.getInstance().getOtherServerPingManager().getState(server) + " in group " + Main.getInstance().getGroupByServer(server));
             }
         }
+        sign.update();
     }
 
     public String replace(String string, String server) {
@@ -96,17 +107,5 @@ public class SignManager {
                 .replace("%extra%", Main.getInstance().getOtherServerPingManager().getExtra(server))
                 .replace("&", "§")
                 ;
-    }
-
-    public String getGroupByServer(String server) {
-        String ret = "";
-        String[] split = server.split("-");
-        for (int i = 0; i<split.length-1; i++) {
-            ret = ret + split[i];
-            if (i < split.length-2) {
-                ret = ret + "-";
-            }
-        }
-        return ret;
     }
 }

@@ -1,5 +1,6 @@
 package at.TimoCraft.TimoCloud.bukkit;
 
+import at.TimoCraft.TimoCloud.bukkit.commands.SignsCommand;
 import at.TimoCraft.TimoCloud.bukkit.listeners.SignChangeEvent;
 import at.TimoCraft.TimoCloud.bukkit.managers.FileManager;
 import at.TimoCraft.TimoCloud.bukkit.managers.OtherServerPingManager;
@@ -26,11 +27,12 @@ public class Main extends JavaPlugin {
     private String prefix = "[TimoCloud]";
 
     public static void log(String message) {
-        Bukkit.getConsoleSender().sendMessage(getInstance().getPrefix() + message);
+        Bukkit.getConsoleSender().sendMessage(getInstance().getPrefix() + message.replace("&", "§"));
     }
 
     public void onEnable() {
         makeInstances();
+        registerCommands();
         registerListeners();
         registerTasks();
         log("&ahas been enabled!");
@@ -47,9 +49,14 @@ public class Main extends JavaPlugin {
     private void makeInstances() {
         instance = this;
         fileManager = new FileManager();
+        socketClientHandler = new BukkitSocketClientHandler();
         socketMessageManager = new SocketMessageManager();
         signManager = new SignManager();
         otherServerPingManager = new OtherServerPingManager();
+    }
+
+    private void registerCommands() {
+        getCommand("signs").setExecutor(new SignsCommand());
     }
 
     private void registerListeners() {
@@ -68,6 +75,8 @@ public class Main extends JavaPlugin {
                 onSocketDisconnect();
             }
         });
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, (Runnable) () -> getSocketClientHandler().flush(), 0L, 1L);
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
             getSignManager().updateSigns();
@@ -114,5 +123,17 @@ public class Main extends JavaPlugin {
 
     public String getServerName() {
         return new File(".").getAbsoluteFile().getParentFile().getName();
+    }
+
+    public String getGroupByServer(String server) {
+        String ret = "";
+        String[] split = server.split("-");
+        for (int i = 0; i<split.length-1; i++) {
+            ret = ret + split[i];
+            if (i < split.length-2) {
+                ret = ret + "-";
+            }
+        }
+        return ret;
     }
 }

@@ -12,7 +12,7 @@ import java.io.File;
  * Created by Timo on 27.12.16.
  */
 public class FileManager {
-    private String path = "plugins/TimoCloud/";
+    private String path;
     private File configFile;
     private FileConfiguration config;
     private File signsFile;
@@ -24,8 +24,9 @@ public class FileManager {
         init();
     }
 
-    private void init() {
+    public void init() {
         try {
+            path = "../../templates/" + Main.getInstance().getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/";
             File directory = new File(path);
             directory.mkdirs();
 
@@ -67,6 +68,10 @@ public class FileManager {
 
     public File getSignsFile() {
         return signsFile;
+    }
+
+    public File getSignLayoutsFile() {
+        return signLayoutsFile;
     }
 
     public FileConfiguration getSignLayouts() {

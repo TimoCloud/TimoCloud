@@ -5,71 +5,98 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
  */
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
-import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@ChannelHandler.Sharable
 public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
 
     private Map<Channel, TemporaryServer> channels = new HashMap<>();
+    private Map<String, Channel> queue;
+    
+    public BungeeSocketServerHandler() {
+        resetQueue();
+    }
+    
+    public void resetQueue() {
+        queue = new HashMap<>();
+    }
 
+    /*
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         String message = ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
-        JSONObject json = (JSONObject) JSONValue.parse(message);
-        String serverName = (String) json.get("server");
-        TemporaryServer server = TimoCloud.getInstance().getServerManager().getFromServerName(serverName);
-        if (server == null) {
-            TimoCloud.severe("Unknown server connected: " + serverName);
-            ctx.close();
-            return;
-        }
-        server.setChannel(ctx.channel());
-        channels.put(ctx.channel(), server);
-        String type = (String) json.get("type");
-        String data = (String) json.get("data");
-        switch (type) {
-            case "HANDSHAKE":
-                if (data.equals("I_JUST_CAME_ONLINE")) {
-                    server.register();
-                    break;
-                }
-                TimoCloud.severe("Uncategorized handshake message: " + message);
-                break;
-            case "SETSTATE":
-                server.setState(data);
-                break;
-            case "GETSTATE":
-                TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getFromServerName(data);
-                sendMessage(ctx.channel(), data, "STATE", requestedServer == null ? "Unknown" : (requestedServer.getState() == null ? "Unknown" : requestedServer.getState()));
-                break;
-            case "SETEXTRA":
-                server.setExtra(data);
-                break;
-            case "GETEXTRA":
-                TemporaryServer requestedServer2 = TimoCloud.getInstance().getServerManager().getFromServerName(data);
-                sendMessage(ctx.channel(), data, "EXTRA", requestedServer2 == null ? "Unknown" : (requestedServer2.getExtra() == null ? "Unknown" : requestedServer2.getExtra()));
-                break;
-            default:
-                TimoCloud.severe("Could not categorize json message: " + message);
+
+        List<JSONObject> jsons = split(message);
+        for (JSONObject json : jsons) {
+            try {
+                handleJSON(json, message, ctx.channel());
+            } catch (Exception e) {
+                TimoCloud.severe("Error while parsing JSON message: " + message);
+            }
         }
     }
 
+    public List<JSONObject> split(String message) {
+        if (! (message.startsWith("{") && message.endsWith("}"))) {
+            TimoCloud.severe("Could not parse JSON message: " + message);
+            return new ArrayList<>();
+        }
+        List<JSONObject> jsons = new ArrayList<>();
+        int open = 0;
+        String parsed = "";
+        for (String c : message.split("")) {
+            if (c.equals("{")) {
+                open++;
+            }
+            if (c.equals("}")) {
+                open--;
+            }
+            parsed = parsed + c;
+            if (open == 0) {
+                jsons.add((JSONObject) JSONValue.parse(parsed));
+                parsed = "";
+            }
+        }
+        return jsons;
+    }
+*/
     public void sendMessage(Channel channel, String server, String type, String data) {
         try {
-            channel.writeAndFlush(Unpooled.copiedBuffer(getJSON(server, type, data), CharsetUtil.UTF_8));
+            queue.put(getJSON(server, type, data), channel);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    public void flush() {
+        ArrayList<String> q = (ArrayList<String>) (new ArrayList<>(queue.keySet())).clone();
+        for (String message : q) {
+            try {
+                queue.get(message).writeAndFlush(message);
+            } catch (Exception e) {
+                TimoCloud.severe("Error while sending message to server " + channels.get(queue.get(message)).getName() + ": " + message);
+                e.printStackTrace();
+            }
+        }
+        for (String key : q) {
+            queue.remove(key);
+        }
+        if (queue.size() > 0) {
+            flush();
         }
     }
 
@@ -114,5 +141,9 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         TimoCloud.severe("Tried to remove not existing channel " + channel);
+    }
+
+    public Map<Channel, TemporaryServer> getChannels() {
+        return channels;
     }
 }

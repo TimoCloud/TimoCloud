@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 27.12.16.
@@ -79,7 +80,10 @@ public class TemporaryServer {
             }
             TimoCloud.info("Server " + name + " disconnected.");
             if (startNew) {
-                TimoCloud.getInstance().getServerManager().startServer(serverGroup, name);
+                TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
+                    TimoCloud.getInstance().getServerManager().startServer(serverGroup, name);
+                    TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
+                }, 5, 0, TimeUnit.SECONDS);
             }
             return;
         }

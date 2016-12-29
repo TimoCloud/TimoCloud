@@ -5,7 +5,6 @@ package at.TimoCraft.TimoCloud.bukkit.sockets;
  */
 
 import at.TimoCraft.TimoCloud.bukkit.Main;
-import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,15 +19,7 @@ public class BukkitSocketClient {
             b.group(group)
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline p = ch.pipeline();
-                            BukkitSocketClientHandler handler = new BukkitSocketClientHandler();
-                            p.addLast(handler);
-                            Main.getInstance().setSocketClientHandler(handler);
-                        }
-                    });
+                    .handler(new Pipeline());
 
             // Start the client.
             ChannelFuture f = b.connect(host, port).sync();
@@ -36,7 +27,7 @@ public class BukkitSocketClient {
             try {
                 f.channel().closeFuture().sync();
             } catch (Exception e) {
-                TimoCloud.info("Socketserver closed.");
+                Main.log("Socketserver closed.");
             }
             } finally {
             // Shut down the event loop to terminate all threads.

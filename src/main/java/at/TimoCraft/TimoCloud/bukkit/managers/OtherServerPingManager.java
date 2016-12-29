@@ -34,7 +34,10 @@ public class OtherServerPingManager {
     }
 
     public String getState(String server) {
-        return states.get(server) == null ? "Unknown" : states.get(server);
+        if (states.get(server) == null) {
+            states.put(server, "UNKNOWN");
+        }
+        return states.get(server);
     }
 
     public void setState(String server, String state) {
@@ -42,7 +45,10 @@ public class OtherServerPingManager {
     }
 
     public String getExtra(String server) {
-        return extras.get(server) == null ? "" : extras.get(server);
+        if (extras.get(server) == null) {
+            extras.put(server, "");
+        }
+        return extras.get(server);
     }
 
     public void setExtra(String server, String extra) {

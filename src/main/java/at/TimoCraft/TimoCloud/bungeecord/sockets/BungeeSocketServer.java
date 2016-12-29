@@ -18,16 +18,14 @@ public class BungeeSocketServer {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
-            b.group(bossGroup, workerGroup)
+            b
+                    .childHandler(new Pipeline())
+                    .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline p = ch.pipeline();
-                            p.addLast(new BungeeSocketServerHandler());
-                        }
-                    });
+                    .option(ChannelOption.MAX_MESSAGES_PER_READ, 1)
+                    .option(ChannelOption.SO_RCVBUF, 4096)
+                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(4096));
 
             // Start the server.
             ChannelFuture f = b.bind(address, port).sync();
