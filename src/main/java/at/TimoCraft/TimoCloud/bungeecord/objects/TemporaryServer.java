@@ -2,9 +2,10 @@ package at.TimoCraft.TimoCloud.bungeecord.objects;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.utils.TimeUtil;
+import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 
-import java.io.*;
+import java.io.File;
 import java.net.InetSocketAddress;
 
 /**
@@ -14,12 +15,15 @@ public class TemporaryServer {
     private ServerInfo serverInfo;
     private boolean registered = false;
     private String name;
+    private int port;
     private ServerGroup serverGroup;
-    private Process process;
-    private ServerClientSocket socket;
+    private Channel channel;
+    private String state = "STARTING";
+    private String extra = "";
 
     public TemporaryServer(String name, ServerGroup serverGroup) {
-        InetSocketAddress address = InetSocketAddress.createUnresolved("127.0.0.1", TimoCloud.getInstance().getServerManager().getFreePort());
+        this.port = TimoCloud.getInstance().getServerManager().getFreePort();
+        InetSocketAddress address = InetSocketAddress.createUnresolved("127.0.0.1", getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
         this.name = name;
         this.serverGroup = serverGroup;
@@ -37,14 +41,13 @@ public class TemporaryServer {
                 "-c",
                 "./startserver.sh"
                         + " ../../../" + TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + name
-                        + " " + name
-                        + " " + TimoCloud.getInstance().getServerManager().getFreePort()
-                        + " " + serverGroup.getRam())
+                        + " " + getName()
+                        + " " + getPort()
+                        + " " + getServerGroup().getRam())
                 .directory(new File(TimoCloud.getInstance().getFileManager().getScriptsDirectory()))
                 .redirectOutput(log).redirectError(log);
         try {
-            process = pb.start();
-
+            pb.start();
         } catch (Exception e) {
             TimoCloud.severe("Error while starting server " + name + ":");
             e.printStackTrace();
@@ -53,7 +56,7 @@ public class TemporaryServer {
 
     public void stop() {
         TimoCloud.info("Stopping server " + name + "...");
-        process.destroy();
+        channel.close();
         TimoCloud.info("Stopped " + name + ".");
     }
 
@@ -64,13 +67,16 @@ public class TemporaryServer {
         TimoCloud.getInstance().getServerManager().addServer(name);
         registered = true;
         TimoCloud.info("Server " + name + " connected.");
+        setState("ONLINE");
     }
 
     public void unregister(boolean startNew) {
         if (registered) {
             TimoCloud.getInstance().getServerManager().removeServer(name);
-            TimoCloud.getInstance().getProxy().getServers().remove(serverInfo.getName());
             registered = false;
+            if (channel != null && channel.isOpen()) {
+                channel.close();
+            }
             TimoCloud.info("Server " + name + " disconnected.");
             if (startNew) {
                 TimoCloud.getInstance().getServerManager().startServer(serverGroup, name);
@@ -119,15 +125,31 @@ public class TemporaryServer {
         return serverGroup;
     }
 
-    public Process getProcess() {
-        return process;
+    public Channel getChannel() {
+        return channel;
     }
 
-    public void sendSocketMessage(String message) {
-        socket.sendMessage(message);
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
-    public void onSocketMessage(String message) {
+    public String getState() {
+        return state;
+    }
 
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

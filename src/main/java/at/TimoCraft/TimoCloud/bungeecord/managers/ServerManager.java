@@ -3,8 +3,7 @@ package at.TimoCraft.TimoCloud.bungeecord.managers;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
-import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Timo on 27.12.16.
@@ -61,6 +61,7 @@ public class ServerManager {
     public int getFreePort() {
         for (int i = 40000; i < 50000; i++) {
             if (isPortFree(i)) {
+                i = registerPort(i);
                 return i;
             }
         }
@@ -71,12 +72,12 @@ public class ServerManager {
         return !portsInUse.contains(port);
     }
 
-    public void registerPort(int port) {
+    public int registerPort(int port) {
         if (isPortFree(port)) {
             portsInUse.add(port);
-            return;
+            return port;
         }
-        TimoCloud.severe("Error: Attemping to register used port: " + port);
+        return getFreePort();
     }
 
     public void unregisterPort(int port) {
@@ -87,29 +88,32 @@ public class ServerManager {
         TimoCloud.severe("Error: Attemping to unregister not registered port: " + port);
     }
 
+    public ServerInfo getRandomLobbyServer() {
+        for (ServerGroup group : getGroups()) {
+            if (group.getName().equalsIgnoreCase("lobby")) {
+                if (group.getTemporaryServers().size() == 0) {
+                    continue;
+                }
+                return group.getTemporaryServers().get(new Random().nextInt(group.getTemporaryServers().size())).getServerInfo();
+            }
+        }
+
+        return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("fallback"));
+    }
+
     public void startServer(ServerGroup group, String name) {
+        TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name));
+    }
+
+    public void startServerFromAsyncContext(ServerGroup group, String name) {
         TimoCloud.getInstance().info("Starting server " + name + "...");
         double millisBefore = System.currentTimeMillis();
 
         File templatesDir = new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + group.getName());
         File spigot = new File(templatesDir, "spigot.jar");
-        if (! spigot.exists()) {
+        if (!spigot.exists()) {
             TimoCloud.severe("Could not start server " + name + " because spigot.jar does not exist.");
             return;
-        }
-
-        File plugin = new File(templatesDir, "plugins/" + TimoCloud.getInstance().getFileName());
-        if (plugin.exists()) {
-            plugin.delete();
-        }
-        try {
-            Files.copy(new File("plugins/" + TimoCloud.getInstance().getFileName()).toPath(), plugin.toPath());
-        } catch (Exception e) {
-            TimoCloud.severe("Error while copying plugin into template:");
-            e.printStackTrace();
-            if (! plugin.exists()) {
-                return;
-            }
         }
 
         try {
@@ -118,48 +122,30 @@ public class ServerManager {
                 FileUtils.deleteDirectory(directory);
             }
             FileUtils.copyDirectory(new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + group.getName()), directory);
-            TemporaryServer temporaryServer = new TemporaryServer(name, group);
-            temporaryServer.start();
+
+            File plugin = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + name, "plugins/" + TimoCloud.getInstance().getFileName());
+            if (plugin.exists()) {
+                plugin.delete();
+            }
+            try {
+                Files.copy(new File("plugins/" + TimoCloud.getInstance().getFileName()).toPath(), plugin.toPath());
+            } catch (Exception e) {
+                TimoCloud.severe("Error while copying plugin into template:");
+                e.printStackTrace();
+                if (!plugin.exists()) {
+                    return;
+                }
+            }
+
+            TemporaryServer server = new TemporaryServer(name, group);
+            server.start();
+            group.addStartingServer(server);
 
             double millisNow = System.currentTimeMillis();
             TimoCloud.getInstance().info("Successfully started server " + name + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
         } catch (Exception e) {
             TimoCloud.severe("Error while starting server " + name + ":");
             e.printStackTrace();
-        }
-    }
-
-    public void everySecond() {
-        for (ServerGroup serverGroup : getGroups()) {
-            for (TemporaryServer server : serverGroup.getTemporaryServers()) {
-                checkIfStillOnline(server);
-            }
-        }
-    }
-
-    public void checkIfCameOnline(TemporaryServer server) {
-        TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    server.getServerInfo().ping(new Callback<ServerPing>() {
-                        @Override
-                        public void done(ServerPing serverPing, Throwable throwable) {
-                            String description = serverPing.getDescriptionComponent().toPlainText();
-                            if (description != null && description.equals("ONLINE")) {
-                                server.register();
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                }
-            }
-        });
-    }
-
-    public void checkIfStillOnline(TemporaryServer server) {
-        if (!server.getProcess().isAlive()) {
-            server.unregister(true);
         }
     }
 
@@ -180,6 +166,7 @@ public class ServerManager {
             startedServers.remove(name);
             return;
         }
+        TimoCloud.getInstance().getProxy().getServers().remove(name);
         TimoCloud.severe("Tried to remove not started server: " + name);
     }
 
@@ -216,5 +203,21 @@ public class ServerManager {
 
     public List<ServerGroup> getGroups() {
         return groups;
+    }
+
+    public TemporaryServer getFromServerName(String name) {
+        for (ServerGroup group : getGroups()) {
+            for (TemporaryServer server : group.getStartingServers()) {
+                if (server.getName().equals(name)) {
+                    return server;
+                }
+            }
+            for (TemporaryServer server : group.getTemporaryServers()) {
+                if (server.getName().equals(name)) {
+                    return server;
+                }
+            }
+        }
+        return null;
     }
 }

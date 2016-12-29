@@ -66,18 +66,20 @@ public class ServerGroup {
         TimoCloud.severe("Tried to add already existing server " + server);
     }
 
+    public void addStartingServer(TemporaryServer server) {
+        if (!startingServers.contains(server)) {
+            startingServers.add(server);
+            return;
+        }
+        TimoCloud.severe("Tried to add already existing starting server " + server);
+    }
+
     public void removeServer(TemporaryServer server) {
         if (temporaryServers.contains(server)) {
             temporaryServers.remove(server);
             return;
         }
         TimoCloud.severe("Tried to remove not existing server " + server);
-    }
-
-    public void checkServersStarted() {
-        for (TemporaryServer server : getStartingServers()) {
-            TimoCloud.getInstance().getServerManager().checkIfCameOnline(server);
-        }
     }
 
     public List<TemporaryServer> getStartingServers() {

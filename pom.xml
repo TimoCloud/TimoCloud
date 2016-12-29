@@ -25,6 +25,10 @@
             <id>json-simple</id>
             <url>https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple</url>
         </repository>
+        <repository>
+            <id>netty-all</id>
+            <url>https://mvnrepository.com/artifact/io.netty/netty-common</url>
+        </repository>
     </repositories>
 
     <build>
@@ -89,6 +93,11 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-common</artifactId>
+            <version>4.1.6.Final</version>
         </dependency>
     </dependencies>
 

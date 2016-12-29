@@ -39,13 +39,23 @@ public class FileManager {
             scripts.mkdirs();
             configs.mkdirs();
             logs.mkdirs();
+
             configFile = new File(configsDirectory, "config.yml");
-            groupsFile = new File(configsDirectory, "groups.yml");
-            groupsFile.createNewFile();
-            if (!configFile.exists()) {
-                Files.copy(this.getClass().getResourceAsStream("/bungeecord/config.yml"), configFile.toPath());
+            if (! configFile.exists()) {
+                configFile.createNewFile();
             }
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            configFile.delete();
+            Files.copy(this.getClass().getResourceAsStream("/bungeecord/config.yml"), configFile.toPath());
+            Configuration configNew = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            for (String key : config.getKeys()) {
+                configNew.set(key, config.get(key));
+            }
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configNew, configFile);
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+            groupsFile = new File(configsDirectory, "groups.yml");
+            groupsFile.createNewFile();
             groups = ConfigurationProvider.getProvider(YamlConfiguration.class).load(groupsFile);
             TimoCloud.getInstance().setPrefix(config.getString("prefix").replace("&", "§") + " ");
             File startserverSH = new File(getScriptsDirectory(), "startserver.sh");

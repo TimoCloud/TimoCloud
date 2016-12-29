@@ -12,6 +12,10 @@ public class MessageManager {
     }
 
     public static void noPermission(CommandSender sender) {
-        sendMessage(sender, "§cDazu hast du keine Rechte!");
+        sendMessage(sender, "&cYou don´t have any permission to do that!");
+    }
+
+    public static void onlyForPlayers(CommandSender sender) {
+        sendMessage(sender, "&cThis command is only for players!");
     }
 }

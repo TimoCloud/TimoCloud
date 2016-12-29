@@ -1,9 +1,12 @@
 package at.TimoCraft.TimoCloud.bungeecord;
 
 
+import at.TimoCraft.TimoCloud.bungeecord.commands.LobbyCommand;
 import at.TimoCraft.TimoCloud.bungeecord.commands.TimoCloudCommand;
+import at.TimoCraft.TimoCloud.bungeecord.listeners.PlayerConnect;
 import at.TimoCraft.TimoCloud.bungeecord.managers.FileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
+import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.concurrent.TimeUnit;
@@ -16,7 +19,9 @@ public class TimoCloud extends Plugin {
     private static TimoCloud instance;
     private ServerManager serverManager;
     private FileManager fileManager;
+    private BungeeSocketServer socketServer;
     private String prefix;
+    private boolean shuttingDown = false;
 
     public static void info(String message) {
         getInstance().getLogger().info(" " + message);
@@ -27,38 +32,48 @@ public class TimoCloud extends Plugin {
     }
 
     public void onEnable() {
+        instance = this;
+        info("Starting TimoCloud in 5 seconds...");
+        getProxy().getScheduler().schedule(this, (Runnable) () -> enableDelayed(), 5, 0, TimeUnit.SECONDS);
+    }
+
+    private void enableDelayed() {
         makeInstances();
         registerCommands();
-        getProxy().getScheduler().runAsync(this, () -> getServerManager().startAllServers());
+        registerListeners();
+        getProxy().getScheduler().runAsync(this, () -> {
+            info("Starting socket-server...");
+            try {
+                socketServer.init("127.0.0.1", getFileManager().getConfig().getInt("socket-port"));
+            } catch (Exception e) {
+                severe("Error while initializing socketServer:");
+                e.printStackTrace();
+            }
+        });
+        getServerManager().startAllServers();
+
         info("Successfully started TimoCloud!");
     }
 
     public void onDisable() {
+        setShuttingDown(true);
         getServerManager().stopAllServers();
         info("Successfully stopped TimoCloud!");
     }
 
     private void makeInstances() {
-        instance = this;
         fileManager = new FileManager();
         serverManager = new ServerManager();
+        socketServer = new BungeeSocketServer();
     }
 
     private void registerCommands() {
         getProxy().getPluginManager().registerCommand(this, new TimoCloudCommand());
+        getProxy().getPluginManager().registerCommand(this, new LobbyCommand());
     }
 
-    private void registerTasks() {
-        getProxy().getScheduler().schedule(this, new Runnable() {
-            @Override
-            public void run() {
-                everySecond();
-            }
-        }, 1, TimeUnit.SECONDS);
-    }
-
-    public void everySecond() {
-        getServerManager().everySecond();
+    private void registerListeners() {
+        getProxy().getPluginManager().registerListener(this, new PlayerConnect());
     }
 
     public static TimoCloud getInstance() {
@@ -88,5 +103,17 @@ public class TimoCloud extends Plugin {
         String[] spl = path.split("/");
         String name = spl[spl.length - 1];
         return name;
+    }
+
+    public BungeeSocketServer getSocketServer() {
+        return socketServer;
+    }
+
+    public boolean isShuttingDown() {
+        return shuttingDown;
+    }
+
+    public void setShuttingDown(boolean shuttingDown) {
+        this.shuttingDown = shuttingDown;
     }
 }
