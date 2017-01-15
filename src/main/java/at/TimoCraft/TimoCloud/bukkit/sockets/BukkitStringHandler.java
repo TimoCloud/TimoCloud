@@ -1,7 +1,6 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
 import at.TimoCraft.TimoCloud.bukkit.Main;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
@@ -10,7 +9,7 @@ import org.json.simple.JSONValue;
 /**
  * Created by Timo on 29.12.16.
  */
-public class StringHandler extends SimpleChannelInboundHandler<String> {
+public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
 
     String remaining = "";
     String parsed = "";
@@ -54,6 +53,9 @@ public class StringHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case "EXTRA":
                 Main.getInstance().getOtherServerPingManager().setExtra(server, data);
+                break;
+            case "PLAYERS":
+                Main.getInstance().getOtherServerPingManager().setPlayers(server, data);
                 break;
             default:
                 Main.log("Error: Could not categorize json message: " + message);

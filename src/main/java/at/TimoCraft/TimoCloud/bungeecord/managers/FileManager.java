@@ -24,10 +24,10 @@ public class FileManager {
     private Configuration groups;
 
     public FileManager() {
-        init();
+        load();
     }
 
-    private void init() {
+    public void load() {
         try {
             File templates = new File(templatesDirectory);
             File temporary = new File(temporaryDirectory);

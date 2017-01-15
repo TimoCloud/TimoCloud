@@ -6,7 +6,7 @@ import org.json.simple.JSONObject;
 /**
  * Created by Timo on 28.12.16.
  */
-public class SocketMessageManager {
+public class BukkitSocketMessageManager {
 
 
     public void sendMessage(String type, String data) {

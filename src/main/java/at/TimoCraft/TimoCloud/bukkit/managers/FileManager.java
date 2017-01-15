@@ -1,22 +1,25 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.Main;
-import java.util.List;
-import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.util.Arrays;
 
 /**
  * Created by Timo on 27.12.16.
  */
 public class FileManager {
     private String path;
+    private String scriptsDirectory;
     private File configFile;
     private FileConfiguration config;
     private File signsFile;
     private FileConfiguration signs;
+    private File dynamicSignsFile;
+    private FileConfiguration dynamicSigns;
     private File signLayoutsFile;
     private FileConfiguration signLayouts;
 
@@ -30,6 +33,16 @@ public class FileManager {
             File directory = new File(path);
             directory.mkdirs();
 
+            scriptsDirectory = "plugins/TimoCloud/scripts/";
+            File scripts = new File(scriptsDirectory);
+            scripts.mkdirs();
+            File killScreen = new File(getScriptsDirectory(), "killscreen.sh");
+            if (killScreen.exists()) {
+                killScreen.delete();
+            }
+            Files.copy(this.getClass().getResourceAsStream("/bukkit/killscreen.sh"), killScreen.toPath());
+            killScreen.setExecutable(true);
+
             configFile = new File(path, "config.yml");
             if (!configFile.exists()) {
                 configFile.createNewFile();
@@ -41,6 +54,12 @@ public class FileManager {
                 signsFile.createNewFile();
             }
             signs = YamlConfiguration.loadConfiguration(signsFile);
+
+            dynamicSignsFile = new File(path, "dynamicSigns.yml");
+            if (!dynamicSignsFile.exists()) {
+                dynamicSignsFile.createNewFile();
+            }
+            dynamicSigns = YamlConfiguration.loadConfiguration(dynamicSignsFile);
 
             signLayoutsFile = new File(path, "signLayouts.yml");
             if (!signLayoutsFile.exists()) {
@@ -57,6 +76,15 @@ public class FileManager {
         }
     }
 
+    public void addLayoutDefaults(String group) {
+        signLayouts.options().copyDefaults(true);
+        signLayouts.addDefault(group + ".sortOut", Arrays.asList("OFFLINE"));
+        try {
+            signLayouts.save(signLayoutsFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     public FileConfiguration getConfig() {
         return config;
@@ -76,5 +104,17 @@ public class FileManager {
 
     public FileConfiguration getSignLayouts() {
         return signLayouts;
+    }
+
+    public File getDynamicSignsFile() {
+        return dynamicSignsFile;
+    }
+
+    public FileConfiguration getDynamicSigns() {
+        return dynamicSigns;
+    }
+
+    public String getScriptsDirectory() {
+        return scriptsDirectory;
     }
 }

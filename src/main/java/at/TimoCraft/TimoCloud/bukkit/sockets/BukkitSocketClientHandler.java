@@ -1,16 +1,12 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
 import at.TimoCraft.TimoCloud.bukkit.Main;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Timo on 28.12.16.
@@ -28,8 +24,8 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         Main.log("Successfully connected to bungee socket!");
         this.channel = ctx.channel();
-        Main.getInstance().getSocketMessageManager().sendMessage("HANDSHAKE", "I_JUST_CAME_ONLINE");
-        Main.getInstance().getSocketMessageManager().sendMessage("SETSTATE", "ONLINE");
+        Main.getInstance().getBukkitSocketMessageManager().sendMessage("HANDSHAKE", "I_JUST_CAME_ONLINE");
+        Main.getInstance().getBukkitSocketMessageManager().sendMessage("SETSTATE", "ONLINE");
     }
 
     public void resetQueue() {

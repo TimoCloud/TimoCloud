@@ -6,17 +6,12 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.util.CharsetUtil;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,45 +30,6 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
         queue = new HashMap<>();
     }
 
-    /*
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        String message = ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
-
-        List<JSONObject> jsons = split(message);
-        for (JSONObject json : jsons) {
-            try {
-                handleJSON(json, message, ctx.channel());
-            } catch (Exception e) {
-                TimoCloud.severe("Error while parsing JSON message: " + message);
-            }
-        }
-    }
-
-    public List<JSONObject> split(String message) {
-        if (! (message.startsWith("{") && message.endsWith("}"))) {
-            TimoCloud.severe("Could not parse JSON message: " + message);
-            return new ArrayList<>();
-        }
-        List<JSONObject> jsons = new ArrayList<>();
-        int open = 0;
-        String parsed = "";
-        for (String c : message.split("")) {
-            if (c.equals("{")) {
-                open++;
-            }
-            if (c.equals("}")) {
-                open--;
-            }
-            parsed = parsed + c;
-            if (open == 0) {
-                jsons.add((JSONObject) JSONValue.parse(parsed));
-                parsed = "";
-            }
-        }
-        return jsons;
-    }
-*/
     public void sendMessage(Channel channel, String server, String type, String data) {
         try {
             queue.put(getJSON(server, type, data), channel);
@@ -83,6 +39,9 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
     }
     
     public void flush() {
+        if (queue.keySet().size() < 1) {
+            return;
+        }
         ArrayList<String> q = (ArrayList<String>) (new ArrayList<>(queue.keySet())).clone();
         for (String message : q) {
             try {
@@ -93,7 +52,9 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
             }
         }
         for (String key : q) {
-            queue.remove(key);
+            if (queue.containsKey(key)) {
+                queue.remove(key);
+            }
         }
         if (queue.size() > 0) {
             flush();
@@ -120,7 +81,11 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
         if (server == null) {
             return;
         }
-        server.unregister(!TimoCloud.getInstance().isShuttingDown());
+        if (TimoCloud.getInstance().isShuttingDown()) {
+            server.unregister(false);
+        } else {
+            server.unregister(! server.isOnce());
+        }
         removeChannel(channel);
     }
 

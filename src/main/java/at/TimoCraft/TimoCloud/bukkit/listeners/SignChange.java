@@ -3,13 +3,15 @@ package at.TimoCraft.TimoCloud.bukkit.listeners;
 import at.TimoCraft.TimoCloud.bukkit.Main;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 
 /**
  * Created by Timo on 28.12.16.
  */
-public class SignChangeEvent implements Listener {
+public class SignChange implements Listener {
+
     @EventHandler
-    public void onSignChangeEvent(org.bukkit.event.block.SignChangeEvent event) {
+    public void onSignChangeEvent(SignChangeEvent event) {
         if (event.getLine(0).trim().equalsIgnoreCase("[TimoCloud]")) {
             String server = event.getLine(1).trim();
             if (server == null || server == "") {

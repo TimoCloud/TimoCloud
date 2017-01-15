@@ -6,9 +6,11 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class BungeeSocketServer {
@@ -19,7 +21,7 @@ public class BungeeSocketServer {
         try {
             ServerBootstrap b = new ServerBootstrap();
             b
-                    .childHandler(new Pipeline())
+                    .childHandler(new BungeePipeline())
                     .group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 100)

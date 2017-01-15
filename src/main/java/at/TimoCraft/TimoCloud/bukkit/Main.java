@@ -1,17 +1,25 @@
 package at.TimoCraft.TimoCloud.bukkit;
 
 import at.TimoCraft.TimoCloud.bukkit.commands.SignsCommand;
-import at.TimoCraft.TimoCloud.bukkit.listeners.SignChangeEvent;
+import at.TimoCraft.TimoCloud.bukkit.listeners.PlayerInteract;
+import at.TimoCraft.TimoCloud.bukkit.listeners.SignChange;
 import at.TimoCraft.TimoCloud.bukkit.managers.FileManager;
 import at.TimoCraft.TimoCloud.bukkit.managers.OtherServerPingManager;
 import at.TimoCraft.TimoCloud.bukkit.managers.SignManager;
 import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
-import at.TimoCraft.TimoCloud.bukkit.sockets.SocketMessageManager;
+import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by Timo on 27.12.16.
@@ -21,7 +29,7 @@ public class Main extends JavaPlugin {
     private static Main instance;
     private FileManager fileManager;
     private BukkitSocketClientHandler socketClientHandler;
-    private SocketMessageManager socketMessageManager;
+    private BukkitSocketMessageManager bukkitSocketMessageManager;
     private SignManager signManager;
     private OtherServerPingManager otherServerPingManager;
     private String prefix = "[TimoCloud]";
@@ -35,6 +43,7 @@ public class Main extends JavaPlugin {
         registerCommands();
         registerListeners();
         registerTasks();
+        registerChannel();
         log("&ahas been enabled!");
     }
 
@@ -43,14 +52,48 @@ public class Main extends JavaPlugin {
     }
 
     public void onSocketDisconnect() {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+        log("Disconnected from TimoCloud. Stopping server.");
+        try {
+            kill();
+        } catch (Exception e) {
+            Main.log("Error while killing server:");
+            e.printStackTrace();
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "stop");
+        }
+    }
+
+    private void kill() throws IOException {
+        Runtime.getRuntime().halt(0);
+        /*
+        for (World world : Bukkit.getWorlds()) {
+            Bukkit.unloadWorld(world, false);
+        }
+        Process process = Runtime.getRuntime().exec(new String[] {"jps", "-m", "|grep", Bukkit.getPort() + ""});
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String response;
+        while ((response = reader.readLine()) != null) {
+            Main.log("Got response: " + response);
+            String pNumber = response.split(" ")[0];
+            Runtime.getRuntime().exec(new String[]{"pkill", "-f", pNumber});
+            return;
+        }
+        Main.log("Got no response.");
+        */
+        /*
+        Process process = Runtime.getRuntime().exec("screen -ls | awk '/\\." + getServerName() + "\t/ {print strtonum($1)}'");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String response = reader.readLine().trim();
+        System.out.println("Response:" + response);
+        int processID = Integer.parseInt(response);
+        Runtime.getRuntime().exec("kill -9 " + processID);
+        */
     }
 
     private void makeInstances() {
         instance = this;
         fileManager = new FileManager();
         socketClientHandler = new BukkitSocketClientHandler();
-        socketMessageManager = new SocketMessageManager();
+        bukkitSocketMessageManager = new BukkitSocketMessageManager();
         signManager = new SignManager();
         otherServerPingManager = new OtherServerPingManager();
     }
@@ -60,7 +103,21 @@ public class Main extends JavaPlugin {
     }
 
     private void registerListeners() {
-        Bukkit.getPluginManager().registerEvents(new SignChangeEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new SignChange(), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
+    }
+
+    private void registerChannel() {
+        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+    }
+
+    public void sendPlayerToServer(Player p, String server) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        try {
+            out.writeUTF("Connect");
+            out.writeUTF(server);
+        } catch (Exception e) {}
+        p.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 
     private void registerTasks() {
@@ -78,11 +135,15 @@ public class Main extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, (Runnable) () -> getSocketClientHandler().flush(), 0L, 1L);
 
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(this, () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            sendPlayers();
+            getOtherServerPingManager().requestEverything();
             getSignManager().updateSigns();
-            getOtherServerPingManager().requestStates();
-            getOtherServerPingManager().requestExtras();
-        }, 20L, 20L);
+        }, 20L, 45L);
+    }
+
+    public void sendPlayers() {
+        getBukkitSocketMessageManager().sendMessage("SETPLAYERS", Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers());
     }
 
     public static Main getInstance() {
@@ -109,8 +170,8 @@ public class Main extends JavaPlugin {
         return fileManager;
     }
 
-    public SocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
+    public BukkitSocketMessageManager getBukkitSocketMessageManager() {
+        return bukkitSocketMessageManager;
     }
 
     public SignManager getSignManager() {

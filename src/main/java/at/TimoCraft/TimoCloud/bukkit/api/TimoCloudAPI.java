@@ -9,7 +9,7 @@ public class TimoCloudAPI {
     private static String state = "ONLINE";
     private static String extra = "";
 
-    public String getServerName() {
+    public static String getServerName() {
         return Main.getInstance().getServerName();
     }
 
@@ -19,7 +19,7 @@ public class TimoCloudAPI {
 
     public static void setState(String state) {
         TimoCloudAPI.state = state;
-        Main.getInstance().getSocketMessageManager().sendMessage("SETSTATE", state);
+        Main.getInstance().getBukkitSocketMessageManager().sendMessage("SETSTATE", state);
     }
 
     public static String getExtra() {
@@ -28,6 +28,6 @@ public class TimoCloudAPI {
 
     public static void setExtra(String extra) {
         TimoCloudAPI.extra = extra;
-        Main.getInstance().getSocketMessageManager().sendMessage("SETEXTRA", extra);
+        Main.getInstance().getBukkitSocketMessageManager().sendMessage("SETEXTRA", extra);
     }
 }

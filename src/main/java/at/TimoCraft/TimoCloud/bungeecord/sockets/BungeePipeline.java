@@ -10,14 +10,14 @@ import io.netty.util.CharsetUtil;
 /**
  * Created by Timo on 29.12.16.
  */
-public class Pipeline extends ChannelInitializer<Channel> {
+public class BungeePipeline extends ChannelInitializer<Channel> {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
 
         ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
-        ch.pipeline().addLast("handler", new StringHandler());
+        ch.pipeline().addLast("handler", new BungeeStringHandler());
         ch.pipeline().addLast(TimoCloud.getInstance().getSocketServerHandler());
     }
 

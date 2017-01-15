@@ -4,6 +4,7 @@ package at.TimoCraft.TimoCloud.bungeecord;
 import at.TimoCraft.TimoCloud.bungeecord.commands.LobbyCommand;
 import at.TimoCraft.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.PlayerConnect;
+import at.TimoCraft.TimoCloud.bungeecord.listeners.ServerKick;
 import at.TimoCraft.TimoCloud.bungeecord.managers.FileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
@@ -35,8 +36,8 @@ public class TimoCloud extends Plugin {
 
     public void onEnable() {
         instance = this;
-        info("Starting TimoCloud in 5 seconds...");
-        getProxy().getScheduler().schedule(this, (Runnable) () -> enableDelayed(), 5, 0, TimeUnit.SECONDS);
+        //info("Starting TimoCloud in 5 seconds...");
+        getProxy().getScheduler().schedule(this, (Runnable) () -> enableDelayed(), 1, 0, TimeUnit.SECONDS);
     }
 
     private void enableDelayed() {
@@ -83,6 +84,7 @@ public class TimoCloud extends Plugin {
 
     private void registerListeners() {
         getProxy().getPluginManager().registerListener(this, new PlayerConnect());
+        getProxy().getPluginManager().registerListener(this, new ServerKick());
     }
 
     public static TimoCloud getInstance() {

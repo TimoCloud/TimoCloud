@@ -7,6 +7,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -52,7 +53,7 @@ public class ServerManager {
             ServerGroup serverGroup = new ServerGroup(
                     group,
                     groupsConfig.getInt(group + ".onlineAmount"),
-                    groupsConfig.getInt(group + ".ramInGigabyte")
+                    groupsConfig.getInt(group + ".ramInMegabyte") == 0 ? groupsConfig.getInt(group + ".ramInGigabyte")*1024 : groupsConfig.getInt(group + ".ramInMegabyte")
             );
             groups.add(serverGroup);
         }
@@ -82,30 +83,47 @@ public class ServerManager {
 
     public void unregisterPort(int port) {
         if (!isPortFree(port)) {
-            portsInUse.remove(port);
+            portsInUse.remove(Integer.valueOf(port));
             return;
         }
         TimoCloud.severe("Error: Attemping to unregister not registered port: " + port);
     }
 
-    public ServerInfo getRandomLobbyServer() {
+    public ServerInfo getRandomLobbyServer(ServerInfo notThis) {
         for (ServerGroup group : getGroups()) {
             if (group.getName().equalsIgnoreCase("lobby")) {
                 if (group.getTemporaryServers().size() == 0) {
                     continue;
                 }
-                return group.getTemporaryServers().get(new Random().nextInt(group.getTemporaryServers().size())).getServerInfo();
+                List<TemporaryServer> servers;
+                if (notThis == null) {
+                    servers = group.getTemporaryServers();
+                } else {
+                    servers = new ArrayList<>();
+                    for (TemporaryServer server : group.getTemporaryServers()) {
+                        if (! server.getServerInfo().equals(notThis)) {
+                            servers.add(server);
+                        }
+                    }
+                    if (servers.size() == 0) {
+                        TimoCloud.severe("No running fallback server found. Maybe you should start more lobby servers.");
+                        return notThis;
+                    }
+                }
+
+                return servers.get(new Random().nextInt(servers.size())).getServerInfo();
             }
         }
 
         return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("fallback"));
     }
 
-    public void startServer(ServerGroup group, String name) {
-        TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name));
+    public void startServer(ServerGroup group, String name, boolean once) {
+        int port = getFreePort();
+        TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port, once));
     }
 
-    public void startServerFromAsyncContext(ServerGroup group, String name) {
+    public void startServerFromAsyncContext(ServerGroup group, String name, int port, boolean once) {
         TimoCloud.getInstance().info("Starting server " + name + "...");
         double millisBefore = System.currentTimeMillis();
 
@@ -119,7 +137,7 @@ public class ServerManager {
         try {
             File directory = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + name);
             if (directory.exists()) {
-                FileUtils.deleteDirectory(directory);
+                FileDeleteStrategy.FORCE.deleteQuietly(directory);
             }
             FileUtils.copyDirectory(new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + group.getName()), directory);
 
@@ -137,7 +155,7 @@ public class ServerManager {
                 }
             }
 
-            TemporaryServer server = new TemporaryServer(name, group);
+            TemporaryServer server = new TemporaryServer(name, group, port, once);
             server.start();
             group.addStartingServer(server);
 
@@ -162,11 +180,15 @@ public class ServerManager {
     }
 
     public void removeServer(String name) {
-        if (startedServers.contains(name)) {
-            startedServers.remove(name);
-            return;
-        }
-        TimoCloud.getInstance().getProxy().getServers().remove(name);
+        try {
+            if (TimoCloud.getInstance().getProxy().getServers().containsKey(name)) {
+                TimoCloud.getInstance().getProxy().getServers().remove(name);
+            }
+            if (startedServers.contains(name)) {
+                startedServers.remove(name);
+                return;
+            }
+        } catch (Exception e) {}
         TimoCloud.severe("Tried to remove not started server: " + name);
     }
 
@@ -185,7 +207,7 @@ public class ServerManager {
 
     public void addGroup(ServerGroup group) throws IOException {
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".onlineAmount", group.getStartupAmount());
-        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".ramInGigabyte", group.getRam());
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + (group.getRam() < 128 ? ".ramInGigabyte" : ".ramInMegabyte"), group.getRam());
         ConfigurationProvider.getProvider(YamlConfiguration.class).save(TimoCloud.getInstance().getFileManager().getGroups(), TimoCloud.getInstance().getFileManager().getGroupsFile());
         if (!groups.contains(group)) {
             groups.add(group);
@@ -205,7 +227,7 @@ public class ServerManager {
         return groups;
     }
 
-    public TemporaryServer getFromServerName(String name) {
+    public TemporaryServer getServerByName(String name) {
         for (ServerGroup group : getGroups()) {
             for (TemporaryServer server : group.getStartingServers()) {
                 if (server.getName().equals(name)) {

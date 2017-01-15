@@ -11,6 +11,7 @@ import java.util.Map;
 public class OtherServerPingManager {
     private Map<String, String> states;
     private Map<String, String> extras;
+    private Map<String, String> players;
 
     public OtherServerPingManager() {
         load();
@@ -19,24 +20,35 @@ public class OtherServerPingManager {
     public void load() {
         states = new HashMap<>();
         extras = new HashMap<>();
+        players = new HashMap<>();
+    }
+
+    public void requestEverything() {
+        requestStates();
+        requestExtras();
+        requestPlayers();
     }
 
     public void requestStates() {
         for (String server : states.keySet()) {
-            Main.getInstance().getSocketMessageManager().sendMessage("GETSTATE", server);
+            Main.getInstance().getBukkitSocketMessageManager().sendMessage("GETSTATE", server);
         }
     }
 
     public void requestExtras() {
         for (String server : extras.keySet()) {
-            Main.getInstance().getSocketMessageManager().sendMessage("GETEXTRA", server);
+            Main.getInstance().getBukkitSocketMessageManager().sendMessage("GETEXTRA", server);
+        }
+    }
+
+    public void requestPlayers() {
+        for (String server : players.keySet()) {
+            Main.getInstance().getBukkitSocketMessageManager().sendMessage("GETPLAYERS", server);
         }
     }
 
     public String getState(String server) {
-        if (states.get(server) == null) {
-            states.put(server, "UNKNOWN");
-        }
+        states.putIfAbsent(server, "OFFLINE");
         return states.get(server);
     }
 
@@ -45,13 +57,29 @@ public class OtherServerPingManager {
     }
 
     public String getExtra(String server) {
-        if (extras.get(server) == null) {
-            extras.put(server, "");
-        }
+        extras.putIfAbsent(server, "");
         return extras.get(server);
     }
 
-    public void setExtra(String server, String extra) {
-        extras.put(server, extra);
+    public void setExtra(String server, String data) {
+        extras.put(server, data);
+    }
+
+    public int getCurrentPlayers(String server) {
+        if (! players.containsKey(server)) {
+            players.put(server, "0/0");
+        }
+        return Integer.parseInt(players.get(server).split("/")[0]);
+    }
+
+    public int getMaxPlayers(String server) {
+        if (! players.containsKey(server)) {
+            players.put(server, "0/0");
+        }
+        return Integer.parseInt(players.get(server).split("/")[1]);
+    }
+
+    public void setPlayers(String server, String data) {
+        players.put(server, data);
     }
 }

@@ -14,13 +14,13 @@ import java.util.Map;
 /**
  * Created by Timo on 29.12.16.
  */
-public class StringHandler extends SimpleChannelInboundHandler<String> {
+public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     private Map<Channel, Integer> open;
     private Map<Channel, String> remaining;
     private Map<Channel, String> parsed;
 
-    public StringHandler() {
+    public BungeeStringHandler() {
         open = new HashMap<>();
         remaining = new HashMap<>();;
         parsed = new HashMap<>();
@@ -56,9 +56,9 @@ public class StringHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleJSON(JSONObject json, String message, Channel channel) {
         String serverName = (String) json.get("server");
-        TemporaryServer server = TimoCloud.getInstance().getServerManager().getFromServerName(serverName);
+        TemporaryServer server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
         if (server == null) {
-            TimoCloud.severe("Unknown server connected: " + serverName);
+            TimoCloud.severe("OFFLINE server connected: " + serverName);
             channel.close();
             return;
         }
@@ -78,18 +78,31 @@ public class StringHandler extends SimpleChannelInboundHandler<String> {
                 server.setState(data);
                 break;
             case "GETSTATE":
-                TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getFromServerName(data);
+                TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
                 if (requestedServer == null) {
-                    TimoCloud.severe("Requested server " + data + " not found.");
+                    return;
                 }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", requestedServer == null ? "UNKNOWN" : (requestedServer.getState() == null ? "UNKNOWN" : requestedServer.getState()));
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", requestedServer.getState() == null ? "OFFLINE" : requestedServer.getState());
                 break;
             case "SETEXTRA":
                 server.setExtra(data);
                 break;
             case "GETEXTRA":
-                TemporaryServer requestedServer2 = TimoCloud.getInstance().getServerManager().getFromServerName(data);
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", requestedServer2 == null ? "UNKNOWN" : (requestedServer2.getExtra() == null ? "UNKNOWN" : requestedServer2.getExtra()));
+                TemporaryServer requestedServer2 = TimoCloud.getInstance().getServerManager().getServerByName(data);
+                if (requestedServer2 == null) {
+                    return;
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", requestedServer2.getExtra() == null ? "OFFLINE" : requestedServer2.getExtra());
+                break;
+            case "SETPLAYERS":
+                server.setPlayers(data);
+                break;
+            case "GETPLAYERS":
+                TemporaryServer requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
+                if (requestedServer3 == null) {
+                    return;
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer3.getPlayers() == null ? "0/0" : requestedServer3.getPlayers());
                 break;
             default:
                 TimoCloud.severe("Could not categorize json message: " + message);
@@ -97,23 +110,17 @@ public class StringHandler extends SimpleChannelInboundHandler<String> {
     }
 
     public int getOpen(Channel channel) {
-        if (open.get(channel) == null) {
-            open.put(channel, 0);
-        }
+        open.putIfAbsent(channel, 0);
         return open.get(channel);
     }
 
     public String getRemaining(Channel channel) {
-        if (remaining.get(channel) == null) {
-            remaining.put(channel, "");
-        }
+        remaining.putIfAbsent(channel, "");
         return remaining.get(channel);
     }
 
     public String getParsed(Channel channel) {
-        if (parsed.get(channel) == null) {
-            parsed.put(channel, "");
-        }
+        parsed.putIfAbsent(channel, "");
         return parsed.get(channel);
     }
 
