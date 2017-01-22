@@ -37,8 +37,14 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
             e.printStackTrace();
         }
     }
-    
+
     public void flush() {
+        while (queue.keySet().size() > 0) {
+            flushOnce();
+        }
+    }
+
+    public void flushOnce() {
         if (queue.keySet().size() < 1) {
             return;
         }
@@ -55,9 +61,6 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
             if (queue.containsKey(key)) {
                 queue.remove(key);
             }
-        }
-        if (queue.size() > 0) {
-            flush();
         }
     }
 

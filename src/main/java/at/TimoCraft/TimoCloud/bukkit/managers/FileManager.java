@@ -13,7 +13,6 @@ import java.util.Arrays;
  */
 public class FileManager {
     private String path;
-    private String scriptsDirectory;
     private File configFile;
     private FileConfiguration config;
     private File signsFile;
@@ -32,16 +31,6 @@ public class FileManager {
             path = "../../templates/" + Main.getInstance().getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/";
             File directory = new File(path);
             directory.mkdirs();
-
-            scriptsDirectory = "plugins/TimoCloud/scripts/";
-            File scripts = new File(scriptsDirectory);
-            scripts.mkdirs();
-            File killScreen = new File(getScriptsDirectory(), "killscreen.sh");
-            if (killScreen.exists()) {
-                killScreen.delete();
-            }
-            Files.copy(this.getClass().getResourceAsStream("/bukkit/killscreen.sh"), killScreen.toPath());
-            killScreen.setExecutable(true);
 
             configFile = new File(path, "config.yml");
             if (!configFile.exists()) {
@@ -114,7 +103,4 @@ public class FileManager {
         return dynamicSigns;
     }
 
-    public String getScriptsDirectory() {
-        return scriptsDirectory;
-    }
 }

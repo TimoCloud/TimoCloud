@@ -3,7 +3,7 @@ package at.TimoCraft.TimoCloud.bungeecord;
 
 import at.TimoCraft.TimoCloud.bungeecord.commands.LobbyCommand;
 import at.TimoCraft.TimoCloud.bungeecord.commands.TimoCloudCommand;
-import at.TimoCraft.TimoCloud.bungeecord.listeners.PlayerConnect;
+import at.TimoCraft.TimoCloud.bungeecord.listeners.LobbyJoin;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.ServerKick;
 import at.TimoCraft.TimoCloud.bungeecord.managers.FileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
@@ -83,7 +83,7 @@ public class TimoCloud extends Plugin {
     }
 
     private void registerListeners() {
-        getProxy().getPluginManager().registerListener(this, new PlayerConnect());
+        getProxy().getPluginManager().registerListener(this, new LobbyJoin());
         getProxy().getPluginManager().registerListener(this, new ServerKick());
     }
 

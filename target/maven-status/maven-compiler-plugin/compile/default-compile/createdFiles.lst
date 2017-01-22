@@ -1,7 +1,8 @@
-at/TimoCraft/TimoCloud/bungeecord/listeners/PlayerConnect.class
+at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.class
 at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.class
 at/TimoCraft/TimoCloud/bukkit/managers/FileManager.class
 at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.class
+at/TimoCraft/TimoCloud/wrapper/Wrapper.class
 at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServer.class
 at/TimoCraft/TimoCloud/bungeecord/sockets/BungeePipeline.class
 at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.class
