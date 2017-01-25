@@ -5,7 +5,9 @@ import at.TimoCraft.TimoCloud.bungeecord.utils.TimeUtil;
 import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +37,19 @@ public class TemporaryServer {
     }
 
     public void start() {
-        getServerGroup().startedPlusOne();
+
+        ProcessBuilder pb = new ProcessBuilder(
+                "/bin/bash", "-c",
+                "cd " + new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()).getAbsolutePath() + " &&" +
+                " screen -mdS " + getName() +
+                " java -server " +
+                " -Xmx" + getServerGroup().getRam() + "M" +
+                " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                " -Dcom.mojang.eula.agree=true" +
+                " -jar spigot.jar -o false -p " +
+                getPort())
+                .directory(new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()));
+        /*
         ProcessBuilder pb = new ProcessBuilder(
                 "/bin/bash",
                 "-c",
@@ -45,8 +59,15 @@ public class TemporaryServer {
                         + " " + getPort()
                         + " " + getServerGroup().getRam())
                 .directory(new File(TimoCloud.getInstance().getFileManager().getScriptsDirectory()));
+*/
         try {
-            pb.start();
+            Process process = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                TimoCloud.severe("Got response when starting server: " + line);
+            }
+            getServerGroup().startedPlusOne();
         } catch (Exception e) {
             TimoCloud.severe("Error while starting server " + getName() + ":");
             e.printStackTrace();

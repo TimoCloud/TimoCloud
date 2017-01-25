@@ -4,6 +4,7 @@ import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -15,7 +16,6 @@ public class FileManager {
     private String pluginsDirectory = "plugins/TimoCloud/";
     private String templatesDirectory = pluginsDirectory + "templates/";
     private String temporaryDirectory = pluginsDirectory + "temporary/";
-    private String scriptsDirectory = pluginsDirectory + "scripts/";
     private String configsDirectory = pluginsDirectory + "configs/";
     private String logsDirectory = pluginsDirectory + "logs/";
     private File configFile;
@@ -31,12 +31,10 @@ public class FileManager {
         try {
             File templates = new File(templatesDirectory);
             File temporary = new File(temporaryDirectory);
-            File scripts = new File(scriptsDirectory);
             File configs = new File(configsDirectory);
             File logs = new File(logsDirectory);
             templates.mkdirs();
             temporary.mkdirs();
-            scripts.mkdirs();
             configs.mkdirs();
             logs.mkdirs();
 
@@ -58,12 +56,13 @@ public class FileManager {
             groupsFile.createNewFile();
             groups = ConfigurationProvider.getProvider(YamlConfiguration.class).load(groupsFile);
             TimoCloud.getInstance().setPrefix(config.getString("prefix").replace("&", "§") + " ");
-            File startserverSH = new File(getScriptsDirectory(), "startserver.sh");
-            if (startserverSH.exists()) {
-                startserverSH.delete();
+
+            //Delete old scripts folder which is no longer needed
+            File scripts = new File(pluginsDirectory, "scripts/");
+            if (scripts.exists()) {
+                FileUtils.deleteDirectory(scripts);
             }
-            Files.copy(this.getClass().getResourceAsStream("/bungeecord/startserver.sh"), startserverSH.toPath());
-            startserverSH.setExecutable(true);
+
         } catch (Exception e) {
             TimoCloud.severe("Exception while initializing files:");
             e.printStackTrace();
@@ -76,10 +75,6 @@ public class FileManager {
 
     public String getTemporaryDirectory() {
         return temporaryDirectory;
-    }
-
-    public String getScriptsDirectory() {
-        return scriptsDirectory;
     }
 
     public String getLogsDirectory() {

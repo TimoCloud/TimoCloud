@@ -138,8 +138,6 @@ public class SignManager {
     }
 
     public void writeSign(Location location, String server, boolean dynamic) {
-        Main.getInstance().getFileManager().addLayoutDefaults(dynamic ? server : Main.getInstance().getGroupByServer(server));
-
         String group = Main.getInstance().getGroupByServer(server);
         Block block = location.getWorld().getBlockAt(location);
         BlockState state = block.getState();

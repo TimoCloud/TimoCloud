@@ -1,5 +1,5 @@
 name: TimoCloud
-version: 2.3.5
+version: 2.3.7
 author: TimoCrafter
 main: at.TimoCraft.TimoCloud.bukkit.Main
 commands:
