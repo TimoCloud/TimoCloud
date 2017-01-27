@@ -136,10 +136,19 @@ public class Main extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, (Runnable) () -> getSocketClientHandler().flush(), 0L, 1L);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            sendPlayers();
+            sendEverything();
             getOtherServerPingManager().requestEverything();
             getSignManager().updateSigns();
         }, 20L, 45L);
+    }
+
+    public void sendEverything() {
+        sendMotds();
+        sendPlayers();
+    }
+
+    public void sendMotds() {
+        getBukkitSocketMessageManager().sendMessage("SETMOTD", Bukkit.getMotd());
     }
 
     public void sendPlayers() {

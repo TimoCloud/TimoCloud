@@ -50,45 +50,6 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    /*
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        String message = ((ByteBuf) msg).toString(CharsetUtil.UTF_8);
-        List<JSONObject> jsons = split(message);
-        for (JSONObject json : jsons) {
-            handleJSON(json, message);
-        }
-    }
-
-    public List<JSONObject> split(String message) {
-        if (! (message.startsWith("{") && message.endsWith("}"))) {
-            Main.log("Error: Got unreadable JSON message: " + message);
-            return new ArrayList<>();
-        }
-        List<JSONObject> jsons = new ArrayList<>();
-        int open = 0;
-        String parsed = "";
-        for (String c : message.split("")) {
-            if (c.equals("{")) {
-                open++;
-            }
-            if (c.equals("}")) {
-                open--;
-            }
-            parsed = parsed + c;
-            if (open == 0) {
-                jsons.add((JSONObject) JSONValue.parse(parsed));
-                parsed = "";
-            }
-        }
-        return jsons;
-    }
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush();
-    }
-*/
-
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.

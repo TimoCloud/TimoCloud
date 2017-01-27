@@ -23,14 +23,19 @@ public class BukkitSocketClient {
                     .handler(new BukkitPipeline());
 
             // Start the client.
-            ChannelFuture f = b.connect(host, port).sync();
+            ChannelFuture f = null;
+            try {
+                f = b.connect(host, port).sync();
+            } catch (Exception e) {
+                Main.getInstance().onSocketDisconnect();
+            }
             // Wait until the connection is closed.
             try {
                 f.channel().closeFuture().sync();
             } catch (Exception e) {
-                Main.log("Socketserver closed.");
+                Main.getInstance().onSocketDisconnect();
             }
-            } finally {
+        } finally {
             // Shut down the event loop to terminate all threads.
             group.shutdownGracefully();
             Main.getInstance().onSocketDisconnect();

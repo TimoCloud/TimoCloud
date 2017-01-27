@@ -74,6 +74,7 @@ public class SignManager {
                     }
                     free = name;
                     found = true;
+                    i = x;
                 }
                 writeSign(location, free, true);
                 signs.put(location, free);
@@ -178,6 +179,7 @@ public class SignManager {
                 .replace("%max_players%", Main.getInstance().getOtherServerPingManager().getMaxPlayers(server) + "")
                 .replace("%state%", Main.getInstance().getOtherServerPingManager().getState(server))
                 .replace("%extra%", Main.getInstance().getOtherServerPingManager().getExtra(server))
+                .replace("%motd%", Main.getInstance().getOtherServerPingManager().getMotd(server))
                 .replace("&", "§")
                 ;
     }

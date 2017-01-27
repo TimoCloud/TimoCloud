@@ -11,6 +11,7 @@ import java.util.Map;
 public class OtherServerPingManager {
     private Map<String, String> states;
     private Map<String, String> extras;
+    private Map<String, String> motds;
     private Map<String, String> players;
 
     public OtherServerPingManager() {
@@ -20,12 +21,14 @@ public class OtherServerPingManager {
     public void load() {
         states = new HashMap<>();
         extras = new HashMap<>();
+        motds = new HashMap<>();
         players = new HashMap<>();
     }
 
     public void requestEverything() {
         requestStates();
         requestExtras();
+        requestMotds();
         requestPlayers();
     }
 
@@ -38,6 +41,11 @@ public class OtherServerPingManager {
     public void requestExtras() {
         for (String server : extras.keySet()) {
             Main.getInstance().getBukkitSocketMessageManager().sendMessage("GETEXTRA", server);
+        }
+    }
+    public void requestMotds() {
+        for (String server : motds.keySet()) {
+            Main.getInstance().getBukkitSocketMessageManager().sendMessage("GETMOTD", server);
         }
     }
 
@@ -63,6 +71,15 @@ public class OtherServerPingManager {
 
     public void setExtra(String server, String data) {
         extras.put(server, data);
+    }
+
+    public String getMotd(String server) {
+        motds.putIfAbsent(server, "");
+        return motds.get(server);
+    }
+
+    public void setMotd(String server, String data) {
+        motds.put(server, data);
     }
 
     public int getCurrentPlayers(String server) {

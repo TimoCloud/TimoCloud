@@ -24,42 +24,29 @@ public class TemporaryServer {
     private Channel channel;
     private String state = "STARTING";
     private String extra = "";
+    private String motd = "";
     private String players = "0/0";
-    private boolean once = false;
 
-    public TemporaryServer(String name, ServerGroup serverGroup, int port, boolean once) {
+    public TemporaryServer(String name, ServerGroup serverGroup, int port) {
         this.port = port;
         InetSocketAddress address = InetSocketAddress.createUnresolved("127.0.0.1", getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
         this.name = name;
         this.serverGroup = serverGroup;
-        this.once = once;
     }
 
     public void start() {
-
         ProcessBuilder pb = new ProcessBuilder(
                 "/bin/bash", "-c",
                 "cd " + new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()).getAbsolutePath() + " &&" +
-                " screen -mdS " + getName() +
-                " java -server " +
-                " -Xmx" + getServerGroup().getRam() + "M" +
-                " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                " -Dcom.mojang.eula.agree=true" +
-                " -jar spigot.jar -o false -p " +
-                getPort())
+                        " screen -mdS " + getName() +
+                        " java -server " +
+                        " -Xmx" + getServerGroup().getRam() + "M" +
+                        " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                        " -Dcom.mojang.eula.agree=true" +
+                        " -jar spigot.jar -o false -p " +
+                        getPort())
                 .directory(new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()));
-        /*
-        ProcessBuilder pb = new ProcessBuilder(
-                "/bin/bash",
-                "-c",
-                "./startserver.sh"
-                        + " ../../../" + TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + getName()
-                        + " " + getName()
-                        + " " + getPort()
-                        + " " + getServerGroup().getRam())
-                .directory(new File(TimoCloud.getInstance().getFileManager().getScriptsDirectory()));
-*/
         try {
             Process process = pb.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -67,7 +54,6 @@ public class TemporaryServer {
             while ((line = reader.readLine()) != null) {
                 TimoCloud.severe("Got response when starting server: " + line);
             }
-            getServerGroup().startedPlusOne();
         } catch (Exception e) {
             TimoCloud.severe("Error while starting server " + getName() + ":");
             e.printStackTrace();
@@ -94,41 +80,39 @@ public class TemporaryServer {
         setState("ONLINE");
     }
 
-    public void unregister(boolean startNew) {
-        if (isRegistered()) {
-            getServerGroup().startedMinusOne();
-            TimoCloud.getInstance().getServerManager().removeServer(name);
-            getServerGroup().removeServer(this);
-            setState("OFFLINE");
-            registered = false;
-            if (channel != null && channel.isOpen()) {
-                channel.close();
-            }
-            TimoCloud.info("Server " + getName() + " disconnected.");
-            if (TimoCloud.getInstance().isShuttingDown()) {
-                return;
-            }
-            File log = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + getName() + "/logs/latest.log");
-            if (log.exists()) {
-                try {
-                    File dir = new File(TimoCloud.getInstance().getFileManager().getLogsDirectory() + getName());
-                    dir.mkdirs();
-                    Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + getName()).toPath());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                TimoCloud.severe("No log from server " + getName() + " exists.");
-            }
-            if (startNew && !once) {
-                TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
-                    TimoCloud.getInstance().getServerManager().startServer(serverGroup, name, once);
-                    TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
-                }, 1, 0, TimeUnit.SECONDS);
-            }
+    public void unregister() {
+        if (!isRegistered()) {
+            TimoCloud.severe("Wanted to unregister not-registered server: " + serverInfo.getName());
             return;
         }
-        TimoCloud.severe("Wanted to unregister not-registered server: " + serverInfo.getName());
+        TimoCloud.getInstance().getServerManager().removeServer(name);
+        getServerGroup().removeServer(this);
+        setState("OFFLINE");
+        registered = false;
+        if (channel != null && channel.isOpen()) {
+            channel.close();
+        }
+        TimoCloud.info("Server " + getName() + " disconnected.");
+        if (TimoCloud.getInstance().isShuttingDown()) {
+            return;
+        }
+        File log = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + getName() + "/logs/latest.log");
+        if (log.exists()) {
+            try {
+                File dir = new File(TimoCloud.getInstance().getFileManager().getLogsDirectory() + getName());
+                dir.mkdirs();
+                Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + getName()).toPath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            TimoCloud.severe("No log from server " + getName() + " exists.");
+        }
+        TimoCloud.getInstance().getServerManager().checkEnoughOnline(getServerGroup());
+        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
+            TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
+        }, 1, 0, TimeUnit.SECONDS);
+
     }
 
     public ServerInfo getServerInfo() {
@@ -184,6 +168,7 @@ public class TemporaryServer {
 
     public void setState(String state) {
         this.state = state;
+        TimoCloud.getInstance().getServerManager().checkEnoughOnline(getServerGroup());
     }
 
     public String getExtra() {
@@ -192,6 +177,14 @@ public class TemporaryServer {
 
     public void setExtra(String extra) {
         this.extra = extra;
+    }
+
+    public String getMotd() {
+        return motd;
+    }
+
+    public void setMotd(String motd) {
+        this.motd = motd;
     }
 
     public int getPort() {
@@ -206,7 +199,4 @@ public class TemporaryServer {
         this.players = players;
     }
 
-    public boolean isOnce() {
-        return once;
-    }
 }

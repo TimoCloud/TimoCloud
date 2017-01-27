@@ -15,7 +15,6 @@ public class ServerGroup {
     private String name;
     private int startupAmount;
     private int ram;
-    private int started = 0;
 
     public ServerGroup(String name, int startupAmount, int ram) {
         this.name = name;
@@ -45,30 +44,9 @@ public class ServerGroup {
         for (int i = 1; i <= getStartupAmount(); i++) {
             String name = getName() + "-" + i;
             if (!TimoCloud.getInstance().getServerManager().isRunning(name)) {
-                TimoCloud.getInstance().getServerManager().startServer(this, name, false);
+                TimoCloud.getInstance().getServerManager().startServer(this, name);
             }
         }
-    }
-
-    public void startOnce() {
-        startedPlusOne();
-        String name = getName() + "-" + getStarted();
-        if (!TimoCloud.getInstance().getServerManager().isRunning(name)) {
-            return;
-        }
-        return;
-    }
-
-    public void startedPlusOne() {
-        started++;
-    }
-
-    public void startedMinusOne() {
-        started--;
-    }
-
-    public int getStarted() {
-        return started;
     }
 
     public void stopAllServers() {

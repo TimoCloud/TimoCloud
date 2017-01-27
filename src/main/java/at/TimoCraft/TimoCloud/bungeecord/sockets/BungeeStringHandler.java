@@ -66,6 +66,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
         TimoCloud.getInstance().getSocketServerHandler().getChannels().put(channel, server);
         String type = (String) json.get("type");
         String data = (String) json.get("data");
+        TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
         switch (type) {
             case "HANDSHAKE":
                 if (data.equals("I_JUST_CAME_ONLINE")) {
@@ -78,21 +79,31 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 server.setState(data);
                 break;
             case "GETSTATE":
-                TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
-                if (requestedServer == null) {
-                    return;
+                String state = "OFFLINE";
+                if (requestedServer != null) {
+                    state = requestedServer.getState();
                 }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", requestedServer.getState() == null ? "OFFLINE" : requestedServer.getState());
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", state);
                 break;
             case "SETEXTRA":
                 server.setExtra(data);
                 break;
             case "GETEXTRA":
-                TemporaryServer requestedServer2 = TimoCloud.getInstance().getServerManager().getServerByName(data);
-                if (requestedServer2 == null) {
-                    return;
+                String extra = "";
+                if (requestedServer != null) {
+                    extra = requestedServer.getExtra();
                 }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", requestedServer2.getExtra() == null ? "OFFLINE" : requestedServer2.getExtra());
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", extra);
+                break;
+            case "SETMOTD":
+                server.setMotd(data);
+                break;
+            case "GETMOTD":
+                String motd = "";
+                if (requestedServer != null) {
+                    motd = requestedServer.getMotd();
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MOTD", motd);
                 break;
             case "SETPLAYERS":
                 server.setPlayers(data);

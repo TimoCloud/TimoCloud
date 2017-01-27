@@ -84,11 +84,7 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
         if (server == null) {
             return;
         }
-        if (TimoCloud.getInstance().isShuttingDown()) {
-            server.unregister(false);
-        } else {
-            server.unregister(! server.isOnce());
-        }
+        server.unregister();
         removeChannel(channel);
     }
 

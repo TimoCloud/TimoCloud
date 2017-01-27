@@ -26,18 +26,15 @@ public class TimoCloudCommand extends Command {
                 MessageManager.sendMessage(sender, "&bBy TimoCrafter");
                 return;
             }
-
             if (!sender.hasPermission("timocloud.admin")) {
                 MessageManager.noPermission(sender);
                 return;
             }
-
             if (args[0].equalsIgnoreCase("reload")) {
                 TimoCloud.getInstance().getFileManager().load();
                 MessageManager.sendMessage(sender, "&aSuccessfully reloaded configs!");
                 return;
             }
-
             if (args[0].equalsIgnoreCase("listgroups")) {
                 List<ServerGroup> groups = TimoCloud.getInstance().getServerManager().getGroups();
                 if (groups.size() == 0) {
@@ -53,7 +50,6 @@ public class TimoCloudCommand extends Command {
                 }
                 return;
             }
-
             if (args[0].equalsIgnoreCase("removegroup")) {
                 String name = args[1];
                 try {
@@ -64,7 +60,6 @@ public class TimoCloudCommand extends Command {
                 }
                 return;
             }
-
             if (args[0].equalsIgnoreCase("restartgroup")) {
                 ServerGroup group = TimoCloud.getInstance().getServerManager().getGroupByName(args[1]);
                 if (group == null) {
@@ -72,16 +67,6 @@ public class TimoCloudCommand extends Command {
                     return;
                 }
                 group.stopAllServers();
-                return;
-            }
-
-            if (args[0].equalsIgnoreCase("startonce")) {
-                ServerGroup group = TimoCloud.getInstance().getServerManager().getGroupByName(args[1]);
-                if (group == null) {
-                    MessageManager.sendMessage(sender, "&cGroup &e" + args[1] + " &cdoes not exist.");
-                    return;
-                }
-                group.startOnce();
                 return;
             }
             if (args[0].equalsIgnoreCase("stopserver") || args[0].equalsIgnoreCase("restartserver")) {
@@ -128,7 +113,6 @@ public class TimoCloudCommand extends Command {
         MessageManager.sendMessage(sender, "  &a/TimoCloud removegroup <groupName> &7- deletes a group");
         MessageManager.sendMessage(sender, "  &a/TimoCloud listgroups &7- lists all groups and started servers");
         MessageManager.sendMessage(sender, "  &a/TimoCloud restartgroup <groupName> &7- restarts all servers in a given group");
-        MessageManager.sendMessage(sender, "  &a/TimoCloud startonce <groupName> &7- starts a server in a given group once, it won't be restarted");
         MessageManager.sendMessage(sender, "  &a/TimoCloud restartserver <serverName> &7- restarts a given server");
     }
 }

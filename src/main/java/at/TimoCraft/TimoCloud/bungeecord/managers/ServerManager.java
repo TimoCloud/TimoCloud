@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 27.12.16.
@@ -53,7 +54,7 @@ public class ServerManager {
             ServerGroup serverGroup = new ServerGroup(
                     group,
                     groupsConfig.getInt(group + ".onlineAmount"),
-                    groupsConfig.getInt(group + ".ramInMegabyte") == 0 ? groupsConfig.getInt(group + ".ramInGigabyte")*1024 : groupsConfig.getInt(group + ".ramInMegabyte")
+                    groupsConfig.getInt(group + ".ramInMegabyte") == 0 ? groupsConfig.getInt(group + ".ramInGigabyte") * 1024 : groupsConfig.getInt(group + ".ramInMegabyte")
             );
             groups.add(serverGroup);
         }
@@ -101,7 +102,7 @@ public class ServerManager {
                 } else {
                     servers = new ArrayList<>();
                     for (TemporaryServer server : group.getTemporaryServers()) {
-                        if (! server.getServerInfo().equals(notThis)) {
+                        if (!server.getServerInfo().equals(notThis)) {
                             servers.add(server);
                         }
                     }
@@ -118,12 +119,12 @@ public class ServerManager {
         return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("fallback"));
     }
 
-    public void startServer(ServerGroup group, String name, boolean once) {
+    public void startServer(ServerGroup group, String name) {
         int port = getFreePort();
-        TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port, once));
+        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port)), 1, 0, TimeUnit.SECONDS);
     }
 
-    public void startServerFromAsyncContext(ServerGroup group, String name, int port, boolean once) {
+    public void startServerFromAsyncContext(ServerGroup group, String name, int port) {
         TimoCloud.getInstance().info("Starting server " + name + "...");
         double millisBefore = System.currentTimeMillis();
 
@@ -155,7 +156,7 @@ public class ServerManager {
                 }
             }
 
-            TemporaryServer server = new TemporaryServer(name, group, port, once);
+            TemporaryServer server = new TemporaryServer(name, group, port);
             server.start();
             group.addStartingServer(server);
 
@@ -188,7 +189,8 @@ public class ServerManager {
                 startedServers.remove(name);
                 return;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         TimoCloud.severe("Tried to remove not started server: " + name);
     }
 
@@ -241,5 +243,58 @@ public class ServerManager {
             }
         }
         return null;
+    }
+
+    public void checkEnoughOnline(ServerGroup group) {
+        if (TimoCloud.getInstance().isShuttingDown()) {
+            return;
+        }
+        int needed = serversNeeded(group);
+        if (needed <= 0) {
+            return;
+        }
+        startServer(group, getNotExistingName(group));
+    }
+
+    private String getNotExistingName(ServerGroup group) {
+        for (int i = 1; true; i++) {
+            String name = generateName(group.getName(), i);
+            if (!nameExists(name, group)) {
+                return name;
+            }
+        }
+    }
+
+    private boolean nameExists(String name, ServerGroup group) {
+        for (TemporaryServer server : group.getStartingServers()) {
+            if (server.getName().equals(name)) {
+                return true;
+            }
+        }
+        for (TemporaryServer server : group.getTemporaryServers()) {
+            if (server.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String generateName(String groupName, int n) {
+        return groupName + "-" + n;
+    }
+
+    public int serversNeeded(ServerGroup group) {
+        int i = 0;
+        for (TemporaryServer server : group.getTemporaryServers()) {
+            if (! isStateActive(server.getState(), group.getName())) {
+                i++;
+            }
+        }
+        i -= group.getStartingServers().size();
+        return i;
+    }
+
+    private boolean isStateActive(String state, String groupName) {
+        return !TimoCloud.getInstance().getFileManager().getGroups().getStringList(groupName + ".sortOut").contains(state);
     }
 }
