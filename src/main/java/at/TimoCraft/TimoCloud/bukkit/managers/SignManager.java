@@ -90,12 +90,20 @@ public class SignManager {
         return layoutsConfig.getStringList(group + ".sortOut").contains(state);
     }
 
+    public boolean canSpectate(String state, String group) {
+        return layoutsConfig.getStringList(group + ".spectate").contains(state);
+    }
+
     public List<Location> getSigns(String server) {
         return (List<Location>) signsConfig.getList(server + ".locations", new ArrayList<Location>());
     }
 
     public List<Location> getDynamicSigns(String group) {
         return (List<Location>) dynamicSignsConfig.getList(group + ".locations", new ArrayList<Location>());
+    }
+
+    public List<Location> getSpectateSigns(String group) {
+        return (List<Location>) dynamicSignsConfig.getList(group + ".spectateSigns", new ArrayList<Location>());
     }
 
     public void setSigns(String name, List<Location> locations, boolean dynamic) {

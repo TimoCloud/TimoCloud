@@ -57,6 +57,9 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
             case "PLAYERS":
                 Main.getInstance().getOtherServerPingManager().setPlayers(server, data);
                 break;
+            case "MOTD":
+                Main.getInstance().getOtherServerPingManager().setMotd(server, data);
+                break;
             default:
                 Main.log("Error: Could not categorize json message: " + message);
         }

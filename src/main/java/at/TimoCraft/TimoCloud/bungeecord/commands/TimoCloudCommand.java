@@ -6,6 +6,8 @@ import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginDescription;
 
 import java.io.File;
 import java.util.List;
@@ -23,7 +25,7 @@ public class TimoCloudCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         try {
             if (args.length < 1) {
-                MessageManager.sendMessage(sender, "&bBy TimoCrafter");
+                sendVersion(sender);
                 return;
             }
             if (!sender.hasPermission("timocloud.admin")) {
@@ -33,6 +35,10 @@ public class TimoCloudCommand extends Command {
             if (args[0].equalsIgnoreCase("reload")) {
                 TimoCloud.getInstance().getFileManager().load();
                 MessageManager.sendMessage(sender, "&aSuccessfully reloaded configs!");
+                return;
+            }
+            if (args[0].equalsIgnoreCase("version")) {
+                sendVersion(sender);
                 return;
             }
             if (args[0].equalsIgnoreCase("listgroups")) {
@@ -87,7 +93,8 @@ public class TimoCloudCommand extends Command {
                 }
                 int amount = Integer.parseInt(args[2]);
                 int ram = Integer.parseInt(args[3]);
-                ServerGroup serverGroup = new ServerGroup(name, amount, ram);
+                boolean isStatic = Boolean.parseBoolean(args[4]);
+                ServerGroup serverGroup = new ServerGroup(name, amount, ram, isStatic);
 
                 if (TimoCloud.getInstance().getServerManager().groupExists(serverGroup)) {
                     MessageManager.sendMessage(sender, "&cThis group already exists.");
@@ -105,9 +112,15 @@ public class TimoCloudCommand extends Command {
         }
     }
 
+    private void sendVersion(CommandSender sender) {
+        PluginDescription description = TimoCloud.getInstance().getDescription();
+        MessageManager.sendMessage(sender, "&bTimoCloud Version &e[&6" + description.getVersion() + "&e] &bby &6TimoCrafter");
+    }
+
     public void sendHelp(CommandSender sender) {
         MessageManager.sendMessage(sender, "&6Available commands for &bTimoCloud&6:");
         MessageManager.sendMessage(sender, "  &a/TimoCloud help &7- shows this page");
+        MessageManager.sendMessage(sender, "  &a/TimoCloud version &7- shows the plugin version");
         MessageManager.sendMessage(sender, "  &a/TimoCloud reload &7- reloads all configs");
         MessageManager.sendMessage(sender, "  &a/TimoCloud addgroup <groupName> <startupAmount> <ram> &7- creates a group, please make sure you created a template with the group name");
         MessageManager.sendMessage(sender, "  &a/TimoCloud removegroup <groupName> &7- deletes a group");

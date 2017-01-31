@@ -15,55 +15,45 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 
 @ChannelHandler.Sharable
 public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
 
     private Map<Channel, TemporaryServer> channels = new HashMap<>();
-    private Map<String, Channel> queue;
+    //private Map<String, Channel> queue;
     
     public BungeeSocketServerHandler() {
-        resetQueue();
+        //resetQueue();
     }
     
+    /*
     public void resetQueue() {
         queue = new HashMap<>();
     }
+    */
 
     public void sendMessage(Channel channel, String server, String type, String data) {
         try {
-            queue.put(getJSON(server, type, data), channel);
+            channel.writeAndFlush(getJSON(server, type, data));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+/*
     public void flush() {
-        while (queue.keySet().size() > 0) {
-            flushOnce();
-        }
-    }
-
-    public void flushOnce() {
-        if (queue.keySet().size() < 1) {
-            return;
-        }
-        ArrayList<String> q = (ArrayList<String>) (new ArrayList<>(queue.keySet())).clone();
-        for (String message : q) {
+        Map<String, Channel> q = new HashMap<>(queue);
+        queue = new HashMap<>();
+        for (String message : q.keySet()) {
             try {
-                queue.get(message).writeAndFlush(message);
+                q.get(message).writeAndFlush(message);
             } catch (Exception e) {
-                TimoCloud.severe("Error while sending message to server " + channels.get(queue.get(message)).getName() + ": " + message);
+                TimoCloud.severe("Error while sending message to server " + channels.get(q.get(message)).getName() + ": " + message);
                 e.printStackTrace();
             }
         }
-        for (String key : q) {
-            if (queue.containsKey(key)) {
-                queue.remove(key);
-            }
-        }
     }
-
+*/
     public String getJSON(String server, String type, String data) {
         JSONObject json = new JSONObject();
         json.put("server", server);
@@ -90,7 +80,6 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        // Close the connection when an exception is raised.
         cause.printStackTrace();
         ctx.close();
     }

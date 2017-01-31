@@ -10,6 +10,7 @@ import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginDescription;
 
 import java.util.concurrent.TimeUnit;
 
@@ -78,8 +79,6 @@ public class TimoCloud extends Plugin {
                 e.printStackTrace();
             }
         });
-
-        getProxy().getScheduler().schedule(this, () -> getSocketServerHandler().flush(), 0L, 1L, TimeUnit.SECONDS);
     }
 
     private void registerListeners() {
@@ -131,4 +130,6 @@ public class TimoCloud extends Plugin {
     public BungeeSocketServerHandler getSocketServerHandler() {
         return socketServerHandler;
     }
+
+
 }

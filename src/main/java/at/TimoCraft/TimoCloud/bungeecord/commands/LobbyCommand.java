@@ -12,7 +12,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class LobbyCommand extends Command {
 
     public LobbyCommand() {
-        super("lobby", "timocloud.lobby", "hub");
+        super("lobby", null, "hub");
     }
 
     @Override

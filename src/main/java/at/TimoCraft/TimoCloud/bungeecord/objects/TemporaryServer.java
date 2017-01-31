@@ -108,11 +108,10 @@ public class TemporaryServer {
         } else {
             TimoCloud.severe("No log from server " + getName() + " exists.");
         }
-        TimoCloud.getInstance().getServerManager().checkEnoughOnline(getServerGroup());
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
         }, 1, 0, TimeUnit.SECONDS);
-
+        TimoCloud.getInstance().getServerManager().checkEnoughOnline(getServerGroup());
     }
 
     public ServerInfo getServerInfo() {

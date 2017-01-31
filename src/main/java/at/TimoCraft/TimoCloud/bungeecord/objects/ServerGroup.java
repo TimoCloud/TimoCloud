@@ -15,11 +15,13 @@ public class ServerGroup {
     private String name;
     private int startupAmount;
     private int ram;
+    private boolean isStatic = false;
 
-    public ServerGroup(String name, int startupAmount, int ram) {
+    public ServerGroup(String name, int startupAmount, int ram, boolean isStatic) {
         this.name = name;
         this.startupAmount = startupAmount;
         this.ram = ram;
+        this.isStatic = false;
     }
 
     public List<TemporaryServer> getTemporaryServers() {
@@ -92,6 +94,10 @@ public class ServerGroup {
 
     public int getRam() {
         return ram;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     @Override
