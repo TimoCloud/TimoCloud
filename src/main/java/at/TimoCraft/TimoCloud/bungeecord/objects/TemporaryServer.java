@@ -27,37 +27,16 @@ public class TemporaryServer {
     private String motd = "";
     private String players = "0/0";
 
-    public TemporaryServer(String name, ServerGroup serverGroup, int port) {
+    public TemporaryServer(String name, ServerGroup serverGroup, String ip, int port) {
         this.port = port;
-        InetSocketAddress address = InetSocketAddress.createUnresolved("127.0.0.1", getPort());
+        InetSocketAddress address = InetSocketAddress.createUnresolved(ip, getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
         this.name = name;
         this.serverGroup = serverGroup;
     }
 
     public void start() {
-        ProcessBuilder pb = new ProcessBuilder(
-                "/bin/bash", "-c",
-                "cd " + new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()).getAbsolutePath() + " &&" +
-                        " screen -mdS " + getName() +
-                        " java -server " +
-                        " -Xmx" + getServerGroup().getRam() + "M" +
-                        " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                        " -Dcom.mojang.eula.agree=true" +
-                        " -jar spigot.jar -o false -p " +
-                        getPort())
-                .directory(new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory(), getName()));
-        try {
-            Process process = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                TimoCloud.severe("Got response when starting server: " + line);
-            }
-        } catch (Exception e) {
-            TimoCloud.severe("Error while starting server " + getName() + ":");
-            e.printStackTrace();
-        }
+
     }
 
     public void stop() {

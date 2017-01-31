@@ -120,13 +120,19 @@ public class Main extends JavaPlugin {
         p.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 
+    public String getBungeeIP() {
+        return System.getProperty("bungeecord-host").split(":")[0];
+    }
+
+    public int getBungeeSocketPort() {
+        return Integer.parseInt(System.getProperty("bungeecord-host").split(":")[1]);
+    }
+
     private void registerTasks() {
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
-                String host = "127.0.0.1";
-                int port = getFileManager().getConfig().getInt("socket-port");
-                log("Connecting to bungee socket on " + host + ":" + port + "...");
-                new BukkitSocketClient().init(host, port);
+                log("Connecting to bungee socket on " + getBungeeIP() + ":" + getBungeeSocketPort() + "...");
+                new BukkitSocketClient().init(getBungeeIP(), getBungeeSocketPort());
             } catch (Exception e) {
                 e.printStackTrace();
                 onSocketDisconnect();

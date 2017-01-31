@@ -126,50 +126,7 @@ public class ServerManager {
     }
 
     public void startServerFromAsyncContext(ServerGroup group, String name, int port) {
-        TimoCloud.getInstance().info("Starting server " + name + "...");
-        double millisBefore = System.currentTimeMillis();
-
-        File templatesDir = new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + group.getName());
-        File spigot = new File(templatesDir, "spigot.jar");
-        if (!spigot.exists()) {
-            TimoCloud.severe("Could not start server " + name + " because spigot.jar does not exist.");
-            return;
-        }
-
-        try {
-            File directory = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + name);
-            if (directory.exists() && !group.isStatic()) {
-                FileDeleteStrategy.FORCE.deleteQuietly(directory);
-            }
-            if (!group.isStatic()) {
-                FileUtils.copyDirectory(new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + group.getName()), directory);
-            }
-            File plugin = new File(TimoCloud.getInstance().getFileManager().getTemporaryDirectory() + name, "plugins/" + TimoCloud.getInstance().getFileName());
-            if (plugin.exists()) {
-                plugin.delete();
-            }
-            try {
-                Files.copy(new File("plugins/" + TimoCloud.getInstance().getFileName()).toPath(), plugin.toPath());
-            } catch (Exception e) {
-                TimoCloud.severe("Error while copying plugin into template:");
-                e.printStackTrace();
-                if (!plugin.exists()) {
-                    return;
-                }
-            }
-
-            TemporaryServer server = new TemporaryServer(name, group, port);
-            server.start();
-            group.addStartingServer(server);
-            getServersWillBeStarted(group).remove(name);
-
-            double millisNow = System.currentTimeMillis();
-            TimoCloud.getInstance().info("Successfully started server " + name + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
-        } catch (Exception e) {
-            TimoCloud.severe("Error while starting server " + name + ":");
-            e.printStackTrace();
-        }
-
+        Channel ch
     }
 
     public boolean isRunning(String name) {

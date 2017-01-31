@@ -58,7 +58,6 @@ public class FileManager {
 
             config.options().copyDefaults(true);
             config.addDefault("prefix", "&6[&bTimo&fCloud&6]");
-            config.addDefault("socket-port", 5000);
             Main.getInstance().setPrefix(config.getString("prefix"));
         } catch (Exception e) {
             e.printStackTrace();

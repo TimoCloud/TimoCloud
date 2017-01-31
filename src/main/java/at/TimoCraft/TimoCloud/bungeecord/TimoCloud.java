@@ -73,7 +73,7 @@ public class TimoCloud extends Plugin {
         getProxy().getScheduler().runAsync(this, () -> {
             info("Starting socket-server...");
             try {
-                socketServer.init("127.0.0.1", getFileManager().getConfig().getInt("socket-port"));
+                socketServer.init("0.0.0.0", getFileManager().getConfig().getInt("socket-port"));
             } catch (Exception e) {
                 severe("Error while initializing socketServer:");
                 e.printStackTrace();
