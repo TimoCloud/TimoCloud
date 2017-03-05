@@ -1,6 +1,6 @@
 package at.TimoCraft.TimoCloud.bukkit.listeners;
 
-import at.TimoCraft.TimoCloud.bukkit.Main;
+import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
@@ -22,16 +22,16 @@ public class PlayerInteract implements Listener {
         if (block.getType() != Material.WALL_SIGN) {
             return;
         }
-        if (! Main.getInstance().getSignManager().getSigns().containsKey(block.getLocation())) {
+        if (!TimoCloudBukkit.getInstance().getSignManager().getSigns().containsKey(block.getLocation())) {
             return;
         }
 
-        String server = Main.getInstance().getSignManager().getServerOnSign(block.getLocation());
-        String group = Main.getInstance().getGroupByServer(server);
-        String state = Main.getInstance().getOtherServerPingManager().getState(server);
-        if (Main.getInstance().getSignManager().shouldBeSortedOut(state, group)) {
+        String server = TimoCloudBukkit.getInstance().getSignManager().getServerOnSign(block.getLocation());
+        String group = TimoCloudBukkit.getInstance().getGroupByServer(server);
+        String state = TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server);
+        if (TimoCloudBukkit.getInstance().getSignManager().shouldBeSortedOut(state, group)) {
             return;
         }
-        Main.getInstance().sendPlayerToServer(event.getPlayer(), Main.getInstance().getSignManager().getSigns().get(block.getLocation()));
+        TimoCloudBukkit.getInstance().sendPlayerToServer(event.getPlayer(), TimoCloudBukkit.getInstance().getSignManager().getSigns().get(block.getLocation()));
     }
 }

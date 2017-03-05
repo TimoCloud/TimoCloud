@@ -1,10 +1,11 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
-import at.TimoCraft.TimoCloud.bukkit.Main;
+import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import java.util.List;
 
 /**
  * Created by Timo on 29.12.16.
@@ -17,7 +18,7 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
-        Main.getInstance().getSocketClientHandler().setChannel(ctx.channel());
+        TimoCloudBukkit.getInstance().getSocketClientHandler().setChannel(ctx.channel());
         remaining = remaining + message;
         read();
     }
@@ -41,27 +42,33 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleJSON(JSONObject json, String message) {
         if (json == null) {
-            Main.log("Error while parsing json: " + message);
+            TimoCloudBukkit.log("Error while parsing json: " + message);
             return;
         }
         String server = (String) json.get("server");
         String type = (String) json.get("type");
-        String data = (String) json.get("data");
+        Object data = json.get("data");
         switch (type) {
             case "STATE":
-                Main.getInstance().getOtherServerPingManager().setState(server, data);
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setState(server, (String) data);
                 break;
             case "EXTRA":
-                Main.getInstance().getOtherServerPingManager().setExtra(server, data);
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setExtra(server, (String) data);
                 break;
             case "PLAYERS":
-                Main.getInstance().getOtherServerPingManager().setPlayers(server, data);
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setPlayers(server, (String) data);
                 break;
             case "MOTD":
-                Main.getInstance().getOtherServerPingManager().setMotd(server, data);
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setMotd(server, (String) data);
+                break;
+            case "MAP":
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setMap(server, (String) data);
+                break;
+            case "SERVERS":
+                TimoCloudBukkit.getInstance().getOtherServerPingManager().setServersToGroup(server, (List<String>) data);
                 break;
             default:
-                Main.log("Error: Could not categorize json message: " + message);
+                TimoCloudBukkit.log("Error: Could not categorize json message: " + message);
         }
     }
 

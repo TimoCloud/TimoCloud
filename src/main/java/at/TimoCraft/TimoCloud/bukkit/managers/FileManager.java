@@ -1,11 +1,10 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
-import at.TimoCraft.TimoCloud.bukkit.Main;
+import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.util.Arrays;
 
 /**
@@ -28,7 +27,11 @@ public class FileManager {
 
     public void init() {
         try {
-            path = "../../templates/" + Main.getInstance().getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/";
+            path = "../../templates/" + TimoCloudBukkit.getInstance().getGroupByServer(TimoCloudBukkit.getInstance().getServerName());
+            if (TimoCloudBukkit.getInstance().isRandomMap()) {
+                path += "_" + TimoCloudBukkit.getInstance().getMapName();
+            }
+            path += "/plugins/TimoCloud/";
             File directory = new File(path);
             directory.mkdirs();
 
@@ -58,7 +61,10 @@ public class FileManager {
 
             config.options().copyDefaults(true);
             config.addDefault("prefix", "&6[&bTimo&fCloud&6]");
-            Main.getInstance().setPrefix(config.getString("prefix"));
+            config.addDefault("updateSignsInServerTicks", 45L);
+            config.addDefault("defaultMapName", "Village");
+            TimoCloudBukkit.getInstance().setPrefix(config.getString("prefix"));
+            config.save(configFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

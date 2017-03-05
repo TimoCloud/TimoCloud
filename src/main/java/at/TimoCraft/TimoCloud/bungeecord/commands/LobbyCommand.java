@@ -11,13 +11,13 @@ import net.md_5.bungee.api.plugin.Command;
  */
 public class LobbyCommand extends Command {
 
-    public LobbyCommand() {
-        super("lobby", null, "hub");
+    public LobbyCommand(String command, String[] aliases) {
+        super(command, null, aliases);
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (! (sender instanceof ProxiedPlayer)) {
+        if (!(sender instanceof ProxiedPlayer)) {
             MessageManager.sendMessage(sender, "&cThis command is only for players!");
         }
         ProxiedPlayer player = (ProxiedPlayer) sender;

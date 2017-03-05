@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/TimoCloud.iml" filepath="$PROJECT_DIR$/TimoCloud.iml" />
+      <module fileurl="file://$PROJECT_DIR$/API/API.iml" filepath="$PROJECT_DIR$/API/API.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCloud-Universal/TimoCloud-Universal.iml" filepath="$PROJECT_DIR$/TimoCloud-Universal/TimoCloud-Universal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCloud-universal.iml" filepath="$PROJECT_DIR$/TimoCloud-universal.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCraft-API/TimoCraft-API.iml" filepath="$PROJECT_DIR$/TimoCraft-API/TimoCraft-API.iml" />
     </modules>
   </component>
 </project>

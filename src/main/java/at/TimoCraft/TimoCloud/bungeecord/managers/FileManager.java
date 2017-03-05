@@ -14,10 +14,7 @@ import java.nio.file.Files;
  */
 public class FileManager {
     private String pluginsDirectory = "plugins/TimoCloud/";
-    private String templatesDirectory = pluginsDirectory + "templates/";
-    private String temporaryDirectory = pluginsDirectory + "temporary/";
     private String configsDirectory = pluginsDirectory + "configs/";
-    private String logsDirectory = pluginsDirectory + "logs/";
     private File configFile;
     private File groupsFile;
     private Configuration config;
@@ -29,17 +26,11 @@ public class FileManager {
 
     public void load() {
         try {
-            File templates = new File(templatesDirectory);
-            File temporary = new File(temporaryDirectory);
             File configs = new File(configsDirectory);
-            File logs = new File(logsDirectory);
-            templates.mkdirs();
-            temporary.mkdirs();
             configs.mkdirs();
-            logs.mkdirs();
 
             configFile = new File(configsDirectory, "config.yml");
-            if (! configFile.exists()) {
+            if (!configFile.exists()) {
                 configFile.createNewFile();
             }
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
@@ -67,18 +58,6 @@ public class FileManager {
             TimoCloud.severe("Exception while initializing files:");
             e.printStackTrace();
         }
-    }
-
-    public String getTemplatesDirectory() {
-        return templatesDirectory;
-    }
-
-    public String getTemporaryDirectory() {
-        return temporaryDirectory;
-    }
-
-    public String getLogsDirectory() {
-        return logsDirectory;
     }
 
     public File getConfigFile() {

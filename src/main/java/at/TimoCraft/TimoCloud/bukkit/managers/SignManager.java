@@ -1,12 +1,11 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
-import at.TimoCraft.TimoCloud.bukkit.Main;
+import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
@@ -29,9 +28,9 @@ public class SignManager {
         signs = new HashMap<>();
         dynamicSigns = new HashMap<>();
 
-        signsConfig = Main.getInstance().getFileManager().getSigns();
-        dynamicSignsConfig = Main.getInstance().getFileManager().getDynamicSigns();
-        layoutsConfig = Main.getInstance().getFileManager().getSignLayouts();
+        signsConfig = TimoCloudBukkit.getInstance().getFileManager().getSigns();
+        dynamicSignsConfig = TimoCloudBukkit.getInstance().getFileManager().getDynamicSigns();
+        layoutsConfig = TimoCloudBukkit.getInstance().getFileManager().getSignLayouts();
 
         Set<String> servers = signsConfig.getKeys(false);
         for (String server : servers) {
@@ -51,7 +50,7 @@ public class SignManager {
                 dynamicSigns.put(group, l);
             }
         }
-        Main.log("Successfully loaded signs!");
+        TimoCloudBukkit.log("Successfully loaded signs!");
     }
 
     public void updateSigns() {
@@ -62,14 +61,14 @@ public class SignManager {
         ArrayList<String> strings = new ArrayList<>(dynamicSigns.keySet());
         for (String group : strings) {
             int i = 0;
-            List<Location> dynamicLocations = (ArrayList) ((ArrayList)dynamicSigns.get(group)).clone();
+            List<Location> dynamicLocations = (ArrayList) ((ArrayList) dynamicSigns.get(group)).clone();
             for (Location location : dynamicLocations) {
                 i++;
                 boolean found = false;
                 String free = "NotFound";
-                for (int x = i; x<=100 && !found; x++) {
+                for (int x = i; x <= 100 && !found; x++) {
                     String name = group + "-" + x;
-                    if (shouldBeSortedOut(Main.getInstance().getOtherServerPingManager().getState(name), group)) {
+                    if (shouldBeSortedOut(TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(name), group)) {
                         continue;
                     }
                     free = name;
@@ -109,7 +108,7 @@ public class SignManager {
     public void setSigns(String name, List<Location> locations, boolean dynamic) {
         FileConfiguration config = dynamic ? dynamicSignsConfig : signsConfig;
         config.set(name + ".locations", locations);
-        File dir = new File("../../templates/" + Main.getInstance().getGroupByServer(Main.getInstance().getServerName()) + "/plugins/TimoCloud/");
+        File dir = new File("../../templates/" + TimoCloudBukkit.getInstance().getGroupByServer(TimoCloudBukkit.getInstance().getServerName()) + "/plugins/TimoCloud/");
         File signs = new File(dir, dynamic ? "dynamicSigns.yml" : "signs.yml");
         dir.mkdirs();
         try {
@@ -147,7 +146,7 @@ public class SignManager {
     }
 
     public void writeSign(Location location, String server, boolean dynamic) {
-        String group = Main.getInstance().getGroupByServer(server);
+        String group = TimoCloudBukkit.getInstance().getGroupByServer(server);
         Block block = location.getWorld().getBlockAt(location);
         BlockState state = block.getState();
         if (!(state instanceof Sign)) {
@@ -159,21 +158,21 @@ public class SignManager {
                 signs.remove(location);
             }
             setSigns(dynamic ? group : server, dynamic ? dynamicSigns.get(group) : new ArrayList<>(signs.keySet()), dynamic);
-            Main.log("Removed sign at " + location + " because it did not exist anymore.");
+            TimoCloudBukkit.log("Removed sign at " + location + " because it did not exist anymore.");
             return;
         }
         Sign sign = (Sign) state;
 
         if (sign == null) {
-            Main.log("Sign at " + block.getLocation() + " does not exist. This is a fatal error and should never happen. Please report this.");
+            TimoCloudBukkit.log("Sign at " + block.getLocation() + " does not exist. This is a fatal error and should never happen. Please report this.");
             return;
         }
         for (int i = 0; i < 4; i++) {
             try {
-                sign.setLine(i, replace(layoutsConfig.getString(Main.getInstance().getGroupByServer(server) + ".layouts." + Main.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
+                sign.setLine(i, replace(layoutsConfig.getString(TimoCloudBukkit.getInstance().getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
             } catch (Exception e) {
-                Main.log("Could not find layout " + Main.getInstance().getOtherServerPingManager().getState(server) + " in group " + Main.getInstance().getGroupByServer(server));
-                System.out.println(Main.getInstance().getGroupByServer(server) + ".layouts." + Main.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1));
+                TimoCloudBukkit.log("Could not find layout " + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + " in group " + TimoCloudBukkit.getInstance().getGroupByServer(server));
+                System.out.println(TimoCloudBukkit.getInstance().getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1));
                 e.printStackTrace();
             }
         }
@@ -183,13 +182,13 @@ public class SignManager {
     public String replace(String string, String server) {
         return string
                 .replace("%server_name%", server)
-                .replace("%current_players%", Main.getInstance().getOtherServerPingManager().getCurrentPlayers(server) + "")
-                .replace("%max_players%", Main.getInstance().getOtherServerPingManager().getMaxPlayers(server) + "")
-                .replace("%state%", Main.getInstance().getOtherServerPingManager().getState(server))
-                .replace("%extra%", Main.getInstance().getOtherServerPingManager().getExtra(server))
-                .replace("%motd%", Main.getInstance().getOtherServerPingManager().getMotd(server))
-                .replace("&", "§")
-                ;
+                .replace("%current_players%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getCurrentPlayers(server) + "")
+                .replace("%max_players%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMaxPlayers(server) + "")
+                .replace("%state%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server))
+                .replace("%extra%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getExtra(server))
+                .replace("%motd%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMotd(server))
+                .replace("%map%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMap(server))
+                .replace("&", "§");
     }
 
     public Map<Location, String> getSigns() {

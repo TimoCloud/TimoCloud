@@ -2,29 +2,93 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e023fd5d-9cb9-4a16-8260-0031b12ec489" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/BaseLoader.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/resources/base/config.yml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/wrapper/Wrapper.java" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/TimoCloud-Universal/pom.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/TimoCraft-API/pom.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SendBungeeCommand.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerJoin.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerQuit.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/BaseObject.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_buffer_4_1_5_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_codec_4_1_5_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_common_4_1_5_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_resolver_4_1_5_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__io_netty_netty_transport_4_1_5_Final.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/TimoCloud.iml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/TimoCloud-1.0-SNAPSHOT-jar-with-dependencies.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/TimoCloud-1.0-SNAPSHOT.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/Main.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/utils/TimeUtil.class" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/utils/TimeUtil.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/TimoCloud.jar" afterPath="$PROJECT_DIR$/target/TimoCloud.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.class" afterPath="$PROJECT_DIR$/target/classes/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/compiler.xml" afterPath="$PROJECT_DIR$/.idea/compiler.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/proguard.conf" afterPath="$PROJECT_DIR$/proguard.conf" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" afterPath="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/bungee.yml" afterPath="$PROJECT_DIR$/src/main/resources/bungee.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/bungeecord/config.yml" afterPath="$PROJECT_DIR$/src/main/resources/bungeecord/config.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/bungee.yml" afterPath="$PROJECT_DIR$/target/classes/bungee.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/bungeecord/config.yml" afterPath="$PROJECT_DIR$/target/classes/bungeecord/config.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/plugin.yml" afterPath="$PROJECT_DIR$/target/classes/plugin.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
     </list>
     <ignored path="TimoCloud.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path=".idea/dataSources.local.xml" />
     <ignored path="$PROJECT_DIR$/TimoCloud_Bukkit/target/" />
+    <ignored path="$PROJECT_DIR$/API/target/" />
+    <ignored path="$PROJECT_DIR$/parent/target/" />
+    <ignored path="$PROJECT_DIR$/TimoCraft-API/target/" />
+    <ignored path="$PROJECT_DIR$/TimoCloud-Universal/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -41,131 +105,81 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Base.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="37" column="26" lean-forward="false" selection-start-line="37" selection-start-column="26" selection-end-line="37" selection-end-column="26" />
-              <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="e#913#914#0" expanded="true" />
-                <element signature="e#984#985#0" expanded="true" />
-                <element signature="e#1033#1034#0" expanded="true" />
-                <element signature="e#1118#1119#0" expanded="true" />
-                <element signature="e#1139#1140#0" expanded="true" />
-                <element signature="e#1165#1166#0" expanded="true" />
-                <element signature="e#2212#2213#0" expanded="true" />
-                <element signature="e#2284#2285#0" expanded="true" />
-                <element signature="e#2325#2326#0" expanded="true" />
-                <element signature="e#2406#2407#0" expanded="true" />
-                <element signature="e#2450#2451#0" expanded="true" />
-                <element signature="e#2530#2531#0" expanded="true" />
-                <element signature="e#2570#2571#0" expanded="true" />
-                <element signature="e#2601#2602#0" expanded="true" />
-                <element signature="e#2644#2645#0" expanded="true" />
-                <element signature="e#2678#2679#0" expanded="true" />
-                <element signature="e#2725#2726#0" expanded="true" />
-                <element signature="e#2761#2762#0" expanded="true" />
-                <element signature="e#2810#2811#0" expanded="true" />
-                <element signature="e#2845#2846#0" expanded="true" />
-                <element signature="e#2908#2909#0" expanded="true" />
-                <element signature="e#2950#2951#0" expanded="true" />
-                <element signature="e#3015#3016#0" expanded="true" />
-                <element signature="e#3058#3059#0" expanded="true" />
-                <element signature="e#3109#3110#0" expanded="true" />
-                <element signature="e#3145#3146#0" expanded="true" />
-                <element signature="e#3178#3179#0" expanded="true" />
-                <element signature="e#3213#3214#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BaseStringHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="54" column="73" lean-forward="false" selection-start-line="54" selection-start-column="73" selection-end-line="54" selection-end-column="73" />
+            <state relative-caret-position="1875">
+              <caret line="125" column="21" lean-forward="false" selection-start-line="125" selection-start-column="21" selection-end-line="125" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ServerManager.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="151" column="13" lean-forward="true" selection-start-line="151" selection-start-column="13" selection-end-line="151" selection-end-column="13" />
-              <folding>
-                <element signature="e#4513#4514#0" expanded="true" />
-                <element signature="e#4538#4539#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BaseSocketClientHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="26" column="49" lean-forward="false" selection-start-line="26" selection-start-column="49" selection-end-line="26" selection-end-column="49" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="359">
-              <caret line="132" column="17" lean-forward="false" selection-start-line="132" selection-start-column="17" selection-end-line="132" selection-end-column="17" />
-              <folding>
-                <element signature="e#4508#4509#0" expanded="true" />
-                <element signature="e#4582#4583#0" expanded="true" />
-                <element signature="e#4622#4623#0" expanded="true" />
-                <element signature="e#4714#4715#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BungeeSocketServerHandler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="201">
-              <caret line="56" column="18" lean-forward="false" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BukkitSocketClient.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java">
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/TimoCraft-API/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="15" column="16" lean-forward="false" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BukkitStringHandler.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="675">
+              <caret line="50" column="23" lean-forward="false" selection-start-line="50" selection-start-column="23" selection-end-line="50" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bungee.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/bungee.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="10" lean-forward="false" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ServerGroup.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="plugin.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/plugin.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="90">
+              <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="FileManager.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="59" column="63" lean-forward="false" selection-start-line="59" selection-start-column="63" selection-end-line="59" selection-end-column="63" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TemporaryServer.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="64">
-              <caret line="38" column="0" lean-forward="false" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
+            <state relative-caret-position="795">
+              <caret line="64" column="5" lean-forward="false" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -174,11 +188,19 @@
       <file leaf-file-name="ServerManager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="255">
+              <caret line="29" column="29" lean-forward="false" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FileManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="29" column="95" lean-forward="false" selection-start-line="29" selection-start-column="95" selection-end-line="29" selection-end-column="95" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -198,6 +220,10 @@
       <find>OFFLI</find>
       <find>Wrong</find>
       <find>getStartingServers().remove</find>
+      <find>getServerNam</find>
+      <find>socketDisc</find>
+      <find>2.0</find>
+      <find>packag</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -216,57 +242,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/MessageManager.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/bungeecord/config.yml" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/SocketMessageManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChangeEvent.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/sockets/Pipeline.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServer.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/Pipeline.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/Pipeline.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/StringHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/StringHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/ServerKick.java" />
-        <option value="$PROJECT_DIR$/proguard.conf" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java" />
         <option value="$PROJECT_DIR$/src/main/resources/bukkit/killscreen.sh" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/wrapper/Wrapper.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/PlayerConnect.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" />
         <option value="$PROJECT_DIR$/src/main/resources/bungeecord/startserver.sh" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java" />
-        <option value="$PROJECT_DIR$/src/main/resources/plugin.yml" />
-        <option value="$PROJECT_DIR$/src/main/resources/bungee.yml" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BukkitPipeline.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/BaseLoader.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java" />
         <option value="$PROJECT_DIR$/src/main/resources/base/config.yml" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/BaseObject.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" />
-        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerJoin.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerQuit.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/bungeecord/config.yml" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/CommandListener.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SendBungeeCommand.java" />
         <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" />
+        <option value="$PROJECT_DIR$/API/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" />
+        <option value="$PROJECT_DIR$/proguard.conf" />
+        <option value="$PROJECT_DIR$/API/pom.xml" />
+        <option value="$PROJECT_DIR$/API/proguard.conf" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" />
+        <option value="$PROJECT_DIR$/src/main/resources/bungee.yml" />
+        <option value="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java" />
+        <option value="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java" />
       </list>
     </option>
   </component>
@@ -307,7 +333,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -330,591 +355,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="resources" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sockets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="objects" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="managers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="listeners" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bungeecord" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="commands" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sockets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="managers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="listeners" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="commands" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="bukkit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="api" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sockets" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="TimoCloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="managers" />
+              <option name="myItemId" value="TimoCloud-Universal" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="configurable.group.tools" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -925,16 +379,39 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/TimoCloud-Universal" />
+      <recent name="$PROJECT_DIR$/parent" />
       <recent name="$PROJECT_DIR$/src/main/resources" />
       <recent name="$PROJECT_DIR$/src/main/resources/bukkit" />
       <recent name="$PROJECT_DIR$/src/main/resources/bungeecord" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/API" />
       <recent name="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base" />
       <recent name="$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets" />
     </key>
   </component>
   <component name="RunManager" selected="Maven.Package">
+    <configuration default="false" name="BaseLoader" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="at.TimoCraft.TimoCloud.base.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="MAIN_CLASS_NAME" value="at.TimoCraft.TimoCloud.base.BaseLoader" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="ENABLE_SWING_INSPECTOR" value="false" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <module name="TimoCloud" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="false" name="startserver.sh" type="BashConfigurationType" factoryName="Bash" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="INTERPRETER_PATH" value="/bin/bash" />
@@ -1387,13 +864,15 @@
       </MavenSettings>
       <method />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Maven.Package" />
-      <item index="1" class="java.lang.String" itemvalue="Bash.startserver.sh" />
+      <item index="1" class="java.lang.String" itemvalue="Application.BaseLoader" />
+      <item index="2" class="java.lang.String" itemvalue="Bash.startserver.sh" />
     </list>
     <recent_temporary>
-      <list size="1">
-        <item index="0" class="java.lang.String" itemvalue="Bash.startserver.sh" />
+      <list size="2">
+        <item index="0" class="java.lang.String" itemvalue="Application.BaseLoader" />
+        <item index="1" class="java.lang.String" itemvalue="Bash.startserver.sh" />
       </list>
     </recent_temporary>
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
@@ -1479,15 +958,45 @@
       <workItem from="1485680358823" duration="2152000" />
       <workItem from="1485780149732" duration="7793000" />
       <workItem from="1485869132110" duration="6623000" />
+      <workItem from="1486003732441" duration="371000" />
+      <workItem from="1486032745171" duration="1906000" />
+      <workItem from="1486044270207" duration="14000" />
+      <workItem from="1486044415387" duration="11329000" />
+      <workItem from="1486136882967" duration="9000" />
+      <workItem from="1486146185331" duration="771000" />
+      <workItem from="1486170859119" duration="334000" />
+      <workItem from="1486209078063" duration="1781000" />
+      <workItem from="1486218853708" duration="6611000" />
+      <workItem from="1486378902818" duration="14000" />
+      <workItem from="1486571245702" duration="3511000" />
+      <workItem from="1486651495839" duration="593000" />
+      <workItem from="1486808878372" duration="982000" />
+      <workItem from="1486838709606" duration="991000" />
+      <workItem from="1486883621939" duration="1045000" />
+      <workItem from="1486924747081" duration="643000" />
+      <workItem from="1486996094648" duration="569000" />
+      <workItem from="1486996871472" duration="1862000" />
+      <workItem from="1487165187540" duration="2716000" />
+      <workItem from="1487412102871" duration="859000" />
+      <workItem from="1487428545658" duration="500000" />
+      <workItem from="1487611740949" duration="6123000" />
+      <workItem from="1487686302089" duration="1825000" />
+      <workItem from="1487772236869" duration="26000" />
+      <workItem from="1487772311539" duration="25000" />
+      <workItem from="1487773953291" duration="7571000" />
+      <workItem from="1487869162111" duration="6460000" />
+      <workItem from="1488563073687" duration="4284000" />
+      <workItem from="1488629786138" duration="8099000" />
+      <workItem from="1488731064787" duration="30000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="222461000" />
+    <option name="totallyTimeSpent" value="300928000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="739" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -1497,15 +1006,14 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30838323" sideWeight="0.509375" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32985073" sideWeight="0.490625" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3164179" sideWeight="0.490625" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.271875" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.271875" sideWeight="0.5" order="4" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32784432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1516,9 +1024,10 @@
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="combo" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3283582" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Thumbnails" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32884902" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32784432" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -1549,200 +1058,130 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="33" column="0" lean-forward="false" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/utils/TimeUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="13" column="51" lean-forward="false" selection-start-line="13" selection-start-column="51" selection-end-line="13" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/net/md-5/bungeecord-api/1.10-SNAPSHOT/bungeecord-api-1.10-20161106.005422-42.jar!/net/md_5/bungee/api/connection/ProxiedPlayer.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="35" column="18" lean-forward="true" selection-start-line="35" selection-start-column="18" selection-end-line="35" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/bukkit/killscreen.sh" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/wrapper/Wrapper.java" />
-    <entry file="file://$PROJECT_DIR$/proguard.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="11" lean-forward="false" selection-start-line="2" selection-start-column="11" selection-end-line="2" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1095">
-          <caret line="73" column="1" lean-forward="false" selection-start-line="73" selection-start-column="1" selection-end-line="73" selection-end-column="1" />
+        <state relative-caret-position="495">
+          <caret line="43" column="107" lean-forward="false" selection-start-line="43" selection-start-column="107" selection-end-line="43" selection-end-column="107" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/bungeecord/startserver.sh" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/bungee.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="585">
-          <caret line="48" column="8" lean-forward="false" selection-start-line="48" selection-start-column="8" selection-end-line="48" selection-end-column="8" />
+        <state relative-caret-position="15">
+          <caret line="1" column="14" lean-forward="false" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/spigotmc/spigot-api/1.11-R0.1-SNAPSHOT/spigot-api-1.11-R0.1-20161219.121403-111.jar!/org/bukkit/World.class">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/plugin.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="48" column="10" lean-forward="false" selection-start-line="48" selection-start-column="10" selection-end-line="48" selection-end-column="10" />
+        <state relative-caret-position="15">
+          <caret line="1" column="14" lean-forward="false" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="57" column="17" lean-forward="false" selection-start-line="57" selection-start-column="17" selection-end-line="57" selection-end-column="17" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1096#1097#0" expanded="false" />
+            <element signature="e#1157#1158#0" expanded="false" />
+            <element signature="e#1206#1207#0" expanded="false" />
+            <element signature="e#1269#1270#0" expanded="false" />
+            <element signature="e#3154#3155#0" expanded="false" />
+            <element signature="e#3208#3209#0" expanded="false" />
+            <element signature="e#3458#3459#0" expanded="false" />
+            <element signature="e#3489#3490#0" expanded="false" />
+            <element signature="e#3536#3537#0" expanded="false" />
+            <element signature="e#3572#3573#0" expanded="false" />
+            <element signature="e#3615#3616#0" expanded="false" />
+            <element signature="e#3649#3650#0" expanded="false" />
+            <element signature="e#3682#3683#0" expanded="false" />
+            <element signature="e#3711#3712#0" expanded="false" />
+            <element signature="e#3755#3756#0" expanded="false" />
+            <element signature="e#3791#3792#0" expanded="false" />
+            <element signature="e#3842#3843#0" expanded="false" />
+            <element signature="e#3877#3878#0" expanded="false" />
+            <element signature="e#3916#3917#0" expanded="false" />
+            <element signature="e#3951#3952#0" expanded="false" />
+            <element signature="e#4008#4009#0" expanded="false" />
+            <element signature="e#4056#4057#0" expanded="false" />
+            <element signature="e#4121#4122#0" expanded="false" />
+            <element signature="e#4163#4164#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="10" column="13" lean-forward="false" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="16" column="66" lean-forward="false" selection-start-line="16" selection-start-column="66" selection-end-line="16" selection-end-column="66" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <caret line="11" column="13" lean-forward="false" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#776#777#0" expanded="false" />
+            <element signature="e#802#803#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1110">
-          <caret line="83" column="55" lean-forward="false" selection-start-line="83" selection-start-column="55" selection-end-line="83" selection-end-column="55" />
+        <state relative-caret-position="180">
+          <caret line="13" column="64" lean-forward="true" selection-start-line="13" selection-start-column="64" selection-end-line="13" selection-end-column="64" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="15" column="16" lean-forward="false" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="44" column="19" lean-forward="false" selection-start-line="44" selection-start-column="19" selection-end-line="44" selection-end-column="19" />
           <folding>
             <element signature="imports" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerJoin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="31" column="25" lean-forward="false" selection-start-line="31" selection-start-column="25" selection-end-line="31" selection-end-column="25" />
+        <state relative-caret-position="135">
+          <caret line="13" column="55" lean-forward="false" selection-start-line="13" selection-start-column="55" selection-end-line="13" selection-end-column="55" />
           <folding>
             <element signature="imports" expanded="false" />
-            <element signature="e#417#418#0" expanded="false" />
-            <element signature="e#439#440#0" expanded="false" />
-            <element signature="e#1722#1723#0" expanded="false" />
-            <element signature="e#1763#1764#0" expanded="false" />
-            <element signature="e#1945#1946#0" expanded="false" />
-            <element signature="e#1985#1986#0" expanded="false" />
-            <element signature="e#2163#2164#0" expanded="false" />
-            <element signature="e#2202#2203#0" expanded="false" />
-            <element signature="e#2696#2697#0" expanded="false" />
-            <element signature="e#2737#2738#0" expanded="false" />
+            <element signature="e#459#460#0" expanded="false" />
+            <element signature="e#518#519#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerQuit.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="108" column="63" lean-forward="false" selection-start-line="108" selection-start-column="63" selection-end-line="108" selection-end-column="63" />
-          <folding />
+        <state relative-caret-position="135">
+          <caret line="13" column="55" lean-forward="false" selection-start-line="13" selection-start-column="55" selection-end-line="13" selection-end-column="55" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="22" column="16" lean-forward="true" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="21" column="43" lean-forward="false" selection-start-line="21" selection-start-column="43" selection-end-line="21" selection-end-column="43" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/MessageManager.java">
-      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="840">
-          <caret line="60" column="71" lean-forward="false" selection-start-line="60" selection-start-column="71" selection-end-line="60" selection-end-column="71" />
+          <caret line="10" column="13" lean-forward="false" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="false" />
           </folding>
@@ -1751,290 +1190,359 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="40" column="19" lean-forward="false" selection-start-line="38" selection-start-column="27" selection-end-line="40" selection-end-column="19" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#731#732#0" expanded="false" />
-            <element signature="e#774#775#0" expanded="false" />
-            <element signature="e#849#850#0" expanded="false" />
-            <element signature="e#895#896#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="155">
+          <caret line="27" column="19" lean-forward="false" selection-start-line="27" selection-start-column="19" selection-end-line="27" selection-end-column="19" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1410">
-          <caret line="110" column="0" lean-forward="false" selection-start-line="110" selection-start-column="0" selection-end-line="110" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#775#776#0" expanded="false" />
-            <element signature="e#814#815#0" expanded="false" />
-            <element signature="e#845#846#0" expanded="false" />
-            <element signature="e#872#873#0" expanded="false" />
-            <element signature="e#909#910#0" expanded="false" />
-            <element signature="e#945#946#0" expanded="false" />
-            <element signature="e#3001#3002#0" expanded="false" />
-            <element signature="e#3039#3040#0" expanded="false" />
-            <element signature="e#3066#3067#0" expanded="false" />
-            <element signature="e#3092#3093#0" expanded="false" />
-            <element signature="e#3125#3126#0" expanded="false" />
-            <element signature="e#3156#3157#0" expanded="false" />
-            <element signature="e#3447#3448#0" expanded="false" />
-            <element signature="e#3485#3486#0" expanded="false" />
-            <element signature="e#3531#3532#0" expanded="false" />
-            <element signature="e#3563#3564#0" expanded="false" />
-          </folding>
+        <state relative-caret-position="330">
+          <caret line="32" column="60" lean-forward="false" selection-start-line="32" selection-start-column="60" selection-end-line="32" selection-end-column="60" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/plugin.yml">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/base/config.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
-          <caret line="1" column="12" lean-forward="false" selection-start-line="1" selection-start-column="12" selection-end-line="1" selection-end-column="12" />
+          <caret line="1" column="24" lean-forward="false" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/bungeecord/config.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="18" lean-forward="false" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="111" column="5" lean-forward="false" selection-start-line="111" selection-start-column="5" selection-end-line="111" selection-end-column="5" />
+          <folding>
+            <element signature="e#3327#3328#0" expanded="false" />
+            <element signature="e#3408#3409#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="13" column="13" lean-forward="false" selection-start-line="13" selection-start-column="13" selection-end-line="13" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/CommandListener.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SendBungeeCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="22" column="25" lean-forward="false" selection-start-line="22" selection-start-column="25" selection-end-line="22" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2565">
+          <caret line="190" column="16" lean-forward="false" selection-start-line="190" selection-start-column="16" selection-end-line="190" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="14" column="14" lean-forward="false" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
+          <folding>
+            <element signature="e#453#454#0" expanded="false" />
+            <element signature="e#498#499#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/API/src/main/java/at/TimoCraft/TimoCloud/bukkit/api.java" />
+    <entry file="file://$PROJECT_DIR$/API/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="930">
+          <caret line="73" column="30" lean-forward="false" selection-start-line="73" selection-start-column="30" selection-end-line="73" selection-end-column="30" />
+          <folding>
+            <element signature="e#642#643#0" expanded="false" />
+            <element signature="e#676#677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home/src.zip!/java/lang/Boolean.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="551">
+          <caret line="146" column="18" lean-forward="true" selection-start-line="146" selection-start-column="18" selection-end-line="146" selection-end-column="18" />
+          <folding>
+            <element signature="e#3553#3554#0" expanded="false" />
+            <element signature="e#3619#3620#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="258">
+          <caret line="37" column="53" lean-forward="true" selection-start-line="37" selection-start-column="53" selection-end-line="37" selection-end-column="53" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="13" column="75" lean-forward="false" selection-start-line="13" selection-start-column="75" selection-end-line="13" selection-end-column="75" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="6" column="0" lean-forward="true" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding>
+            <element signature="e#776#777#0" expanded="false" />
+            <element signature="e#802#803#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="37" column="22" lean-forward="false" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="158" column="28" lean-forward="false" selection-start-line="158" selection-start-column="28" selection-end-line="158" selection-end-column="28" />
+          <folding>
+            <element signature="e#4456#4457#0" expanded="false" />
+            <element signature="e#4494#4495#0" expanded="false" />
+            <element signature="e#4524#4525#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="56" column="79" lean-forward="false" selection-start-line="56" selection-start-column="79" selection-end-line="56" selection-end-column="79" />
+          <folding>
+            <element signature="e#1932#1933#0" expanded="false" />
+            <element signature="e#1975#1976#0" expanded="false" />
+            <element signature="e#3838#3839#0" expanded="false" />
+            <element signature="e#3889#3890#0" expanded="false" />
+            <element signature="e#3924#3925#0" expanded="false" />
+            <element signature="e#3998#3999#0" expanded="false" />
+            <element signature="e#4038#4039#0" expanded="false" />
+            <element signature="e#4130#4131#0" expanded="false" />
+            <element signature="e#5667#5668#0" expanded="false" />
+            <element signature="e#5698#5699#0" expanded="false" />
+            <element signature="e#5731#5732#0" expanded="false" />
+            <element signature="e#5760#5761#0" expanded="false" />
+            <element signature="e#5804#5805#0" expanded="false" />
+            <element signature="e#5864#5865#0" expanded="false" />
+            <element signature="e#5929#5930#0" expanded="false" />
+            <element signature="e#5971#5972#0" expanded="false" />
+            <element signature="e#6165#6166#0" expanded="false" />
+            <element signature="e#6199#6200#0" expanded="false" />
+            <element signature="e#6272#6273#0" expanded="false" />
+            <element signature="e#6321#6322#0" expanded="false" />
+            <element signature="e#6364#6365#0" expanded="false" />
+            <element signature="e#6398#6399#0" expanded="false" />
+            <element signature="e#6463#6464#0" expanded="false" />
+            <element signature="e#6508#6509#0" expanded="false" />
+            <marker date="1488643700000" expanded="false" signature="47:1075" ph="..." />
+            <marker date="1488643700000" expanded="true" signature="2138:2223" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="439">
+          <caret line="190" column="35" lean-forward="false" selection-start-line="190" selection-start-column="35" selection-end-line="190" selection-end-column="35" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#653#654#0" expanded="false" />
+            <element signature="e#675#676#0" expanded="false" />
+            <element signature="e#3032#3033#0" expanded="false" />
+            <element signature="e#3074#3075#0" expanded="false" />
+            <element signature="e#4637#4638#0" expanded="false" />
+            <element signature="e#4679#4680#0" expanded="false" />
+            <element signature="e#8129#8130#0" expanded="false" />
+            <element signature="e#8157#8158#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-417">
+          <caret line="53" column="13" lean-forward="false" selection-start-line="53" selection-start-column="13" selection-end-line="53" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#1096#1097#0" expanded="false" />
+            <element signature="e#1157#1158#0" expanded="false" />
+            <element signature="e#1206#1207#0" expanded="false" />
+            <element signature="e#1269#1270#0" expanded="false" />
+            <element signature="e#3154#3155#0" expanded="false" />
+            <element signature="e#3208#3209#0" expanded="false" />
+            <element signature="e#3458#3459#0" expanded="false" />
+            <element signature="e#3489#3490#0" expanded="false" />
+            <element signature="e#3536#3537#0" expanded="false" />
+            <element signature="e#3572#3573#0" expanded="false" />
+            <element signature="e#3615#3616#0" expanded="false" />
+            <element signature="e#3649#3650#0" expanded="false" />
+            <element signature="e#3682#3683#0" expanded="false" />
+            <element signature="e#3711#3712#0" expanded="false" />
+            <element signature="e#3755#3756#0" expanded="false" />
+            <element signature="e#3791#3792#0" expanded="false" />
+            <element signature="e#3842#3843#0" expanded="false" />
+            <element signature="e#3877#3878#0" expanded="false" />
+            <element signature="e#3916#3917#0" expanded="false" />
+            <element signature="e#3951#3952#0" expanded="false" />
+            <element signature="e#4008#4009#0" expanded="false" />
+            <element signature="e#4056#4057#0" expanded="false" />
+            <element signature="e#4121#4122#0" expanded="false" />
+            <element signature="e#4163#4164#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudAPI.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="645">
+          <caret line="55" column="58" lean-forward="false" selection-start-line="55" selection-start-column="58" selection-end-line="55" selection-end-column="58" />
+          <folding>
+            <element signature="imports" expanded="false" />
+            <element signature="e#606#607#0" expanded="false" />
+            <element signature="e#674#675#0" expanded="false" />
+            <element signature="e#765#766#0" expanded="false" />
+            <element signature="e#793#794#0" expanded="false" />
+            <element signature="e#1904#1905#0" expanded="false" />
+            <element signature="e#1932#1933#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/proguard.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="8" column="23" lean-forward="false" selection-start-line="8" selection-start-column="23" selection-end-line="8" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/API/pom.xml" />
+    <entry file="file://$PROJECT_DIR$/API/proguard.conf" />
+    <entry file="file://$PROJECT_DIR$/parent/pom.xml" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="298">
+          <caret line="135" column="102" lean-forward="false" selection-start-line="135" selection-start-column="102" selection-end-line="135" selection-end-column="102" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="675">
+          <caret line="50" column="23" lean-forward="false" selection-start-line="50" selection-start-column="23" selection-end-line="50" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/resources/bungee.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="19" lean-forward="false" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="19" />
+        <state relative-caret-position="15">
+          <caret line="1" column="10" lean-forward="false" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java">
+    <entry file="file://$PROJECT_DIR$/src/main/resources/plugin.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1770">
-          <caret line="130" column="1" lean-forward="false" selection-start-line="130" selection-start-column="1" selection-end-line="130" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#644#645#0" expanded="false" />
-            <element signature="e#678#679#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="22" column="54" lean-forward="true" selection-start-line="22" selection-start-column="54" selection-end-line="22" selection-end-column="54" />
-          <folding>
-            <element signature="e#421#422#0" expanded="true" />
-            <element signature="e#464#465#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/BaseLoader.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="15" lean-forward="false" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
-          <folding>
-            <element signature="e#179#180#0" expanded="true" />
-            <element signature="e#201#202#0" expanded="true" />
-            <element signature="e#234#235#0" expanded="true" />
-            <element signature="e#267#268#0" expanded="true" />
-            <element signature="e#303#304#0" expanded="true" />
-            <element signature="e#330#331#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="34" lean-forward="false" selection-start-line="16" selection-start-column="34" selection-end-line="16" selection-end-column="34" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="14" column="13" lean-forward="false" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+        <state relative-caret-position="90">
+          <caret line="6" column="13" lean-forward="false" selection-start-line="6" selection-start-column="13" selection-end-line="6" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/FileManager.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/ServerGroup.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="54" column="28" lean-forward="false" selection-start-line="54" selection-start-column="28" selection-end-line="54" selection-end-column="28" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#488#489#0" expanded="true" />
-            <element signature="e#510#511#0" expanded="true" />
-            <element signature="e#1095#1096#0" expanded="true" />
-            <element signature="e#1134#1135#0" expanded="true" />
-            <element signature="e#1179#1180#0" expanded="true" />
-            <element signature="e#1220#1221#0" expanded="true" />
-            <element signature="e#1265#1266#0" expanded="true" />
-            <element signature="e#1306#1307#0" expanded="true" />
-            <element signature="e#1341#1342#0" expanded="true" />
-            <element signature="e#1374#1375#0" expanded="true" />
-            <element signature="e#1433#1434#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="48" lean-forward="false" selection-start-line="22" selection-start-column="48" selection-end-line="22" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/base/config.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        <state relative-caret-position="465">
+          <caret line="41" column="0" lean-forward="false" selection-start-line="41" selection-start-column="0" selection-end-line="41" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServer.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/FileManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="17" column="19" lean-forward="false" selection-start-line="17" selection-start-column="19" selection-end-line="17" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="59" column="63" lean-forward="false" selection-start-line="59" selection-start-column="63" selection-end-line="59" selection-end-column="63" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="15" column="16" lean-forward="false" selection-start-line="15" selection-start-column="16" selection-end-line="15" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/Base.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="37" column="26" lean-forward="false" selection-start-line="37" selection-start-column="26" selection-end-line="37" selection-end-column="26" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#913#914#0" expanded="true" />
-            <element signature="e#984#985#0" expanded="true" />
-            <element signature="e#1033#1034#0" expanded="true" />
-            <element signature="e#1118#1119#0" expanded="true" />
-            <element signature="e#1139#1140#0" expanded="true" />
-            <element signature="e#1165#1166#0" expanded="true" />
-            <element signature="e#2212#2213#0" expanded="true" />
-            <element signature="e#2284#2285#0" expanded="true" />
-            <element signature="e#2325#2326#0" expanded="true" />
-            <element signature="e#2406#2407#0" expanded="true" />
-            <element signature="e#2450#2451#0" expanded="true" />
-            <element signature="e#2530#2531#0" expanded="true" />
-            <element signature="e#2570#2571#0" expanded="true" />
-            <element signature="e#2601#2602#0" expanded="true" />
-            <element signature="e#2644#2645#0" expanded="true" />
-            <element signature="e#2678#2679#0" expanded="true" />
-            <element signature="e#2725#2726#0" expanded="true" />
-            <element signature="e#2761#2762#0" expanded="true" />
-            <element signature="e#2810#2811#0" expanded="true" />
-            <element signature="e#2845#2846#0" expanded="true" />
-            <element signature="e#2908#2909#0" expanded="true" />
-            <element signature="e#2950#2951#0" expanded="true" />
-            <element signature="e#3015#3016#0" expanded="true" />
-            <element signature="e#3058#3059#0" expanded="true" />
-            <element signature="e#3109#3110#0" expanded="true" />
-            <element signature="e#3145#3146#0" expanded="true" />
-            <element signature="e#3178#3179#0" expanded="true" />
-            <element signature="e#3213#3214#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/TemporaryServer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="64">
-          <caret line="38" column="0" lean-forward="false" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="132" column="17" lean-forward="false" selection-start-line="132" selection-start-column="17" selection-end-line="132" selection-end-column="17" />
-          <folding>
-            <element signature="e#4508#4509#0" expanded="true" />
-            <element signature="e#4582#4583#0" expanded="true" />
-            <element signature="e#4622#4623#0" expanded="true" />
-            <element signature="e#4714#4715#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="54" column="73" lean-forward="false" selection-start-line="54" selection-start-column="73" selection-end-line="54" selection-end-column="73" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="26" column="49" lean-forward="false" selection-start-line="26" selection-start-column="49" selection-end-line="26" selection-end-column="49" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="56" column="18" lean-forward="false" selection-start-line="56" selection-start-column="18" selection-end-line="56" selection-end-column="18" />
+        <state relative-caret-position="795">
+          <caret line="64" column="5" lean-forward="false" selection-start-line="64" selection-start-column="5" selection-end-line="64" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/base/managers/ServerManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="255">
+          <caret line="29" column="29" lean-forward="false" selection-start-line="29" selection-start-column="29" selection-end-line="29" selection-end-column="29" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/ServerManager.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/FileManager.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="151" column="13" lean-forward="true" selection-start-line="151" selection-start-column="13" selection-end-line="151" selection-end-column="13" />
-          <folding>
-            <element signature="e#4513#4514#0" expanded="true" />
-            <element signature="e#4538#4539#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="330">
+          <caret line="29" column="95" lean-forward="false" selection-start-line="29" selection-start-column="95" selection-end-line="29" selection-end-column="95" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1875">
+          <caret line="125" column="21" lean-forward="false" selection-start-line="125" selection-start-column="21" selection-end-line="125" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCraft-API/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

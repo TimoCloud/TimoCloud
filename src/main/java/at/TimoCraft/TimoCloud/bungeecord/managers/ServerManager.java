@@ -1,18 +1,17 @@
 package at.TimoCraft.TimoCloud.bungeecord.managers;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
+import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -21,23 +20,26 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerManager {
 
-    private List<Integer> portsInUse = new ArrayList<>();
+    private List<Integer> portsInUse;
     private List<ServerGroup> groups;
-    private List<String> startedServers = new ArrayList<>();
-    private Map<ServerGroup, List<String>> willBeStarted = new HashMap<>();
+    private List<String> startedServers;
+    private Map<ServerGroup, List<String>> willBeStarted;
+    private Map<String, BaseObject> bases;
 
     public ServerManager() {
-        init();
     }
 
-    private void init() {
+    public void init() {
+        makeInstances();
         readGroups();
     }
 
-    public void startAllServers() {
-        for (ServerGroup group : groups) {
-            group.startAllServers();
-        }
+    private void makeInstances() {
+        portsInUse = new ArrayList<>();
+        groups = new ArrayList<>();
+        startedServers = new ArrayList<>();
+        willBeStarted = new HashMap<>();
+        bases = new HashMap<>();
     }
 
     public void stopAllServers() {
@@ -47,14 +49,14 @@ public class ServerManager {
     }
 
     public void readGroups() {
-        groups = new ArrayList<>();
         Configuration groupsConfig = TimoCloud.getInstance().getFileManager().getGroups();
         for (String group : groupsConfig.getKeys()) {
             ServerGroup serverGroup = new ServerGroup(
                     group,
                     groupsConfig.getInt(group + ".onlineAmount"),
                     groupsConfig.getInt(group + ".ramInMegabyte") == 0 ? groupsConfig.getInt(group + ".ramInGigabyte") * 1024 : groupsConfig.getInt(group + ".ramInMegabyte"),
-                    groupsConfig.getBoolean(group + ".static")
+                    groupsConfig.getBoolean(group + ".static"),
+                    groupsConfig.getString(group + ".base")
             );
             groups.add(serverGroup);
         }
@@ -122,11 +124,29 @@ public class ServerManager {
     public void startServer(ServerGroup group, String name) {
         getServersWillBeStarted(group).add(name);
         int port = getFreePort();
-        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port)), 3, 0, TimeUnit.SECONDS);
+        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port)), group.isStatic() ? 5 : 1, 0, TimeUnit.SECONDS);
     }
 
     public void startServerFromAsyncContext(ServerGroup group, String name, int port) {
-        Channel ch
+        JSONObject json = new JSONObject();
+        json.put("type", "STARTSERVER");
+        json.put("server", name);
+        json.put("group", group.getName());
+        json.put("ram", group.getRam());
+        json.put("port", port);
+        json.put("static", group.isStatic());
+        try {
+            Channel channel = group.getBase().getChannel();
+            channel.writeAndFlush(json.toJSONString());
+            TimoCloud.info("Told base " + group.getBase().getName() + " to start server " + name + ".");
+        } catch (Exception e) {
+            TimoCloud.severe("Error while starting server " + name + ": Base " + group.getBaseName() + " not connected.");
+            return;
+        }
+
+        TemporaryServer server = new TemporaryServer(name, group, port);
+        group.addStartingServer(server);
+        getServersWillBeStarted(group).remove(name);
     }
 
     public boolean isRunning(String name) {
@@ -168,15 +188,15 @@ public class ServerManager {
         return null;
     }
 
-    public void addGroup(ServerGroup group) throws IOException {
+    public void updateGroup(ServerGroup group) throws IOException {
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".onlineAmount", group.getStartupAmount());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + (group.getRam() < 128 ? ".ramInGigabyte" : ".ramInMegabyte"), group.getRam());
-        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".statc", group.isStatic());
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".static", group.isStatic());
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".base", group.getBaseName());
         ConfigurationProvider.getProvider(YamlConfiguration.class).save(TimoCloud.getInstance().getFileManager().getGroups(), TimoCloud.getInstance().getFileManager().getGroupsFile());
         if (!groups.contains(group)) {
             groups.add(group);
         }
-        group.startAllServers();
     }
 
     public void removeGroup(String name) throws IOException {
@@ -207,8 +227,17 @@ public class ServerManager {
         return null;
     }
 
+    public void checkEnoughOnline() {
+        for (ServerGroup group : getGroups()) {
+            checkEnoughOnline(group);
+        }
+    }
+
     public void checkEnoughOnline(ServerGroup group) {
         if (TimoCloud.getInstance().isShuttingDown()) {
+            return;
+        }
+        if (group.getBase() == null || ! group.getBase().isConnected()) {
             return;
         }
         int needed = serversNeeded(group);
@@ -267,4 +296,26 @@ public class ServerManager {
     private boolean isStateActive(String state, String groupName) {
         return !(state.equals("OFFLINE") || TimoCloud.getInstance().getFileManager().getGroups().getStringList(groupName + ".sortOut").contains(state));
     }
+
+    public void addBase(String name, BaseObject base) {
+        bases.put(name, base);
+        base.setConnected(true);
+        for (ServerGroup group : getGroups()) {
+            if (group.getBaseName().equalsIgnoreCase(name)) {
+                group.setBase(base);
+            }
+        }
+        TimoCloud.info("Base " + name + " connected.");
+    }
+
+    public void onBaseDisconnect(BaseObject base) {
+        base.setConnected(false);
+        bases.remove(base.getName());
+        TimoCloud.info("Base " + base.getName() + " disconnected.");
+    }
+
+    public BaseObject getBase(String name) {
+        return bases.get(name);
+    }
+
 }

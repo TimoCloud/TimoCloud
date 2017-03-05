@@ -3,7 +3,6 @@ package at.TimoCraft.TimoCloud.bungeecord.listeners;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -12,8 +11,6 @@ import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 28.12.16.
@@ -27,12 +24,15 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
+        if (! TimoCloud.getInstance().getFileManager().getConfig().getBoolean("loginOnLobby")) {
+            return;
+        }
         pending.add(event.getPlayer());
     }
 
     @EventHandler
     public void onServerChange(ServerConnectEvent event) {
-        if (! pending.contains(event.getPlayer())) {
+        if (!pending.contains(event.getPlayer())) {
             return;
         }
         ServerInfo info = TimoCloud.getInstance().getServerManager().getRandomLobbyServer(null);

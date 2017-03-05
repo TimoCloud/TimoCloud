@@ -16,12 +16,16 @@ public class ServerGroup {
     private int startupAmount;
     private int ram;
     private boolean isStatic = false;
+    private String baseName;
+    private BaseObject base;
 
-    public ServerGroup(String name, int startupAmount, int ram, boolean isStatic) {
+    public ServerGroup(String name, int startupAmount, int ram, boolean isStatic, String baseName) {
         this.name = name;
         this.startupAmount = startupAmount;
         this.ram = ram;
         this.isStatic = false;
+        this.baseName = baseName;
+        setBase(TimoCloud.getInstance().getServerManager().getBase(baseName));
     }
 
     public List<TemporaryServer> getTemporaryServers() {
@@ -34,21 +38,6 @@ public class ServerGroup {
 
     public int getStartupAmount() {
         return startupAmount;
-    }
-
-    public void startAllServers() {
-        File directory = new File(TimoCloud.getInstance().getFileManager().getTemplatesDirectory() + name);
-        File spigot = new File(directory, "spigot.jar");
-        if (! spigot.exists()) {
-            TimoCloud.severe("Could not start group " + getName() + " because spigot.jar does not exist.");
-            return;
-        }
-        for (int i = 1; i <= getStartupAmount(); i++) {
-            String name = getName() + "-" + i;
-            if (!TimoCloud.getInstance().getServerManager().isRunning(name)) {
-                TimoCloud.getInstance().getServerManager().startServer(this, name);
-            }
-        }
     }
 
     public void stopAllServers() {
@@ -92,12 +81,40 @@ public class ServerGroup {
         return startingServers;
     }
 
+    public void setStartupAmount(int startupAmount) {
+        this.startupAmount = startupAmount;
+    }
+
     public int getRam() {
         return ram;
     }
 
+    public void setRam(int ram) {
+        this.ram = ram;
+    }
+
+    public void setStatic(boolean aStatic) {
+        isStatic = aStatic;
+    }
+
     public boolean isStatic() {
         return isStatic;
+    }
+
+    public void setBase(BaseObject base) {
+        this.base = base;
+    }
+
+    public BaseObject getBase() {
+        return base;
+    }
+
+    public void setBaseName(String baseName) {
+        this.baseName = baseName;
+    }
+
+    public String getBaseName() {
+        return baseName;
     }
 
     @Override

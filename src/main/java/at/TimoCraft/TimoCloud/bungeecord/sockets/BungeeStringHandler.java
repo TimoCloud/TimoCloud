@@ -1,6 +1,8 @@
 package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
+import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,8 +10,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 /**
  * Created by Timo on 29.12.16.
@@ -22,7 +28,8 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     public BungeeStringHandler() {
         open = new HashMap<>();
-        remaining = new HashMap<>();;
+        remaining = new HashMap<>();
+        ;
         parsed = new HashMap<>();
     }
 
@@ -56,24 +63,40 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleJSON(JSONObject json, String message, Channel channel) {
         String serverName = (String) json.get("server");
-        TemporaryServer server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
-        if (server == null) {
-            TimoCloud.severe("OFFLINE server connected: " + serverName);
-            channel.close();
-            return;
-        }
-        server.setChannel(channel);
-        TimoCloud.getInstance().getSocketServerHandler().getChannels().put(channel, server);
         String type = (String) json.get("type");
         String data = (String) json.get("data");
-        TemporaryServer requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
+        TemporaryServer server = null;
+        TemporaryServer requestedServer = null;
+        if (!type.toLowerCase().startsWith("base")) {
+            server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
+            if (server == null) {
+                //TimoCloud.severe("OFFLINE server connected: " + serverName);
+                channel.close();
+                return;
+            }
+            server.setChannel(channel);
+            TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, server);
+            requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
+        }
         switch (type) {
             case "HANDSHAKE":
-                if (data.equals("I_JUST_CAME_ONLINE")) {
-                    server.register();
-                    break;
+                server.register();
+                server.setMap(data);
+                server.setState("ONLINE");
+                break;
+            case "BASE_HANDSHAKE":
+                InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
+                if (!TimoCloud.getInstance().getFileManager().getConfig().getStringList("allowedIPs").contains(address.getHostAddress())) {
+                    TimoCloud.severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + TimoCloud.getInstance().getFileManager().getConfig().getInt("socket-port") + " in your firewall.");
+                    channel.close();
+                    return;
                 }
-                TimoCloud.severe("Uncategorized handshake message: " + message);
+                if (TimoCloud.getInstance().getServerManager().getBase(serverName) != null) {
+                    return;
+                }
+                BaseObject base = new BaseObject(serverName, address, channel);
+                TimoCloud.getInstance().getSocketServerHandler().getBaseChannels().put(channel, base);
+                TimoCloud.getInstance().getServerManager().addBase(serverName, base);
                 break;
             case "SETSTATE":
                 server.setState(data);
@@ -105,6 +128,13 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MOTD", motd);
                 break;
+            case "GETMAP":
+                String map = "";
+                if (requestedServer != null) {
+                    map = requestedServer.getMap();
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MAP", map);
+                break;
             case "SETPLAYERS":
                 server.setPlayers(data);
                 break;
@@ -114,6 +144,17 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                     return;
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer3.getPlayers() == null ? "0/0" : requestedServer3.getPlayers());
+                break;
+            case "GETSERVERS":
+                ServerGroup requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
+                List<String> servers = new ArrayList<>();
+                for (TemporaryServer t : requestedGroup.getTemporaryServers()) {
+                    servers.add(t.getName());
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "SERVERS", servers);
+                break;
+            case "EXECUTECOMMAND":
+                TimoCloud.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloud.getInstance().getProxy().getConsole(), data);
                 break;
             default:
                 TimoCloud.severe("Could not categorize json message: " + message);

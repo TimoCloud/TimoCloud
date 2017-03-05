@@ -5,6 +5,7 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
  */
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -12,49 +13,24 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 
 @ChannelHandler.Sharable
 public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
 
-    private Map<Channel, TemporaryServer> channels = new HashMap<>();
-    //private Map<String, Channel> queue;
-    
-    public BungeeSocketServerHandler() {
-        //resetQueue();
-    }
-    
-    /*
-    public void resetQueue() {
-        queue = new HashMap<>();
-    }
-    */
+    private Map<Channel, TemporaryServer> serverChannels = new HashMap<>();
+    private Map<Channel, BaseObject> baseChannels = new HashMap<>();
 
-    public void sendMessage(Channel channel, String server, String type, String data) {
+    public void sendMessage(Channel channel, String server, String type, Object data) {
         try {
             channel.writeAndFlush(getJSON(server, type, data));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-/*
-    public void flush() {
-        Map<String, Channel> q = new HashMap<>(queue);
-        queue = new HashMap<>();
-        for (String message : q.keySet()) {
-            try {
-                q.get(message).writeAndFlush(message);
-            } catch (Exception e) {
-                TimoCloud.severe("Error while sending message to server " + channels.get(q.get(message)).getName() + ": " + message);
-                e.printStackTrace();
-            }
-        }
-    }
-*/
-    public String getJSON(String server, String type, String data) {
+
+    public String getJSON(String server, String type, Object data) {
         JSONObject json = new JSONObject();
         json.put("server", server);
         json.put("type", type);
@@ -70,11 +46,17 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
-        TemporaryServer server = channels.get(channel);
-        if (server == null) {
-            return;
+        if (serverChannels.containsKey(channel)) {
+            TemporaryServer server = serverChannels.get(channel);
+            if (server == null) {
+                return;
+            }
+            server.unregister();
         }
-        server.unregister();
+        if (baseChannels.containsKey(channel)) {
+            BaseObject base = baseChannels.get(channel);
+            TimoCloud.getInstance().getServerManager().onBaseDisconnect(base);
+        }
         removeChannel(channel);
     }
 
@@ -85,18 +67,26 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public TemporaryServer getByChannel(Channel channel) {
-        return channels.get(channel);
+        return serverChannels.get(channel);
     }
 
     public void removeChannel(Channel channel) {
-        if (channels.containsKey(channel)) {
-            channels.remove(channel);
+        if (serverChannels.containsKey(channel)) {
+            serverChannels.remove(channel);
+            return;
+        }
+        if (baseChannels.containsKey(channel)) {
+            baseChannels.remove(channel);
             return;
         }
         TimoCloud.severe("Tried to remove not existing channel " + channel);
     }
 
-    public Map<Channel, TemporaryServer> getChannels() {
-        return channels;
+    public Map<Channel, TemporaryServer> getServerChannels() {
+        return serverChannels;
+    }
+
+    public Map<Channel, BaseObject> getBaseChannels() {
+        return baseChannels;
     }
 }

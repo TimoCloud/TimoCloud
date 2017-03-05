@@ -1,6 +1,7 @@
 name: TimoCloud
-version: 2.5
+version: ${project.version}
 author: TimoCrafter
-main: at.TimoCraft.TimoCloud.bukkit.Main
+main: at.TimoCraft.TimoCloud.bukkit.a
 commands:
   signs:
+  sendbungee:

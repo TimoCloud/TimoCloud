@@ -1,7 +1,6 @@
 package at.TimoCraft.TimoCloud.base.sockets;
 
 import at.TimoCraft.TimoCloud.base.Base;
-import at.TimoCraft.TimoCloud.bukkit.Main;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
@@ -18,7 +17,7 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
-        Main.getInstance().getSocketClientHandler().setChannel(ctx.channel());
+        Base.getInstance().getSocketClientHandler().setChannel(ctx.channel());
         remaining = remaining + message;
         read();
     }
@@ -42,7 +41,7 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleJSON(JSONObject json, String message) {
         if (json == null) {
-            Main.log("Error while parsing json: " + message);
+            Base.severe("Error while parsing json: " + message);
             return;
         }
         String server = (String) json.get("server");
@@ -50,13 +49,22 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
         String data = (String) json.get("data");
         switch (type) {
             case "STARTSERVER":
-                int port = (Integer) json.get("port");
-                int ram = (Integer) json.get("ram");
-                Base.getInstance().getServerManager().startServer(server, port, ram);
+                int port = 0;
+                port+= (Long) json.get("port");
+                int ram = 0;
+                ram += (Long) json.get("ram");
+                boolean isStatic = (Boolean) json.get("static");
+                String group = (String) json.get("group");
+                Base.getInstance().getServerManager().startServer(server, port, ram, isStatic, group);
+                break;
+            case "SERVERSTOPPED":
+                Base.getInstance().getServerManager().onServerStopped(server);
                 break;
             default:
-                Main.log("Error: Could not categorize json message: " + message);
+                Base.severe("Could not categorize json message: " + message);
         }
     }
+
+
 
 }

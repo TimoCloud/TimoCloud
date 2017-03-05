@@ -1,33 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <resourceExtensions />
-    <wildcardResourcePatterns>
-      <entry name="!?*.java" />
-      <entry name="!?*.form" />
-      <entry name="!?*.class" />
-      <entry name="!?*.groovy" />
-      <entry name="!?*.scala" />
-      <entry name="!?*.flex" />
-      <entry name="!?*.kt" />
-      <entry name="!?*.clj" />
-      <entry name="!?*.aj" />
-    </wildcardResourcePatterns>
     <annotationProcessing>
-      <profile default="true" name="Default" enabled="false">
-        <processorPath useClasspath="true" />
-      </profile>
-      <profile default="false" name="Maven default annotation processors profile" enabled="true">
+      <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
+        <module name="API" />
         <module name="TimoCloud" />
+        <module name="TimoCloud-universal" />
+        <module name="TimoCloud-Universal" />
+        <module name="TimoCraft-API" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="API" target="1.8" />
+      <module name="parent" target="1.8" />
       <module name="TimoCloud" target="1.8" />
+      <module name="TimoCloud-universal" target="1.8" />
+      <module name="TimoCloud-Universal" target="1.5" />
       <module name="TimoCloud_Bukkit" target="1.8" />
+      <module name="TimoCraft-API" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,4 +1,4 @@
-package at.TimoCraft.TimoCloud.bungeecord.utils;
+package at.TimoCraft.TimoCloud.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

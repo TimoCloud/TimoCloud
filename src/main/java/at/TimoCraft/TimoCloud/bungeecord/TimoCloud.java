@@ -10,9 +10,9 @@ import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.api.plugin.PluginDescription;
 
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 /**
  * Created by Timo on 26.12.16.
@@ -35,9 +35,9 @@ public class TimoCloud extends Plugin {
         getInstance().getLogger().severe(" " + message);
     }
 
+    @Override
     public void onEnable() {
         instance = this;
-        //info("Starting TimoCloud in 5 seconds...");
         getProxy().getScheduler().schedule(this, (Runnable) () -> enableDelayed(), 1, 0, TimeUnit.SECONDS);
     }
 
@@ -46,11 +46,12 @@ public class TimoCloud extends Plugin {
         registerCommands();
         registerListeners();
         registerTasks();
-        getServerManager().startAllServers();
+        getServerManager().init();
 
         info("Successfully started TimoCloud!");
     }
 
+    @Override
     public void onDisable() {
         setShuttingDown(true);
         getServerManager().stopAllServers();
@@ -66,7 +67,11 @@ public class TimoCloud extends Plugin {
 
     private void registerCommands() {
         getProxy().getPluginManager().registerCommand(this, new TimoCloudCommand());
-        getProxy().getPluginManager().registerCommand(this, new LobbyCommand());
+        List<String> lobbyCommands = getFileManager().getConfig().getStringList("lobbyCommands");
+        if (lobbyCommands.size() > 0) {
+            String[] aliases = lobbyCommands.subList(1, lobbyCommands.size()).toArray(new String[0]);
+            getProxy().getPluginManager().registerCommand(this, new LobbyCommand(lobbyCommands.get(0), aliases));
+        }
     }
 
     private void registerTasks() {
@@ -79,6 +84,11 @@ public class TimoCloud extends Plugin {
                 e.printStackTrace();
             }
         });
+        getProxy().getScheduler().schedule(this, () -> everySecond(), 1L, 1L, TimeUnit.SECONDS);
+    }
+
+    private void everySecond() {
+        getServerManager().checkEnoughOnline();
     }
 
     private void registerListeners() {
@@ -104,15 +114,6 @@ public class TimoCloud extends Plugin {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-    }
-
-
-    public String getFileName() {
-        Plugin plugin = (Plugin) this;
-        String path = plugin.getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
-        String[] spl = path.split("/");
-        String name = spl[spl.length - 1];
-        return name;
     }
 
     public BungeeSocketServer getSocketServer() {
