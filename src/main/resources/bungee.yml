@@ -1,4 +1,0 @@
-name: TimoCloud
-version: ${project.version}
-main: at.TimoCraft.TimoCloud.a.a
-author: TimoCrafter

@@ -8,7 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="API" />
         <module name="TimoCloud" />
-        <module name="TimoCloud-universal" />
+        <module name="TimoCloud-API" />
         <module name="TimoCloud-Universal" />
         <module name="TimoCraft-API" />
       </profile>
@@ -17,10 +17,12 @@
       <module name="API" target="1.8" />
       <module name="parent" target="1.8" />
       <module name="TimoCloud" target="1.8" />
+      <module name="TimoCloud-API" target="1.5" />
+      <module name="TimoCloud-parent" target="1.5" />
       <module name="TimoCloud-universal" target="1.8" />
-      <module name="TimoCloud-Universal" target="1.5" />
+      <module name="TimoCloud-Universal" target="1.8" />
       <module name="TimoCloud_Bukkit" target="1.8" />
-      <module name="TimoCraft-API" target="1.8" />
+      <module name="TimoCraft-API" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -1,0 +1,7 @@
+name: TimoCloud
+version: 3.0.1
+author: TimoCrafter
+main: at.TimoCraft.TimoCloud.a.a
+commands:
+  signs:
+  sendbungee:

@@ -4,8 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/API/API.iml" filepath="$PROJECT_DIR$/API/API.iml" />
       <module fileurl="file://$PROJECT_DIR$/TimoCloud-Universal/TimoCloud-Universal.iml" filepath="$PROJECT_DIR$/TimoCloud-Universal/TimoCloud-Universal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/TimoCloud-universal.iml" filepath="$PROJECT_DIR$/TimoCloud-universal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/TimoCraft-API/TimoCraft-API.iml" filepath="$PROJECT_DIR$/TimoCraft-API/TimoCraft-API.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCloud-parent.iml" filepath="$PROJECT_DIR$/TimoCloud-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCloud-API/TimoCraft-API.iml" filepath="$PROJECT_DIR$/TimoCloud-API/TimoCraft-API.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimoCloud-API/TimoCraft-API.iml" filepath="$PROJECT_DIR$/TimoCloud-API/TimoCraft-API.iml" />
     </modules>
   </component>
 </project>
