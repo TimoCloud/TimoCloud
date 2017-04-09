@@ -14,16 +14,18 @@ public class ServerGroup {
     private List<TemporaryServer> startingServers = new ArrayList<>();
     private String name;
     private int startupAmount;
+    private int maxAmount;
     private int ram;
     private boolean isStatic = false;
     private String baseName;
     private BaseObject base;
 
-    public ServerGroup(String name, int startupAmount, int ram, boolean isStatic, String baseName) {
+    public ServerGroup(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName) {
         this.name = name;
         this.startupAmount = startupAmount;
+        this.maxAmount = maxAmount;
         this.ram = ram;
-        this.isStatic = false;
+        this.isStatic = isStatic;
         this.baseName = baseName;
         setBase(TimoCloud.getInstance().getServerManager().getBase(baseName));
     }
@@ -83,6 +85,14 @@ public class ServerGroup {
 
     public void setStartupAmount(int startupAmount) {
         this.startupAmount = startupAmount;
+    }
+
+    public void setMaxAmount(int maxAmount) {
+        this.maxAmount = maxAmount;
+    }
+
+    public int getMaxAmount() {
+        return maxAmount;
     }
 
     public int getRam() {

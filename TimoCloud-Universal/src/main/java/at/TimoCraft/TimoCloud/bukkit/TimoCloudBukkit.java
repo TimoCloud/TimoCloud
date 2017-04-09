@@ -57,7 +57,10 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public void onSocketConnect() {
-        getBukkitSocketMessageManager().sendMessage("HANDSHAKE", getMapName());
+        getBukkitSocketMessageManager().sendMessage("HANDSHAKE", "I_JUST_CAME_ONLINE");
+        if (isRandomMap()) {
+            getBukkitSocketMessageManager().sendMessage("SETMAP", getMapName());
+        }
     }
 
     public void onSocketDisconnect() {
@@ -152,6 +155,10 @@ public class TimoCloudBukkit extends JavaPlugin {
             ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             Bukkit.getPluginManager().callEvent(event);
             getBukkitSocketMessageManager().sendMessage("SETMOTD", event.getMotd());
+            Object state = getFileManager().getConfig().get("MotdToState." + event.getMotd());
+            if (state != null && state instanceof String) {
+                TimoCloudAPI.getBukkitInstance().setState((String) state);
+            }
         } catch (Exception e) {
             log("Error while sending MOTD:");
             e.printStackTrace();

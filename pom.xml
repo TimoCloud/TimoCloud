@@ -7,10 +7,37 @@
     <groupId>at.TimoCraft.TimoCloud</groupId>
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
-    <version>3.0</version>
+    <version>4.0.6-SNAPSHOT</version>
 
     <modules>
         <module>TimoCloud-Universal</module>
         <module>TimoCloud-API</module>
     </modules>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>TimoCloud-API</id>
+            <name>TimoCloud-API</name>
+            <url>http://maven.timo.cloud/repository/TimoCloud-API/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <repository>
+            <id>TimoCloud-API</id>
+            <name>TimoCloud-API</name>
+            <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
+        </repository>
+        <snapshotRepository>
+            <id>TimoCloud-API</id>
+            <name>TimoCloud-API</name>
+            <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

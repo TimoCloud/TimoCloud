@@ -9,17 +9,21 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Timo on 28.12.16.
  */
 public class LobbyJoin implements Listener {
-    private List<ProxiedPlayer> pending;
+    private Map<UUID, Boolean> pending;
 
     public LobbyJoin() {
-        pending = new ArrayList<>();
+        pending = new HashMap<>();
+    }
+
+    private boolean isPending(UUID uuid) {
+        pending.putIfAbsent(uuid, false);
+        return pending.get(uuid);
     }
 
     @EventHandler
@@ -27,12 +31,12 @@ public class LobbyJoin implements Listener {
         if (! TimoCloud.getInstance().getFileManager().getConfig().getBoolean("loginOnLobby")) {
             return;
         }
-        pending.add(event.getPlayer());
+        pending.put(event.getPlayer().getUniqueId(), true);
     }
 
     @EventHandler
     public void onServerChange(ServerConnectEvent event) {
-        if (!pending.contains(event.getPlayer())) {
+        if (! isPending(event.getPlayer().getUniqueId())) {
             return;
         }
         ServerInfo info = TimoCloud.getInstance().getServerManager().getRandomLobbyServer(null);
@@ -41,7 +45,7 @@ public class LobbyJoin implements Listener {
             return;
         }
         event.setTarget(info);
-        pending.remove(event.getPlayer());
+        pending.put(event.getPlayer().getUniqueId(), false);
     }
 
     @EventHandler

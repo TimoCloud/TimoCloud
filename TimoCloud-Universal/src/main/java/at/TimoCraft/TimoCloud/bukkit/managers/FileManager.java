@@ -63,6 +63,7 @@ public class FileManager {
             config.addDefault("prefix", "&6[&bTimo&fCloud&6]");
             config.addDefault("updateSignsInServerTicks", 45L);
             config.addDefault("defaultMapName", "Village");
+            config.addDefault("MotdToState.§aOnline", "ONLINE");
             TimoCloudBukkit.getInstance().setPrefix(config.getString("prefix"));
             config.save(configFile);
         } catch (Exception e) {

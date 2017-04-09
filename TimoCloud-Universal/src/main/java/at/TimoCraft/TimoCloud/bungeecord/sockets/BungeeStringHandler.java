@@ -39,7 +39,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             remaining.put(ctx.channel(), getRemaining(ctx.channel()) + message);
             read(ctx.channel());
         } catch (Exception e) {
-            TimoCloud.severe("Error while parsing JSON message: " + message);
+            TimoCloud.severe("Error while parsing JSON message(s): " + getRemaining(ctx.channel()));
             e.printStackTrace();
         }
     }
@@ -54,7 +54,12 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             if (c.equals("}")) {
                 open.put(channel, getOpen(channel) - 1);
                 if (getOpen(channel) == 0) {
-                    handleJSON((JSONObject) JSONValue.parse(getParsed(channel)), getParsed(channel), channel);
+                    try {
+                        handleJSON((JSONObject) JSONValue.parse(getParsed(channel)), getParsed(channel), channel);
+                    } catch (Exception e) {
+                        TimoCloud.severe("Error while parsing JSON message;" + getParsed(channel));
+                        e.printStackTrace();
+                    }
                     parsed.put(channel, "");
                 }
             }
@@ -80,8 +85,11 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
         }
         switch (type) {
             case "HANDSHAKE":
+                if (! data.equals("I_JUST_CAME_ONLINE")) {
+                    TimoCloud.severe("Unknown HANDSHAKE message: " + data);
+                    break;
+                }
                 server.register();
-                server.setMap(data);
                 server.setState("ONLINE");
                 break;
             case "BASE_HANDSHAKE":
@@ -127,6 +135,9 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                     motd = requestedServer.getMotd();
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MOTD", motd);
+                break;
+            case "SETMAP":
+                server.setMap(data);
                 break;
             case "GETMAP":
                 String map = "";

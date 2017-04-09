@@ -40,6 +40,10 @@ public class TimoCloudCommand extends Command {
                 sendVersion(sender);
                 return;
             }
+            if (args[0].equalsIgnoreCase("help")) {
+                sendHelp(sender);
+                return;
+            }
             if (args[0].equalsIgnoreCase("listgroups")) {
                 List<ServerGroup> groups = TimoCloud.getInstance().getServerManager().getGroups();
                 if (groups.size() == 0) {
@@ -50,7 +54,7 @@ public class TimoCloudCommand extends Command {
                 for (ServerGroup group : groups) {
                     MessageManager.sendMessage(sender, "  &b" + group.getName() + " &e(&7RAM: &6" + group.getRam() + (group.getRam() < 128 ? "G" : "M") + "&e, &7Amount: &6" + group.getStartupAmount() + "&e)");
                     for (TemporaryServer server : group.getTemporaryServers()) {
-                        MessageManager.sendMessage(sender, "    &b" + server.getName());
+                        MessageManager.sendMessage(sender, "    &b" + server.getName() + (server.getMap().equals("") ? "" : (" &b(&6Map: &e" + server.getMap() + "&b)")));
                     }
                 }
                 return;
@@ -86,10 +90,11 @@ public class TimoCloudCommand extends Command {
             if (args[0].equalsIgnoreCase("addgroup")) {
                 String name = args[1];
                 int amount = Integer.parseInt(args[2]);
-                int ram = Integer.parseInt(args[3]);
-                boolean isStatic = Boolean.parseBoolean(args[4]);
-                String base = args[5];
-                ServerGroup serverGroup = new ServerGroup(name, amount, ram, isStatic, base);
+                int maxAmount = Integer.parseInt(args[3]);
+                int ram = Integer.parseInt(args[4]);
+                boolean isStatic = Boolean.parseBoolean(args[5]);
+                String base = args[6];
+                ServerGroup serverGroup = new ServerGroup(name, amount, maxAmount, ram, isStatic, base);
 
                 if (TimoCloud.getInstance().getServerManager().groupExists(serverGroup)) {
                     MessageManager.sendMessage(sender, "&cThis group already exists.");
@@ -113,13 +118,16 @@ public class TimoCloudCommand extends Command {
                 String key = args[2];
                 switch (key.toLowerCase()) {
                     case "onlineamount":
-                        int onlineAmount = Integer.parseInt(args[3]);
-                        group.setStartupAmount(onlineAmount);
+                        group.setStartupAmount(Integer.parseInt(args[3]));
+                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        break;
+                    case "maxAmount":
+                        group.setMaxAmount(Integer.parseInt(args[3]));
                         TimoCloud.getInstance().getServerManager().updateGroup(group);
                         break;
                     case "base":
                         String baseName = args[3];
-                        BaseObject base = TimoCloud.getInstance().getServerManager().getBase(baseName);
+                        BaseObject base = TimoCloud.getInstance().getServerManager().getBase(args[3]);
                         if (base == null) {
                             MessageManager.sendMessage(sender, "&cBase &e" + baseName + "&c is not connected or does not exist.");
                             return;
@@ -144,6 +152,7 @@ public class TimoCloudCommand extends Command {
                 }
                 return;
             }
+            sendHelp(sender);
         } catch (Exception e) {
             sendHelp(sender);
         }
@@ -159,11 +168,11 @@ public class TimoCloudCommand extends Command {
         MessageManager.sendMessage(sender, "  &a/TimoCloud help &7- shows this page");
         MessageManager.sendMessage(sender, "  &a/TimoCloud version &7- shows the plugin version");
         MessageManager.sendMessage(sender, "  &a/TimoCloud reload &7- reloads all configs");
-        MessageManager.sendMessage(sender, "  &a/TimoCloud addgroup <groupName (String)> <startupAmount (int)> <ram (int)> <static (boolean), use false if you don't know what you want> <base (String)> &7- creates a group, please make sure you created a template with the group name in the specific base");
+        MessageManager.sendMessage(sender, "  &a/TimoCloud addgroup <groupName (String)> <startupAmount (int)> <maxAmount (int)> <ram (int)> <static (boolean), use false if you don't know what you want> <base (String)> &7- creates a group, please make sure you created a template with the group name in the specific base");
         MessageManager.sendMessage(sender, "  &a/TimoCloud removegroup <groupName> &7- deletes a group");
         MessageManager.sendMessage(sender, "  &a/TimoCloud listgroups &7- lists all groups and started servers");
         MessageManager.sendMessage(sender, "  &a/TimoCloud restartgroup <groupName> &7- restarts all servers in a given group");
-        MessageManager.sendMessage(sender, "  &a/TimoCloud editgroup <name> <onlineAmount (int), base (String), ram (int), static (boolean)> <value>");
+        MessageManager.sendMessage(sender, "  &a/TimoCloud editgroup <name> <onlineAmount (int), maxAmount (int), base (String), ram (int), static (boolean)> <value>");
 
     }
 }

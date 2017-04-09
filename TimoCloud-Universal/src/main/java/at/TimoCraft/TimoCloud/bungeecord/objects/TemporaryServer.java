@@ -21,7 +21,7 @@ public class TemporaryServer {
     private String extra = "";
     private String motd = "";
     private String players = "0/0";
-    private String map;
+    private String map = "";
 
     public TemporaryServer(String name, ServerGroup serverGroup, int port) {
         this.port = port;

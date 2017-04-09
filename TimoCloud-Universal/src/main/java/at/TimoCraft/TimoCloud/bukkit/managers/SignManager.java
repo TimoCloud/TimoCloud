@@ -122,11 +122,17 @@ public class SignManager {
     }
 
     private boolean isGroup(String name) {
-        return !name.contains("-");
+        if (! name.contains("-")) {
+            return true;
+        }
+        try {
+            Integer.parseInt(name.split("-")[name.split("-").length-1]);
+            return true;
+        } catch (Exception e) {return false;}
     }
 
     public void addSign(String name, Location location) {
-        List<Location> locations = null;
+        List<Location> locations;
         if (isGroup(name)) {
             dynamicSigns.putIfAbsent(name, new ArrayList<>());
             locations = dynamicSigns.get(name);
@@ -136,6 +142,7 @@ public class SignManager {
         if (locations.contains(location)) {
             return;
         }
+        String s = "";
         locations.add(location);
         setSigns(name, locations, isGroup(name));
         if (isGroup(name)) {

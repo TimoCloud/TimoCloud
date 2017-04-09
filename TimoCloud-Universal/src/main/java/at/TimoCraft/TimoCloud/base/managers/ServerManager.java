@@ -29,6 +29,10 @@ public class ServerManager {
             templatesDir = getRandomServer(groupName);
             randomMap = true;
             mapName = "";
+            if (templatesDir.getName() == null) {
+                Base.severe("Could not start server " + name + ": No template called " + groupName + " found.");
+                return;
+            }
             String[] splitted = templatesDir.getName().split("_");
             for (int i = 1; i<splitted.length; i++) {
                 mapName += splitted[i];
@@ -47,7 +51,7 @@ public class ServerManager {
             if (directory.exists() && !isStatic) {
                 FileDeleteStrategy.FORCE.deleteQuietly(directory);
             }
-            if (!isStatic) {
+            if ((!isStatic) || ! directory.exists()) {
                 FileUtils.copyDirectory(templatesDir, directory);
             }
             File plugin = new File(Base.getInstance().getFileManager().getTemporaryDirectory() + name + "/plugins/", Base.getInstance().getFileName());
@@ -76,7 +80,7 @@ public class ServerManager {
                         " screen -mdS " + name +
                         " java -server " +
                         " -Xmx" + ram + "M" +
-                        " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                        " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                         " -Dcom.mojang.eula.agree=true" +
                         " -Dbungeecord-host=" + Base.getInstance().getBungeeSocketIP() + ":" + Base.getInstance().getBungeeSocketPort() +
                         " -Drandom-map=" + randomMap +

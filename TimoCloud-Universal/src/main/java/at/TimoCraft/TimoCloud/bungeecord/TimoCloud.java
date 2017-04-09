@@ -38,7 +38,7 @@ public class TimoCloud extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
-        getProxy().getScheduler().schedule(this, (Runnable) () -> enableDelayed(), 1, 0, TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, () -> enableDelayed(), 1, 0, TimeUnit.SECONDS);
     }
 
     private void enableDelayed() {

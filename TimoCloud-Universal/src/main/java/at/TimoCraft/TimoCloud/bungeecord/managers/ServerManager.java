@@ -54,6 +54,7 @@ public class ServerManager {
             ServerGroup serverGroup = new ServerGroup(
                     group,
                     groupsConfig.getInt(group + ".onlineAmount"),
+                    groupsConfig.getInt(group + ".maxAmount"),
                     groupsConfig.getInt(group + ".ramInMegabyte") == 0 ? groupsConfig.getInt(group + ".ramInGigabyte") * 1024 : groupsConfig.getInt(group + ".ramInMegabyte"),
                     groupsConfig.getBoolean(group + ".static"),
                     groupsConfig.getString(group + ".base")
@@ -190,6 +191,7 @@ public class ServerManager {
 
     public void updateGroup(ServerGroup group) throws IOException {
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".onlineAmount", group.getStartupAmount());
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".maxAmount", group.getMaxAmount());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + (group.getRam() < 128 ? ".ramInGigabyte" : ".ramInMegabyte"), group.getRam());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".static", group.isStatic());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".base", group.getBaseName());
@@ -290,7 +292,12 @@ public class ServerManager {
         }
         i += group.getStartingServers().size();
         i += getServersWillBeStarted(group).size();
-        return group.getStartupAmount() - i;
+        int s = group.getStartingServers().size()+group.getTemporaryServers().size()+getServersWillBeStarted(group).size();
+        int needed = group.getStartupAmount() - i;
+        if (group.getMaxAmount()-s > group.getMaxAmount()) {
+            needed += group.getMaxAmount()-s;
+        }
+        return needed;
     }
 
     private boolean isStateActive(String state, String groupName) {

@@ -35,6 +35,7 @@ public class FileManager {
             }
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
             configFile.delete();
+            System.out.println(this.getClass().getResourceAsStream("/bungeecord/config.yml") == null);
             Files.copy(this.getClass().getResourceAsStream("/bungeecord/config.yml"), configFile.toPath());
             Configuration configNew = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
             for (String key : config.getKeys()) {
