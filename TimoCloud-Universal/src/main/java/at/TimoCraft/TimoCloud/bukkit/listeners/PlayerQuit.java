@@ -13,6 +13,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class PlayerQuit implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(TimoCloudBukkit.getInstance(), () -> TimoCloudBukkit.getInstance().sendPlayers(), 1L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(TimoCloudBukkit.getInstance(), () -> {
+            TimoCloudBukkit.getInstance().sendPlayers();
+            TimoCloudBukkit.getInstance().getStateByEventManager().onPlayerQuit();
+        }, 1L);
     }
 }

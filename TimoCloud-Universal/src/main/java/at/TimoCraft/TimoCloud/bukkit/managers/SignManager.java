@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -108,7 +109,7 @@ public class SignManager {
     public void setSigns(String name, List<Location> locations, boolean dynamic) {
         FileConfiguration config = dynamic ? dynamicSignsConfig : signsConfig;
         config.set(name + ".locations", locations);
-        File dir = new File("../../templates/" + TimoCloudBukkit.getInstance().getGroupByServer(TimoCloudBukkit.getInstance().getServerName()) + "/plugins/TimoCloud/");
+        File dir = new File("../../templates/" + ServerToGroupUtil.getGroupByServer(TimoCloudBukkit.getInstance().getServerName()) + "/plugins/TimoCloud/");
         File signs = new File(dir, dynamic ? "dynamicSigns.yml" : "signs.yml");
         dir.mkdirs();
         try {
@@ -122,13 +123,11 @@ public class SignManager {
     }
 
     private boolean isGroup(String name) {
-        if (! name.contains("-")) {
-            return true;
-        }
+        if (! name.contains("-")) return true;
         try {
             Integer.parseInt(name.split("-")[name.split("-").length-1]);
-            return true;
-        } catch (Exception e) {return false;}
+            return false;
+        } catch (Exception e) {return true;}
     }
 
     public void addSign(String name, Location location) {
@@ -153,7 +152,7 @@ public class SignManager {
     }
 
     public void writeSign(Location location, String server, boolean dynamic) {
-        String group = TimoCloudBukkit.getInstance().getGroupByServer(server);
+        String group = ServerToGroupUtil.getGroupByServer(server);
         Block block = location.getWorld().getBlockAt(location);
         BlockState state = block.getState();
         if (!(state instanceof Sign)) {
@@ -168,6 +167,7 @@ public class SignManager {
             TimoCloudBukkit.log("Removed sign at " + location + " because it did not exist anymore.");
             return;
         }
+
         Sign sign = (Sign) state;
 
         if (sign == null) {
@@ -176,10 +176,10 @@ public class SignManager {
         }
         for (int i = 0; i < 4; i++) {
             try {
-                sign.setLine(i, replace(layoutsConfig.getString(TimoCloudBukkit.getInstance().getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
+                sign.setLine(i, replace(layoutsConfig.getString(ServerToGroupUtil.getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
             } catch (Exception e) {
-                TimoCloudBukkit.log("Could not find layout " + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + " in group " + TimoCloudBukkit.getInstance().getGroupByServer(server));
-                System.out.println(TimoCloudBukkit.getInstance().getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1));
+                TimoCloudBukkit.log("Could not find layout " + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + " in group " + ServerToGroupUtil.getGroupByServer(server));
+                System.out.println(ServerToGroupUtil.getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1));
                 e.printStackTrace();
             }
         }

@@ -12,7 +12,7 @@ public class SignsCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("timocloud.signs")) {
+        if (!sender.hasPermission("timocloud.command.signs")) {
             sender.sendMessage(TimoCloudBukkit.getInstance().getPrefix() + "§cYou don´t have any permission to do that!");
             return false;
         }

@@ -12,13 +12,14 @@ import net.md_5.bungee.config.YamlConfiguration;
 import org.json.simple.JSONObject;
 
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 27.12.16.
  */
-public class ServerManager {
+public class BungeeServerManager {
 
     private List<Integer> portsInUse;
     private List<ServerGroup> groups;
@@ -26,7 +27,7 @@ public class ServerManager {
     private Map<ServerGroup, List<String>> willBeStarted;
     private Map<String, BaseObject> bases;
 
-    public ServerManager() {
+    public BungeeServerManager() {
     }
 
     public void init() {
@@ -74,7 +75,11 @@ public class ServerManager {
     }
 
     public boolean isPortFree(int port) {
-        return !portsInUse.contains(port);
+        if (portsInUse.contains(port)) return false;
+        try (ServerSocket socket = new ServerSocket(port)) {
+            socket.close();
+            return true;
+        } catch (Exception e) {return false;}
     }
 
     public int registerPort(int port) {
@@ -129,6 +134,7 @@ public class ServerManager {
     }
 
     public void startServerFromAsyncContext(ServerGroup group, String name, int port) {
+        String token = UUID.randomUUID().toString();
         JSONObject json = new JSONObject();
         json.put("type", "STARTSERVER");
         json.put("server", name);
@@ -136,6 +142,7 @@ public class ServerManager {
         json.put("ram", group.getRam());
         json.put("port", port);
         json.put("static", group.isStatic());
+        json.put("token", token);
         try {
             Channel channel = group.getBase().getChannel();
             channel.writeAndFlush(json.toJSONString());
@@ -145,7 +152,7 @@ public class ServerManager {
             return;
         }
 
-        TemporaryServer server = new TemporaryServer(name, group, port);
+        TemporaryServer server = new TemporaryServer(name, group, port, token);
         group.addStartingServer(server);
         getServersWillBeStarted(group).remove(name);
     }
@@ -216,11 +223,13 @@ public class ServerManager {
     public TemporaryServer getServerByName(String name) {
         for (ServerGroup group : getGroups()) {
             for (TemporaryServer server : group.getStartingServers()) {
+                if (server == null) continue;
                 if (server.getName().equals(name)) {
                     return server;
                 }
             }
             for (TemporaryServer server : group.getTemporaryServers()) {
+                if (server == null) continue;
                 if (server.getName().equals(name)) {
                     return server;
                 }

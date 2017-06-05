@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -10,8 +11,8 @@ import java.util.Arrays;
 /**
  * Created by Timo on 27.12.16.
  */
-public class FileManager {
-    private String path;
+public class BukkitFileManager {
+
     private File configFile;
     private FileConfiguration config;
     private File signsFile;
@@ -21,19 +22,14 @@ public class FileManager {
     private File signLayoutsFile;
     private FileConfiguration signLayouts;
 
-    public FileManager() {
+    public BukkitFileManager() {
         init();
     }
 
     public void init() {
         try {
-            path = "../../templates/" + TimoCloudBukkit.getInstance().getGroupByServer(TimoCloudBukkit.getInstance().getServerName());
-            if (TimoCloudBukkit.getInstance().isRandomMap()) {
-                path += "_" + TimoCloudBukkit.getInstance().getMapName();
-            }
-            path += "/plugins/TimoCloud/";
-            File directory = new File(path);
-            directory.mkdirs();
+            File path  = new File(TimoCloudBukkit.getInstance().getTemplate(), "/plugins/TimoCloud/");
+            path.mkdirs();
 
             configFile = new File(path, "config.yml");
             if (!configFile.exists()) {
@@ -64,6 +60,8 @@ public class FileManager {
             config.addDefault("updateSignsInServerTicks", 45L);
             config.addDefault("defaultMapName", "Village");
             config.addDefault("MotdToState.§aOnline", "ONLINE");
+            config.addDefault("PlayersToState.enabled", false);
+            config.addDefault("PlayersToState.full", "FULL");
             TimoCloudBukkit.getInstance().setPrefix(config.getString("prefix"));
             config.save(configFile);
         } catch (Exception e) {

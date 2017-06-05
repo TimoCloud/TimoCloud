@@ -12,15 +12,16 @@ import java.util.Map;
 /**
  * Created by Timo on 31.01.17.
  */
-public class FileManager {
-    private String configsDirectory = "configs/";
-    private String templatesDirectory = "templates/";
-    private String temporaryDirectory = "temporary/";
-    private String logsDirectory = "logs/";
+public class BaseFileManager {
+    private final String configsDirectory = "configs/";
+    private final String templatesDirectory = "templates/";
+    private final String temporaryDirectory = "temporary/";
+    private final String logsDirectory = "logs/";
+    private final String pluginsDirectory = "plugins/";
     private File configFile;
     private Map<String, Object> config;
 
-    public FileManager() {
+    public BaseFileManager() {
         load();
     }
 
@@ -30,6 +31,7 @@ public class FileManager {
             new File(getTemplatesDirectory()).mkdirs();
             new File(getTemporaryDirectory()).mkdirs();
             new File(getLogsDirectory()).mkdirs();
+            new File(pluginsDirectory).mkdirs();
             this.configFile = new File(getConfigsDirectory(), "config.yml");
             if (! configFile.exists()) {
                 Files.copy(this.getClass().getResourceAsStream("/base/config.yml"), configFile.toPath());

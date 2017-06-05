@@ -13,5 +13,6 @@ public class PlayerJoin implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         TimoCloudBukkit.getInstance().sendPlayers();
+        TimoCloudBukkit.getInstance().getStateByEventManager().onPlayerJoin();
     }
 }

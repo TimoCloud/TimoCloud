@@ -12,7 +12,7 @@ import java.nio.file.Files;
 /**
  * Created by Timo on 27.12.16.
  */
-public class FileManager {
+public class BungeeFileManager {
     private String pluginsDirectory = "plugins/TimoCloud/";
     private String configsDirectory = pluginsDirectory + "configs/";
     private File configFile;
@@ -20,7 +20,7 @@ public class FileManager {
     private Configuration config;
     private Configuration groups;
 
-    public FileManager() {
+    public BungeeFileManager() {
         load();
     }
 
@@ -35,7 +35,6 @@ public class FileManager {
             }
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
             configFile.delete();
-            System.out.println(this.getClass().getResourceAsStream("/bungeecord/config.yml") == null);
             Files.copy(this.getClass().getResourceAsStream("/bungeecord/config.yml"), configFile.toPath());
             Configuration configNew = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
             for (String key : config.getKeys()) {

@@ -3,5 +3,7 @@ version: ${project.version}
 author: TimoCrafter
 main: at.TimoCraft.TimoCloud.a.a
 commands:
+  timocloudbukkit:
+    aliases: [tcb]
   signs:
   sendbungee:

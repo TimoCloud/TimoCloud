@@ -1,7 +1,7 @@
 package at.TimoCraft.TimoCloud.base;
 
-import at.TimoCraft.TimoCloud.base.managers.FileManager;
-import at.TimoCraft.TimoCloud.base.managers.ServerManager;
+import at.TimoCraft.TimoCloud.base.managers.BaseFileManager;
+import at.TimoCraft.TimoCloud.base.managers.BaseServerManager;
 import at.TimoCraft.TimoCloud.base.sockets.BaseSocketClient;
 import at.TimoCraft.TimoCloud.base.sockets.BaseSocketClientHandler;
 import at.TimoCraft.TimoCloud.base.sockets.BaseSocketMessageManager;
@@ -30,8 +30,8 @@ public class Base {
 
     private static Base instance;
     private String prefix = ANSI_YELLOW + "[" +ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
-    private FileManager fileManager;
-    private ServerManager serverManager;
+    private BaseFileManager fileManager;
+    private BaseServerManager serverManager;
     private BaseSocketClient socketClient;
     private BaseSocketClientHandler socketClientHandler;
     private BaseSocketMessageManager socketMessageManager;
@@ -61,12 +61,21 @@ public class Base {
 
     private void makeInstances() {
         instance = this;
-        fileManager = new FileManager();
-        serverManager = new ServerManager();
+        fileManager = new BaseFileManager();
+        serverManager = new BaseServerManager(getServerManagerDelayMillis());
         socketClient = new BaseSocketClient();
         socketClientHandler = new BaseSocketClientHandler();
         socketMessageManager = new BaseSocketMessageManager();
         stringHandler = new BaseStringHandler();
+    }
+
+    private long getServerManagerDelayMillis() {
+        long delay = 1000;
+        String prop = System.getProperty("serverStartDelay");
+        try {
+            delay = Long.parseLong(prop);
+        } catch (Exception e) {}
+        return delay;
     }
 
     public void connectToSocket() {
@@ -107,11 +116,11 @@ public class Base {
         return instance;
     }
 
-    public FileManager getFileManager() {
+    public BaseFileManager getFileManager() {
         return fileManager;
     }
 
-    public ServerManager getServerManager() {
+    public BaseServerManager getServerManager() {
         return serverManager;
     }
 

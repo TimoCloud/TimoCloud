@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetSocketAddress;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,13 +23,15 @@ public class TemporaryServer {
     private String motd = "";
     private String players = "0/0";
     private String map = "";
+    private String token;
 
-    public TemporaryServer(String name, ServerGroup serverGroup, int port) {
+    public TemporaryServer(String name, ServerGroup serverGroup, int port, String token) {
         this.port = port;
         this.name = name;
         this.serverGroup = serverGroup;
         InetSocketAddress address = new InetSocketAddress(getServerGroup().getBase().getAddress(), getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
+        this.token = token;
     }
 
     public void stop() {
@@ -53,7 +56,6 @@ public class TemporaryServer {
 
     public void unregister() {
         if (!isRegistered()) {
-            TimoCloud.severe("Wanted to unregister not-registered server: " + serverInfo.getName());
             return;
         }
         TimoCloud.getInstance().getServerManager().removeServer(getName());
@@ -69,7 +71,7 @@ public class TemporaryServer {
         }
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
-        }, 1, 0, TimeUnit.SECONDS);
+        }, 60, 0, TimeUnit.SECONDS);
         TimoCloud.getInstance().getSocketServerHandler().sendMessage(getServerGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");
     }
 
@@ -162,5 +164,9 @@ public class TemporaryServer {
 
     public void setMap(String map) {
         this.map = map;
+    }
+
+    public String getToken() {
+        return token;
     }
 }

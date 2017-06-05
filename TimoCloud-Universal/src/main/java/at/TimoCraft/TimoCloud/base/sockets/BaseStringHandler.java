@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.base.sockets;
 
 import at.TimoCraft.TimoCloud.base.Base;
+import at.TimoCraft.TimoCloud.base.objects.BaseServerObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
@@ -47,6 +48,7 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
         String server = (String) json.get("server");
         String type = (String) json.get("type");
         String data = (String) json.get("data");
+        String token = (String) json.get("token");
         switch (type) {
             case "STARTSERVER":
                 int port = 0;
@@ -55,7 +57,8 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
                 ram += (Long) json.get("ram");
                 boolean isStatic = (Boolean) json.get("static");
                 String group = (String) json.get("group");
-                Base.getInstance().getServerManager().startServer(server, port, ram, isStatic, group);
+                Base.getInstance().getServerManager().addToQueue(new BaseServerObject(server, port, ram, isStatic, group, token));
+                Base.info("Added server " + server + " to queue.");
                 break;
             case "SERVERSTOPPED":
                 Base.getInstance().getServerManager().onServerStopped(server);

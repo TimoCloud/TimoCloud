@@ -29,7 +29,6 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
     public BungeeStringHandler() {
         open = new HashMap<>();
         remaining = new HashMap<>();
-        ;
         parsed = new HashMap<>();
     }
 
@@ -46,10 +45,10 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void read(Channel channel) {
         for (String c : getRemaining(channel).split("")) {
-            parsed.put(channel, getParsed(channel) + c);
-            remaining.put(channel, getRemaining(channel).substring(1));
-            if (c.equals("{")) {
-                open.put(channel, getOpen(channel) + 1);
+            if (c.equals("{")) open.put(channel, getOpen(channel) + 1);
+            if (getOpen(channel) > 0) {
+                parsed.put(channel, getParsed(channel) + c);
+                remaining.put(channel, getRemaining(channel).substring(1));
             }
             if (c.equals("}")) {
                 open.put(channel, getOpen(channel) - 1);
@@ -57,7 +56,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                     try {
                         handleJSON((JSONObject) JSONValue.parse(getParsed(channel)), getParsed(channel), channel);
                     } catch (Exception e) {
-                        TimoCloud.severe("Error while parsing JSON message;" + getParsed(channel));
+                        TimoCloud.severe("Error while parsing JSON message: " + getParsed(channel));
                         e.printStackTrace();
                     }
                     parsed.put(channel, "");
@@ -72,23 +71,22 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
         String data = (String) json.get("data");
         TemporaryServer server = null;
         TemporaryServer requestedServer = null;
-        if (!type.toLowerCase().startsWith("base")) {
+        if (! type.toLowerCase().startsWith("base")) {
             server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
             if (server == null) {
-                //TimoCloud.severe("OFFLINE server connected: " + serverName);
                 channel.close();
                 return;
             }
-            server.setChannel(channel);
-            TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, server);
             requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
         }
         switch (type) {
             case "HANDSHAKE":
-                if (! data.equals("I_JUST_CAME_ONLINE")) {
-                    TimoCloud.severe("Unknown HANDSHAKE message: " + data);
+                if (! data.equals(server.getToken())) {
+                    channel.close();
                     break;
                 }
+                server.setChannel(channel);
+                TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, server);
                 server.register();
                 server.setState("ONLINE");
                 break;

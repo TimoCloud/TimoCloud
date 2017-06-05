@@ -33,6 +33,7 @@ public class BaseSocketClient {
             try {
                 f.channel().closeFuture().sync();
             } catch (Exception e) {
+                f.channel().close();
                 Base.getInstance().onSocketDisconnect();
             }
         } finally {

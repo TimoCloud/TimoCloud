@@ -5,8 +5,8 @@ import at.TimoCraft.TimoCloud.bungeecord.commands.LobbyCommand;
 import at.TimoCraft.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.LobbyJoin;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.ServerKick;
-import at.TimoCraft.TimoCloud.bungeecord.managers.FileManager;
-import at.TimoCraft.TimoCloud.bungeecord.managers.ServerManager;
+import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeFileManager;
+import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -20,19 +20,19 @@ import java.util.List;
 public class TimoCloud extends Plugin {
 
     private static TimoCloud instance;
-    private ServerManager serverManager;
-    private FileManager fileManager;
+    private BungeeServerManager serverManager;
+    private BungeeFileManager fileManager;
     private BungeeSocketServer socketServer;
     private BungeeSocketServerHandler socketServerHandler;
     private String prefix;
     private boolean shuttingDown = false;
 
     public static void info(String message) {
-        getInstance().getLogger().info(" " + message);
+        getInstance().getLogger().info(" " + message.replace("&", "§"));
     }
 
     public static void severe(String message) {
-        getInstance().getLogger().severe(" " + message);
+        getInstance().getLogger().severe(" " + message.replace("&", "§"));
     }
 
     @Override
@@ -48,6 +48,7 @@ public class TimoCloud extends Plugin {
         registerTasks();
         getServerManager().init();
 
+        info("&cPlease note that using TimoCloud without having bought it before is a crime. Do not give TimoCloud to anybody else, because you are responsible for everybody who uses the plugin with your download ID.");
         info("Successfully started TimoCloud!");
     }
 
@@ -59,8 +60,8 @@ public class TimoCloud extends Plugin {
     }
 
     private void makeInstances() {
-        fileManager = new FileManager();
-        serverManager = new ServerManager();
+        fileManager = new BungeeFileManager();
+        serverManager = new BungeeServerManager();
         socketServer = new BungeeSocketServer();
         socketServerHandler = new BungeeSocketServerHandler();
     }
@@ -100,11 +101,11 @@ public class TimoCloud extends Plugin {
         return instance;
     }
 
-    public ServerManager getServerManager() {
+    public BungeeServerManager getServerManager() {
         return serverManager;
     }
 
-    public FileManager getFileManager() {
+    public BungeeFileManager getFileManager() {
         return fileManager;
     }
 

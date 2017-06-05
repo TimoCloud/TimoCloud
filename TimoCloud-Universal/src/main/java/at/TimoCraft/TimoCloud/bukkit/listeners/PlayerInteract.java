@@ -1,12 +1,15 @@
 package at.TimoCraft.TimoCloud.bukkit.listeners;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+
+import java.util.Arrays;
 
 /**
  * Created by Timo on 30.12.16.
@@ -19,7 +22,7 @@ public class PlayerInteract implements Listener {
             return;
         }
         Block block = event.getClickedBlock();
-        if (block.getType() != Material.WALL_SIGN) {
+        if (! Arrays.asList(Material.WALL_SIGN, Material.SIGN_POST).contains(block.getType())) {
             return;
         }
         if (!TimoCloudBukkit.getInstance().getSignManager().getSigns().containsKey(block.getLocation())) {
@@ -27,7 +30,7 @@ public class PlayerInteract implements Listener {
         }
 
         String server = TimoCloudBukkit.getInstance().getSignManager().getServerOnSign(block.getLocation());
-        String group = TimoCloudBukkit.getInstance().getGroupByServer(server);
+        String group = ServerToGroupUtil.getGroupByServer(server);
         String state = TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server);
         if (TimoCloudBukkit.getInstance().getSignManager().shouldBeSortedOut(state, group)) {
             return;
