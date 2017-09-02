@@ -2,7 +2,7 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
-import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
+import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -145,17 +145,18 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MAP", map);
                 break;
             case "SETPLAYERS":
-                server.setPlayers(data);
+                server.setCurrentPlayers(Integer.parseInt(data.split("/")[0]));
+                server.setMaxPlayers(Integer.parseInt(data.split("/")[1]));
                 break;
             case "GETPLAYERS":
                 Server requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
                 if (requestedServer3 == null) {
                     return;
                 }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer3.getPlayers() == null ? "0/0" : requestedServer3.getPlayers());
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer.getCurrentPlayers() + "/" + requestedServer.getMaxPlayers());
                 break;
             case "GETSERVERS":
-                ServerGroup requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
+                Group requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
                 List<String> servers = new ArrayList<>();
                 for (Server t : requestedGroup.getRunningServers()) {
                     servers.add(t.getName());

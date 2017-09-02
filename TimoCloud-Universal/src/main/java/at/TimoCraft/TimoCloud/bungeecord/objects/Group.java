@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Timo on 27.12.16.
  */
-public class ServerGroup {
+public class Group {
     private List<Server> runningServers = new ArrayList<>();
     private List<Server> startingServers = new ArrayList<>();
     private String name;
@@ -19,7 +19,7 @@ public class ServerGroup {
     private String baseName;
     private BaseObject base;
 
-    public ServerGroup(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName) {
+    public Group(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName) {
         this.name = name;
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
@@ -135,7 +135,7 @@ public class ServerGroup {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ServerGroup that = (ServerGroup) o;
+        Group that = (Group) o;
 
         return name.equals(that.name);
 

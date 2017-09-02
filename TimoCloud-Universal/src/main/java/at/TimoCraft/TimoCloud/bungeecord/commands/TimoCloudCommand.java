@@ -3,7 +3,7 @@ package at.TimoCraft.TimoCloud.bungeecord.commands;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeMessageManager;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
-import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
+import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -56,13 +56,13 @@ public class TimoCloudCommand extends Command {
             }
 
             if (args[0].equalsIgnoreCase("listgroups")) {
-                List<ServerGroup> groups = TimoCloud.getInstance().getServerManager().getGroups();
+                List<Group> groups = TimoCloud.getInstance().getServerManager().getGroups();
                 if (groups.size() == 0) {
                     BungeeMessageManager.sendMessage(sender, "&cNo groups yet!");
                     return;
                 }
                 BungeeMessageManager.sendMessage(sender, "&6Groups (" + groups.size() + "):");
-                for (ServerGroup group : groups) {
+                for (Group group : groups) {
                     BungeeMessageManager.sendMessage(sender, "  &b" + group.getName() + " &e(&7RAM: &6" + group.getRam() + (group.getRam() < 128 ? "G" : "M") + "&e, &7Amount: &6" + group.getStartupAmount() + "&e)");
                     for (Server server : group.getRunningServers()) {
                         BungeeMessageManager.sendMessage(sender, "    &b" + server.getName() +
@@ -83,7 +83,7 @@ public class TimoCloudCommand extends Command {
                 return;
             }
             if (args[0].equalsIgnoreCase("restartgroup")) {
-                ServerGroup group = TimoCloud.getInstance().getServerManager().getGroupByName(args[1]);
+                Group group = TimoCloud.getInstance().getServerManager().getGroupByName(args[1]);
                 if (group == null) {
                     BungeeMessageManager.sendMessage(sender, "&cGroup &e" + args[1] + " &cdoes not exist.");
                     return;
@@ -107,14 +107,14 @@ public class TimoCloudCommand extends Command {
                 int ram = Integer.parseInt(args[4]);
                 boolean isStatic = Boolean.parseBoolean(args[5]);
                 String base = args[6];
-                ServerGroup serverGroup = new ServerGroup(name, amount, maxAmount, ram, isStatic, base);
+                Group group = new Group(name, amount, maxAmount, ram, isStatic, base);
 
-                if (TimoCloud.getInstance().getServerManager().groupExists(serverGroup)) {
+                if (TimoCloud.getInstance().getServerManager().groupExists(group)) {
                     BungeeMessageManager.sendMessage(sender, "&cThis group already exists.");
                     return;
                 }
                 try {
-                    TimoCloud.getInstance().getServerManager().updateGroup(serverGroup);
+                    TimoCloud.getInstance().getServerManager().updateGroup(group);
                 } catch (Exception e) {
                     BungeeMessageManager.sendMessage(sender, "&cError while saving groups.yml. See console for mor information.");
                     e.printStackTrace();
@@ -123,7 +123,7 @@ public class TimoCloudCommand extends Command {
             }
             if (args[0].equalsIgnoreCase("editgroup")) {
                 String groupName = args[1];
-                ServerGroup group = TimoCloud.getInstance().getServerManager().getGroupByName(groupName);
+                Group group = TimoCloud.getInstance().getServerManager().getGroupByName(groupName);
                 if (group == null) {
                     BungeeMessageManager.sendMessage(sender, "&cGroup &e" + groupName + " &cnot found. Try /timocloud listgroups");
                     return;

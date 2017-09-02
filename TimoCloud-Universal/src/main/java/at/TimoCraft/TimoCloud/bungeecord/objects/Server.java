@@ -16,26 +16,27 @@ public class Server {
     private boolean registered = false;
     private String name;
     private int port;
-    private ServerGroup serverGroup;
+    private Group group;
     private Channel channel;
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private String players = "0/0";
+    private int currentPlayers = 0;
+    private int maxPlayers = 0;
     private String map = "";
     private String token;
 
-    public Server(String name, ServerGroup serverGroup, int port, String token) {
+    public Server(String name, Group group, int port, String token) {
         this.port = port;
         this.name = name;
-        this.serverGroup = serverGroup;
-        InetSocketAddress address = new InetSocketAddress(getServerGroup().getBase().getAddress(), getPort());
+        this.group = group;
+        InetSocketAddress address = new InetSocketAddress(getGroup().getBase().getAddress(), getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
         this.token = token;
     }
 
     public boolean isStatic() {
-        return getServerGroup().isStatic();
+        return getGroup().isStatic();
     }
 
     public void stop() {
@@ -50,7 +51,7 @@ public class Server {
 
     public void register() {
         TimoCloud.getInstance().getProxy().getServers().put(getServerInfo().getName(), getServerInfo());
-        serverGroup.onServerConnect(this);
+        group.onServerConnect(this);
         TimoCloud.getInstance().getServerManager().addServer(getName());
         registered = true;
         TimoCloud.info("Server " + getName() + " connected.");
@@ -62,7 +63,7 @@ public class Server {
             return;
         }
         TimoCloud.getInstance().getServerManager().removeServer(getName());
-        getServerGroup().removeServer(this);
+        getGroup().removeServer(this);
         setState("OFFLINE");
         registered = false;
         if (channel != null && channel.isOpen()) {
@@ -75,7 +76,7 @@ public class Server {
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
         }, 60, 0, TimeUnit.SECONDS);
-        TimoCloud.getInstance().getSocketServerHandler().sendMessage(getServerGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");
+        TimoCloud.getInstance().getSocketServerHandler().sendMessage(getGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");
     }
 
     public ServerInfo getServerInfo() {
@@ -113,8 +114,8 @@ public class Server {
         return getName();
     }
 
-    public ServerGroup getServerGroup() {
-        return serverGroup;
+    public Group getGroup() {
+        return group;
     }
 
     public Channel getChannel() {
@@ -153,12 +154,20 @@ public class Server {
         return port;
     }
 
-    public String getPlayers() {
-        return players;
+    public int getCurrentPlayers() {
+        return currentPlayers;
     }
 
-    public void setPlayers(String players) {
-        this.players = players;
+    public void setCurrentPlayers(int currentPlayers) {
+        this.currentPlayers = currentPlayers;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
     }
 
     public String getMap() {

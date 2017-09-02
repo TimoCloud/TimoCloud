@@ -55,8 +55,8 @@ public class BaseServerManager {
                 templatesDir = getRandomServer(server.getGroup());
                 randomMap = true;
                 mapName = "";
-                if (templatesDir.getName() == null) {
-                    Base.severe("Could not start server " + server.getName() + ": No template called " + server.getName() + " found.");
+                if (templatesDir == null || ! templatesDir.exists()) {
+                    Base.severe("Could not start server " + server.getName() + ": No template called " + server.getName() + " found. Please make sure the directory " + templatesDir.getAbsolutePath() + " exists.");
                     return;
                 }
                 String[] splitted = templatesDir.getName().split("_");
@@ -70,7 +70,7 @@ public class BaseServerManager {
         }
         File spigot = new File(templatesDir, "spigot.jar");
         if (!spigot.exists()) {
-            Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist.");
+            Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigot.getAbsolutePath() + " exists (case sensitive!).");
             return;
         }
         File directory = null;
@@ -129,7 +129,7 @@ public class BaseServerManager {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                Base.severe("Got response when starting server: " + line);
+                Base.severe("Got response when starting server. Please report this: " + line);
             }
         } catch (Exception e) {
             Base.severe("Error while starting server " + server.getName() + ":");
