@@ -3,7 +3,7 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
-import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
+import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -69,8 +69,8 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
         String serverName = (String) json.get("server");
         String type = (String) json.get("type");
         String data = (String) json.get("data");
-        TemporaryServer server = null;
-        TemporaryServer requestedServer = null;
+        Server server = null;
+        Server requestedServer = null;
         if (! type.toLowerCase().startsWith("base")) {
             server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
             if (server == null) {
@@ -148,7 +148,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 server.setPlayers(data);
                 break;
             case "GETPLAYERS":
-                TemporaryServer requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
+                Server requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
                 if (requestedServer3 == null) {
                     return;
                 }
@@ -157,7 +157,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "GETSERVERS":
                 ServerGroup requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
                 List<String> servers = new ArrayList<>();
-                for (TemporaryServer t : requestedGroup.getTemporaryServers()) {
+                for (Server t : requestedGroup.getRunningServers()) {
                     servers.add(t.getName());
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "SERVERS", servers);

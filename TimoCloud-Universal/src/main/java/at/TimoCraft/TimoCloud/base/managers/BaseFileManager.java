@@ -16,6 +16,7 @@ public class BaseFileManager {
     private final String configsDirectory = "configs/";
     private final String templatesDirectory = "templates/";
     private final String temporaryDirectory = "temporary/";
+    private final String staticDirectory = "static/";
     private final String logsDirectory = "logs/";
     private final String pluginsDirectory = "plugins/";
     private File configFile;
@@ -30,8 +31,9 @@ public class BaseFileManager {
             new File(getConfigsDirectory()).mkdirs();
             new File(getTemplatesDirectory()).mkdirs();
             new File(getTemporaryDirectory()).mkdirs();
+            new File(getStaticDirectory()).mkdirs();
             new File(getLogsDirectory()).mkdirs();
-            new File(pluginsDirectory).mkdirs();
+            new File(getPluginsDirectory()).mkdirs();
             this.configFile = new File(getConfigsDirectory(), "config.yml");
             if (! configFile.exists()) {
                 Files.copy(this.getClass().getResourceAsStream("/base/config.yml"), configFile.toPath());
@@ -55,8 +57,16 @@ public class BaseFileManager {
         return temporaryDirectory;
     }
 
+    public String getStaticDirectory() {
+        return staticDirectory;
+    }
+
     public String getLogsDirectory() {
         return logsDirectory;
+    }
+
+    public String getPluginsDirectory() {
+        return pluginsDirectory;
     }
 
     public File getConfigFile() {

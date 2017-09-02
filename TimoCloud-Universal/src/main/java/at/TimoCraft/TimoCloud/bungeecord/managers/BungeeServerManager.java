@@ -1,10 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.managers;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
-import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
-import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
-import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
-import io.netty.channel.Channel;
+import at.TimoCraft.TimoCloud.bungeecord.objects.*;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -27,9 +24,6 @@ public class BungeeServerManager {
     private Map<ServerGroup, List<String>> willBeStarted;
     private Map<String, BaseObject> bases;
 
-    public BungeeServerManager() {
-    }
-
     public void init() {
         makeInstances();
         readGroups();
@@ -41,6 +35,7 @@ public class BungeeServerManager {
         startedServers = new ArrayList<>();
         willBeStarted = new HashMap<>();
         bases = new HashMap<>();
+        startedServers = new ArrayList<>();
     }
 
     public void stopAllServers() {
@@ -60,6 +55,9 @@ public class BungeeServerManager {
                     groupsConfig.getBoolean(group + ".static"),
                     groupsConfig.getString(group + ".base")
             );
+            if (serverGroup.isStatic() && serverGroup.getStartupAmount() > 1) {
+                TimoCloud.severe("Static groups (" + group + ") can only start 1 server. Please set 'onlineAmount' to 1");
+            }
             groups.add(serverGroup);
         }
     }
@@ -99,17 +97,18 @@ public class BungeeServerManager {
     }
 
     public ServerInfo getRandomLobbyServer(ServerInfo notThis) {
+        String fallback = TimoCloud.getInstance().getFileManager().getConfig().getString("fallbackGroup");
         for (ServerGroup group : getGroups()) {
-            if (group.getName().equalsIgnoreCase("lobby")) {
-                if (group.getTemporaryServers().size() == 0) {
+            if (group.getName().equalsIgnoreCase(fallback)) {
+                if (group.getRunningServers().size() == 0) {
                     continue;
                 }
-                List<TemporaryServer> servers;
+                List<Server> servers;
                 if (notThis == null) {
-                    servers = group.getTemporaryServers();
+                    servers = group.getRunningServers();
                 } else {
                     servers = new ArrayList<>();
-                    for (TemporaryServer server : group.getTemporaryServers()) {
+                    for (Server server : group.getRunningServers()) {
                         if (!server.getServerInfo().equals(notThis)) {
                             servers.add(server);
                         }
@@ -124,37 +123,37 @@ public class BungeeServerManager {
             }
         }
 
-        return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("fallback"));
+        return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
     }
 
     public void startServer(ServerGroup group, String name) {
         getServersWillBeStarted(group).add(name);
         int port = getFreePort();
-        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(group, name, port)), group.isStatic() ? 5 : 1, 0, TimeUnit.SECONDS);
+        String token = UUID.randomUUID().toString();
+        TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
+            TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(name, group.getName(), group.getRam(), port, group.isStatic(), token, group.getBase()));
+            Server server =  new Server(name, group, port, token);
+            group.addStartingServer(server);
+            getServersWillBeStarted(group).remove(name);
+        }, group.isStatic() ? 5 : 1, 0, TimeUnit.SECONDS);
     }
 
-    public void startServerFromAsyncContext(ServerGroup group, String name, int port) {
-        String token = UUID.randomUUID().toString();
+    public void startServerFromAsyncContext(String name, String group, int ram, int port, boolean isStatic, String token, BaseObject base) {
         JSONObject json = new JSONObject();
         json.put("type", "STARTSERVER");
         json.put("server", name);
-        json.put("group", group.getName());
-        json.put("ram", group.getRam());
+        json.put("group", group);
+        json.put("ram", ram);
         json.put("port", port);
-        json.put("static", group.isStatic());
+        json.put("static", isStatic);
         json.put("token", token);
         try {
-            Channel channel = group.getBase().getChannel();
-            channel.writeAndFlush(json.toJSONString());
-            TimoCloud.info("Told base " + group.getBase().getName() + " to start server " + name + ".");
+            base.getChannel().writeAndFlush(json.toJSONString());
+            TimoCloud.info("Told base " + base.getName() + " to start server " + name + ".");
         } catch (Exception e) {
-            TimoCloud.severe("Error while starting server " + name + ": Base " + group.getBaseName() + " not connected.");
+            TimoCloud.severe("Error while starting server " + name + ": Base " + base.getName() + " not connected.");
             return;
         }
-
-        TemporaryServer server = new TemporaryServer(name, group, port, token);
-        group.addStartingServer(server);
-        getServersWillBeStarted(group).remove(name);
     }
 
     public boolean isRunning(String name) {
@@ -203,9 +202,7 @@ public class BungeeServerManager {
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".static", group.isStatic());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".base", group.getBaseName());
         ConfigurationProvider.getProvider(YamlConfiguration.class).save(TimoCloud.getInstance().getFileManager().getGroups(), TimoCloud.getInstance().getFileManager().getGroupsFile());
-        if (!groups.contains(group)) {
-            groups.add(group);
-        }
+        if (! groups.contains(group)) groups.add(group);
     }
 
     public void removeGroup(String name) throws IOException {
@@ -220,15 +217,15 @@ public class BungeeServerManager {
         return groups;
     }
 
-    public TemporaryServer getServerByName(String name) {
+    public Server getServerByName(String name) {
         for (ServerGroup group : getGroups()) {
-            for (TemporaryServer server : group.getStartingServers()) {
+            for (Server server : group.getStartingServers()) {
                 if (server == null) continue;
                 if (server.getName().equals(name)) {
                     return server;
                 }
             }
-            for (TemporaryServer server : group.getTemporaryServers()) {
+            for (Server server : group.getRunningServers()) {
                 if (server == null) continue;
                 if (server.getName().equals(name)) {
                     return server;
@@ -239,31 +236,25 @@ public class BungeeServerManager {
     }
 
     public void checkEnoughOnline() {
-        for (ServerGroup group : getGroups()) {
-            checkEnoughOnline(group);
-        }
+        for (ServerGroup group : getGroups()) checkEnoughOnline(group);
     }
 
     public void checkEnoughOnline(ServerGroup group) {
-        if (TimoCloud.getInstance().isShuttingDown()) {
-            return;
-        }
-        if (group.getBase() == null || ! group.getBase().isConnected()) {
-            return;
-        }
+        if (TimoCloud.getInstance().isShuttingDown()) return;
+        if (group.getBase() == null || ! group.getBase().isConnected()) return;
         int needed = serversNeeded(group);
-        for (int i = 0; i < needed; i++) {
-            startServer(group, getNotExistingName(group));
-        }
+        for (int i = 0; i < needed; i++) startServer(group, getNotExistingName(group));
     }
 
     private String getNotExistingName(ServerGroup group) {
-        for (int i = 1; true; i++) {
-            String name = generateName(group.getName(), i);
+        for (int i = 1; i<100000; i++) {
+            String name = generateName(group, i);
             if (!nameExists(name, group)) {
                 return name;
             }
         }
+        TimoCloud.severe("Fatal error: No fitting name for group " + group.getName() + " found. Please report this!");
+        return group.getName();
     }
 
     private List<String> getServersWillBeStarted(ServerGroup group) {
@@ -275,12 +266,12 @@ public class BungeeServerManager {
         if (getServersWillBeStarted(group).contains(name)) {
             return true;
         }
-        for (TemporaryServer server : group.getStartingServers()) {
+        for (Server server : group.getStartingServers()) {
             if (server.getName().equals(name)) {
                 return true;
             }
         }
-        for (TemporaryServer server : group.getTemporaryServers()) {
+        for (Server server : group.getRunningServers()) {
             if (server.getName().equals(name)) {
                 return true;
             }
@@ -288,24 +279,18 @@ public class BungeeServerManager {
         return false;
     }
 
-    private String generateName(String groupName, int n) {
-        return groupName + "-" + n;
+    private String generateName(ServerGroup group, int n) {
+        return group.isStatic() ? group.getName() : group.getName() + "-" + n;
     }
 
     public int serversNeeded(ServerGroup group) {
         int i = 0;
-        for (TemporaryServer server : group.getTemporaryServers()) {
-            if (isStateActive(server.getState(), group.getName())) {
-                i++;
-            }
-        }
+        for (Server server : group.getRunningServers())
+            if (isStateActive(server.getState(), group.getName())) i++;
         i += group.getStartingServers().size();
         i += getServersWillBeStarted(group).size();
-        int s = group.getStartingServers().size()+group.getTemporaryServers().size()+getServersWillBeStarted(group).size();
         int needed = group.getStartupAmount() - i;
-        if (group.getMaxAmount()-s > group.getMaxAmount()) {
-            needed += group.getMaxAmount()-s;
-        }
+        if (group.getMaxAmount() > 0 && i + needed > group.getMaxAmount()) needed = group.getMaxAmount()-(group.getStartingServers().size()+group.getRunningServers().size()+getServersWillBeStarted(group).size());
         return needed;
     }
 

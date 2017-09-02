@@ -5,13 +5,13 @@ import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 
 import java.net.InetSocketAddress;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 27.12.16.
  */
-public class TemporaryServer {
+public class Server {
+
     private ServerInfo serverInfo;
     private boolean registered = false;
     private String name;
@@ -25,13 +25,17 @@ public class TemporaryServer {
     private String map = "";
     private String token;
 
-    public TemporaryServer(String name, ServerGroup serverGroup, int port, String token) {
+    public Server(String name, ServerGroup serverGroup, int port, String token) {
         this.port = port;
         this.name = name;
         this.serverGroup = serverGroup;
         InetSocketAddress address = new InetSocketAddress(getServerGroup().getBase().getAddress(), getPort());
         serverInfo = TimoCloud.getInstance().getProxy().constructServerInfo(name, address, name, false);
         this.token = token;
+    }
+
+    public boolean isStatic() {
+        return getServerGroup().isStatic();
     }
 
     public void stop() {
@@ -46,8 +50,7 @@ public class TemporaryServer {
 
     public void register() {
         TimoCloud.getInstance().getProxy().getServers().put(getServerInfo().getName(), getServerInfo());
-        serverGroup.getStartingServers().remove(this);
-        serverGroup.getTemporaryServers().add(this);
+        serverGroup.onServerConnect(this);
         TimoCloud.getInstance().getServerManager().addServer(getName());
         registered = true;
         TimoCloud.info("Server " + getName() + " connected.");
@@ -92,7 +95,7 @@ public class TemporaryServer {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TemporaryServer that = (TemporaryServer) o;
+        Server that = (Server) o;
 
         if (port != that.port) return false;
         return name.equals(that.name);

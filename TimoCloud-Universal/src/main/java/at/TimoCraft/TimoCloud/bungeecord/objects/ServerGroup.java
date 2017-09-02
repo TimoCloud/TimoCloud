@@ -2,7 +2,6 @@ package at.TimoCraft.TimoCloud.bungeecord.objects;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,13 +9,13 @@ import java.util.List;
  * Created by Timo on 27.12.16.
  */
 public class ServerGroup {
-    private List<TemporaryServer> temporaryServers = new ArrayList<>();
-    private List<TemporaryServer> startingServers = new ArrayList<>();
+    private List<Server> runningServers = new ArrayList<>();
+    private List<Server> startingServers = new ArrayList<>();
     private String name;
     private int startupAmount;
     private int maxAmount;
     private int ram;
-    private boolean isStatic = false;
+    private boolean isStatic;
     private String baseName;
     private BaseObject base;
 
@@ -25,13 +24,16 @@ public class ServerGroup {
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;
+        if (ram == 0) {
+            TimoCloud.severe("Attention: Group " + name + " has 0MB Ram. (This won't work)");
+        }
         this.isStatic = isStatic;
         this.baseName = baseName;
         setBase(TimoCloud.getInstance().getServerManager().getBase(baseName));
     }
 
-    public List<TemporaryServer> getTemporaryServers() {
-        return temporaryServers;
+    public List<Server> getRunningServers() {
+        return runningServers;
     }
 
     public String getName() {
@@ -43,27 +45,28 @@ public class ServerGroup {
     }
 
     public void stopAllServers() {
-        List<TemporaryServer> starting = (ArrayList<TemporaryServer>) ((ArrayList) getStartingServers()).clone();
-        for (TemporaryServer server : starting) {
+        List<Server> starting = (ArrayList<Server>) ((ArrayList) getStartingServers()).clone();
+        for (Server server : starting) {
             server.stop();
         }
-        List<TemporaryServer> temporary = (ArrayList<TemporaryServer>) ((ArrayList) getTemporaryServers()).clone();
-        for (TemporaryServer server : temporary) {
+        List<Server> temporary = (ArrayList<Server>) ((ArrayList) getRunningServers()).clone();
+        for (Server server : temporary) {
             server.stop();
         }
         startingServers = new ArrayList<>();
-        temporaryServers = new ArrayList<>();
+        runningServers = new ArrayList<>();
     }
 
-    public void addServer(TemporaryServer server) {
-        if (!temporaryServers.contains(server)) {
-            temporaryServers.add(server);
+    public void onServerConnect(Server server) {
+        if (startingServers.contains(server)) startingServers.remove(server);
+        if (!runningServers.contains(server)) {
+            runningServers.add(server);
             return;
         }
         TimoCloud.severe("Tried to add already existing server " + server);
     }
 
-    public void addStartingServer(TemporaryServer server) {
+    public void addStartingServer(Server server) {
         if (!startingServers.contains(server)) {
             startingServers.add(server);
             return;
@@ -71,15 +74,15 @@ public class ServerGroup {
         TimoCloud.severe("Tried to add already existing starting server " + server);
     }
 
-    public void removeServer(TemporaryServer server) {
-        if (temporaryServers.contains(server)) {
-            temporaryServers.remove(server);
+    public void removeServer(Server server) {
+        if (runningServers.contains(server)) {
+            runningServers.remove(server);
             return;
         }
         //TimoCloud.severe("Tried to remove not existing server " + server);
     }
 
-    public List<TemporaryServer> getStartingServers() {
+    public List<Server> getStartingServers() {
         return startingServers;
     }
 

@@ -24,6 +24,12 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
         Base.info("Successfully connected to bungee socket!");
     }
 
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+        Base.getInstance().onSocketDisconnect();
+    }
+
     public void sendMessage(String message) {
         channel.writeAndFlush(message);
     }

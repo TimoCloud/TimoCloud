@@ -10,6 +10,9 @@ import at.TimoCraft.TimoCloud.base.sockets.BaseStringHandler;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 31.01.17.
@@ -36,17 +39,19 @@ public class Base {
     private BaseSocketClientHandler socketClientHandler;
     private BaseSocketMessageManager socketMessageManager;
     private BaseStringHandler stringHandler;
+    private ScheduledExecutorService scheduler;
+    private boolean connected = false;
 
     public static String getTime() {
         return "[" + format.format(new Date()) + "] ";
     }
 
     public static void info(String message) {
-        System.out.println(getTime() + getInstance().getPrefix() + message);
+        System.out.println(getTime() + getInstance().getPrefix() + message + ANSI_RESET);
     }
 
     public static void severe(String message) {
-        System.err.println(getTime() + getInstance().getPrefix() + "\\e[0;31m" + message);
+        System.err.println(getTime() + getInstance().getPrefix() + "\\e[0;31m" + message + ANSI_RESET);
     }
 
     public Base() {
@@ -55,7 +60,7 @@ public class Base {
 
     private void onEnable() {
         makeInstances();
-        connectToSocket();
+        scheduleConnecting();
         info(ANSI_GREEN + "has been enabled");
     }
 
@@ -67,6 +72,12 @@ public class Base {
         socketClientHandler = new BaseSocketClientHandler();
         socketMessageManager = new BaseSocketMessageManager();
         stringHandler = new BaseStringHandler();
+        scheduler = Executors.newScheduledThreadPool(1);
+    }
+
+    private void scheduleConnecting() {
+        scheduler.scheduleAtFixedRate(() -> connectToSocket(), 0, 3, TimeUnit.SECONDS);
+        alertConnecting();
     }
 
     private long getServerManagerDelayMillis() {
@@ -78,22 +89,33 @@ public class Base {
         return delay;
     }
 
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        if (this.connected && ! connected) alertConnecting();
+        this.connected = connected;
+    }
+
+    public void alertConnecting() {
+        info("Connecting to BungeeCord...");
+    }
+
     public void connectToSocket() {
+        if (isConnected()) return;
         try {
             getSocketClient().init(getBungeeSocketIP(), getBungeeSocketPort());
+            setConnected(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            setConnected(false);
         }
     }
 
     public void onSocketDisconnect() {
-        info("Disconnected from bungeecord. Reconnecting...");
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e2) {
-            severe("Please do not interrupt while waiting.");
-        }
-        connectToSocket();
+        if (isConnected()) info("Disconnected from bungeecord. Reconnecting...");
+        setConnected(false);
     }
 
     public String getFileName() {

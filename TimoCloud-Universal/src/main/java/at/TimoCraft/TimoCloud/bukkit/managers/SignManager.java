@@ -3,10 +3,14 @@ package at.TimoCraft.TimoCloud.bukkit.managers;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Colorable;
 
 import java.io.File;
 import java.util.*;
@@ -59,8 +63,8 @@ public class SignManager {
         for (Location location : locations) {
             writeSign(location, signs.get(location), false);
         }
-        ArrayList<String> strings = new ArrayList<>(dynamicSigns.keySet());
-        for (String group : strings) {
+        ArrayList<String> groups = new ArrayList<>(dynamicSigns.keySet());
+        for (String group : groups) {
             int i = 0;
             List<Location> dynamicLocations = (ArrayList) ((ArrayList) dynamicSigns.get(group)).clone();
             for (Location location : dynamicLocations) {
@@ -123,11 +127,13 @@ public class SignManager {
     }
 
     private boolean isGroup(String name) {
-        if (! name.contains("-")) return true;
+        if (!name.contains("-")) return true;
         try {
-            Integer.parseInt(name.split("-")[name.split("-").length-1]);
+            Integer.parseInt(name.split("-")[name.split("-").length - 1]);
             return false;
-        } catch (Exception e) {return true;}
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     public void addSign(String name, Location location) {
@@ -174,9 +180,12 @@ public class SignManager {
             TimoCloudBukkit.log("Sign at " + block.getLocation() + " does not exist. This is a fatal error and should never happen. Please report this.");
             return;
         }
+
+        String serverState = TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server);
+
         for (int i = 0; i < 4; i++) {
             try {
-                sign.setLine(i, replace(layoutsConfig.getString(ServerToGroupUtil.getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1)), server));
+                sign.setLine(i, replace(layoutsConfig.getString(ServerToGroupUtil.getGroupByServer(server) + ".layouts." + serverState + "." + (i + 1)), server));
             } catch (Exception e) {
                 TimoCloudBukkit.log("Could not find layout " + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + " in group " + ServerToGroupUtil.getGroupByServer(server));
                 System.out.println(ServerToGroupUtil.getGroupByServer(server) + ".layouts." + TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server) + "." + (i + 1));
@@ -184,6 +193,28 @@ public class SignManager {
             }
         }
         sign.update();
+        //changeSignBlock(sign, serverState);
+    }
+
+    private void changeSignBlock(Sign sign, String state) {
+        if (!sign.getBlock().getType().equals(Material.WALL_SIGN)) return;
+        if (!TimoCloudBukkit.getInstance().getFileManager().getSignBlocks().getKeys(false).contains(state)) return;
+        String color = TimoCloudBukkit.getInstance().getFileManager().getSignBlocks().getString(state + ".color");
+        Block behind = getBlockBehindSign(sign.getBlock());
+        behind.setType(Material.CLAY);
+    }
+
+    private Block getBlockBehindSign(Block signBlock){
+        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) signBlock.getState();
+        if(! signBlock.getType().equals(org.bukkit.Material.WALL_SIGN)) return null;
+        switch (sign.getFacing()) {
+            case NORTH: return signBlock.getLocation().clone().add(0, 0, -1).getBlock();
+            case SOUTH: return signBlock.getLocation().clone().add(0, 0, 1).getBlock();
+            case EAST: return signBlock.getLocation().clone().add(1, 0, 0).getBlock();
+            case WEST: return signBlock.getLocation().clone().add(-1, 0, 0).getBlock();
+            default: TimoCloudBukkit.log("Error: Unknown sign facing: " + sign.getFacing() + ". Please report this.");
+        }
+        return null;
     }
 
     public String replace(String string, String server) {

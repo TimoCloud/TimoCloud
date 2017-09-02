@@ -47,23 +47,24 @@ public class BaseServerManager {
     private void startServer(BaseServerObject server) {
         Base.info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
-
-        File templatesDir = new File(Base.getInstance().getFileManager().getTemplatesDirectory() + server.getGroup());
+        File templatesDir = new File((server.isStatic() ? Base.getInstance().getFileManager().getStaticDirectory() : Base.getInstance().getFileManager().getTemplatesDirectory()), server.getGroup());
         boolean randomMap = false;
         String mapName = "default";
-        if (! templatesDir.exists()) {
-            templatesDir = getRandomServer(server.getGroup());
-            randomMap = true;
-            mapName = "";
-            if (templatesDir.getName() == null) {
-                Base.severe("Could not start server " + server.getName() + ": No template called " + server.getName() + " found.");
-                return;
-            }
-            String[] splitted = templatesDir.getName().split("_");
-            for (int i = 1; i<splitted.length; i++) {
-                mapName += splitted[i];
-                if (i < splitted.length-1) {
-                    mapName += "_";
+        if (! server.isStatic()) {
+            if (!templatesDir.exists()) {
+                templatesDir = getRandomServer(server.getGroup());
+                randomMap = true;
+                mapName = "";
+                if (templatesDir.getName() == null) {
+                    Base.severe("Could not start server " + server.getName() + ": No template called " + server.getName() + " found.");
+                    return;
+                }
+                String[] splitted = templatesDir.getName().split("_");
+                for (int i = 1; i < splitted.length; i++) {
+                    mapName += splitted[i];
+                    if (i < splitted.length - 1) {
+                        mapName += "_";
+                    }
                 }
             }
         }
@@ -72,12 +73,11 @@ public class BaseServerManager {
             Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist.");
             return;
         }
+        File directory = null;
         try {
-            File directory = new File(Base.getInstance().getFileManager().getTemporaryDirectory() + server.getName());
-            if (directory.exists() && !server.isStatic()) {
-                FileDeleteStrategy.FORCE.deleteQuietly(directory);
-            }
-            if ((!server.isStatic()) || ! directory.exists()) {
+            directory = server.isStatic() ? templatesDir : new File(Base.getInstance().getFileManager().getTemporaryDirectory() + server.getName());
+            if (! server.isStatic()) {
+                if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
                 FileUtils.copyDirectory(templatesDir, directory);
             }
             File plugin = new File(new File(directory, "/plugins/"), Base.getInstance().getFileName());
@@ -102,7 +102,7 @@ public class BaseServerManager {
                 }
             }
             double millisNow = System.currentTimeMillis();
-            Base.getInstance().info("Successfully started server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
+            Base.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
         } catch (Exception e) {
             Base.severe("Error while starting server " + server.getName() + ":");
             e.printStackTrace();
@@ -110,8 +110,7 @@ public class BaseServerManager {
 
         ProcessBuilder pb = new ProcessBuilder(
                 "/bin/bash", "-c",
-                "cd " + new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName()).getAbsolutePath() + " &&" +
-                        " screen -mdS " + server.getName() +
+                        "screen -mdS " + server.getName() +
                         " java -server " +
                         " -Xmx" + server.getRam() + "M" +
                         " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
@@ -124,7 +123,7 @@ public class BaseServerManager {
                         " -Dtimocloud-token=" + server.getToken() +
                         " -Dtimocloud-template=" + templatesDir.getAbsolutePath() +
                         " -jar spigot.jar -o false -h 0.0.0.0 -p " + server.getPort()
-        ).directory(new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName()));
+        ).directory(directory);
         try {
             Process process = pb.start();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));

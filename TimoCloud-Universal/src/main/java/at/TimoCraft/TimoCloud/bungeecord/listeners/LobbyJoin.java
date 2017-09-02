@@ -28,7 +28,7 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
-        if (! TimoCloud.getInstance().getFileManager().getConfig().getBoolean("loginOnLobby")) {
+        if (! TimoCloud.getInstance().getFileManager().getConfig().getBoolean("useFallback")) {
             return;
         }
         pending.put(event.getPlayer().getUniqueId(), true);

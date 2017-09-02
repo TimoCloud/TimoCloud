@@ -6,7 +6,7 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
-import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
+import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,7 +19,7 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
 
-    private Map<Channel, TemporaryServer> serverChannels = new HashMap<>();
+    private Map<Channel, Server> serverChannels = new HashMap<>();
     private Map<Channel, BaseObject> baseChannels = new HashMap<>();
 
     public void sendMessage(Channel channel, String server, String type, Object data) {
@@ -47,7 +47,7 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         Channel channel = ctx.channel();
         if (serverChannels.containsKey(channel)) {
-            TemporaryServer server = serverChannels.get(channel);
+            Server server = serverChannels.get(channel);
             if (server == null) {
                 return;
             }
@@ -66,7 +66,7 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
         ctx.close();
     }
 
-    public TemporaryServer getByChannel(Channel channel) {
+    public Server getByChannel(Channel channel) {
         return serverChannels.get(channel);
     }
 
@@ -82,7 +82,7 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
         TimoCloud.severe("Tried to remove not existing channel " + channel);
     }
 
-    public Map<Channel, TemporaryServer> getServerChannels() {
+    public Map<Channel, Server> getServerChannels() {
         return serverChannels;
     }
 

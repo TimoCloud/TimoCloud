@@ -1,7 +1,8 @@
 prefix: '&6[&bTimo&fCloud&6]'
 socket-port: 5000
-fallback: 'ws1'
-loginOnLobby: true
+fallbackGroup: 'Lobby'
+useFallback: true
+emergencyFallback: 'Economy'
 allowedIPs:
 - 127.0.0.1
 lobbyCommands:

@@ -21,6 +21,8 @@ public class BukkitFileManager {
     private FileConfiguration dynamicSigns;
     private File signLayoutsFile;
     private FileConfiguration signLayouts;
+    private File signBlocksFile;
+    private FileConfiguration signBlocks;
 
     public BukkitFileManager() {
         init();
@@ -55,6 +57,12 @@ public class BukkitFileManager {
             }
             signLayouts = YamlConfiguration.loadConfiguration(signLayoutsFile);
 
+            signBlocksFile = new File(path, "signBlocks.yml");
+            if (!signBlocksFile.exists()) {
+                signBlocksFile.createNewFile();
+            }
+            signBlocks = YamlConfiguration.loadConfiguration(signBlocksFile);
+
             config.options().copyDefaults(true);
             config.addDefault("prefix", "&6[&bTimo&fCloud&6]");
             config.addDefault("updateSignsInServerTicks", 45L);
@@ -64,6 +72,13 @@ public class BukkitFileManager {
             config.addDefault("PlayersToState.full", "FULL");
             TimoCloudBukkit.getInstance().setPrefix(config.getString("prefix"));
             config.save(configFile);
+
+            signBlocks.options().copyDefaults(true);
+            signBlocks.addDefault("ONLINE.type", "STAINED_CLAY");
+            signBlocks.addDefault("ONLINE.dataValue", 5);
+            signBlocks.addDefault("OFFLINE.type", "STAINED_CLAY");
+            signBlocks.addDefault("OFFLINE.dataValue", 14);
+            signBlocks.save(signBlocksFile);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -107,4 +122,11 @@ public class BukkitFileManager {
         return dynamicSigns;
     }
 
+    public File getSignBlocksFile() {
+        return signBlocksFile;
+    }
+
+    public FileConfiguration getSignBlocks() {
+        return signBlocks;
+    }
 }

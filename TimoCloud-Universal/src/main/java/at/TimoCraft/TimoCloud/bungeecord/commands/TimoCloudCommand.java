@@ -4,7 +4,7 @@ import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeMessageManager;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.ServerGroup;
-import at.TimoCraft.TimoCloud.bungeecord.objects.TemporaryServer;
+import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
@@ -64,7 +64,7 @@ public class TimoCloudCommand extends Command {
                 BungeeMessageManager.sendMessage(sender, "&6Groups (" + groups.size() + "):");
                 for (ServerGroup group : groups) {
                     BungeeMessageManager.sendMessage(sender, "  &b" + group.getName() + " &e(&7RAM: &6" + group.getRam() + (group.getRam() < 128 ? "G" : "M") + "&e, &7Amount: &6" + group.getStartupAmount() + "&e)");
-                    for (TemporaryServer server : group.getTemporaryServers()) {
+                    for (Server server : group.getRunningServers()) {
                         BungeeMessageManager.sendMessage(sender, "    &b" + server.getName() +
                                 " &b(&6State: &e" + server.getState() + "&b) " +
                                 (server.getMap().equals("") ? "" : (" &b(&6Map: &e" + server.getMap() + "&b)")));
@@ -92,7 +92,7 @@ public class TimoCloudCommand extends Command {
                 return;
             }
             if (args[0].equalsIgnoreCase("stopserver") || args[0].equalsIgnoreCase("restartserver")) {
-                TemporaryServer server = TimoCloud.getInstance().getServerManager().getServerByName(args[1]);
+                Server server = TimoCloud.getInstance().getServerManager().getServerByName(args[1]);
                 if (server == null) {
                     BungeeMessageManager.sendMessage(sender, "&cServer &e" + args[1] + " &cdoes not exist.");
                     return;

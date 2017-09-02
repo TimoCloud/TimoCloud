@@ -11,8 +11,6 @@ public class BaseServerObject {
     private String group;
     private String token;
 
-    public BaseServerObject() {}
-
     public BaseServerObject(String name, int port, int ram, boolean isStatic, String group, String token) {
         this.name = name;
         this.port = port;
