@@ -1,8 +1,11 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
+import at.TimoCraft.TimoCloud.api.objects.GroupObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,17 +21,26 @@ public class Group {
     private boolean isStatic;
     private String baseName;
     private BaseObject base;
+    private List<String> sortOutStates;
 
-    public Group(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName) {
-        this.name = name;
-        this.startupAmount = startupAmount;
-        this.maxAmount = maxAmount;
-        this.ram = ram;
-        if (ram == 0) {
-            TimoCloud.severe("Attention: Group " + name + " has 0MB Ram. (This won't work)");
+    public Group() {
+    }
+
+    public Group(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName, List<String> sortOutStates) {
+        construct(name, startupAmount, maxAmount, ram, isStatic, baseName, sortOutStates);
+    }
+
+    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName, List<String> sortOutStates) {
+        if (isStatic() && startupAmount > 1) {
+            TimoCloud.severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
+            return;
         }
-        this.isStatic = isStatic;
-        this.baseName = baseName;
+        this.name = name;
+        setStartupAmount(startupAmount);
+        setMaxAmount(maxAmount);
+        setRam(ram);
+        setStatic(isStatic);
+        setBaseName(baseName);
         setBase(TimoCloud.getInstance().getServerManager().getBase(baseName));
     }
 
@@ -63,7 +75,7 @@ public class Group {
             runningServers.add(server);
             return;
         }
-        TimoCloud.severe("Tried to add already existing server " + server);
+        TimoCloud.severe("Tried to add already existing server " + server + ". Please report this.");
     }
 
     public void addStartingServer(Server server) {
@@ -71,15 +83,11 @@ public class Group {
             startingServers.add(server);
             return;
         }
-        TimoCloud.severe("Tried to add already existing starting server " + server);
+        TimoCloud.severe("Tried to add already existing starting server " + server + ". Please report this.");
     }
 
     public void removeServer(Server server) {
-        if (runningServers.contains(server)) {
-            runningServers.remove(server);
-            return;
-        }
-        //TimoCloud.severe("Tried to remove not existing server " + server);
+        if (runningServers.contains(server)) runningServers.remove(server);
     }
 
     public List<Server> getStartingServers() {
@@ -103,11 +111,12 @@ public class Group {
     }
 
     public void setRam(int ram) {
+        if (ram == 0) TimoCloud.severe("Attention: Group " + name + " has 0MB Ram. (This won't work)");
         this.ram = ram;
     }
 
-    public void setStatic(boolean aStatic) {
-        isStatic = aStatic;
+    public void setStatic(boolean isStatic) {
+        this.isStatic = isStatic;
     }
 
     public boolean isStatic() {
@@ -130,13 +139,33 @@ public class Group {
         return baseName;
     }
 
+    public List<String> getSortOutStates() {
+        return sortOutStates;
+    }
+
+    public void setSortOutStates(List<String> sortOutStates) {
+        this.sortOutStates = sortOutStates;
+    }
+
+    public GroupObject toGroupObject() {
+        return new GroupObject(
+                Arrays.asList(startingServers.stream().map(Server::toServerObject).toArray(ServerObject[]::new)),
+                Arrays.asList(runningServers.stream().map(Server::toServerObject).toArray(ServerObject[]::new)),
+                getName(),
+                getStartupAmount(),
+                getMaxAmount(),
+                getRam(),
+                isStatic(),
+                getBaseName(),
+                getSortOutStates()
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Group that = (Group) o;
-
         return name.equals(that.name);
 
     }
@@ -150,4 +179,5 @@ public class Group {
     public String toString() {
         return getName();
     }
+
 }

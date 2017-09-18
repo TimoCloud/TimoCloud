@@ -9,6 +9,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,23 +28,7 @@ public class TimoCloudCommand extends Command {
                 sendVersion(sender);
                 return;
             }
-            if (!sender.hasPermission("timocloud.admin")) {
-                BungeeMessageManager.noPermission(sender);
-                return;
-            }
-            if (args[0].equalsIgnoreCase("reload")) {
-                TimoCloud.getInstance().getFileManager().load();
-                BungeeMessageManager.sendMessage(sender, "&aSuccessfully reloaded configs!");
-                return;
-            }
-            if (args[0].equalsIgnoreCase("version")) {
-                sendVersion(sender);
-                return;
-            }
-            if (args[0].equalsIgnoreCase("help")) {
-                sendHelp(sender);
-                return;
-            }
+
             if (args[0].equalsIgnoreCase("check")) {
                 String user = "%%__USER__%%", nonce = "%%__NONCE__%%";
                 if (user.startsWith("%%")) {
@@ -52,6 +37,25 @@ public class TimoCloudCommand extends Command {
                 }
                 BungeeMessageManager.sendMessage(sender, "&6Downloaded by &ehttps://www.spigotmc.org/members/" + user + "/");
                 BungeeMessageManager.sendMessage(sender, "&b" + nonce);
+                return;
+            }
+
+            if (!sender.hasPermission("timocloud.admin")) {
+                BungeeMessageManager.noPermission(sender);
+                return;
+            }
+            if (args[0].equalsIgnoreCase("reload")) {
+                TimoCloud.getInstance().getFileManager().load();
+                TimoCloud.getInstance().getServerManager().loadGroups();
+                BungeeMessageManager.sendMessage(sender, "&aSuccessfully reloaded from configuration!");
+                return;
+            }
+            if (args[0].equalsIgnoreCase("version")) {
+                sendVersion(sender);
+                return;
+            }
+            if (args[0].equalsIgnoreCase("help")) {
+                sendHelp(sender);
                 return;
             }
 
@@ -107,14 +111,14 @@ public class TimoCloudCommand extends Command {
                 int ram = Integer.parseInt(args[4]);
                 boolean isStatic = Boolean.parseBoolean(args[5]);
                 String base = args[6];
-                Group group = new Group(name, amount, maxAmount, ram, isStatic, base);
+                Group group = new Group(name, amount, maxAmount, ram, isStatic, base, new ArrayList<>());
 
                 if (TimoCloud.getInstance().getServerManager().groupExists(group)) {
                     BungeeMessageManager.sendMessage(sender, "&cThis group already exists.");
                     return;
                 }
                 try {
-                    TimoCloud.getInstance().getServerManager().updateGroup(group);
+                    TimoCloud.getInstance().getServerManager().saveGroup(group);
                 } catch (Exception e) {
                     BungeeMessageManager.sendMessage(sender, "&cError while saving groups.yml. See console for mor information.");
                     e.printStackTrace();
@@ -125,18 +129,18 @@ public class TimoCloudCommand extends Command {
                 String groupName = args[1];
                 Group group = TimoCloud.getInstance().getServerManager().getGroupByName(groupName);
                 if (group == null) {
-                    BungeeMessageManager.sendMessage(sender, "&cGroup &e" + groupName + " &cnot found. Try /timocloud listgroups");
+                    BungeeMessageManager.sendMessage(sender, "&cGroup &e" + groupName + " &cnot found. Get a list of all groups with §e/timocloud listgroups");
                     return;
                 }
                 String key = args[2];
                 switch (key.toLowerCase()) {
                     case "onlineamount":
                         group.setStartupAmount(Integer.parseInt(args[3]));
-                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        TimoCloud.getInstance().getServerManager().saveGroup(group);
                         break;
-                    case "maxAmount":
+                    case "maxamount":
                         group.setMaxAmount(Integer.parseInt(args[3]));
-                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        TimoCloud.getInstance().getServerManager().saveGroup(group);
                         break;
                     case "base":
                         String baseName = args[3];
@@ -146,17 +150,17 @@ public class TimoCloudCommand extends Command {
                             return;
                         }
                         group.setBase(base);
-                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        TimoCloud.getInstance().getServerManager().saveGroup(group);
                         break;
                     case "ram":
                         int ram = Integer.parseInt(args[3]);
                         group.setRam(ram);
-                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        TimoCloud.getInstance().getServerManager().saveGroup(group);
                         break;
                     case "static":
                         boolean isStatic = Boolean.parseBoolean(args[3]);
                         group.setStatic(isStatic);
-                        TimoCloud.getInstance().getServerManager().updateGroup(group);
+                        TimoCloud.getInstance().getServerManager().saveGroup(group);
                         break;
                     default:
                         BungeeMessageManager.sendMessage(sender, "&cNo valid argument found. Please use \n" +

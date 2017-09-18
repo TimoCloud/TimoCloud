@@ -2,6 +2,7 @@ package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -113,13 +114,8 @@ public class SignManager {
     public void setSigns(String name, List<Location> locations, boolean dynamic) {
         FileConfiguration config = dynamic ? dynamicSignsConfig : signsConfig;
         config.set(name + ".locations", locations);
-        File dir = new File("../../templates/" + ServerToGroupUtil.getGroupByServer(TimoCloudBukkit.getInstance().getServerName()) + "/plugins/TimoCloud/");
-        File signs = new File(dir, dynamic ? "dynamicSigns.yml" : "signs.yml");
-        dir.mkdirs();
+        File signs = dynamic ? TimoCloudBukkit.getInstance().getFileManager().getDynamicSignsFile() : TimoCloudBukkit.getInstance().getFileManager().getSignsFile();
         try {
-            if (!signs.exists()) {
-                signs.createNewFile();
-            }
             config.save(signs);
         } catch (Exception e) {
             e.printStackTrace();
@@ -176,11 +172,6 @@ public class SignManager {
 
         Sign sign = (Sign) state;
 
-        if (sign == null) {
-            TimoCloudBukkit.log("Sign at " + block.getLocation() + " does not exist. This is a fatal error and should never happen. Please report this.");
-            return;
-        }
-
         String serverState = TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server);
 
         for (int i = 0; i < 4; i++) {
@@ -218,15 +209,14 @@ public class SignManager {
     }
 
     public String replace(String string, String server) {
-        return string
+        return ChatColor.translateAlternateColorCodes('&', string
                 .replace("%server_name%", server)
                 .replace("%current_players%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getCurrentPlayers(server) + "")
                 .replace("%max_players%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMaxPlayers(server) + "")
                 .replace("%state%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getState(server))
                 .replace("%extra%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getExtra(server))
                 .replace("%motd%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMotd(server))
-                .replace("%map%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMap(server))
-                .replace("&", "§");
+                .replace("%map%", TimoCloudBukkit.getInstance().getOtherServerPingManager().getMap(server)));
     }
 
     public Map<Location, String> getSigns() {

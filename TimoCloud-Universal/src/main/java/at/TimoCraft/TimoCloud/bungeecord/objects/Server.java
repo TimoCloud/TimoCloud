@@ -1,5 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
+import at.TimoCraft.TimoCloud.api.objects.GroupObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -180,5 +182,19 @@ public class Server {
 
     public String getToken() {
         return token;
+    }
+
+    public ServerObject toServerObject() {
+        return new ServerObject(
+                getName(),
+                null,
+                getState(),
+                getExtra(),
+                getMotd(),
+                getMap(),
+                getCurrentPlayers(),
+                getMaxPlayers(),
+                getServerInfo().getAddress()
+        );
     }
 }
