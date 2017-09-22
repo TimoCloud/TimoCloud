@@ -2,23 +2,19 @@ package at.TimoCraft.TimoCloud.bukkit;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
 import at.TimoCraft.TimoCloud.bukkit.api.TimoCloudBukkitAPIImplementation;
+import at.TimoCraft.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import at.TimoCraft.TimoCloud.bukkit.commands.SendBungeeCommand;
 import at.TimoCraft.TimoCloud.bukkit.commands.SignsCommand;
 import at.TimoCraft.TimoCloud.bukkit.commands.TimoCloudBukkitCommand;
-import at.TimoCraft.TimoCloud.bukkit.listeners.PlayerInteract;
-import at.TimoCraft.TimoCloud.bukkit.listeners.PlayerJoin;
-import at.TimoCraft.TimoCloud.bukkit.listeners.PlayerQuit;
-import at.TimoCraft.TimoCloud.bukkit.listeners.SignChange;
-import at.TimoCraft.TimoCloud.bukkit.managers.BukkitFileManager;
-import at.TimoCraft.TimoCloud.bukkit.managers.OtherServerPingManager;
-import at.TimoCraft.TimoCloud.bukkit.managers.SignManager;
-import at.TimoCraft.TimoCloud.bukkit.managers.StateByEventManager;
+import at.TimoCraft.TimoCloud.bukkit.listeners.*;
+import at.TimoCraft.TimoCloud.bukkit.managers.*;
 import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import at.TimoCraft.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -41,17 +37,20 @@ public class TimoCloudBukkit extends JavaPlugin {
     private String prefix = "[TimoCloud]";
 
     public static void log(String message) {
-        Bukkit.getConsoleSender().sendMessage(getInstance().getPrefix() + message.replace("&", "§"));
+        BukkitMessageManager.sendMessage(Bukkit.getConsoleSender(), message);
     }
 
     @Override
     public void onEnable() {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',
+                "&eEnabling &bTimoCloud &oBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e..."));
         makeInstances();
         registerCommands();
         registerListeners();
         registerTasks();
         registerChannel();
         TimoCloudAPI.setBukkitImplementation(new TimoCloudBukkitAPIImplementation());
+        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBukkitImplementation());
         log("&ahas been enabled!");
     }
 
@@ -69,10 +68,10 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public void onSocketDisconnect() {
         log("Disconnected from TimoCloud. Stopping server.");
-        kill();
+        stop();
     }
 
-    private void kill() {
+    private void stop() {
         if (isStatic()) {
             Bukkit.shutdown();
         } else {
@@ -103,20 +102,23 @@ public class TimoCloudBukkit extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
+        Bukkit.getPluginManager().registerEvents(new BlockPlace(), this);
     }
 
     private void registerChannel() {
         Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
-    public void sendPlayerToServer(Player p, String server) {
+    public void sendPlayerToServer(Player player, String server) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         try {
             out.writeUTF("Connect");
             out.writeUTF(server);
         } catch (Exception e) {
+            log("&cError while sending player &e" +  player + " &c to server &e" + server + "&c. Please report this: ");
+            e.printStackTrace();
         }
-        p.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+        player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 
     public boolean isRandomMap() {
@@ -124,7 +126,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public boolean isStatic() {
-        return Boolean.getBoolean("static");
+        return Boolean.getBoolean("timocloud-static");
     }
 
     public String getBungeeIP() {
@@ -135,8 +137,12 @@ public class TimoCloudBukkit extends JavaPlugin {
         return Integer.parseInt(System.getProperty("timocloud-bungeecordhost").split(":")[1]);
     }
 
-    public File getTemplate() {
-        return new File(System.getProperty("timocloud-template"));
+    public File getTemplateDirectory() {
+        return new File(System.getProperty("timocloud-templatedirectory"));
+    }
+
+    public File getTemporaryDirectory() {
+        return new File(System.getProperty("timocloud-temporarydirectory"));
     }
 
     private void registerTasks() {
@@ -154,7 +160,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             sendEverything();
             getOtherServerPingManager().requestEverything();
             getSignManager().updateSigns();
-        }, 20L, getFileManager().getConfig().getLong("updateSignsInServerTicks"));
+        }, 1L, 1L);
     }
 
     public void sendEverything() {
@@ -202,7 +208,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public void setPrefix(String prefix) {
-        this.prefix = prefix.replace("&", "§") + " ";
+        this.prefix = ChatColor.translateAlternateColorCodes('&', prefix) + " ";
     }
 
     public BukkitSocketClientHandler getSocketClientHandler() {

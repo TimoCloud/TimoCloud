@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bukkit.commands;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import at.TimoCraft.TimoCloud.bukkit.managers.BukkitMessageManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,7 @@ public class SignsCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!sender.hasPermission("timocloud.command.signs")) {
-            sender.sendMessage(TimoCloudBukkit.getInstance().getPrefix() + "§cYou don´t have any permission to do that!");
+            BukkitMessageManager.sendMessage(sender, "&cYou don´t have any permission to do that!");
             return false;
         }
         if (args.length < 1) {
@@ -23,7 +24,7 @@ public class SignsCommand implements CommandExecutor {
         if (args[0].equalsIgnoreCase("reload")) {
             TimoCloudBukkit.getInstance().getFileManager().init();
             TimoCloudBukkit.getInstance().getSignManager().load();
-            sender.sendMessage("§aSuccessfully reloaded signs.");
+            BukkitMessageManager.sendMessage(sender, "&aSuccessfully reloaded signs.");
         }
         return false;
     }

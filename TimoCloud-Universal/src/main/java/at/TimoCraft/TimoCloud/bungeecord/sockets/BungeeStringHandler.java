@@ -1,12 +1,20 @@
 package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
+import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.objects.GroupObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -14,8 +22,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Timo on 29.12.16.
@@ -73,10 +81,6 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
         Server requestedServer = null;
         if (! type.toLowerCase().startsWith("base")) {
             server = TimoCloud.getInstance().getServerManager().getServerByName(serverName);
-            if (server == null) {
-                channel.close();
-                return;
-            }
             requestedServer = TimoCloud.getInstance().getServerManager().getServerByName(data);
         }
         switch (type) {
@@ -103,6 +107,18 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 BaseObject base = new BaseObject(serverName, address, channel);
                 TimoCloud.getInstance().getSocketServerHandler().getBaseChannels().put(channel, base);
                 TimoCloud.getInstance().getServerManager().addBase(serverName, base);
+                break;
+            case "GETAPIDATA":
+                JSONArray groups = new JSONArray();
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+                objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                try {
+                    for (GroupObject groupObject : TimoCloudAPI.getUniversalInstance().getGroups()) groups.add(objectMapper.writeValueAsString(groupObject));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, "APIDATA", groups.toJSONString());
                 break;
             case "SETSTATE":
                 server.setState(data);

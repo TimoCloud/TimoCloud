@@ -4,8 +4,8 @@ import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Timo on 28.12.16.
@@ -32,12 +32,17 @@ public class OtherServerPingManager {
     }
 
     public void requestEverything() {
+        requestApiData();
         requestStates();
         requestExtras();
         requestMotds();
         requestMaps();
         requestPlayers();
         requestServers();
+    }
+
+    public void requestApiData() {
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETAPIDATA", null);
     }
 
     public void requestStates() {

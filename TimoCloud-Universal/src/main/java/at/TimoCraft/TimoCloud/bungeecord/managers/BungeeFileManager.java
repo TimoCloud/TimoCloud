@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.managers;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -46,7 +47,7 @@ public class BungeeFileManager {
             groupsFile = new File(configsDirectory, "groups.yml");
             groupsFile.createNewFile();
             groups = ConfigurationProvider.getProvider(YamlConfiguration.class).load(groupsFile);
-            TimoCloud.getInstance().setPrefix(config.getString("prefix").replace("&", "§") + " ");
+            TimoCloud.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
 
             //Delete old scripts folder which is no longer needed
             File scripts = new File(pluginsDirectory, "scripts/");

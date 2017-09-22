@@ -7,9 +7,9 @@ import at.TimoCraft.TimoCloud.utils.TimeUtil;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -47,19 +47,19 @@ public class BaseServerManager {
     private void startServer(BaseServerObject server) {
         Base.info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
-        File templatesDir = new File((server.isStatic() ? Base.getInstance().getFileManager().getStaticDirectory() : Base.getInstance().getFileManager().getTemplatesDirectory()), server.getGroup());
+        File templateDirectory = new File((server.isStatic() ? Base.getInstance().getFileManager().getStaticDirectory() : Base.getInstance().getFileManager().getTemplatesDirectory()), server.getGroup());
+        if (! templateDirectory.exists()) {
+            Base.severe("Could not start server " + server.getName() + ": No template called " + server.getGroup() + " found. Please make sure the directory " + templateDirectory.getAbsolutePath() + " exists. (Put your minecraft server in there)");
+            return;
+        }
         boolean randomMap = false;
         String mapName = "default";
-        if (! server.isStatic()) {
-            if (!templatesDir.exists()) {
-                templatesDir = getRandomServer(server.getGroup());
+        if (!server.isStatic()) {
+            if (!templateDirectory.exists()) {
+                templateDirectory = getRandomServer(server.getGroup());
                 randomMap = true;
                 mapName = "";
-                if (templatesDir == null || ! templatesDir.exists()) {
-                    Base.severe("Could not start server " + server.getName() + ": No template called " + server.getName() + " found. Please make sure the directory " + templatesDir.getAbsolutePath() + " exists.");
-                    return;
-                }
-                String[] splitted = templatesDir.getName().split("_");
+                String[] splitted = templateDirectory.getName().split("_");
                 for (int i = 1; i < splitted.length; i++) {
                     mapName += splitted[i];
                     if (i < splitted.length - 1) {
@@ -68,19 +68,22 @@ public class BaseServerManager {
                 }
             }
         }
-        File spigot = new File(templatesDir, "spigot.jar");
+
+        File spigot = new File(templateDirectory, "spigot.jar");
         if (!spigot.exists()) {
-            Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigot.getAbsolutePath() + " exists (case sensitive!).");
+            Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigot.getAbsolutePath() + " exists (case sensitive!)");
             return;
         }
-        File directory = null;
+        File temporaryDirectory = null;
         try {
-            directory = server.isStatic() ? templatesDir : new File(Base.getInstance().getFileManager().getTemporaryDirectory() + server.getName());
-            if (! server.isStatic()) {
-                if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
-                FileUtils.copyDirectory(templatesDir, directory);
+            temporaryDirectory = server.isStatic() ? templateDirectory : new File(Base.getInstance().getFileManager().getTemporaryDirectory() + server.getName());
+            if (!server.isStatic()) {
+                if (temporaryDirectory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(temporaryDirectory);
+                FileUtils.copyDirectory(templateDirectory, temporaryDirectory);
             }
-            File plugin = new File(new File(directory, "/plugins/"), Base.getInstance().getFileName());
+            File plugins = new File(temporaryDirectory, "/plugins/");
+            plugins.mkdirs();
+            File plugin = new File(plugins, "TimoCloud.jar");
             if (plugin.exists()) {
                 plugin.delete();
             }
@@ -96,13 +99,16 @@ public class BaseServerManager {
             File pluginsDir = new File("plugins/");
             if (pluginsDir.exists() && pluginsDir.isDirectory()) {
                 for (File pl : pluginsDir.listFiles()) {
-                    File target = new File(directory, "plugins/" + pl.getName());
+                    File target = new File(temporaryDirectory, "plugins/" + pl.getName());
                     if (target.exists()) continue;
                     Files.copy(pl.toPath(), target.toPath());
                 }
             }
+
+            setProperty(new File(temporaryDirectory, "server.properties"), "online-mode", "false");
+
             double millisNow = System.currentTimeMillis();
-            Base.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
+            Base.info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
         } catch (Exception e) {
             Base.severe("Error while starting server " + server.getName() + ":");
             e.printStackTrace();
@@ -110,7 +116,7 @@ public class BaseServerManager {
 
         ProcessBuilder pb = new ProcessBuilder(
                 "/bin/bash", "-c",
-                        "screen -mdS " + server.getName() +
+                "screen -mdS " + server.getName() +
                         " java -server " +
                         " -Xmx" + server.getRam() + "M" +
                         " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
@@ -121,18 +127,34 @@ public class BaseServerManager {
                         " -Dtimocloud-servername=" + server.getName() +
                         " -Dtimocloud-static=" + server.isStatic() +
                         " -Dtimocloud-token=" + server.getToken() +
-                        " -Dtimocloud-template=" + templatesDir.getAbsolutePath() +
+                        " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
+                        " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
                         " -jar spigot.jar -o false -h 0.0.0.0 -p " + server.getPort()
-        ).directory(directory);
+        ).directory(temporaryDirectory);
         try {
-            Process process = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                Base.severe("Got response when starting server. Please report this: " + line);
-            }
+            pb.start();
+            Base.info("Successfully started screen session " + server.getName() + ".");
         } catch (Exception e) {
             Base.severe("Error while starting server " + server.getName() + ":");
+            e.printStackTrace();
+        }
+    }
+
+    private void setProperty(File file, String property, String value) {
+        try {
+            file.createNewFile();
+
+            FileInputStream in = new FileInputStream(file);
+            Properties props = new Properties();
+            props.load(in);
+            in.close();
+
+            FileOutputStream out = new FileOutputStream(file);
+            props.setProperty(property, value);
+            props.store(out, null);
+            out.close();
+        } catch (Exception e) {
+            Base.severe("Error while setting property '" + property + "' to value '" + value + "' in file " + file.getAbsolutePath() + ":");
             e.printStackTrace();
         }
     }
@@ -141,7 +163,7 @@ public class BaseServerManager {
         File templates = new File(Base.getInstance().getFileManager().getTemplatesDirectory());
         List<File> valid = new ArrayList<>();
         for (File sub : templates.listFiles()) {
-            if (! sub.isDirectory() || ! sub.getName().startsWith(group + "_")) {
+            if (!sub.isDirectory() || !sub.getName().startsWith(group + "_")) {
                 continue;
             }
             valid.add(sub);

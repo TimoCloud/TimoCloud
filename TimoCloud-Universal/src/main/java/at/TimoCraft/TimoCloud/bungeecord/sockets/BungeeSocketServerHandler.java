@@ -22,12 +22,27 @@ public class BungeeSocketServerHandler extends ChannelInboundHandlerAdapter {
     private Map<Channel, Server> serverChannels = new HashMap<>();
     private Map<Channel, BaseObject> baseChannels = new HashMap<>();
 
+    public void sendMessage(Channel channel, String type, Object data) {
+        try {
+            channel.writeAndFlush(getJSON(type, data));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendMessage(Channel channel, String server, String type, Object data) {
         try {
             channel.writeAndFlush(getJSON(server, type, data));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public String getJSON(String type, Object data) {
+        JSONObject json = new JSONObject();
+        json.put("type", type);
+        json.put("data", data);
+        return json.toString();
     }
 
     public String getJSON(String server, String type, Object data) {

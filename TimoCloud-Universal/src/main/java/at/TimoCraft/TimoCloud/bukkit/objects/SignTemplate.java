@@ -1,27 +1,25 @@
 package at.TimoCraft.TimoCloud.bukkit.objects;
 
-import java.util.List;
+import java.util.Map;
 
 public class SignTemplate {
     private String name;
-    private List<SignLayout> layouts;
-    private long updateSpeed;
+    private Map<String, SignLayout> layouts;
 
-    public SignTemplate(String name, List<SignLayout> layouts, long updateSpeed) {
+    public SignTemplate(String name, Map<String, SignLayout> layouts) {
         this.name = name;
         this.layouts = layouts;
-        this.updateSpeed = updateSpeed;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<SignLayout> getLayouts() {
-        return layouts;
+    public SignLayout getLayout(String state) {
+        return layouts.containsKey(state) ? layouts.get(state) : layouts.get("Default");
     }
 
-    public long getUpdateSpeed() {
-        return updateSpeed;
+    public void addLayout(String name, SignLayout layout) {
+        layouts.put(name, layout);
     }
 }

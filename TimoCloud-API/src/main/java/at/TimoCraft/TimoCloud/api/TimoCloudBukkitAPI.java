@@ -2,7 +2,6 @@ package at.TimoCraft.TimoCloud.api;
 
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
 import java.util.List;
 
 /**

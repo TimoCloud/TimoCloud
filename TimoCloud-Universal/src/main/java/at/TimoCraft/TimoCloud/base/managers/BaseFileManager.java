@@ -3,10 +3,8 @@ package at.TimoCraft.TimoCloud.base.managers;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.nio.file.Files;
-import java.util.HashMap;
 import java.util.Map;
 
 /**

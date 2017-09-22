@@ -1,0 +1,122 @@
+package at.TimoCraft.TimoCloud.api.objects;
+
+import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+
+public class ServerObjectBasicImplementation implements ServerObject {
+
+    private String name;
+    private String group;
+    private String token;
+    protected String state;
+    protected String extra;
+    private String map;
+    private String motd;
+    private int currentPlayers;
+    private int maxPlayers;
+    private InetSocketAddress socketAddress;
+
+    public ServerObjectBasicImplementation() {}
+
+    public ServerObjectBasicImplementation(String name, String group, String token, String state, String extra, String map, String motd, int currentPlayers, int maxPlayers, InetSocketAddress socketAddress) {
+        this.name = name;
+        this.group = group;
+        this.token = token;
+        this.state = state;
+        this.extra = extra;
+        this.motd = motd;
+        this.map = map;
+        this.currentPlayers = currentPlayers;
+        this.maxPlayers = maxPlayers;
+        this.socketAddress = socketAddress;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public GroupObject getGroup() {
+        System.out.println("Group of " + name + ": " + group);
+        return TimoCloudAPI.getUniversalInstance().getGroup(group);
+    }
+
+    @Override
+    public String getGroupName() {
+        return group;
+    }
+
+    protected void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    @Override
+    public String getState() {
+        return state;
+    }
+
+    @Override
+    public void setState(String state) {}
+
+    @Override
+    public String getExtra() {
+        return extra;
+    }
+
+    @Override
+    public void setExtra(String extra) {}
+
+    @Override
+    public String getMap() {
+        return map;
+    }
+
+    @Override
+    public String getMotd() {
+        return motd;
+    }
+
+    @Override
+    public int getCurrentPlayers() {
+        return currentPlayers;
+    }
+
+    @Override
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    @Override
+    public InetSocketAddress getSocketAddress() {
+        return socketAddress;
+    }
+
+    @Override
+    public InetAddress getIpAddress() {
+        return getSocketAddress().getAddress();
+    }
+
+    @Override
+    public int getPort() {
+        return getSocketAddress().getPort();
+    }
+
+    @Override
+    public boolean isSortedOut() {
+        return getGroup().getSortOutStates().contains(getState());
+    }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
+
+}

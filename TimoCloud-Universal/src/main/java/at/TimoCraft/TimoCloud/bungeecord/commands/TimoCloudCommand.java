@@ -67,7 +67,19 @@ public class TimoCloudCommand extends Command {
                 }
                 BungeeMessageManager.sendMessage(sender, "&6Groups (" + groups.size() + "):");
                 for (Group group : groups) {
-                    BungeeMessageManager.sendMessage(sender, "  &b" + group.getName() + " &e(&7RAM: &6" + group.getRam() + (group.getRam() < 128 ? "G" : "M") + "&e, &7Amount: &6" + group.getStartupAmount() + "&e)");
+                    BungeeMessageManager.sendMessage(sender,
+                            "  &b" + group.getName() + " &e(&7RAM: &6" + group.getRam() + (group.getRam() < 128 ? "G" : "M") +
+                                    "&e, &7KeepOnline-Amount: &6" + group.getStartupAmount() +
+                                    "&e, &7static: &6" + group.isStatic() +
+                                    "&e)");
+                    BungeeMessageManager.sendMessage(sender, "&3Currently &estarting &3servers: &6" + group.getRunningServers().size());
+                    for (Server server : group.getStartingServers()) {
+                        BungeeMessageManager.sendMessage(sender, "    &7" + server.getName() + " (starting)" +
+                                " &b(&6State: &e" + server.getState() + "&b) " +
+                                (server.getMap().equals("") ? "" : (" &b(&6Map: &e" + server.getMap() + "&b)"))
+                        );
+                    }
+                    BungeeMessageManager.sendMessage(sender, "&3Currently &aonline &3servers: &6" + group.getRunningServers().size());
                     for (Server server : group.getRunningServers()) {
                         BungeeMessageManager.sendMessage(sender, "    &b" + server.getName() +
                                 " &b(&6State: &e" + server.getState() + "&b) " +

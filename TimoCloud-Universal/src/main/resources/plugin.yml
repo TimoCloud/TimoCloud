@@ -1,5 +1,5 @@
 name: TimoCloud
-version: ${project.version}
+version: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
 author: TimoCrafter
 main: at.TimoCraft.TimoCloud.a.a
 commands:

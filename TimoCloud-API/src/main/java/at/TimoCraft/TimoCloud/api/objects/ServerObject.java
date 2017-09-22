@@ -7,78 +7,36 @@ import java.net.InetSocketAddress;
 /**
  * Created by Timo on 02.09.17.
  */
-public class ServerObject implements Serializable {
-    private String name;
-    private GroupObject group;
-    private String state;
-    private String extra;
-    private String motd;
-    private String map = "";
-    private int currentPlayers;
-    private int maxPlayers;
-    private InetSocketAddress socketAddress;
+public interface ServerObject extends Serializable {
 
-    public ServerObject(String name, GroupObject group, String state, String extra, String motd, String map, int currentPlayers, int maxPlayers, InetSocketAddress socketAddress) {
-        this.name = name;
-        this.group = group;
-        this.state = state;
-        this.extra = extra;
-        this.motd = motd;
-        this.map = map;
-        this.currentPlayers = currentPlayers;
-        this.maxPlayers = maxPlayers;
-        this.socketAddress = socketAddress;
-    }
+    String getName();
 
-    public String getName() {
-        return name;
-    }
+    GroupObject getGroup();
 
-    public GroupObject getGroup() {
-        return group;
-    }
+    String getGroupName();
 
-    protected void setGroup(GroupObject group) {
-        this.group = group;
-    }
+    String getState();
 
-    public String getState() {
-        return state;
-    }
+    void setState(String state);
 
-    public String getExtra() {
-        return extra;
-    }
+    String getExtra();
 
-    public String getMotd() {
-        return motd;
-    }
+    void setExtra(String extra);
 
-    public String getMap() {
-        return map;
-    }
+    String getMap();
 
-    public int getCurrentPlayers() {
-        return currentPlayers;
-    }
+    String getMotd();
 
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
+    int getCurrentPlayers();
 
-    public InetSocketAddress getSocketAddress() {
-        return socketAddress;
-    }
+    int getMaxPlayers();
 
-    public InetAddress getIpAddress() {
-        return getSocketAddress().getAddress();
-    }
+    InetSocketAddress getSocketAddress();
 
-    public int getPort() {
-        return getSocketAddress().getPort();
-    }
+    InetAddress getIpAddress();
 
-    public boolean isSortedOut() {
-        return getGroup().getSortOutStates().contains(getState());
-    }
+    int getPort();
+
+    boolean isSortedOut();
+
 }

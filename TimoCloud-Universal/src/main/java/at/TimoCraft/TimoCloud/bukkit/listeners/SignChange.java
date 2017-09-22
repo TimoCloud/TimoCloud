@@ -10,20 +10,26 @@ import org.bukkit.event.block.SignChangeEvent;
  */
 public class SignChange implements Listener {
 
+    private int parseIntOr0(String string) {
+        try {
+            return Integer.parseInt(string.trim());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     @EventHandler
     public void onSignChangeEvent(SignChangeEvent event) {
-        if (event.getLine(0).trim().equalsIgnoreCase("[TimoCloud]")) {
-            String server = event.getLine(1).trim();
-            if (server == null || server.equals("")) {
-                event.getPlayer().sendMessage(TimoCloudBukkit.getInstance().getPrefix() + "§cPlease specify a server at line 2");
+        if (TimoCloudBukkit.getInstance().getSignManager().signExists(event.getBlock().getLocation())) TimoCloudBukkit.getInstance().getSignManager().unlockSign(event.getBlock().getLocation());
+        if (event.getLine(0).trim().equalsIgnoreCase("[TimoCloud]") || TimoCloudBukkit.getInstance().getSignManager().signExists(event.getBlock().getLocation())) {
+            String target = event.getLine(1).trim();
+            if (target.equals("")) {
+                event.getPlayer().sendMessage(TimoCloudBukkit.getInstance().getPrefix() + "§cPlease specify a target (group or server) in line 2");
                 event.setCancelled(true);
                 return;
             }
-            if (server.equalsIgnoreCase("Spectate")) {
-
-                return;
-            }
-            TimoCloudBukkit.getInstance().getSignManager().addSign(server, event.getBlock().getLocation());
+            String template = event.getLine(2).trim();
+            TimoCloudBukkit.getInstance().getSignManager().addSign(event.getBlock().getLocation(), target, template, parseIntOr0(event.getLine(3)), event.getPlayer());
         }
     }
 }

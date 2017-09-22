@@ -19,10 +19,11 @@ public class GroupObject implements Serializable {
     private String base;
     private List<String> sortOutStates;
 
+    public GroupObject() {}
+
     public GroupObject(List<ServerObject> startingServers, List<ServerObject> runningServers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
         this.runningServers = runningServers;
         this.startingServers = startingServers;
-        for (ServerObject serverObject : getAllServers()) serverObject.setGroup(this);
         this.name = name;
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
@@ -74,4 +75,5 @@ public class GroupObject implements Serializable {
     public List<String> getSortOutStates() {
         return sortOutStates;
     }
+
 }

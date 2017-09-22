@@ -6,14 +6,17 @@ import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Timo on 27.12.16.
  */
 public class Group {
-    private List<Server> runningServers = new ArrayList<>();
+
     private List<Server> startingServers = new ArrayList<>();
+    private List<Server> runningServers = new ArrayList<>();
     private String name;
     private int startupAmount;
     private int maxAmount;
@@ -42,10 +45,7 @@ public class Group {
         setStatic(isStatic);
         setBaseName(baseName);
         setBase(TimoCloud.getInstance().getServerManager().getBase(baseName));
-    }
-
-    public List<Server> getRunningServers() {
-        return runningServers;
+        setSortOutStates(sortOutStates);
     }
 
     public String getName() {
@@ -79,6 +79,8 @@ public class Group {
     }
 
     public void addStartingServer(Server server) {
+        System.out.println("Added server " + server);
+        if (server == null) TimoCloud.severe("Fatal error: Tried to add server which is null. Please report this.");
         if (!startingServers.contains(server)) {
             startingServers.add(server);
             return;
@@ -94,6 +96,9 @@ public class Group {
         return startingServers;
     }
 
+    public List<Server> getRunningServers() {
+        return runningServers;
+    }
     public void setStartupAmount(int startupAmount) {
         this.startupAmount = startupAmount;
     }
@@ -148,9 +153,11 @@ public class Group {
     }
 
     public GroupObject toGroupObject() {
-        return new GroupObject(
-                Arrays.asList(startingServers.stream().map(Server::toServerObject).toArray(ServerObject[]::new)),
-                Arrays.asList(runningServers.stream().map(Server::toServerObject).toArray(ServerObject[]::new)),
+        //System.out.println(Arrays.toString(startingServers.toArray()));
+        //System.out.println(Arrays.toString(runningServers.toArray()));
+        GroupObject groupObject = new GroupObject(
+                startingServers.stream().map(Server::toServerObject).collect(Collectors.toList()),
+                runningServers.stream().map(Server::toServerObject).collect(Collectors.toList()),
                 getName(),
                 getStartupAmount(),
                 getMaxAmount(),
@@ -159,6 +166,9 @@ public class Group {
                 getBaseName(),
                 getSortOutStates()
         );
+        groupObject.getStartingServers().sort(Comparator.comparing(ServerObject::getName));
+        groupObject.getRunningServers().sort(Comparator.comparing(ServerObject::getName));
+        return groupObject;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package at.TimoCraft.TimoCloud.bungeecord;
 
 
+import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.commands.LobbyCommand;
 import at.TimoCraft.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.LobbyJoin;
@@ -9,10 +11,11 @@ import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeFileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeServerManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.concurrent.TimeUnit;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timo on 26.12.16.
@@ -28,17 +31,18 @@ public class TimoCloud extends Plugin {
     private boolean shuttingDown = false;
 
     public static void info(String message) {
-        getInstance().getLogger().info(" " + message.replace("&", "§"));
+        getInstance().getLogger().info(" " + ChatColor.translateAlternateColorCodes('&', message));
     }
 
     public static void severe(String message) {
-        getInstance().getLogger().severe(" " + message.replace("&", "§"));
+        getInstance().getLogger().severe(" " + ChatColor.translateAlternateColorCodes('&', message));
     }
 
     @Override
     public void onEnable() {
         instance = this;
-        getProxy().getScheduler().schedule(this, () -> enableDelayed(), 1, 0, TimeUnit.SECONDS);
+        info("&eEnabling &bTimoCloud &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+        getProxy().getScheduler().schedule(this, this::enableDelayed, 1, 0, TimeUnit.SECONDS);
     }
 
     private void enableDelayed() {
@@ -47,9 +51,10 @@ public class TimoCloud extends Plugin {
         registerListeners();
         registerTasks();
         getServerManager().init();
+        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
 
         info("&cPlease note that using TimoCloud without having bought it before is a crime. Do not give TimoCloud to anybody else, because you are responsible for everybody who uses the plugin with your download ID.");
-        info("Successfully started TimoCloud!");
+        info("&aSuccessfully started TimoCloud!");
     }
 
     @Override
@@ -85,7 +90,7 @@ public class TimoCloud extends Plugin {
                 e.printStackTrace();
             }
         });
-        getProxy().getScheduler().schedule(this, () -> everySecond(), 1L, 1L, TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, this::everySecond, 1L, 1L, TimeUnit.SECONDS);
     }
 
     private void everySecond() {

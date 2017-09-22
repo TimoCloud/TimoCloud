@@ -1,6 +1,5 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
-import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;

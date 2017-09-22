@@ -1,10 +1,14 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
+import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import at.TimoCraft.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
 import java.util.List;
 
 /**
@@ -49,6 +53,8 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
+            case "APIDATA":
+                ((TimoCloudUniversalAPIBukkitImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
             case "STATE":
                 TimoCloudBukkit.getInstance().getOtherServerPingManager().setState(server, (String) data);
                 break;

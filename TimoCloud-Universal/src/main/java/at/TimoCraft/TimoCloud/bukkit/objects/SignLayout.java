@@ -1,20 +1,28 @@
 package at.TimoCraft.TimoCloud.bukkit.objects;
 
+import java.util.List;
+
 public class SignLayout {
 
-    private String name;
-    private String[] lines;
+    private List<String>[] lines;
+    private long updateSpeed;
 
-    public SignLayout(String name, String[] lines) {
-        this.name = name;
+    public SignLayout() {}
+
+    public SignLayout(List<String>[] lines, long updateSpeed) {
         this.lines = lines;
+        this.updateSpeed = updateSpeed;
     }
 
-    public String getName() {
-        return name;
+    public List<String> getLine(int lineNumber) {
+        return lines[lineNumber];
     }
 
-    public String[] getLines() {
+    public List<String>[] getLines() {
         return lines;
+    }
+
+    public long getUpdateSpeed() {
+        return updateSpeed;
     }
 }

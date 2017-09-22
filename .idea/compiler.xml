@@ -22,7 +22,7 @@
       <module name="TimoCloud-universal" target="1.8" />
       <module name="TimoCloud-Universal" target="1.8" />
       <module name="TimoCloud_Bukkit" target="1.8" />
-      <module name="TimoCraft-API" target="1.5" />
+      <module name="TimoCraft-API" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

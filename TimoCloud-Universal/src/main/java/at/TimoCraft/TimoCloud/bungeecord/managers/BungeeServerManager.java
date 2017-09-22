@@ -237,6 +237,24 @@ public class BungeeServerManager {
         return null;
     }
 
+    public Server getServerByToken(String token) {
+        for (Group group : getGroups()) {
+            for (Server server : group.getStartingServers()) {
+                if (server == null) continue;
+                if (server.getToken().equals(token)) {
+                    return server;
+                }
+            }
+            for (Server server : group.getRunningServers()) {
+                if (server == null) continue;
+                if (server.getToken().equals(token)) {
+                    return server;
+                }
+            }
+        }
+        return null;
+    }
+
     public void checkEnoughOnline() {
         for (Group group : getGroups()) checkEnoughOnline(group);
     }

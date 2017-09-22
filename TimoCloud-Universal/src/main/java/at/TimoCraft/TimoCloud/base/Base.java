@@ -46,12 +46,16 @@ public class Base {
         return "[" + format.format(new Date()) + "] ";
     }
 
+    private static String formatLog(String message, String color) {
+        return (getTime() + getInstance().getPrefix() + color + message + ANSI_RESET);
+    }
+
     public static void info(String message) {
-        System.out.println(getTime() + getInstance().getPrefix() + message + ANSI_RESET);
+        System.out.println(formatLog(message, ANSI_RESET));
     }
 
     public static void severe(String message) {
-        System.err.println(getTime() + getInstance().getPrefix() + "\\e[0;31m" + message + ANSI_RESET);
+        System.err.println(formatLog(message, ANSI_RED));
     }
 
     public Base() {
@@ -60,8 +64,8 @@ public class Base {
 
     private void onEnable() {
         makeInstances();
-        scheduleConnecting();
         info(ANSI_GREEN + "has been enabled");
+        scheduleConnecting();
     }
 
     private void makeInstances() {
@@ -76,7 +80,7 @@ public class Base {
     }
 
     private void scheduleConnecting() {
-        scheduler.scheduleAtFixedRate(() -> connectToSocket(), 0, 3, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::connectToSocket, 0, 1, TimeUnit.SECONDS);
         alertConnecting();
     }
 
@@ -106,11 +110,13 @@ public class Base {
         if (isConnected()) return;
         try {
             getSocketClient().init(getBungeeSocketIP(), getBungeeSocketPort());
-            setConnected(true);
-        } catch (Exception e) {
-            //e.printStackTrace();
-            setConnected(false);
-        }
+        } catch (Exception e) {}
+    }
+
+    public void onSocketConnect() {
+        setConnected(true);
+        getSocketMessageManager().sendMessage("BASE_HANDSHAKE", null);
+        info("Successfully connected to BungeeCord socket!");
     }
 
     public void onSocketDisconnect() {

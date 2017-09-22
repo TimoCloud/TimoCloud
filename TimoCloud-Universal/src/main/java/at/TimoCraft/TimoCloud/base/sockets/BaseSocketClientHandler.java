@@ -6,9 +6,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by Timo on 28.12.16.
  */
@@ -20,8 +17,7 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         this.channel = ctx.channel();
-        Base.getInstance().getSocketMessageManager().sendMessage("BASE_HANDSHAKE", null);
-        Base.info("Successfully connected to bungee socket!");
+        Base.getInstance().onSocketConnect();
     }
 
     @Override

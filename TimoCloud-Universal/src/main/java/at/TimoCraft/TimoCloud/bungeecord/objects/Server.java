@@ -1,8 +1,9 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
-import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import at.TimoCraft.TimoCloud.bungeecord.api.ServerObjectBungeeImplementation;
 import io.netty.channel.Channel;
 import net.md_5.bungee.api.config.ServerInfo;
 
@@ -185,9 +186,10 @@ public class Server {
     }
 
     public ServerObject toServerObject() {
-        return new ServerObject(
+        return (ServerObjectBasicImplementation) new ServerObjectBungeeImplementation(
                 getName(),
-                null,
+                getGroup().getName(),
+                getToken(),
                 getState(),
                 getExtra(),
                 getMotd(),
