@@ -1,5 +1,6 @@
 package at.TimoCraft.TimoCloud.bukkit.api;
 
+import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
 import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
@@ -15,15 +16,17 @@ import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUniversalAPI {
 
-    private ArrayList<GroupObject> groups;
+    private ArrayList<GroupObject> groups = new ArrayList<>();
+    private String lastData = "NO DATA YET";
 
     public void setData(String json) {
-        //System.out.println("Json: " + json);
-        groups = new ArrayList<>();
+        lastData = json;
+        ArrayList groups = new ArrayList<>();
         JSONArray jsonArray = null;
         try {
             jsonArray = (JSONArray) new JSONParser().parse(json);
@@ -32,8 +35,9 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
             e.printStackTrace();
             return;
         }
-        for (Object object : jsonArray) {
-            try {
+
+        try {
+            for (Object object : jsonArray) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 SimpleModule module = new SimpleModule("CustomModel", Version.unknownVersion());
 
@@ -50,21 +54,18 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
                 GroupObject groupObject = objectMapper.readValue((String) object, GroupObject.class);
 
                 List<ServerObject> serverObjects = new ArrayList<>();
-                for (ServerObject serverObject : groupObject.getStartingServers())
+                for (ServerObject serverObject : groupObject.getServers())
                     serverObjects.add(new ServerObjectBukkitImplementation((ServerObjectBasicImplementation) serverObject));
-                groupObject.getStartingServers().clear();
-                groupObject.getStartingServers().addAll(serverObjects);
+                groupObject.getServers().clear();
+                groupObject.getServers().addAll(serverObjects);
 
-                serverObjects = new ArrayList<>();
-                for (ServerObject serverObject : groupObject.getRunningServers())
-                    serverObjects.add(new ServerObjectBukkitImplementation((ServerObjectBasicImplementation) serverObject));
-                groupObject.getRunningServers().clear();
-                groupObject.getRunningServers().addAll(serverObjects);
                 groups.add(groupObject);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            this.groups = groups;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
     }
 
     @Override
@@ -78,6 +79,9 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
         if (groups == null) return null;
         for (GroupObject group : groups) if (group.getName().equals(groupName)) return group;
         for (GroupObject group : groups) if (group.getName().equalsIgnoreCase(groupName)) return group;
+        System.out.println("Last data: " + lastData);
+        System.out.println(Arrays.toString(TimoCloudAPI.getUniversalInstance().getGroups().toArray()));
+        for (GroupObject groupObject : groups) System.out.println(groupObject.getName());
         return null;
     }
 
@@ -85,8 +89,12 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
     public ServerObject getServer(String serverName) {
         List<GroupObject> groups = getGroups();
         if (groups == null) return null;
-        for (GroupObject group : groups) for (ServerObject server : group.getAllServers()) if (server.getName().equals(serverName)) return server;
-        for (GroupObject group : groups) for (ServerObject server : group.getAllServers()) if (server.getName().equalsIgnoreCase(serverName)) return server;
+        for (GroupObject group : groups)
+            for (ServerObject server : group.getServers())
+                if (server.getName().equals(serverName)) return server;
+        for (GroupObject group : groups)
+            for (ServerObject server : group.getServers())
+                if (server.getName().equalsIgnoreCase(serverName)) return server;
         return null;
     }
 }

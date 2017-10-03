@@ -6,13 +6,13 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class JsonHelper {
     public static JSONObject locationToJson(Location location) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new LinkedHashMap<String, String>();
         map.put("worldUUID", location.getWorld().getUID().toString());
         map.put("worldName", location.getWorld().getName());
         map.put("x", Integer.toString(location.getBlockX()));

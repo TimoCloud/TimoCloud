@@ -42,42 +42,42 @@ public class OtherServerPingManager {
     }
 
     public void requestApiData() {
-        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETAPIDATA", null);
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_API_DATA", null);
     }
 
     public void requestStates() {
         for (String server : states.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETSTATE", server);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_STATE", server);
         }
     }
 
     public void requestExtras() {
         for (String server : extras.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETEXTRA", server);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_EXTRA", server);
         }
     }
 
     public void requestMotds() {
         for (String server : motds.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETMOTD", server);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_MOTD", server);
         }
     }
 
     public void requestMaps() {
         for (String server : maps.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETMAP", server);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_MAP", server);
         }
     }
 
     public void requestPlayers() {
         for (String server : players.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETPLAYERS", server);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_PLAYERS", server);
         }
     }
 
     public void requestServers() {
         for (String group : servers.keySet()) {
-            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GETSERVERS", group);
+            TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("GET_SERVERS", group);
         }
     }
 

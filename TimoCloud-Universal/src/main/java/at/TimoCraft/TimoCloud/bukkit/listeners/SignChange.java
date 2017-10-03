@@ -21,13 +21,8 @@ public class SignChange implements Listener {
     @EventHandler
     public void onSignChangeEvent(SignChangeEvent event) {
         if (TimoCloudBukkit.getInstance().getSignManager().signExists(event.getBlock().getLocation())) TimoCloudBukkit.getInstance().getSignManager().unlockSign(event.getBlock().getLocation());
-        if (event.getLine(0).trim().equalsIgnoreCase("[TimoCloud]") || TimoCloudBukkit.getInstance().getSignManager().signExists(event.getBlock().getLocation())) {
+        if (event.getLine(0).trim().equalsIgnoreCase("[TimoCloud]")) {
             String target = event.getLine(1).trim();
-            if (target.equals("")) {
-                event.getPlayer().sendMessage(TimoCloudBukkit.getInstance().getPrefix() + "§cPlease specify a target (group or server) in line 2");
-                event.setCancelled(true);
-                return;
-            }
             String template = event.getLine(2).trim();
             TimoCloudBukkit.getInstance().getSignManager().addSign(event.getBlock().getLocation(), target, template, parseIntOr0(event.getLine(3)), event.getPlayer());
         }

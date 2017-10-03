@@ -108,7 +108,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 TimoCloud.getInstance().getSocketServerHandler().getBaseChannels().put(channel, base);
                 TimoCloud.getInstance().getServerManager().addBase(serverName, base);
                 break;
-            case "GETAPIDATA":
+            case "GET_API_DATA":
                 JSONArray groups = new JSONArray();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -123,7 +123,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "SETSTATE":
                 server.setState(data);
                 break;
-            case "GETSTATE":
+            case "GET_STATE":
                 String state = "OFFLINE";
                 if (requestedServer != null) {
                     state = requestedServer.getState();
@@ -133,7 +133,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "SETEXTRA":
                 server.setExtra(data);
                 break;
-            case "GETEXTRA":
+            case "GET_EXTRA":
                 String extra = "";
                 if (requestedServer != null) {
                     extra = requestedServer.getExtra();
@@ -143,7 +143,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "SETMOTD":
                 server.setMotd(data);
                 break;
-            case "GETMOTD":
+            case "GET_MOTD":
                 String motd = "";
                 if (requestedServer != null) {
                     motd = requestedServer.getMotd();
@@ -153,7 +153,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "SETMAP":
                 server.setMap(data);
                 break;
-            case "GETMAP":
+            case "GET_MAP":
                 String map = "";
                 if (requestedServer != null) {
                     map = requestedServer.getMap();
@@ -164,17 +164,17 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 server.setCurrentPlayers(Integer.parseInt(data.split("/")[0]));
                 server.setMaxPlayers(Integer.parseInt(data.split("/")[1]));
                 break;
-            case "GETPLAYERS":
+            case "GET_PLAYERS":
                 Server requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
                 if (requestedServer3 == null) {
                     return;
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer.getCurrentPlayers() + "/" + requestedServer.getMaxPlayers());
                 break;
-            case "GETSERVERS":
+            case "GET_SERVERS":
                 Group requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
                 List<String> servers = new ArrayList<>();
-                for (Server t : requestedGroup.getRunningServers()) {
+                for (Server t : requestedGroup.getServers()) {
                     servers.add(t.getName());
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "SERVERS", servers);

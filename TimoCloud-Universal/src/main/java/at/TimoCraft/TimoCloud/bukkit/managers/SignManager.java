@@ -93,7 +93,7 @@ public class SignManager {
             JSONArray jsonArray = new JSONArray();
 
             for (SignInstance signInstance : signInstances) {
-                Map<String, Object> properties = new HashMap<>();
+                Map<String, Object> properties = new LinkedHashMap<>();
                 properties.put("location", JsonHelper.locationToJson(signInstance.getLocation()));
                 properties.put("target", signInstance.getTarget());
                 properties.put("template", signInstance.getTemplateName());
@@ -109,8 +109,8 @@ public class SignManager {
 
     private SignTemplate getSignTemplate(String name) {
         for (SignTemplate signTemplate : signTemplates) if (signTemplate.getName().equals(name)) return signTemplate;
-        for (SignTemplate signTemplate : signTemplates)
-            if (signTemplate.getName().equalsIgnoreCase(name)) return signTemplate;
+        for (SignTemplate signTemplate : signTemplates) if (signTemplate.getName().equalsIgnoreCase(name)) return signTemplate;
+        if (! "Default".equalsIgnoreCase(name)) return getSignTemplate("Default");
         return null;
     }
 
@@ -157,6 +157,11 @@ public class SignManager {
     private void processDynamicSignsPerGroup(GroupObject group, List<SignInstance> signInstances) {
         if (group == null) return;
         signInstances = signInstances.stream().filter(this::isSignActive).collect(Collectors.toList());
+
+        List<ServerObject> targets = new ArrayList<>();
+        for (ServerObject serverObject : group.getServers())
+            if (true) targets.add(serverObject);
+
         List<SignInstance> withPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() != 0).collect(Collectors.toList());
         List<SignInstance> withoutPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() == 0).collect(Collectors.toList());
         withPriority.sort(Comparator.comparing(SignInstance::getPriority));
@@ -168,14 +173,37 @@ public class SignManager {
                 step++;
                 lastPriority = signInstance.getPriority();
             }
-            writeSign(step < group.getAllServers().size() ? group.getAllServers().get(step) : null, step < group.getAllServers().size() ? signInstance.getTemplate() : getSignTemplate("NoFreeServerFound"), signInstance);
+            writeSign(step < targets.size() ? targets.get(step) : null, step < targets.size() ? signInstance.getTemplate() : getSignTemplate("NoFreeServerFound"), signInstance);
         }
 
         step = -1;
+        withoutPriority.sort((o1, o2) -> {
+            try {
+                org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
+                org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
+                if (! sign1.getFacing().equals(sign2.getFacing())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY()) return o2.getLocation().getBlockY()-o1.getLocation().getBlockY();
+                switch (sign1.getFacing()) {
+                    case NORTH:
+                        return o2.getLocation().getBlockX()-o1.getLocation().getBlockX();
+                    case SOUTH:
+                        return o1.getLocation().getBlockX()-o2.getLocation().getBlockX();
+                    case EAST:
+                        return o2.getLocation().getBlockZ()-o1.getLocation().getBlockZ();
+                    case WEST:
+                        return o1.getLocation().getBlockZ()-o2.getLocation().getBlockZ();
+                    default:
+                        return 0;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0;
+            }
+        });
         for (SignInstance signInstance : withoutPriority) {
             if (signInstance == null) return;
             step++;
-            writeSign(step < group.getAllServers().size() ? group.getAllServers().get(step) : null, step < group.getAllServers().size() ? signInstance.getTemplate() : getSignTemplate("NoFreeServerFound"), signInstance);
+            writeSign(step < targets.size() ? targets.get(step) : null, step < targets.size() ? signInstance.getTemplate() : getSignTemplate("NoFreeServerFound"), signInstance);
         }
     }
 
@@ -202,7 +230,7 @@ public class SignManager {
     }
 
     private Block getBlockBehindSign(Block signBlock) {
-        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) signBlock.getState();
+        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) signBlock.getState().getData();
         if (!signBlock.getType().equals(org.bukkit.Material.WALL_SIGN)) return null;
         switch (sign.getFacing()) {
             case NORTH:
@@ -255,7 +283,6 @@ public class SignManager {
             return;
         }
         boolean dynamic;
-        System.out.println(Arrays.toString(TimoCloudAPI.getUniversalInstance().getGroups().toArray()));
         if (TimoCloudAPI.getUniversalInstance().getGroup(target) != null) dynamic = true;
         else if (TimoCloudAPI.getUniversalInstance().getServer(target) != null) dynamic = false;
         else {
@@ -264,12 +291,10 @@ public class SignManager {
         }
         signInstances.add(new SignInstance(location, target, template, signTemplate, dynamic, priority));
         BukkitMessageManager.sendMessage(player, "&aSuccessfully added sign. Please check the parsed data is correct: " +
-                "&6[" +
-                "&etarget&6: &3 " + target +
-                "&6, &eisGroup&6: &3 " + dynamic +
-                "&6, &etemplate&6: &3 " + signTemplate.getName() +
-                "&6, &epriority&6: &3 " + priority +
-                "&6]"
+                "\n  &eTarget&6: &3 " + target +
+                "\n  &eIsGroup&6: &3 " + dynamic +
+                "\n  &eTemplate&6: &3 " + signTemplate.getName() +
+                "\n  &ePriority&6: &3 " + priority
         );
         saveSignInstances();
     }

@@ -15,9 +15,8 @@ import java.util.stream.Collectors;
  */
 public class Group {
 
-    private List<Server> startingServers = new ArrayList<>();
-    private List<Server> runningServers = new ArrayList<>();
     private String name;
+    private List<Server> servers = new ArrayList<>();
     private int startupAmount;
     private int maxAmount;
     private int ram;
@@ -57,48 +56,31 @@ public class Group {
     }
 
     public void stopAllServers() {
-        List<Server> starting = (ArrayList<Server>) ((ArrayList) getStartingServers()).clone();
-        for (Server server : starting) {
-            server.stop();
-        }
-        List<Server> temporary = (ArrayList<Server>) ((ArrayList) getRunningServers()).clone();
-        for (Server server : temporary) {
-            server.stop();
-        }
-        startingServers = new ArrayList<>();
-        runningServers = new ArrayList<>();
+        List<Server> servers = (ArrayList<Server>) ((ArrayList) getServers()).clone();
+        for (Server server : servers) server.stop();
+        this.servers.removeAll(servers);
+        if (! this.servers.isEmpty()) stopAllServers();
     }
 
     public void onServerConnect(Server server) {
-        if (startingServers.contains(server)) startingServers.remove(server);
-        if (!runningServers.contains(server)) {
-            runningServers.add(server);
-            return;
-        }
-        TimoCloud.severe("Tried to add already existing server " + server + ". Please report this.");
+
     }
 
     public void addStartingServer(Server server) {
         System.out.println("Added server " + server);
         if (server == null) TimoCloud.severe("Fatal error: Tried to add server which is null. Please report this.");
-        if (!startingServers.contains(server)) {
-            startingServers.add(server);
-            return;
-        }
-        TimoCloud.severe("Tried to add already existing starting server " + server + ". Please report this.");
+        if (servers.contains(server)) TimoCloud.severe("Tried to add already existing starting server " + server + ". Please report this.");
+        servers.add(server);
     }
 
     public void removeServer(Server server) {
-        if (runningServers.contains(server)) runningServers.remove(server);
+        if (servers.contains(server)) servers.remove(server);
     }
 
-    public List<Server> getStartingServers() {
-        return startingServers;
+    public List<Server> getServers() {
+        return servers;
     }
 
-    public List<Server> getRunningServers() {
-        return runningServers;
-    }
     public void setStartupAmount(int startupAmount) {
         this.startupAmount = startupAmount;
     }
@@ -156,8 +138,7 @@ public class Group {
         //System.out.println(Arrays.toString(startingServers.toArray()));
         //System.out.println(Arrays.toString(runningServers.toArray()));
         GroupObject groupObject = new GroupObject(
-                startingServers.stream().map(Server::toServerObject).collect(Collectors.toList()),
-                runningServers.stream().map(Server::toServerObject).collect(Collectors.toList()),
+                servers.stream().map(Server::toServerObject).collect(Collectors.toList()),
                 getName(),
                 getStartupAmount(),
                 getMaxAmount(),
@@ -166,8 +147,7 @@ public class Group {
                 getBaseName(),
                 getSortOutStates()
         );
-        groupObject.getStartingServers().sort(Comparator.comparing(ServerObject::getName));
-        groupObject.getRunningServers().sort(Comparator.comparing(ServerObject::getName));
+        groupObject.getServers().sort(Comparator.comparing(ServerObject::getName));
         return groupObject;
     }
 

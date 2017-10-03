@@ -28,6 +28,7 @@ public class Server {
     private int maxPlayers = 0;
     private String map = "";
     private String token;
+    private boolean starting;
 
     public Server(String name, Group group, int port, String token) {
         this.port = port;
@@ -40,6 +41,10 @@ public class Server {
 
     public boolean isStatic() {
         return getGroup().isStatic();
+    }
+
+    public void onStart() {
+        this.starting = true;
     }
 
     public void stop() {
@@ -56,30 +61,25 @@ public class Server {
         TimoCloud.getInstance().getProxy().getServers().put(getServerInfo().getName(), getServerInfo());
         group.onServerConnect(this);
         TimoCloud.getInstance().getServerManager().addServer(getName());
+        setState("ONLINE");
+        starting = false;
         registered = true;
         TimoCloud.info("Server " + getName() + " connected.");
-        setState("ONLINE");
     }
 
     public void unregister() {
-        if (!isRegistered()) {
-            return;
-        }
+        if (!isRegistered()) return;
         TimoCloud.getInstance().getServerManager().removeServer(getName());
         getGroup().removeServer(this);
         setState("OFFLINE");
         registered = false;
-        if (channel != null && channel.isOpen()) {
-            channel.close();
-        }
+        if (channel != null && channel.isOpen()) channel.close();
         TimoCloud.info("Server " + getName() + " disconnected.");
-        if (TimoCloud.getInstance().isShuttingDown()) {
-            return;
-        }
+        TimoCloud.getInstance().getSocketServerHandler().sendMessage(getGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");
+        if (TimoCloud.getInstance().isShuttingDown()) return;
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getServerManager().unregisterPort(getPort());
         }, 60, 0, TimeUnit.SECONDS);
-        TimoCloud.getInstance().getSocketServerHandler().sendMessage(getGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");
     }
 
     public ServerInfo getServerInfo() {
@@ -183,6 +183,10 @@ public class Server {
 
     public String getToken() {
         return token;
+    }
+
+    public boolean isStarting() {
+        return starting;
     }
 
     public ServerObject toServerObject() {

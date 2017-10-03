@@ -9,8 +9,7 @@ import java.util.List;
  */
 public class GroupObject implements Serializable {
 
-    private List<ServerObject> startingServers;
-    private List<ServerObject> runningServers;
+    private List<ServerObject> servers;
     private String name;
     private int startupAmount;
     private int maxAmount;
@@ -21,9 +20,8 @@ public class GroupObject implements Serializable {
 
     public GroupObject() {}
 
-    public GroupObject(List<ServerObject> startingServers, List<ServerObject> runningServers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
-        this.runningServers = runningServers;
-        this.startingServers = startingServers;
+    public GroupObject(List<ServerObject> servers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
+        this.servers = servers;
         this.name = name;
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
@@ -33,19 +31,8 @@ public class GroupObject implements Serializable {
         this.sortOutStates = sortOutStates;
     }
 
-    public List<ServerObject> getRunningServers() {
-        return runningServers;
-    }
-
-    public List<ServerObject> getStartingServers() {
-        return startingServers;
-    }
-
-    public List<ServerObject> getAllServers() {
-        List<ServerObject> allServers = new ArrayList<>();
-        allServers.addAll(startingServers);
-        allServers.addAll(runningServers);
-        return allServers;
+    public List<ServerObject> getServers() {
+        return servers;
     }
 
     public String getName() {

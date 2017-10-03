@@ -1,6 +1,10 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -96,11 +100,15 @@ public class BukkitFileManager {
         signTemplates.addDefault("Default.layouts.STARTING.lines.3", "&estarting...");
         signTemplates.addDefault("Default.layouts.STARTING.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
 
+        signTemplates.addDefault("Default.sortOut", Arrays.asList("INGAME", "OFFLINE"));
+
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.updateSpeed", 5L);
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.1", "&cWaiting");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.2", "&cfor");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.3", "&cserver");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
+
+
 
         try {
             signTemplates.save(signTemplatesFile);
@@ -142,7 +150,7 @@ public class BukkitFileManager {
     public void saveSignInstances(JSONArray jsonArray) {
         try {
             FileWriter fileWriter = new FileWriter(signInstancesFile, false);
-            fileWriter.write(jsonArray.toJSONString());
+            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(jsonArray.toJSONString()))); //Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
             e.printStackTrace();

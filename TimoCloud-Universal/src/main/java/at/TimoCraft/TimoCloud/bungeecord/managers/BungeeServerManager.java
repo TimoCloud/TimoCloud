@@ -26,6 +26,12 @@ public class BungeeServerManager {
     private Map<Group, List<String>> willBeStarted;
     private Map<String, BaseObject> bases;
 
+    public static final int MIN_PORT = 40000;
+    public static final int MAX_PORT = 50000;
+    public static final long SERVER_START_DELAY = 1;
+    public static final long STATIC_SERVER_START_DELAY = 5;
+
+
     public void init() {
         makeInstances();
         loadGroups();
@@ -41,9 +47,7 @@ public class BungeeServerManager {
     }
 
     public void stopAllServers() {
-        for (Group group : groups) {
-            group.stopAllServers();
-        }
+        for (Group group : groups) group.stopAllServers();
     }
 
     public Group getGroupByExactName(String name) {
@@ -78,7 +82,7 @@ public class BungeeServerManager {
     }
 
     public int getFreePort() {
-        for (int i = 40000; i < 50000; i++) {
+        for (int i = MIN_PORT; i <= MAX_PORT; i++) {
             if (isPortFree(i)) {
                 i = registerPort(i);
                 return i;
@@ -115,20 +119,20 @@ public class BungeeServerManager {
 
     public ServerInfo getRandomLobbyServer(ServerInfo notThis) {
         Group group = getGroupByName(TimoCloud.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
-        if (group.getRunningServers().size() == 0)
+        if (group.getServers().size() == 0)
             return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
         List<Server> servers;
         if (notThis == null) {
-            servers = group.getRunningServers();
+            servers = group.getServers();
         } else {
             servers = new ArrayList<>();
-            for (Server server : group.getRunningServers()) {
+            for (Server server : group.getServers()) {
                 if (!server.getServerInfo().equals(notThis)) {
                     servers.add(server);
                 }
             }
             if (servers.size() == 0) {
-                TimoCloud.severe("No running fallback server found. Maybe you should start more lobby servers. This could happen because a player has been kicked from a lobby and there was no other free lobby server.");
+                TimoCloud.severe("No running fallback server found. Maybe you should start more lobby servers. This could happen because a player has been kicked from a lobby and there was no OTHER free lobby server.");
                 return notThis;
             }
         }
@@ -143,9 +147,10 @@ public class BungeeServerManager {
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(name, group.getName(), group.getRam(), port, group.isStatic(), token, group.getBase()));
             Server server = new Server(name, group, port, token);
+            server.onStart();
             group.addStartingServer(server);
             getServersWillBeStarted(group).remove(name);
-        }, group.isStatic() ? 5 : 1, 0, TimeUnit.SECONDS);
+        }, group.isStatic() ? STATIC_SERVER_START_DELAY : SERVER_START_DELAY, 0, TimeUnit.SECONDS);
     }
 
     public void startServerFromAsyncContext(String name, String group, int ram, int port, boolean isStatic, String token, BaseObject base) {
@@ -220,38 +225,18 @@ public class BungeeServerManager {
     }
 
     public Server getServerByName(String name) {
-        for (Group group : getGroups()) {
-            for (Server server : group.getStartingServers()) {
-                if (server == null) continue;
-                if (server.getName().equals(name)) {
+        for (Group group : getGroups())
+            for (Server server : group.getServers())
+                if (server != null && server.getName().equals(name))
                     return server;
-                }
-            }
-            for (Server server : group.getRunningServers()) {
-                if (server == null) continue;
-                if (server.getName().equals(name)) {
-                    return server;
-                }
-            }
-        }
         return null;
     }
 
     public Server getServerByToken(String token) {
-        for (Group group : getGroups()) {
-            for (Server server : group.getStartingServers()) {
-                if (server == null) continue;
-                if (server.getToken().equals(token)) {
+        for (Group group : getGroups())
+            for (Server server : group.getServers())
+                if (server != null && server.getToken().equals(token))
                     return server;
-                }
-            }
-            for (Server server : group.getRunningServers()) {
-                if (server == null) continue;
-                if (server.getToken().equals(token)) {
-                    return server;
-                }
-            }
-        }
         return null;
     }
 
@@ -283,20 +268,7 @@ public class BungeeServerManager {
     }
 
     private boolean nameExists(String name, Group group) {
-        if (getServersWillBeStarted(group).contains(name)) {
-            return true;
-        }
-        for (Server server : group.getStartingServers()) {
-            if (server.getName().equals(name)) {
-                return true;
-            }
-        }
-        for (Server server : group.getRunningServers()) {
-            if (server.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
+        return getServersWillBeStarted(group).contains(name) || getServerByName(name) != null;
     }
 
     private String generateName(Group group, int n) {
@@ -305,9 +277,8 @@ public class BungeeServerManager {
 
     public int serversNeeded(Group group) {
         int running = 0;
-        for (Server server : group.getRunningServers())
-            if (isStateActive(server.getState(), group.getName())) running++;
-        running += group.getStartingServers().size();
+        for (Server server : group.getServers())
+            if (isStateActive(server.getState(), group.getName()) || server.isStarting()) running++;
         running += getServersWillBeStarted(group).size();
         return Math.max(
                 (group.getMaxAmount()>0 ? Math.min(group.getStartupAmount(), group.getMaxAmount()) : group.getStartupAmount())
