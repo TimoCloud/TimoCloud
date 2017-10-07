@@ -7,6 +7,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 public class BaseFileManager {
@@ -45,6 +46,7 @@ public class BaseFileManager {
             configFile.createNewFile();
             Yaml yaml = new Yaml();
             this.config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+            if (this.config == null) this.config = new HashMap<>();
             Map<String, Object> defaults = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/base/config.yml"));
             for (String key : defaults.keySet()) {
                 if (! config.containsKey(key)) config.put(key, defaults.get(key));

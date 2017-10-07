@@ -63,12 +63,17 @@ public class BaseServerManager {
             File temporaryDirectory = server.isStatic() ? templateDirectory : new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName());
             if (!server.isStatic()) {
                 if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
+                copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
             }
-
-            copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
 
             if (!server.isStatic()) {
                 copyDirectory(templateDirectory, temporaryDirectory);
+            } else {
+                File temp = new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName());
+                copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temp);
+                copyDirectory(temporaryDirectory, temp);
+                copyDirectory(temp, temporaryDirectory);
+                deleteDirectory(temp);
             }
 
             boolean randomMap = false;

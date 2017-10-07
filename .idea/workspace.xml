@@ -2,96 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e023fd5d-9cb9-4a16-8260-0031b12ec489" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/TimoCloud-Universal/proguard-dict.txt" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_2_4.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_guava_guava_18_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_persistence_persistence_api_1_0.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_api_1_10_SNAPSHOT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_chat_1_10_SNAPSHOT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_config_1_10_SNAPSHOT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_event_1_10_SNAPSHOT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__net_md_5_bungeecord_protocol_1_10_SNAPSHOT.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_avaje_ebean_2_8_1.xml" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_spigotmc_spigot_api_1_11_R0_1_SNAPSHOT.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/allclasses-frame.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/allclasses-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/allclasses-noframe.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/allclasses-noframe.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/TimoCloudAPI.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/TimoCloudAPI.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-frame.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-frame.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-summary.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-summary.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-tree.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/at/TimoCraft/TimoCloud/api/package-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/constant-values.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/constant-values.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/deprecated-list.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/deprecated-list.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/help-doc.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/help-doc.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/index-all.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/index-all.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/index.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/overview-tree.html" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/overview-tree.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/javadoc/package-list" afterPath="$PROJECT_DIR$/TimoCloud-API/javadoc/package-list" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/pom.xml" afterPath="$PROJECT_DIR$/TimoCloud-API/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudAPI.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudAPI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudUniversalAPI.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudUniversalAPI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/GroupObject.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/GroupObject.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/ServerObject.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/ServerObject.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/ServerObjectBasicImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/objects/ServerObjectBasicImplementation.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/pom.xml" afterPath="$PROJECT_DIR$/TimoCloud-Universal/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/proguard.conf" afterPath="$PROJECT_DIR$/TimoCloud-Universal/proguard.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/BaseLoader.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/BaseLoader.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/objects/BaseServerObject.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/objects/BaseServerObject.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClientHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/ServerObjectBukkitImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/ServerObjectBukkitImplementation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudBukkitAPIImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudBukkitAPIImplementation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudUniversalAPIBukkitImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/api/TimoCloudUniversalAPIBukkitImplementation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SendBungeeCommand.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SendBungeeCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/SignsCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/TimoCloudBukkitCommand.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/commands/TimoCloudBukkitCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerInteract.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerJoin.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerJoin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerQuit.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/PlayerQuit.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/BukkitFileManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/BukkitFileManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/BukkitMessageManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/BukkitMessageManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/OtherServerPingManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/SignManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/StateByEventManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/managers/StateByEventManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/objects/SignLayout.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/objects/SignLayout.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/objects/SignTemplate.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/objects/SignTemplate.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClient.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketClientHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitSocketMessageManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitStringHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/TimoCloud.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/api/ServerObjectBungeeImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/api/ServerObjectBungeeImplementation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/api/TimoCloudUniversalAPIBungeeImplementation.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/api/TimoCloudUniversalAPIBungeeImplementation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/ServerKick.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/ServerKick.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeFileManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeFileManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeMessageManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeMessageManager.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/BaseObject.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/BaseObject.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/Group.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/Group.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/Server.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/Server.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeePipeline.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeePipeline.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServer.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeSocketServerHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/sockets/BungeeStringHandler.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/ServerToGroupUtil.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/ServerToGroupUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/base/config.yml" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/base/config.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/bungee.yml" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/bungee.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/plugin.yml" afterPath="$PROJECT_DIR$/TimoCloud-Universal/src/main/resources/plugin.yml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
     </list>
     <ignored path="TimoCloud.iws" />
@@ -131,7 +47,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LobbyCommand.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="LobbyCommand.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/LobbyCommand.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
@@ -141,31 +57,61 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="BaseServerManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="205">
+              <caret line="68" column="37" lean-forward="false" selection-start-line="68" selection-start-column="37" selection-end-line="68" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BaseFileManager.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="513">
+              <caret line="48" column="67" lean-forward="false" selection-start-line="48" selection-start-column="67" selection-end-line="48" selection-end-column="67" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="16">
+              <caret line="10" column="18" lean-forward="false" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="466">
+              <caret line="203" column="26" lean-forward="false" selection-start-line="203" selection-start-column="26" selection-end-line="203" selection-end-column="26" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/TimoCloud-API/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="225">
+              <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="BungeeServerManager.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="229">
-              <caret line="210" column="80" lean-forward="false" selection-start-line="210" selection-start-column="80" selection-end-line="210" selection-end-column="80" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Group.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/objects/Group.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TimoCloudCommand.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="29">
-              <caret line="174" column="42" lean-forward="false" selection-start-line="174" selection-start-column="42" selection-end-line="174" selection-end-column="42" />
+            <state relative-caret-position="219">
+              <caret line="275" column="82" lean-forward="false" selection-start-line="275" selection-start-column="82" selection-end-line="275" selection-end-column="82" />
               <folding />
             </state>
           </provider>
@@ -185,39 +131,7 @@
         <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="375">
-              <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TimoCloudAPI.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudAPI.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="495">
-              <caret line="37" column="0" lean-forward="false" selection-start-line="37" selection-start-column="0" selection-end-line="37" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TimoCloudBukkitAPI.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="99">
-              <caret line="9" column="25" lean-forward="false" selection-start-line="9" selection-start-column="25" selection-end-line="9" selection-end-column="25" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TimoCloudUniversalAPI.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudUniversalAPI.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="26" column="14" lean-forward="false" selection-start-line="26" selection-start-column="14" selection-end-line="26" selection-end-column="14" />
+              <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -292,9 +206,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java" />
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java" />
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/Base.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/ServerKick.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/LobbyJoin.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeMessageManager.java" />
@@ -323,8 +234,6 @@
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/TimoCloudBukkit.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/ServerToGroupUtil.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/utils/TimeUtil.java" />
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java" />
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BasePipeline.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketMessageManager.java" />
@@ -340,9 +249,14 @@
         <option value="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudBukkitAPI.java" />
         <option value="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudUniversalAPI.java" />
         <option value="$PROJECT_DIR$/TimoCloud-API/src/main/java/at/TimoCraft/TimoCloud/api/TimoCloudAPI.java" />
-        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java" />
         <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java" />
+        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/TimoCloud-Universal/pom.xml" />
+        <option value="$PROJECT_DIR$/TimoCloud-API/pom.xml" />
+        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java" />
+        <option value="$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java" />
       </list>
     </option>
   </component>
@@ -1487,12 +1401,12 @@
       <workItem from="1506956289075" duration="4246000" />
       <workItem from="1507039670216" duration="4917000" />
       <workItem from="1507122652349" duration="2444000" />
-      <workItem from="1507182783442" duration="40450000" />
+      <workItem from="1507182783442" duration="42462000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="526027000" />
+    <option name="totallyTimeSpent" value="528039000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1680" height="986" extended-state="6" />
@@ -1567,30 +1481,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/sockets/BukkitPipeline.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="8" column="0" lean-forward="false" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseSocketClient.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/Base.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/listeners/ServerKick.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -1795,22 +1685,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/sockets/BaseStringHandler.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -1933,14 +1807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="210" column="80" lean-forward="false" selection-start-line="210" selection-start-column="80" selection-end-line="210" selection-end-column="80" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/commands/TimoCloudCommand.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="29">
@@ -1960,7 +1826,7 @@
     <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bukkit/listeners/SignChange.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
-          <caret line="28" column="0" lean-forward="true" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
+          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1977,6 +1843,54 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="8" column="13" lean-forward="false" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16">
+          <caret line="10" column="18" lean-forward="false" selection-start-line="10" selection-start-column="18" selection-end-line="10" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="466">
+          <caret line="203" column="26" lean-forward="false" selection-start-line="203" selection-start-column="26" selection-end-line="203" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-API/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="22" lean-forward="false" selection-start-line="15" selection-start-column="22" selection-end-line="15" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/bungeecord/managers/BungeeServerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="219">
+          <caret line="275" column="82" lean-forward="false" selection-start-line="275" selection-start-column="82" selection-end-line="275" selection-end-column="82" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseServerManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="68" column="37" lean-forward="false" selection-start-line="68" selection-start-column="37" selection-end-line="68" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TimoCloud-Universal/src/main/java/at/TimoCraft/TimoCloud/base/managers/BaseFileManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="513">
+          <caret line="48" column="67" lean-forward="false" selection-start-line="48" selection-start-column="67" selection-end-line="48" selection-end-column="67" />
           <folding />
         </state>
       </provider>

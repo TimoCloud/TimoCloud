@@ -279,7 +279,7 @@ public class BungeeServerManager {
         return Math.max(0,
                 Math.min(
                         group.getStartupAmount()-running,
-                        group.getMaxAmount()-(group.getServers().size() + getServersWillBeStarted(group).size())
+                        (group.getMaxAmount() > 0 ? group.getMaxAmount() : 100)-(group.getServers().size() + getServersWillBeStarted(group).size())
                 ));
 
     }

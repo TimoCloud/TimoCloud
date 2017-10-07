@@ -9,9 +9,9 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>at.TimoCraft.TimoCloud</groupId>
-        <version>4.6.0</version>
+        <version>4.6.1</version>
     </parent>
-    <version>4.6.0</version>
+    <version>4.6.1</version>
 
     <repositories>
         <repository>
@@ -201,7 +201,7 @@
         <dependency>
             <groupId>at.TimoCraft.TimoCloud</groupId>
             <artifactId>TimoCloud-API</artifactId>
-            <version>4.6.0</version>
+            <version>4.6.1</version>
         </dependency>
     </dependencies>
 </project>
