@@ -10,9 +10,6 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.file.Files;
 
-/**
- * Created by Timo on 27.12.16.
- */
 public class BungeeFileManager {
     private String pluginsDirectory = "plugins/TimoCloud/";
     private String configsDirectory = pluginsDirectory + "configs/";

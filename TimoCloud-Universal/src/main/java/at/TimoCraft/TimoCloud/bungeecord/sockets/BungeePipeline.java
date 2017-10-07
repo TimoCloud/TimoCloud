@@ -7,9 +7,6 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
-/**
- * Created by Timo on 29.12.16.
- */
 public class BungeePipeline extends ChannelInitializer<Channel> {
 
     @Override

@@ -1,6 +1,5 @@
 package at.TimoCraft.TimoCloud.bukkit.api;
 
-import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
@@ -33,12 +32,12 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
     @Override
     public void setState(String state) {
         this.state = state;
-        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("SETSTATE", state);
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("SET_STATE", getName(), state);
     }
 
     @Override
     public void setExtra(String extra) {
         this.extra = extra;
-        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("SETEXTRA", extra);
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("SET_EXTRA", getName(), extra);
     }
 }

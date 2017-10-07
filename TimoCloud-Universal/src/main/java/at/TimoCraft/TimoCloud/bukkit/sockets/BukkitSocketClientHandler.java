@@ -5,9 +5,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
 
     private Channel channel;

@@ -1,17 +1,16 @@
 package at.TimoCraft.TimoCloud.bukkit.objects;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class SignTemplate {
     private String name;
     private Map<String, SignLayout> layouts;
     private List<String> sortOutStates;
 
-    public SignTemplate(String name, Map<String, SignLayout> layouts, List<String> sortOut) {
+    public SignTemplate(String name, Map<String, SignLayout> layouts) {
         this.name = name;
         this.layouts = layouts;
-        this.sortOutStates = sortOut;
     }
 
     public String getName() {
@@ -26,11 +25,4 @@ public class SignTemplate {
         layouts.put(name, layout);
     }
 
-    public List<String> getSortOutStates() {
-        return sortOutStates;
-    }
-
-    public boolean isSortedOut(String state) {
-        return getSortOutStates().contains(state);
-    }
 }

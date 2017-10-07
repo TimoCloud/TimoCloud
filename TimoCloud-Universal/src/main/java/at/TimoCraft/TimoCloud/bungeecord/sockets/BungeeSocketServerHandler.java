@@ -1,9 +1,5 @@
 package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
-/**
- * Created by Timo on 28.12.16.
- */
-
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;

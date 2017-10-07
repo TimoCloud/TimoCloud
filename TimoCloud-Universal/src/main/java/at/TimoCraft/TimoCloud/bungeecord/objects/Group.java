@@ -5,14 +5,10 @@ import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Timo on 27.12.16.
- */
 public class Group {
 
     private String name;
@@ -67,7 +63,6 @@ public class Group {
     }
 
     public void addStartingServer(Server server) {
-        System.out.println("Added server " + server);
         if (server == null) TimoCloud.severe("Fatal error: Tried to add server which is null. Please report this.");
         if (servers.contains(server)) TimoCloud.severe("Tried to add already existing starting server " + server + ". Please report this.");
         servers.add(server);
@@ -135,8 +130,6 @@ public class Group {
     }
 
     public GroupObject toGroupObject() {
-        //System.out.println(Arrays.toString(startingServers.toArray()));
-        //System.out.println(Arrays.toString(runningServers.toArray()));
         GroupObject groupObject = new GroupObject(
                 servers.stream().map(Server::toServerObject).collect(Collectors.toList()),
                 getName(),

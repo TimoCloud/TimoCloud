@@ -1,9 +1,5 @@
 package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
-/**
- * Created by Timo on 28.12.16.
- */
-
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

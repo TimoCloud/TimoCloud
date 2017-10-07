@@ -10,9 +10,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Timo on 27.12.16.
- */
 public class Server {
 
     private ServerInfo serverInfo;
@@ -58,12 +55,13 @@ public class Server {
     }
 
     public void register() {
+        if (isRegistered()) return;
         TimoCloud.getInstance().getProxy().getServers().put(getServerInfo().getName(), getServerInfo());
-        group.onServerConnect(this);
+        getGroup().onServerConnect(this);
         TimoCloud.getInstance().getServerManager().addServer(getName());
         setState("ONLINE");
-        starting = false;
-        registered = true;
+        this.starting = false;
+        this.registered = true;
         TimoCloud.info("Server " + getName() + " connected.");
     }
 
@@ -72,7 +70,7 @@ public class Server {
         TimoCloud.getInstance().getServerManager().removeServer(getName());
         getGroup().removeServer(this);
         setState("OFFLINE");
-        registered = false;
+        this.registered = false;
         if (channel != null && channel.isOpen()) channel.close();
         TimoCloud.info("Server " + getName() + " disconnected.");
         TimoCloud.getInstance().getSocketServerHandler().sendMessage(getGroup().getBase().getChannel(), getName(), "SERVERSTOPPED", "");

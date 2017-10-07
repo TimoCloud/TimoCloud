@@ -3,9 +3,6 @@ package at.TimoCraft.TimoCloud.base.sockets;
 import at.TimoCraft.TimoCloud.base.Base;
 import org.json.simple.JSONObject;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class BaseSocketMessageManager {
 
 

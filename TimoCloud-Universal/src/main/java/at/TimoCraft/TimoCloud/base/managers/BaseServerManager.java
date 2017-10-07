@@ -10,15 +10,13 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Timo on 31.01.17.
- */
 public class BaseServerManager {
 
     private LinkedList<BaseServerObject> queue;
@@ -44,43 +42,58 @@ public class BaseServerManager {
         startServer(server);
     }
 
+    private void copyDirectory(File from, File to) throws IOException {
+        FileUtils.copyDirectory(from, to);
+    }
+
+    private void deleteDirectory(File directory) {
+        if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
+    }
+
     private void startServer(BaseServerObject server) {
         Base.info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
-        File templateDirectory = new File((server.isStatic() ? Base.getInstance().getFileManager().getStaticDirectory() : Base.getInstance().getFileManager().getTemplatesDirectory()), server.getGroup());
-        if (! templateDirectory.exists()) {
-            Base.severe("Could not start server " + server.getName() + ": No template called " + server.getGroup() + " found. Please make sure the directory " + templateDirectory.getAbsolutePath() + " exists. (Put your minecraft server in there)");
-            return;
-        }
-        boolean randomMap = false;
-        String mapName = "default";
-        if (!server.isStatic()) {
+        try {
+            File templateDirectory = new File((server.isStatic() ? Base.getInstance().getFileManager().getStaticDirectory() : Base.getInstance().getFileManager().getTemplatesDirectory()), server.getGroup());
             if (!templateDirectory.exists()) {
-                templateDirectory = getRandomServer(server.getGroup());
-                randomMap = true;
-                mapName = "";
-                String[] splitted = templateDirectory.getName().split("_");
-                for (int i = 1; i < splitted.length; i++) {
-                    mapName += splitted[i];
-                    if (i < splitted.length - 1) {
-                        mapName += "_";
+                Base.severe("Could not start server " + server.getName() + ": No template called " + server.getGroup() + " found. Please make sure the directory " + templateDirectory.getAbsolutePath() + " exists. (Put your minecraft server in there)");
+                return;
+            }
+
+            File temporaryDirectory = server.isStatic() ? templateDirectory : new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName());
+            if (!server.isStatic()) {
+                if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
+            }
+
+            copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
+
+            if (!server.isStatic()) {
+                copyDirectory(templateDirectory, temporaryDirectory);
+            }
+
+            boolean randomMap = false;
+            String mapName = "default";
+            if (!server.isStatic()) {
+                File randomMapDirectory = getRandomServer(server.getGroup());
+                if (randomMapDirectory != null && randomMapDirectory.exists()) {
+                    randomMap = true;
+                    mapName = "";
+                    String[] splitted = templateDirectory.getName().split("_");
+                    for (int i = 1; i < splitted.length; i++) {
+                        mapName += splitted[i];
+                        if (i < splitted.length - 1) mapName += "_";
                     }
+                    copyDirectory(randomMapDirectory, templateDirectory);
                 }
             }
-        }
 
-        File spigot = new File(templateDirectory, "spigot.jar");
-        if (!spigot.exists()) {
-            Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigot.getAbsolutePath() + " exists (case sensitive!)");
-            return;
-        }
-        File temporaryDirectory = null;
-        try {
-            temporaryDirectory = server.isStatic() ? templateDirectory : new File(Base.getInstance().getFileManager().getTemporaryDirectory() + server.getName());
-            if (!server.isStatic()) {
-                if (temporaryDirectory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(temporaryDirectory);
-                FileUtils.copyDirectory(templateDirectory, temporaryDirectory);
+            File spigotJar = new File(temporaryDirectory, "spigot.jar");
+            if (!spigotJar.exists()) {
+                Base.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)");
+                return;
             }
+
+
             File plugins = new File(temporaryDirectory, "/plugins/");
             plugins.mkdirs();
             File plugin = new File(plugins, "TimoCloud.jar");
@@ -96,44 +109,38 @@ public class BaseServerManager {
                     return;
                 }
             }
-            File pluginsDir = new File("plugins/");
-            if (pluginsDir.exists() && pluginsDir.isDirectory()) {
-                for (File pl : pluginsDir.listFiles()) {
-                    File target = new File(temporaryDirectory, "plugins/" + pl.getName());
-                    if (target.exists()) continue;
-                    Files.copy(pl.toPath(), target.toPath());
-                }
-            }
 
             setProperty(new File(temporaryDirectory, "server.properties"), "online-mode", "false");
 
             double millisNow = System.currentTimeMillis();
             Base.info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
-        } catch (Exception e) {
-            Base.severe("Error while starting server " + server.getName() + ":");
-            e.printStackTrace();
-        }
 
-        ProcessBuilder pb = new ProcessBuilder(
-                "/bin/bash", "-c",
-                "screen -mdS " + server.getName() +
-                        " java -server " +
-                        " -Xmx" + server.getRam() + "M" +
-                        " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                        " -Dcom.mojang.eula.agree=true" +
-                        " -Dtimocloud-bungeecordhost=" + Base.getInstance().getBungeeSocketIP() + ":" + Base.getInstance().getBungeeSocketPort() +
-                        " -Dtimocloud-randommap=" + randomMap +
-                        " -Dtimocloud-mapname=" + mapName +
-                        " -Dtimocloud-servername=" + server.getName() +
-                        " -Dtimocloud-static=" + server.isStatic() +
-                        " -Dtimocloud-token=" + server.getToken() +
-                        " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
-                        " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                        " -jar spigot.jar -o false -h 0.0.0.0 -p " + server.getPort()
-        ).directory(temporaryDirectory);
-        try {
-            pb.start();
-            Base.info("Successfully started screen session " + server.getName() + ".");
+
+            ProcessBuilder pb = new ProcessBuilder(
+                    "/bin/bash", "-c",
+                    "screen -mdS " + server.getName() +
+                            " java -server " +
+                            " -Xmx" + server.getRam() + "M" +
+                            " -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:MaxGCPauseMillis=50 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                            " -Dcom.mojang.eula.agree=true" +
+                            " -Dtimocloud-bungeecordhost=" + Base.getInstance().getBungeeSocketIP() + ":" + Base.getInstance().getBungeeSocketPort() +
+                            " -Dtimocloud-randommap=" + randomMap +
+                            " -Dtimocloud-mapname=" + mapName +
+                            " -Dtimocloud-servername=" + server.getName() +
+                            " -Dtimocloud-static=" + server.isStatic() +
+                            " -Dtimocloud-token=" + server.getToken() +
+                            " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
+                            " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
+                            " -jar spigot.jar -o false -h 0.0.0.0 -p " + server.getPort()
+            ).directory(temporaryDirectory);
+
+            try {
+                pb.start();
+                Base.info("Successfully started screen session " + server.getName() + ".");
+            } catch (Exception e) {
+                Base.severe("Error while starting server " + server.getName() + ":");
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             Base.severe("Error while starting server " + server.getName() + ":");
             e.printStackTrace();
@@ -160,7 +167,7 @@ public class BaseServerManager {
     }
 
     private File getRandomServer(String group) {
-        File templates = new File(Base.getInstance().getFileManager().getTemplatesDirectory());
+        File templates = Base.getInstance().getFileManager().getTemplatesDirectory();
         List<File> valid = new ArrayList<>();
         for (File sub : templates.listFiles()) {
             if (!sub.isDirectory() || !sub.getName().startsWith(group + "_")) {
@@ -175,17 +182,21 @@ public class BaseServerManager {
     }
 
     public void onServerStopped(String name) {
-        File log = new File(Base.getInstance().getFileManager().getTemporaryDirectory() + name + "/logs/latest.log");
-        if (log.exists()) {
-            try {
-                File dir = new File(Base.getInstance().getFileManager().getLogsDirectory() + ServerToGroupUtil.getGroupByServer(name));
-                dir.mkdirs();
-                Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name).toPath());
-            } catch (Exception e) {
-                e.printStackTrace();
+        File directory = new File(Base.getInstance().getFileManager().getTemporaryDirectory(), name);
+        if ((Boolean) Base.getInstance().getFileManager().getConfig().get("save-logs")) {
+            File log = new File(directory, "/logs/latest.log");
+            if (log.exists()) {
+                try {
+                    File dir = new File(Base.getInstance().getFileManager().getLogsDirectory(), ServerToGroupUtil.getGroupByServer(name));
+                    dir.mkdirs();
+                    Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Base.severe("No log from server " + name + " exists.");
             }
-        } else {
-            Base.severe("No log from server " + name + " exists.");
         }
+        deleteDirectory(directory);
     }
 }

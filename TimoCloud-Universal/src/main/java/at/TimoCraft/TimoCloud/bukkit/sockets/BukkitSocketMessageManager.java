@@ -3,24 +3,24 @@ package at.TimoCraft.TimoCloud.bukkit.sockets;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import org.json.simple.JSONObject;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class BukkitSocketMessageManager {
 
-
-    public void sendMessage(String type, String data) {
+    public void sendMessage(String type, String server, String data) {
         try {
-            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, data));
+            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, TimoCloudBukkit.getInstance().getServerName(), data));
         } catch (Exception e) {
             e.printStackTrace();
             TimoCloudBukkit.getInstance().onSocketDisconnect();
         }
     }
 
-    public String getJSON(String type, String data) {
+    public void sendMessage(String type, String data) {
+        sendMessage(type, TimoCloudBukkit.getInstance().getServerName(), data);
+    }
+
+    public String getJSON(String type, String server, String data) {
         JSONObject json = new JSONObject();
-        json.put("server", TimoCloudBukkit.getInstance().getServerName());
+        json.put("server", server);
         json.put("type", type);
         json.put("data", data);
         return json.toString();

@@ -22,9 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.net.InetAddress;
 
-/**
- * Created by Timo on 27.12.16.
- */
 public class TimoCloudBukkit extends JavaPlugin {
 
     private static TimoCloudBukkit instance;
@@ -62,7 +59,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     public void onSocketConnect() {
         getBukkitSocketMessageManager().sendMessage("HANDSHAKE", System.getProperty("timocloud-token"));
         if (isRandomMap()) {
-            getBukkitSocketMessageManager().sendMessage("SETMAP", getMapName());
+            getBukkitSocketMessageManager().sendMessage("SET_MAP", getMapName());
         }
     }
 
@@ -159,8 +156,10 @@ public class TimoCloudBukkit extends JavaPlugin {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             sendEverything();
             getOtherServerPingManager().requestEverything();
+        }, 0L, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             getSignManager().updateSigns();
-        }, 1L, 1L);
+        }, 5L, 1L);
     }
 
     public void sendEverything() {
@@ -172,31 +171,41 @@ public class TimoCloudBukkit extends JavaPlugin {
         try {
             ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             Bukkit.getPluginManager().callEvent(event);
-            getBukkitSocketMessageManager().sendMessage("SETMOTD", event.getMotd());
-            Object state = getFileManager().getConfig().get("MotdToState." + event.getMotd());
-            if (state != null && state instanceof String) {
-                getStateByEventManager().setStateByMotd((String) state);
-            }
+            getBukkitSocketMessageManager().sendMessage("SET_MOTD", event.getMotd());
+            getStateByEventManager().setStateByMotd(event.getMotd().trim());
         } catch (Exception e) {
             log("Error while sending MOTD: ");
             e.printStackTrace();
-            getBukkitSocketMessageManager().sendMessage("SETMOTD", Bukkit.getMotd());
+            getBukkitSocketMessageManager().sendMessage("SET_MOTD", Bukkit.getMotd());
+        }
+    }
+
+    public int getOnlinePlayersAmount() {
+        try {
+            ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+            Bukkit.getPluginManager().callEvent(event);
+            return event.getNumPlayers();
+        } catch (Exception e) {
+            TimoCloudBukkit.log("&cError while calling ServerListPingEvent: ");
+            e.printStackTrace();
+            return Bukkit.getOnlinePlayers().size();
+        }
+    }
+
+    public int getMaxPlayersAmount() {
+        try {
+            ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+            Bukkit.getPluginManager().callEvent(event);
+            return event.getMaxPlayers();
+        } catch (Exception e) {
+            TimoCloudBukkit.log("&cError while calling ServerListPingEvent: ");
+            e.printStackTrace();
+            return Bukkit.getMaxPlayers();
         }
     }
 
     public void sendPlayers() {
-        int curPlayers = Bukkit.getOnlinePlayers().size();
-        int maxPlayers = Bukkit.getMaxPlayers();
-        try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
-            curPlayers = event.getNumPlayers();
-            maxPlayers = event.getMaxPlayers();
-        } catch (Exception e) {
-            log("Error while sending player count: ");
-            e.printStackTrace();
-        }
-        getBukkitSocketMessageManager().sendMessage("SETPLAYERS", curPlayers + "/" + maxPlayers);
+        getBukkitSocketMessageManager().sendMessage("SET_PLAYERS", getOnlinePlayersAmount() + "/" + getMaxPlayersAmount());
     }
 
     public static TimoCloudBukkit getInstance() {

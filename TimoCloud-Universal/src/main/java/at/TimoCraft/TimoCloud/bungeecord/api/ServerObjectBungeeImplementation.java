@@ -1,6 +1,5 @@
 package at.TimoCraft.TimoCloud.bungeecord.api;
 
-import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
@@ -21,6 +20,7 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
             TimoCloud.severe("&cCould not set state per API access for server " + getName() + ": Server does not exist anymore.");
             return;
         }
+        this.state = state;
         server.setState(state);
     }
 
@@ -31,6 +31,7 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
             TimoCloud.severe("&cCould not set extra per API access for server " + getName() + ": Server does not exist anymore.");
             return;
         }
+        this.extra = extra;
         server.setState(extra);
     }
 

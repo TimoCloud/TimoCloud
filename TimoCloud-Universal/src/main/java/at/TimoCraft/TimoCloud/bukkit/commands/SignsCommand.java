@@ -6,9 +6,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-/**
- * Created by Timo on 29.12.16.
- */
 public class SignsCommand implements CommandExecutor {
 
     @Override
@@ -22,7 +19,7 @@ public class SignsCommand implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
-            TimoCloudBukkit.getInstance().getFileManager().init();
+            TimoCloudBukkit.getInstance().getFileManager().loadSignConfigs();
             TimoCloudBukkit.getInstance().getSignManager().load();
             BukkitMessageManager.sendMessage(sender, "&aSuccessfully reloaded signs.");
         }

@@ -1,8 +1,5 @@
 package at.TimoCraft.TimoCloud.base.objects;
 
-/**
- * Created by Timo on 16.05.17.
- */
 public class BaseServerObject {
     private String name;
     private int port;

@@ -15,9 +15,6 @@ import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Timo on 27.12.16.
- */
 public class BungeeServerManager {
 
     private List<Integer> portsInUse;
@@ -110,11 +107,7 @@ public class BungeeServerManager {
     }
 
     public void unregisterPort(int port) {
-        if (!isPortFree(port)) {
-            portsInUse.remove(Integer.valueOf(port));
-            return;
-        }
-        TimoCloud.severe("Error: Attemping to unregister not registered port: " + port + ". Please report this.");
+        portsInUse.remove(Integer.valueOf(port));
     }
 
     public ServerInfo getRandomLobbyServer(ServerInfo notThis) {
@@ -144,12 +137,12 @@ public class BungeeServerManager {
         getServersWillBeStarted(group).add(name);
         int port = getFreePort();
         String token = UUID.randomUUID().toString();
+        Server server = new Server(name, group, port, token);
+        group.addStartingServer(server);
         TimoCloud.getInstance().getProxy().getScheduler().schedule(TimoCloud.getInstance(), () -> {
             TimoCloud.getInstance().getProxy().getScheduler().runAsync(TimoCloud.getInstance(), () -> startServerFromAsyncContext(name, group.getName(), group.getRam(), port, group.isStatic(), token, group.getBase()));
-            Server server = new Server(name, group, port, token);
-            server.onStart();
-            group.addStartingServer(server);
             getServersWillBeStarted(group).remove(name);
+            server.onStart();
         }, group.isStatic() ? STATIC_SERVER_START_DELAY : SERVER_START_DELAY, 0, TimeUnit.SECONDS);
     }
 
@@ -201,22 +194,21 @@ public class BungeeServerManager {
         return groups.contains(group);
     }
 
-
     public void saveGroup(Group group) throws IOException {
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".onlineAmount", group.getStartupAmount());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".maxAmount", group.getMaxAmount());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + (group.getRam() < 128 ? ".ramInGigabyte" : ".ramInMegabyte"), group.getRam());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".static", group.isStatic());
         TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".base", group.getBaseName());
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName() + ".sortOut", group.getSortOutStates());
         ConfigurationProvider.getProvider(YamlConfiguration.class).save(TimoCloud.getInstance().getFileManager().getGroups(), TimoCloud.getInstance().getFileManager().getGroupsFile());
         if (!groups.contains(group)) groups.add(group);
     }
 
-    public void removeGroup(String name) throws IOException {
-        Group group = getGroupByName(name);
+    public void removeGroup(Group group) throws IOException {
         group.stopAllServers();
         groups.remove(group);
-        TimoCloud.getInstance().getFileManager().getGroups().set(name, null);
+        TimoCloud.getInstance().getFileManager().getGroups().set(group.getName(), null);
         ConfigurationProvider.getProvider(YamlConfiguration.class).save(TimoCloud.getInstance().getFileManager().getGroups(), TimoCloud.getInstance().getFileManager().getGroupsFile());
     }
 
@@ -277,16 +269,23 @@ public class BungeeServerManager {
 
     public int serversNeeded(Group group) {
         int running = 0;
-        for (Server server : group.getServers())
-            if (isStateActive(server.getState(), group.getName()) || server.isStarting()) running++;
+        for (Server server : group.getServers()) {
+            if (server == null) {
+                TimoCloud.severe("Fatal error: Server is null. Please report this.");
+            }
+            if (isStateActive(server.getState(), group) || server.isStarting()) running++;
+        }
         running += getServersWillBeStarted(group).size();
-        return Math.max(
-                (group.getMaxAmount()>0 ? Math.min(group.getStartupAmount(), group.getMaxAmount()) : group.getStartupAmount())
-                        - running, 0);
+        return Math.max(0,
+                Math.min(
+                        group.getStartupAmount()-running,
+                        group.getMaxAmount()-(group.getServers().size() + getServersWillBeStarted(group).size())
+                ));
+
     }
 
-    private boolean isStateActive(String state, String groupName) {
-        return !(state.equals("OFFLINE") || getGroupByName(groupName).getSortOutStates().contains(groupName));
+    private boolean isStateActive(String state, Group group) {
+        return !(state.equals("OFFLINE") || group.getSortOutStates().contains(state));
     }
 
     public void addBase(String name, BaseObject base) {

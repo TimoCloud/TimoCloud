@@ -1,7 +1,6 @@
 package at.TimoCraft.TimoCloud.api.objects;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
-import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -41,7 +40,6 @@ public class ServerObjectBasicImplementation implements ServerObject {
 
     @Override
     public GroupObject getGroup() {
-        System.out.println("Group of " + name + ": " + group);
         return TimoCloudAPI.getUniversalInstance().getGroup(group);
     }
 
@@ -64,7 +62,9 @@ public class ServerObjectBasicImplementation implements ServerObject {
     }
 
     @Override
-    public void setState(String state) {}
+    public void setState(String state) {
+        this.state = state;
+    }
 
     @Override
     public String getExtra() {
@@ -72,7 +72,9 @@ public class ServerObjectBasicImplementation implements ServerObject {
     }
 
     @Override
-    public void setExtra(String extra) {}
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
 
     @Override
     public String getMap() {

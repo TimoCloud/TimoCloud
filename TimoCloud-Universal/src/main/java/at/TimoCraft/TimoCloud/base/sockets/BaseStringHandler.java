@@ -7,14 +7,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-/**
- * Created by Timo on 29.12.16.
- */
 public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
 
-    String remaining = "";
-    String parsed = "";
-    int open = 0;
+    private String remaining = "";
+    private String parsed = "";
+    private int open = 0;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
@@ -25,7 +22,7 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void read() {
         for (String c : remaining.split("")) {
-            parsed = parsed + c;
+            parsed += c;
             remaining = remaining.substring(1);
             if (c.equals("{")) {
                 open++;

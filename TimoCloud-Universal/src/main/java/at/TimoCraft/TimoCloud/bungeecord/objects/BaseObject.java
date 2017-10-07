@@ -4,9 +4,6 @@ import io.netty.channel.Channel;
 
 import java.net.InetAddress;
 
-/**
- * Created by Timo on 01.02.17.
- */
 public class BaseObject {
     private String name;
     private InetAddress address;

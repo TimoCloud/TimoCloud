@@ -1,9 +1,5 @@
 package at.TimoCraft.TimoCloud.base.sockets;
 
-/**
- * Created by Timo on 28.12.16.
- */
-
 import at.TimoCraft.TimoCloud.base.Base;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

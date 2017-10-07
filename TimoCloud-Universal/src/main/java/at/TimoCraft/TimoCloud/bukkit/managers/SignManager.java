@@ -10,6 +10,7 @@ import at.TimoCraft.TimoCloud.bukkit.objects.SignLayout;
 import at.TimoCraft.TimoCloud.bukkit.objects.SignTemplate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,9 +21,6 @@ import org.json.simple.JSONObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class SignManager {
 
     private List<SignTemplate> signTemplates;
@@ -55,9 +53,24 @@ public class SignManager {
                             errorReason = "Line " + (i + 1) + " (signTemplates.yml section '" + template + ".layouts.lines." + (i + 1) + ") is not defined.";
                         lines[i] = Arrays.asList(line.split(";"));
                     }
-                    layouts.put(layout, new SignLayout(lines, config.getLong(template + ".layouts." + layout + ".updateSpeed")));
+                    Material signBlockMaterial = null;
+                    int signBlockData = 0;
+                    try {
+                        signBlockMaterial = Material.getMaterial(config.getString(template + ".layouts." + layout + ".signBlockMaterial"));
+                        signBlockData = config.getInt(template + ".layouts." + layout + ".signBlockData");
+                    } catch (Exception e) {
+                        errorReason = "Invalid signBlockMaterial or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)";
+                        throw new Exception();
+                    }
+
+                    layouts.put(layout, new SignLayout(
+                            lines,
+                            config.getLong(template + ".layouts." + layout + ".updateSpeed"),
+                            signBlockMaterial,
+                            signBlockData
+                    ));
                 }
-                if (! layouts.containsKey("Default")) {
+                if (!layouts.containsKey("Default")) {
                     errorReason = "Template " + template + " does not have a default layout 'Default'. Please add it and type /signs reload";
                     throw new Exception();
                 }
@@ -109,8 +122,9 @@ public class SignManager {
 
     private SignTemplate getSignTemplate(String name) {
         for (SignTemplate signTemplate : signTemplates) if (signTemplate.getName().equals(name)) return signTemplate;
-        for (SignTemplate signTemplate : signTemplates) if (signTemplate.getName().equalsIgnoreCase(name)) return signTemplate;
-        if (! "Default".equalsIgnoreCase(name)) return getSignTemplate("Default");
+        for (SignTemplate signTemplate : signTemplates)
+            if (signTemplate.getName().equalsIgnoreCase(name)) return signTemplate;
+        if (!"Default".equalsIgnoreCase(name)) return getSignTemplate("Default");
         return null;
     }
 
@@ -122,7 +136,7 @@ public class SignManager {
                 Arrays.asList(name)
         };
         Map<String, SignLayout> layouts = new HashMap<>();
-        layouts.put("Default", new SignLayout(lines, -1));
+        layouts.put("Default", new SignLayout(lines, -1, null, 0));
         return new SignTemplate("TemplateNotFound", layouts);
     }
 
@@ -160,7 +174,7 @@ public class SignManager {
 
         List<ServerObject> targets = new ArrayList<>();
         for (ServerObject serverObject : group.getServers())
-            if (true) targets.add(serverObject);
+            if (!group.getSortOutStates().contains(serverObject.getState())) targets.add(serverObject);
 
         List<SignInstance> withPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() != 0).collect(Collectors.toList());
         List<SignInstance> withoutPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() == 0).collect(Collectors.toList());
@@ -181,17 +195,18 @@ public class SignManager {
             try {
                 org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
                 org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
-                if (! sign1.getFacing().equals(sign2.getFacing())) return 0;
-                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY()) return o2.getLocation().getBlockY()-o1.getLocation().getBlockY();
+                if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
                 switch (sign1.getFacing()) {
                     case NORTH:
-                        return o2.getLocation().getBlockX()-o1.getLocation().getBlockX();
+                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
                     case SOUTH:
-                        return o1.getLocation().getBlockX()-o2.getLocation().getBlockX();
+                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
                     case EAST:
-                        return o2.getLocation().getBlockZ()-o1.getLocation().getBlockZ();
+                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
                     case WEST:
-                        return o1.getLocation().getBlockZ()-o2.getLocation().getBlockZ();
+                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
                     default:
                         return 0;
                 }
@@ -216,37 +231,40 @@ public class SignManager {
     }
 
     private void writeSign(ServerObject server, SignTemplate signTemplate, SignInstance signInstance) {
-        if (! isSignActive(signInstance) || server == null) return;
+        if (!isSignActive(signInstance)) return;
         if (signTemplate == null) signTemplate = templateNotFound(signInstance.getTemplateName());
         signInstance.setTargetServer(server);
-        SignLayout signLayout = signTemplate.getLayout(server.getState());
+        SignLayout signLayout = signTemplate.getLayout(server == null ? "Default" : server.getState());
         Sign sign = (Sign) signInstance.getLocation().getBlock().getState();
         for (int i = 0; i < 4; i++) {
             sign.setLine(i, replace(signLayout.getLine(i).get(signInstance.getStep() % signLayout.getLine(i).size()), server));
         }
         sign.update();
+        setSignBlock(signInstance, signLayout);
+
         if (signLayout.getUpdateSpeed() > 0 && updates % signLayout.getUpdateSpeed() == 0)
             signInstance.setStep(signInstance.getStep() + 1);
     }
 
-    private Block getBlockBehindSign(Block signBlock) {
-        org.bukkit.material.Sign sign = (org.bukkit.material.Sign) signBlock.getState().getData();
-        if (!signBlock.getType().equals(org.bukkit.Material.WALL_SIGN)) return null;
-        switch (sign.getFacing()) {
-            case NORTH:
-                return signBlock.getLocation().clone().add(0, 0, -1).getBlock();
-            case SOUTH:
-                return signBlock.getLocation().clone().add(0, 0, 1).getBlock();
-            case EAST:
-                return signBlock.getLocation().clone().add(1, 0, 0).getBlock();
-            case WEST:
-                return signBlock.getLocation().clone().add(-1, 0, 0).getBlock();
-            default:
-                return null;
-        }
+    private void setSignBlock(SignInstance signInstance, SignLayout signLayout) {
+        Material material = signLayout.getSignBlockMaterial();
+        if (material == null) return;
+        Block signBlock = signInstance.getLocation().getBlock();
+        Block attachedTo = getSignBlockAttached(signBlock);
+        if (attachedTo == null) return;
+        attachedTo.setType(material);
+        try {
+            Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
+        } catch (Exception e) {}
+    }
+
+    private Block getSignBlockAttached(Block signBlock) {
+        if (! signBlock.getType().equals(Material.WALL_SIGN)) return null;
+        return signBlock.getRelative(((org.bukkit.material.Sign) signBlock.getState().getData()).getAttachedFace());
     }
 
     public String replace(String string, ServerObject server) {
+        if (server == null) return ChatColor.translateAlternateColorCodes('&', string);
         return ChatColor.translateAlternateColorCodes('&', string
                 .replace("%name%", server.getName())
                 .replace("%server_name%", server.getName())
@@ -259,7 +277,8 @@ public class SignManager {
     }
 
     private SignInstance getSignInstanceByLocation(Location location) {
-        for (SignInstance signInstance : signInstances) if (signInstance.getLocation().equals(location)) return signInstance;
+        for (SignInstance signInstance : signInstances)
+            if (signInstance.getLocation().equals(location)) return signInstance;
         return null;
     }
 

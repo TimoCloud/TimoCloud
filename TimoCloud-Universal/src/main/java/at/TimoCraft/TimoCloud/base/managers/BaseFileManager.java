@@ -1,22 +1,21 @@
 package at.TimoCraft.TimoCloud.base.managers;
 
+import at.TimoCraft.TimoCloud.base.Base;
+import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileReader;
-import java.nio.file.Files;
+import java.io.FileWriter;
 import java.util.Map;
 
-/**
- * Created by Timo on 31.01.17.
- */
 public class BaseFileManager {
-    private final String configsDirectory = "configs/";
-    private final String templatesDirectory = "templates/";
-    private final String temporaryDirectory = "temporary/";
-    private final String staticDirectory = "static/";
-    private final String logsDirectory = "logs/";
-    private final String pluginsDirectory = "plugins/";
+    private File configsDirectory;
+    private File templatesDirectory;
+    private File temporaryDirectory;
+    private File staticDirectory;
+    private File globalDirectory;
+    private File logsDirectory;
     private File configFile;
     private Map<String, Object> config;
 
@@ -26,45 +25,70 @@ public class BaseFileManager {
 
     public void load() {
         try {
-            new File(getConfigsDirectory()).mkdirs();
-            new File(getTemplatesDirectory()).mkdirs();
-            new File(getTemporaryDirectory()).mkdirs();
-            new File(getStaticDirectory()).mkdirs();
-            new File(getLogsDirectory()).mkdirs();
-            new File(getPluginsDirectory()).mkdirs();
-            this.configFile = new File(getConfigsDirectory(), "config.yml");
-            if (! configFile.exists()) {
-                Files.copy(this.getClass().getResourceAsStream("/base/config.yml"), configFile.toPath());
+            configsDirectory = new File("configs/");
+            configsDirectory.mkdirs();
+            templatesDirectory = new File("templates/");
+            templatesDirectory.mkdirs();
+            temporaryDirectory = new File("temporary/");
+            temporaryDirectory.mkdirs();
+            staticDirectory = new File("static/");
+            staticDirectory.mkdirs();
+            globalDirectory = new File(templatesDirectory, "Global/");
+            globalDirectory.mkdirs();
+            new File(globalDirectory, "plugins/").mkdirs();
+            logsDirectory = new File("logs/");
+            logsDirectory.mkdirs();
+            if (new File("plugins/").exists()) {
+                Base.severe("The global 'plugins' directory is outdated and will no longer be used. Please move global plugins to 'templates/Global/plugins/' and delete the 'plugins/' directory to hide this warning.");
             }
-            Yaml configYaml = new Yaml();
-            this.config = (Map<String, Object>) configYaml.load(new FileReader(configFile));
+            this.configFile = new File(getConfigsDirectory(), "config.yml");
+            configFile.createNewFile();
+            Yaml yaml = new Yaml();
+            this.config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+            Map<String, Object> defaults = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/base/config.yml"));
+            for (String key : defaults.keySet()) {
+                if (! config.containsKey(key)) config.put(key, defaults.get(key));
+            }
+            saveConfig();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public String getConfigsDirectory() {
+    private void saveConfig() {
+        try {
+            FileWriter writer = new FileWriter(configFile);
+            DumperOptions dumperOptions = new DumperOptions();
+            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            new Yaml(dumperOptions).dump(config, writer);
+        } catch (Exception e) {
+            Base.severe("Error while saving config: ");
+            e.printStackTrace();
+        }
+    }
+
+    public File getConfigsDirectory() {
         return configsDirectory;
     }
 
-    public String getTemplatesDirectory() {
+    public File getTemplatesDirectory() {
         return templatesDirectory;
     }
 
-    public String getTemporaryDirectory() {
+    public File getTemporaryDirectory() {
         return temporaryDirectory;
     }
 
-    public String getStaticDirectory() {
+    public File getStaticDirectory() {
         return staticDirectory;
     }
 
-    public String getLogsDirectory() {
-        return logsDirectory;
+    public File getGlobalDirectory() {
+        return globalDirectory;
     }
 
-    public String getPluginsDirectory() {
-        return pluginsDirectory;
+    public File getLogsDirectory() {
+        return logsDirectory;
     }
 
     public File getConfigFile() {
@@ -74,4 +98,5 @@ public class BaseFileManager {
     public Map getConfig() {
         return config;
     }
+
 }

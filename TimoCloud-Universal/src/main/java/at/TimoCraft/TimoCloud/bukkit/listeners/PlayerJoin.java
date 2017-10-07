@@ -6,9 +6,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-/**
- * Created by Timo on 11.02.17.
- */
 public class PlayerJoin implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {

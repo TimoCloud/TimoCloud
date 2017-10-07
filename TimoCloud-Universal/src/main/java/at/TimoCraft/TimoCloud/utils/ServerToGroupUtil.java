@@ -1,8 +1,5 @@
 package at.TimoCraft.TimoCloud.utils;
 
-/**
- * Created by Timo on 16.05.17.
- */
 public class ServerToGroupUtil {
     public static String getGroupByServer(String server) {
         if (!server.contains("-")) {

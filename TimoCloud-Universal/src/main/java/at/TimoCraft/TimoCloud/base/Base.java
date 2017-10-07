@@ -14,9 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by Timo on 31.01.17.
- */
 public class Base {
 
     public static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
@@ -98,7 +95,6 @@ public class Base {
     }
 
     public void setConnected(boolean connected) {
-        if (this.connected && ! connected) alertConnecting();
         this.connected = connected;
     }
 

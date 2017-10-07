@@ -2,14 +2,12 @@ package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -25,9 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Timo on 29.12.16.
- */
 public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     private Map<Channel, Integer> open;
@@ -92,7 +87,6 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 server.setChannel(channel);
                 TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, server);
                 server.register();
-                server.setState("ONLINE");
                 break;
             case "BASE_HANDSHAKE":
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
@@ -120,7 +114,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, "APIDATA", groups.toJSONString());
                 break;
-            case "SETSTATE":
+            case "SET_STATE":
                 server.setState(data);
                 break;
             case "GET_STATE":
@@ -130,7 +124,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", state);
                 break;
-            case "SETEXTRA":
+            case "SET_EXTRA":
                 server.setExtra(data);
                 break;
             case "GET_EXTRA":
@@ -140,7 +134,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", extra);
                 break;
-            case "SETMOTD":
+            case "SET_MOTD":
                 server.setMotd(data);
                 break;
             case "GET_MOTD":
@@ -150,7 +144,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MOTD", motd);
                 break;
-            case "SETMAP":
+            case "SET_MAP":
                 server.setMap(data);
                 break;
             case "GET_MAP":
@@ -160,7 +154,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MAP", map);
                 break;
-            case "SETPLAYERS":
+            case "SET_PLAYERS":
                 server.setCurrentPlayers(Integer.parseInt(data.split("/")[0]));
                 server.setMaxPlayers(Integer.parseInt(data.split("/")[1]));
                 break;
@@ -179,7 +173,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "SERVERS", servers);
                 break;
-            case "EXECUTECOMMAND":
+            case "EXECUTE_COMMAND":
                 TimoCloud.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloud.getInstance().getProxy().getConsole(), data);
                 break;
             default:

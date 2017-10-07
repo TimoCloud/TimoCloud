@@ -1,7 +1,6 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
-import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import at.TimoCraft.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,9 +10,6 @@ import org.json.simple.JSONValue;
 
 import java.util.List;
 
-/**
- * Created by Timo on 29.12.16.
- */
 public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
 
     String remaining = "";
@@ -55,6 +51,8 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
         switch (type) {
             case "APIDATA":
                 ((TimoCloudUniversalAPIBukkitImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
+                TimoCloudBukkit.getInstance().getStateByEventManager().setStateByPlayerCount();
+                break;
             case "STATE":
                 TimoCloudBukkit.getInstance().getOtherServerPingManager().setState(server, (String) data);
                 break;

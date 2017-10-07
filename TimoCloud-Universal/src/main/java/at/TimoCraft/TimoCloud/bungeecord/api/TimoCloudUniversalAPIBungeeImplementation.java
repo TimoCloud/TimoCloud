@@ -7,8 +7,6 @@ import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class TimoCloudUniversalAPIBungeeImplementation implements TimoCloudUniversalAPI {

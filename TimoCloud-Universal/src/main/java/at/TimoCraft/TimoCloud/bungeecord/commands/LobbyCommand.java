@@ -6,9 +6,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class LobbyCommand extends Command {
 
     public LobbyCommand(String command, String[] aliases) {

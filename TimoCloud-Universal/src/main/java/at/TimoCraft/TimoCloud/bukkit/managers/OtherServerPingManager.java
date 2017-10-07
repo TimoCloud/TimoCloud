@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class OtherServerPingManager {
     private Map<String, String> states;
     private Map<String, String> extras;

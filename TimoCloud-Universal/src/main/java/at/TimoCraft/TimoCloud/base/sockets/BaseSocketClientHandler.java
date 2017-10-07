@@ -6,9 +6,6 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
-/**
- * Created by Timo on 28.12.16.
- */
 @ChannelHandler.Sharable
 public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
 

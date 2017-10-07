@@ -1,9 +1,5 @@
 package at.TimoCraft.TimoCloud.bukkit.sockets;
 
-/**
- * Created by Timo on 28.12.16.
- */
-
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;

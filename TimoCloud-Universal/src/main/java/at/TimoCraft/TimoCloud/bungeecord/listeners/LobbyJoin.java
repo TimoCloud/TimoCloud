@@ -12,9 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * Created by Timo on 28.12.16.
- */
 public class LobbyJoin implements Listener {
     private Map<UUID, Boolean> pending;
 

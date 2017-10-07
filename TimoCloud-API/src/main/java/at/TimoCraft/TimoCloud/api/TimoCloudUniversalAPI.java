@@ -6,27 +6,27 @@ import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import java.util.List;
 
 /**
- * Created by Timo on 11.09.17.
+ * Use {@link TimoCloudAPI#getUniversalInstance()} to get an instance of this class
  */
 public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get all groups
-     * @return List of all groups
+     * @return A list of {@link GroupObject} which contains all existing groups
      */
     List<GroupObject> getGroups();
 
     /**
-     * Use this to get a group by name. Case-insensitive.
-     * @param groupName The groups name
-     * @return A group object
+     * Use this to get a group by name
+     * @param groupName The groups name, case-insensitive
+     * @return A {@link GroupObject} which matches the given name
      */
     GroupObject getGroup(String groupName);
 
     /**
-     * Use this to get a server by name. Case-insensitive.
-     * @param serverName
-     * @return A server object
+     * Use this to get a server by name
+     * @param serverName The servers name, case-insensitive
+     * @return A {@link ServerObject} which matches the given name
      */
     ServerObject getServer(String serverName);
 }
