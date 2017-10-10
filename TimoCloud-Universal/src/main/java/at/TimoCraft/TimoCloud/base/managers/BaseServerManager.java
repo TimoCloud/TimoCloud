@@ -88,7 +88,7 @@ public class BaseServerManager {
                         mapName += splitted[i];
                         if (i < splitted.length - 1) mapName += "_";
                     }
-                    copyDirectory(randomMapDirectory, templateDirectory);
+                    copyDirectory(randomMapDirectory, temporaryDirectory);
                 }
             }
 

@@ -2,9 +2,11 @@ package at.TimoCraft.TimoCloud.bungeecord.objects;
 
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -140,7 +142,7 @@ public class Group {
                 getBaseName(),
                 getSortOutStates()
         );
-        groupObject.getServers().sort(Comparator.comparing(ServerObject::getName));
+        Collections.sort((List) groupObject.getServers());
         return groupObject;
     }
 

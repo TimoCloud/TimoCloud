@@ -21,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBukkit extends JavaPlugin {
 
@@ -48,6 +50,7 @@ public class TimoCloudBukkit extends JavaPlugin {
         registerChannel();
         TimoCloudAPI.setBukkitImplementation(new TimoCloudBukkitAPIImplementation());
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBukkitImplementation());
+        Executors.newSingleThreadExecutor().submit(this::connectToBungeeCord);
         log("&ahas been enabled!");
     }
 
@@ -56,8 +59,23 @@ public class TimoCloudBukkit extends JavaPlugin {
         log("&chas been disabled!");
     }
 
+    private void connectToBungeeCord() {
+        try {
+            log("Connecting to bungee socket on " + getBungeeIP() + ":" + getBungeeSocketPort() + "...");
+            new BukkitSocketClient().init(getBungeeIP(), getBungeeSocketPort());
+        } catch (Exception e) {
+            e.printStackTrace();
+            onSocketDisconnect();
+        }
+    }
+
+    private void registerAtBungeeCord() {
+        getBukkitSocketMessageManager().sendMessage("REGISTER", System.getProperty("timocloud-token"));
+    }
+
     public void onSocketConnect() {
         getBukkitSocketMessageManager().sendMessage("HANDSHAKE", System.getProperty("timocloud-token"));
+        doEverySecond();
         if (isRandomMap()) {
             getBukkitSocketMessageManager().sendMessage("SET_MAP", getMapName());
         }
@@ -142,21 +160,14 @@ public class TimoCloudBukkit extends JavaPlugin {
         return new File(System.getProperty("timocloud-temporarydirectory"));
     }
 
-    private void registerTasks() {
-        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            try {
-                log("Connecting to bungee socket on " + getBungeeIP() + ":" + getBungeeSocketPort() + "...");
-                new BukkitSocketClient().init(getBungeeIP(), getBungeeSocketPort());
-            } catch (Exception e) {
-                e.printStackTrace();
-                onSocketDisconnect();
-            }
-        });
+    private void doEverySecond() {
+        sendEverything();
+        getOtherServerPingManager().requestEverything();
+    }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            sendEverything();
-            getOtherServerPingManager().requestEverything();
-        }, 0L, 20L);
+    private void registerTasks() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtBungeeCord, 0L);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             getSignManager().updateSigns();
         }, 5L, 1L);

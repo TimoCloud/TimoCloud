@@ -54,6 +54,12 @@ public class Server {
         TimoCloud.info("Stopped " + getName() + ".");
     }
 
+    public void onConnect(Channel channel) {
+        setChannel(channel);
+        TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, this);
+        TimoCloud.info("Server " + getName() + " connected.");
+    }
+
     public void register() {
         if (isRegistered()) return;
         TimoCloud.getInstance().getProxy().getServers().put(getServerInfo().getName(), getServerInfo());
@@ -62,7 +68,7 @@ public class Server {
         setState("ONLINE");
         this.starting = false;
         this.registered = true;
-        TimoCloud.info("Server " + getName() + " connected.");
+        TimoCloud.info("Server " + getName() + " registered.");
     }
 
     public void unregister() {

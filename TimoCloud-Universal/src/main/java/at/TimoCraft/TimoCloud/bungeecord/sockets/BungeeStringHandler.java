@@ -84,9 +84,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                     channel.close();
                     break;
                 }
-                server.setChannel(channel);
-                TimoCloud.getInstance().getSocketServerHandler().getServerChannels().put(channel, server);
-                server.register();
+                server.onConnect(channel);
                 break;
             case "BASE_HANDSHAKE":
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
@@ -101,6 +99,13 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
                 BaseObject base = new BaseObject(serverName, address, channel);
                 TimoCloud.getInstance().getSocketServerHandler().getBaseChannels().put(channel, base);
                 TimoCloud.getInstance().getServerManager().addBase(serverName, base);
+                break;
+            case "REGISTER":
+                if (! data.equals(server.getToken())) {
+                    channel.close();
+                    break;
+                }
+                server.register();
                 break;
             case "GET_API_DATA":
                 JSONArray groups = new JSONArray();

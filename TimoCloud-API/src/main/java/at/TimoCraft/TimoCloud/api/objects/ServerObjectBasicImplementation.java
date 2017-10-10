@@ -5,7 +5,7 @@ import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class ServerObjectBasicImplementation implements ServerObject {
+public class ServerObjectBasicImplementation implements ServerObject, Comparable {
 
     private String name;
     private String group;
@@ -121,4 +121,14 @@ public class ServerObjectBasicImplementation implements ServerObject {
         return getName();
     }
 
+    @Override
+    public int compareTo(Object o) {
+        if (! (o instanceof ServerObject)) return 1;
+        ServerObject so = (ServerObject) o;
+        try {
+            return Integer.parseInt(getName().split("-")[getName().split("-").length-1])-Integer.parseInt(so.getName().split("-")[so.getName().split("-").length-1]);
+        } catch (Exception e) {
+            return getName().compareTo(so.getName());
+        }
+    }
 }
