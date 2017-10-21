@@ -46,6 +46,17 @@ public class BaseServerManager {
         FileUtils.copyDirectory(from, to);
     }
 
+    private void copyDirectoryCarefully(File from, File to) throws IOException {
+        for (File file : from.listFiles()) {
+            if (file.isDirectory()) {
+                copyDirectoryCarefully(file, new File(to, file.getName()));
+            } else {
+                if (new File(to, file.getName()).exists()) continue;
+                FileUtils.copyFileToDirectory(file, to);
+            }
+        }
+    }
+
     private void deleteDirectory(File directory) {
         if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
     }
@@ -66,14 +77,17 @@ public class BaseServerManager {
                 copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
             }
 
-            if (!server.isStatic()) {
-                copyDirectory(templateDirectory, temporaryDirectory);
-            } else {
+            if (server.isStatic()) {
+                copyDirectoryCarefully(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
+                 /*
                 File temp = new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName());
                 copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temp);
                 copyDirectory(temporaryDirectory, temp);
                 copyDirectory(temp, temporaryDirectory);
                 deleteDirectory(temp);
+                */
+            } else {
+                copyDirectory(templateDirectory, temporaryDirectory);
             }
 
             boolean randomMap = false;
@@ -83,7 +97,7 @@ public class BaseServerManager {
                 if (randomMapDirectory != null && randomMapDirectory.exists()) {
                     randomMap = true;
                     mapName = "";
-                    String[] splitted = templateDirectory.getName().split("_");
+                    String[] splitted = randomMapDirectory.getName().split("_");
                     for (int i = 1; i < splitted.length; i++) {
                         mapName += splitted[i];
                         if (i < splitted.length - 1) mapName += "_";
@@ -115,7 +129,9 @@ public class BaseServerManager {
                 }
             }
 
-            setProperty(new File(temporaryDirectory, "server.properties"), "online-mode", "false");
+            File serverProperties = new File(temporaryDirectory, "server.properties");
+            setProperty(serverProperties, "online-mode", "false");
+            setProperty(serverProperties, "server-name", server.getName());
 
             double millisNow = System.currentTimeMillis();
             Base.info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");

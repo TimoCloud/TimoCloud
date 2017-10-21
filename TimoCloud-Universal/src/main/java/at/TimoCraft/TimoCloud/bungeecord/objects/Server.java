@@ -200,8 +200,8 @@ public class Server {
                 getToken(),
                 getState(),
                 getExtra(),
-                getMotd(),
                 getMap(),
+                getMotd(),
                 getCurrentPlayers(),
                 getMaxPlayers(),
                 getServerInfo().getAddress()

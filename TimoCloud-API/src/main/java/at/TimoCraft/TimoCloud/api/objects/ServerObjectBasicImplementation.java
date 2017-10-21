@@ -26,8 +26,8 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
         this.token = token;
         this.state = state;
         this.extra = extra;
-        this.motd = motd;
         this.map = map;
+        this.motd = motd;
         this.currentPlayers = currentPlayers;
         this.maxPlayers = maxPlayers;
         this.socketAddress = socketAddress;
