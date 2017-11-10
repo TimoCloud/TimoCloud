@@ -12,12 +12,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class BaseServerManager {
+
+    private static final FileTime STATIC_CREATE_TIME = FileTime.fromMillis(996192000L);
 
     private LinkedList<BaseServerObject> queue;
     private final ScheduledExecutorService scheduler;
@@ -48,11 +53,21 @@ public class BaseServerManager {
 
     private void copyDirectoryCarefully(File from, File to) throws IOException {
         for (File file : from.listFiles()) {
+            File toFile = new File(to, file.getName());
             if (file.isDirectory()) {
-                copyDirectoryCarefully(file, new File(to, file.getName()));
+                copyDirectoryCarefully(file, toFile);
             } else {
-                if (new File(to, file.getName()).exists()) continue;
+                BasicFileAttributes attributesRead = null;
+                if (toFile.exists()) {
+                    attributesRead = Files.readAttributes(toFile.toPath(), BasicFileAttributes.class);
+                    if (! attributesRead.creationTime().equals(STATIC_CREATE_TIME)) continue; // Not copied to static directory before
+                }
+
+                if (toFile.exists() && ! attributesRead.creationTime().equals(STATIC_CREATE_TIME)) continue;
                 FileUtils.copyFileToDirectory(file, to);
+                attributesRead = Files.readAttributes(toFile.toPath(), BasicFileAttributes.class);
+                BasicFileAttributeView attributes = Files.getFileAttributeView(toFile.toPath(), BasicFileAttributeView.class);
+                attributes.setTimes(attributesRead.lastModifiedTime(), attributesRead.lastAccessTime(), STATIC_CREATE_TIME);
             }
         }
     }
@@ -79,13 +94,6 @@ public class BaseServerManager {
 
             if (server.isStatic()) {
                 copyDirectoryCarefully(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
-                 /*
-                File temp = new File(Base.getInstance().getFileManager().getTemporaryDirectory(), server.getName());
-                copyDirectory(Base.getInstance().getFileManager().getGlobalDirectory(), temp);
-                copyDirectory(temporaryDirectory, temp);
-                copyDirectory(temp, temporaryDirectory);
-                deleteDirectory(temp);
-                */
             } else {
                 copyDirectory(templateDirectory, temporaryDirectory);
             }

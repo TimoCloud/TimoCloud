@@ -16,8 +16,9 @@ public class LobbyCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) {
             BungeeMessageManager.sendMessage(sender, "&cThis command is only for players!");
+            return;
         }
         ProxiedPlayer player = (ProxiedPlayer) sender;
-        player.connect(TimoCloud.getInstance().getServerManager().getRandomLobbyServer(null));
+        player.connect(TimoCloud.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId()));
     }
 }

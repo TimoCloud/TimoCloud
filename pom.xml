@@ -8,7 +8,7 @@
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
 
-    <version>4.6.6</version>
+    <version>4.6.7</version>
 
     <modules>
         <module>TimoCloud-Universal</module>

@@ -9,6 +9,7 @@ import at.TimoCraft.TimoCloud.bungeecord.listeners.LobbyJoin;
 import at.TimoCraft.TimoCloud.bungeecord.listeners.ServerKick;
 import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeFileManager;
 import at.TimoCraft.TimoCloud.bungeecord.managers.BungeeServerManager;
+import at.TimoCraft.TimoCloud.bungeecord.managers.LobbyManager;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServer;
 import at.TimoCraft.TimoCloud.bungeecord.sockets.BungeeSocketServerHandler;
 import net.md_5.bungee.api.ChatColor;
@@ -20,8 +21,9 @@ import java.util.concurrent.TimeUnit;
 public class TimoCloud extends Plugin {
 
     private static TimoCloud instance;
-    private BungeeServerManager serverManager;
     private BungeeFileManager fileManager;
+    private BungeeServerManager serverManager;
+    private LobbyManager lobbyManager;
     private BungeeSocketServer socketServer;
     private BungeeSocketServerHandler socketServerHandler;
     private String prefix;
@@ -63,6 +65,7 @@ public class TimoCloud extends Plugin {
 
     private void makeInstances() {
         fileManager = new BungeeFileManager();
+        lobbyManager = new LobbyManager();
         serverManager = new BungeeServerManager();
         socketServer = new BungeeSocketServer();
         socketServerHandler = new BungeeSocketServerHandler();
@@ -103,12 +106,16 @@ public class TimoCloud extends Plugin {
         return instance;
     }
 
+    public BungeeFileManager getFileManager() {
+        return fileManager;
+    }
+
     public BungeeServerManager getServerManager() {
         return serverManager;
     }
 
-    public BungeeFileManager getFileManager() {
-        return fileManager;
+    public LobbyManager getLobbyManager() {
+        return lobbyManager;
     }
 
     public String getPrefix() {

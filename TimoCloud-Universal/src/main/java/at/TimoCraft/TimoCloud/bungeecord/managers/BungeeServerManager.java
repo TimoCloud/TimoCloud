@@ -1,8 +1,10 @@
 package at.TimoCraft.TimoCloud.bungeecord.managers;
 
+import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Group;
+import at.TimoCraft.TimoCloud.bungeecord.objects.LobbyChooseStrategy;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class BungeeServerManager {
 
@@ -110,28 +113,6 @@ public class BungeeServerManager {
         portsInUse.remove(Integer.valueOf(port));
     }
 
-    public ServerInfo getRandomLobbyServer(ServerInfo notThis) {
-        Group group = getGroupByName(TimoCloud.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
-        if (group.getServers().size() == 0)
-            return TimoCloud.getInstance().getProxy().getServerInfo(TimoCloud.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
-        List<Server> servers;
-        if (notThis == null) {
-            servers = group.getServers();
-        } else {
-            servers = new ArrayList<>();
-            for (Server server : group.getServers()) {
-                if (!server.getServerInfo().equals(notThis)) {
-                    servers.add(server);
-                }
-            }
-            if (servers.size() == 0) {
-                TimoCloud.severe("No running fallback server found. Maybe you should start more lobby servers. This could happen because a player has been kicked from a lobby and there was no OTHER free lobby server.");
-                return notThis;
-            }
-        }
-
-        return servers.get(new Random().nextInt(servers.size())).getServerInfo();
-    }
 
     public void startServer(Group group, String name) {
         getServersWillBeStarted(group).add(name);
@@ -272,14 +253,15 @@ public class BungeeServerManager {
         for (Server server : group.getServers()) {
             if (server == null) {
                 TimoCloud.severe("Fatal error: Server is null. Please report this.");
+                continue;
             }
             if (isStateActive(server.getState(), group) || server.isStarting()) running++;
         }
         running += getServersWillBeStarted(group).size();
         return Math.max(0,
                 Math.min(
-                        group.getStartupAmount()-running,
-                        (group.getMaxAmount() > 0 ? group.getMaxAmount() : 100)-(group.getServers().size() + getServersWillBeStarted(group).size())
+                        group.getStartupAmount() - running,
+                        (group.getMaxAmount() > 0 ? group.getMaxAmount() : 100) - (group.getServers().size() + getServersWillBeStarted(group).size())
                 ));
 
     }

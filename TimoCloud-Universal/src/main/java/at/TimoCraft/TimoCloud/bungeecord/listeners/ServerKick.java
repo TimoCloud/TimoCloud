@@ -10,6 +10,6 @@ public class ServerKick implements Listener {
     public void onServerKickEvent(ServerKickEvent event) {
         if (! TimoCloud.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;
         event.setCancelled(true);
-        event.setCancelServer(TimoCloud.getInstance().getServerManager().getRandomLobbyServer(event.getKickedFrom()));
+        event.setCancelServer(TimoCloud.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true));
     }
 }

@@ -2,6 +2,7 @@ package at.TimoCraft.TimoCloud.bungeecord.listeners;
 
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -37,18 +38,19 @@ public class LobbyJoin implements Listener {
         if (! isPending(event.getPlayer().getUniqueId())) {
             return;
         }
-        ServerInfo info = TimoCloud.getInstance().getServerManager().getRandomLobbyServer(null);
+        ProxiedPlayer player = event.getPlayer();
+        ServerInfo info = TimoCloud.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
         if (info == null) {
             TimoCloud.severe("No lobby server found.");
             return;
         }
         event.setTarget(info);
-        pending.put(event.getPlayer().getUniqueId(), false);
+        pending.put(player.getUniqueId(), false);
     }
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
         event.setCancelled(true);
-        event.setCancelServer(TimoCloud.getInstance().getServerManager().getRandomLobbyServer(event.getKickedFrom()));
+        event.setCancelServer(TimoCloud.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
     }
 }
