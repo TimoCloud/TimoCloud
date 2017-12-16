@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bukkit.managers;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;

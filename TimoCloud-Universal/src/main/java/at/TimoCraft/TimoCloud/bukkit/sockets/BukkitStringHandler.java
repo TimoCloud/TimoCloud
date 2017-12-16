@@ -53,23 +53,8 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
                 ((TimoCloudUniversalAPIBukkitImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
                 TimoCloudBukkit.getInstance().getStateByEventManager().setStateByPlayerCount();
                 break;
-            case "STATE":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setState(server, (String) data);
-                break;
-            case "EXTRA":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setExtra(server, (String) data);
-                break;
-            case "PLAYERS":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setPlayers(server, (String) data);
-                break;
-            case "MOTD":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setMotd(server, (String) data);
-                break;
-            case "MAP":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setMap(server, (String) data);
-                break;
-            case "SERVERS":
-                TimoCloudBukkit.getInstance().getOtherServerPingManager().setServersToGroup(server, (List<String>) data);
+            case "EXECUTE_COMMAND":
+                TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data);
                 break;
             default:
                 TimoCloudBukkit.log("Error: Could not categorize json message: " + message);

@@ -1,6 +1,8 @@
-package at.TimoCraft.TimoCloud.api.objects;
+package at.TimoCraft.TimoCloud.api.implementations;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.objects.GroupObject;
+import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -114,6 +116,14 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     @Override
     public boolean isSortedOut() {
         return getGroup().getSortOutStates().contains(getState());
+    }
+
+    @Override
+    public void executeCommand(String command) {}
+
+    @Override
+    public void stop() {
+        executeCommand("stop");
     }
 
     @Override

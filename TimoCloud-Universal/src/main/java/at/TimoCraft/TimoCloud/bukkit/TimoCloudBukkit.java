@@ -31,7 +31,6 @@ public class TimoCloudBukkit extends JavaPlugin {
     private BukkitSocketClientHandler socketClientHandler;
     private BukkitSocketMessageManager bukkitSocketMessageManager;
     private SignManager signManager;
-    private OtherServerPingManager otherServerPingManager;
     private StateByEventManager stateByEventManager;
     private String prefix = "[TimoCloud]";
 
@@ -100,7 +99,6 @@ public class TimoCloudBukkit extends JavaPlugin {
         socketClientHandler = new BukkitSocketClientHandler();
         bukkitSocketMessageManager = new BukkitSocketMessageManager();
         signManager = new SignManager();
-        otherServerPingManager = new OtherServerPingManager();
         stateByEventManager = new StateByEventManager();
     }
 
@@ -162,7 +160,7 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     private void doEverySecond() {
         sendEverything();
-        getOtherServerPingManager().requestEverything();
+        requestApiData();
     }
 
     private void registerTasks() {
@@ -173,12 +171,16 @@ public class TimoCloudBukkit extends JavaPlugin {
         }, 5L, 1L);
     }
 
-    public void sendEverything() {
+    private void sendEverything() {
         sendMotds();
         sendPlayers();
     }
 
-    public void sendMotds() {
+    private void requestApiData() {
+        getBukkitSocketMessageManager().sendMessage("GET_API_DATA", "");
+    }
+
+    private void sendMotds() {
         try {
             ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             Bukkit.getPluginManager().callEvent(event);
@@ -249,10 +251,6 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public SignManager getSignManager() {
         return signManager;
-    }
-
-    public OtherServerPingManager getOtherServerPingManager() {
-        return otherServerPingManager;
     }
 
     public StateByEventManager getStateByEventManager() {

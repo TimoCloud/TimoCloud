@@ -1,5 +1,6 @@
 package at.TimoCraft.TimoCloud.api;
 
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 

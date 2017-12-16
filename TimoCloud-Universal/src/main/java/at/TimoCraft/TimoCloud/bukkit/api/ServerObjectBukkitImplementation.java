@@ -1,7 +1,7 @@
 package at.TimoCraft.TimoCloud.bukkit.api;
 
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
+import at.TimoCraft.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 
 import java.net.InetSocketAddress;
@@ -39,5 +39,15 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
     public void setExtra(String extra) {
         this.extra = extra;
         TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("SET_EXTRA", getName(), extra);
+    }
+
+    @Override
+    public void executeCommand(String command) {
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("REDIRECT_COMMAND", getName(), command);
+    }
+
+    @Override
+    public void stop() {
+        TimoCloudBukkit.getInstance().getBukkitSocketMessageManager().sendMessage("STOP_SERVER", getName(), "");
     }
 }

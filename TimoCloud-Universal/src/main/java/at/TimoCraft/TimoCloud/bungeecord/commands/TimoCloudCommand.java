@@ -10,6 +10,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TimoCloudCommand extends Command {
@@ -102,6 +103,33 @@ public class TimoCloudCommand extends Command {
                 }
                 server.stop();
                 BungeeMessageManager.sendMessage(sender, "&aServer &e" + server.getName() + "&a has successfully been stopped.");
+                return;
+            }
+            if (args[0].equalsIgnoreCase("sendcommand")) {
+                Server server = TimoCloud.getInstance().getServerManager().getServerByName(args[1]);
+                Group group = TimoCloud.getInstance().getServerManager().getGroupByName(args[1]);
+                if (group == null && server == null) {
+                    BungeeMessageManager.sendMessage(sender, "&cServer or group &e" + args[1] + " &cdoes not exist.");
+                    return;
+                }
+                String command = "";
+                for (int i = 2; i<args.length; i++) {
+                    command += args[i] + " ";
+                }
+                command = command.trim();
+                if (command.length() == 0) {
+                    BungeeMessageManager.sendMessage(sender, "&cPlease provide a command.");
+                    sendHelp(sender);
+                    return;
+                }
+                List<Server> servers = group == null ? Collections.singletonList(server) : group.getServers();
+                for (Server server1 : servers) {
+                    server1.executeCommand(command);
+                }
+                BungeeMessageManager.sendMessage(sender, "&aCommand &e/" + command + "&a has successfully been executed on the following servers:");
+                for (Server server1 : servers) {
+                    BungeeMessageManager.sendMessage(sender, "&b    " + server1.getName());
+                }
                 return;
             }
             if (args[0].equalsIgnoreCase("addgroup")) {
@@ -210,9 +238,10 @@ public class TimoCloudCommand extends Command {
         BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud reload &7- reloads all configs");
         BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud addgroup <groupName (String)> <startupAmount (int)> <maxAmount (int)> <ram (int)> <static (boolean), use false if you don't know what you want> <base (String)> &7- creates a group, please make sure you created a template with the group name in the specific base");
         BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud removegroup <groupName> &7- deletes a group");
+        BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud editgroup <name> <onlineAmount (int), maxAmount (int), base (String), ram (int), static (boolean)> <value>");
         BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud listgroups &7- lists all groups and started servers");
         BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud restartgroup <groupName> &7- restarts all servers in a given group");
-        BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud editgroup <name> <onlineAmount (int), maxAmount (int), base (String), ram (int), static (boolean)> <value>");
-
+        BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud restartserver <serverName> &7- restarts the given server");
+        BungeeMessageManager.sendMessage(sender, "  &a/TimoCloud sendcommand <groupName/serverName> <command> &7- sends the given command to all server of a given group or the given server");
     }
 }

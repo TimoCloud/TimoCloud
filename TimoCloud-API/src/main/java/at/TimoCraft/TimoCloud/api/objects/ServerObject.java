@@ -1,5 +1,7 @@
 package at.TimoCraft.TimoCloud.api.objects;
 
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -88,4 +90,15 @@ public interface ServerObject {
      */
     boolean isSortedOut();
 
+
+    /**
+     * Executes the given command as ConsoleSender on the server
+     * @param command *Without leading /*
+     */
+    void executeCommand(String command);
+
+    /**
+     * Stops the server
+     */
+    void stop();
 }

@@ -1,13 +1,12 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
+import at.TimoCraft.TimoCloud.bungeecord.api.GroupObjectBungeeImplementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,7 +131,7 @@ public class Group {
     }
 
     public GroupObject toGroupObject() {
-        GroupObject groupObject = new GroupObject(
+        GroupObjectBungeeImplementation groupObject = new GroupObjectBungeeImplementation(
                 servers.stream().map(Server::toServerObject).collect(Collectors.toList()),
                 getName(),
                 getStartupAmount(),

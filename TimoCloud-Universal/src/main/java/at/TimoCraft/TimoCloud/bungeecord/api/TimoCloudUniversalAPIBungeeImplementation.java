@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.api;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
@@ -12,7 +13,7 @@ import java.util.List;
 public class TimoCloudUniversalAPIBungeeImplementation implements TimoCloudUniversalAPI {
     @Override
     public List<GroupObject> getGroups() {
-        return Arrays.asList(TimoCloud.getInstance().getServerManager().getGroups().stream().map(Group::toGroupObject).toArray(GroupObject[]::new));
+        return Arrays.asList(TimoCloud.getInstance().getServerManager().getGroups().stream().map(Group::toGroupObject).toArray(GroupObjectBasicImplementation[]::new));
     }
 
     @Override

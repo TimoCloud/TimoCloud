@@ -1,7 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.objects;
 
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
+import at.TimoCraft.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.api.ServerObjectBungeeImplementation;
 import io.netty.channel.Channel;
@@ -193,8 +193,12 @@ public class Server {
         return starting;
     }
 
+    public void executeCommand(String command) {
+        TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, "EXECUTE_COMMAND", command);
+    }
+
     public ServerObject toServerObject() {
-        return (ServerObjectBasicImplementation) new ServerObjectBungeeImplementation(
+        return new ServerObjectBungeeImplementation(
                 getName(),
                 getGroup().getName(),
                 getToken(),

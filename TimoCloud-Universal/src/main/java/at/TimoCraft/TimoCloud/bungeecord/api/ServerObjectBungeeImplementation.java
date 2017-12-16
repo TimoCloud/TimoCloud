@@ -1,7 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.api;
 
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
+import at.TimoCraft.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.Server;
 
@@ -13,9 +13,13 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
         super(name, group, token, state, extra, map, motd, currentPlayers, maxPlayers, socketAddress);
     }
 
+    private Server getServer() {
+        return TimoCloud.getInstance().getServerManager().getServerByToken(getToken());
+    }
+
     @Override
     public void setState(String state) {
-        Server server = TimoCloud.getInstance().getServerManager().getServerByToken(getToken());
+        Server server = getServer();
         if (server == null) {
             TimoCloud.severe("&cCould not set state per API access for server " + getName() + ": Server does not exist anymore.");
             return;
@@ -26,13 +30,23 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
 
     @Override
     public void setExtra(String extra) {
-        Server server = TimoCloud.getInstance().getServerManager().getServerByToken(getToken());
+        Server server = getServer();
         if (server == null) {
             TimoCloud.severe("&cCould not set extra per API access for server " + getName() + ": Server does not exist anymore.");
             return;
         }
         this.extra = extra;
         server.setState(extra);
+    }
+
+    @Override
+    public void executeCommand(String command) {
+        getServer().executeCommand(command);
+    }
+
+    @Override
+    public void stop() {
+        getServer().stop();
     }
 
 }

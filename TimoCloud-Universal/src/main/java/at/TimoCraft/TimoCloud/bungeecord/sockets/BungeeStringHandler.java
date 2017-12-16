@@ -1,6 +1,7 @@
 package at.TimoCraft.TimoCloud.bungeecord.sockets;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudAPI;
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.bungeecord.TimoCloud;
 import at.TimoCraft.TimoCloud.bungeecord.objects.BaseObject;
@@ -122,64 +123,27 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
             case "SET_STATE":
                 server.setState(data);
                 break;
-            case "GET_STATE":
-                String state = "OFFLINE";
-                if (requestedServer != null) {
-                    state = requestedServer.getState();
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "STATE", state);
-                break;
             case "SET_EXTRA":
                 server.setExtra(data);
-                break;
-            case "GET_EXTRA":
-                String extra = "";
-                if (requestedServer != null) {
-                    extra = requestedServer.getExtra();
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "EXTRA", extra);
                 break;
             case "SET_MOTD":
                 server.setMotd(data);
                 break;
-            case "GET_MOTD":
-                String motd = "";
-                if (requestedServer != null) {
-                    motd = requestedServer.getMotd();
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MOTD", motd);
-                break;
             case "SET_MAP":
                 server.setMap(data);
-                break;
-            case "GET_MAP":
-                String map = "";
-                if (requestedServer != null) {
-                    map = requestedServer.getMap();
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "MAP", map);
                 break;
             case "SET_PLAYERS":
                 server.setCurrentPlayers(Integer.parseInt(data.split("/")[0]));
                 server.setMaxPlayers(Integer.parseInt(data.split("/")[1]));
                 break;
-            case "GET_PLAYERS":
-                Server requestedServer3 = TimoCloud.getInstance().getServerManager().getServerByName(data);
-                if (requestedServer3 == null) {
-                    return;
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "PLAYERS", requestedServer.getCurrentPlayers() + "/" + requestedServer.getMaxPlayers());
-                break;
-            case "GET_SERVERS":
-                Group requestedGroup = TimoCloud.getInstance().getServerManager().getGroupByName(data);
-                List<String> servers = new ArrayList<>();
-                for (Server t : requestedGroup.getServers()) {
-                    servers.add(t.getName());
-                }
-                TimoCloud.getInstance().getSocketServerHandler().sendMessage(channel, data, "SERVERS", servers);
-                break;
             case "EXECUTE_COMMAND":
                 TimoCloud.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloud.getInstance().getProxy().getConsole(), data);
+                break;
+            case "REDIRECT_COMMAND":
+                server.executeCommand(data);
+                break;
+            case "STOP_SERVER":
+                server.stop();
                 break;
             default:
                 TimoCloud.severe("Could not categorize json message: " + message);

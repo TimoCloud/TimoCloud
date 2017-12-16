@@ -7,7 +7,7 @@ public class BukkitSocketMessageManager {
 
     public void sendMessage(String type, String server, String data) {
         try {
-            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, TimoCloudBukkit.getInstance().getServerName(), data));
+            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, server, data));
         } catch (Exception e) {
             e.printStackTrace();
             TimoCloudBukkit.getInstance().onSocketDisconnect();

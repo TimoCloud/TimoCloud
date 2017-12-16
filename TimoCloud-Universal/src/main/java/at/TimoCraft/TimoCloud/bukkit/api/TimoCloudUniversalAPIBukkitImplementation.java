@@ -1,9 +1,10 @@
 package at.TimoCraft.TimoCloud.bukkit.api;
 
 import at.TimoCraft.TimoCloud.api.TimoCloudUniversalAPI;
+import at.TimoCraft.TimoCloud.api.implementations.GroupObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.api.objects.GroupObject;
 import at.TimoCraft.TimoCloud.api.objects.ServerObject;
-import at.TimoCraft.TimoCloud.api.objects.ServerObjectBasicImplementation;
+import at.TimoCraft.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import at.TimoCraft.TimoCloud.bukkit.TimoCloudBukkit;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -18,7 +19,7 @@ import java.util.List;
 
 public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUniversalAPI {
 
-    private ArrayList<GroupObject> groups = new ArrayList<>();
+    private ArrayList<GroupObjectBukkitImplementation> groups = new ArrayList<>();
 
     public void setData(String json) {
         ArrayList groups = new ArrayList<>();
@@ -42,7 +43,7 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
 
                 objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
                 objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-                GroupObject groupObject = objectMapper.readValue((String) object, GroupObject.class);
+                GroupObjectBukkitImplementation groupObject = new GroupObjectBukkitImplementation(objectMapper.readValue((String) object, GroupObjectBasicImplementation.class));
                 List<ServerObject> serverObjects = new ArrayList<>();
                 for (ServerObject serverObject : groupObject.getServers())
                     serverObjects.add(new ServerObjectBukkitImplementation((ServerObjectBasicImplementation) serverObject));

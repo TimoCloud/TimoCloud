@@ -2,6 +2,7 @@ package at.TimoCraft.TimoCloud.base.managers;
 
 import at.TimoCraft.TimoCloud.base.Base;
 import at.TimoCraft.TimoCloud.base.objects.BaseServerObject;
+import at.TimoCraft.TimoCloud.utils.FileAttributeUtil;
 import at.TimoCraft.TimoCloud.utils.ServerToGroupUtil;
 import at.TimoCraft.TimoCloud.utils.TimeUtil;
 import org.apache.commons.io.FileDeleteStrategy;
@@ -12,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -22,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BaseServerManager {
 
-    private static final FileTime STATIC_CREATE_TIME = FileTime.fromMillis(996192000L);
+    private static final long STATIC_CREATE_TIME = 1482773874000L;
 
     private LinkedList<BaseServerObject> queue;
     private final ScheduledExecutorService scheduler;
@@ -30,7 +32,7 @@ public class BaseServerManager {
     public BaseServerManager(long millis) {
         queue = new LinkedList<>();
         scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> startNext(), millis, millis, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(this::startNext, millis, millis, TimeUnit.MILLISECONDS);
     }
 
     public void addToQueue(BaseServerObject server) {
@@ -51,23 +53,19 @@ public class BaseServerManager {
         FileUtils.copyDirectory(from, to);
     }
 
-    private void copyDirectoryCarefully(File from, File to) throws IOException {
+    private void copyDirectoryCarefully(File from, File to, long value, int layer) throws IOException {
+        if (layer > 25) {
+            throw new IOException("Too many layers. This could be caused by a symlink loop. File: " + to.getAbsolutePath());
+        }
         for (File file : from.listFiles()) {
             File toFile = new File(to, file.getName());
             if (file.isDirectory()) {
-                copyDirectoryCarefully(file, toFile);
+                copyDirectoryCarefully(file, toFile, value, layer+1);
             } else {
-                BasicFileAttributes attributesRead = null;
-                if (toFile.exists()) {
-                    attributesRead = Files.readAttributes(toFile.toPath(), BasicFileAttributes.class);
-                    if (! attributesRead.creationTime().equals(STATIC_CREATE_TIME)) continue; // Not copied to static directory before
-                }
+                if (toFile.exists() && toFile.lastModified() != value) continue;
 
-                if (toFile.exists() && ! attributesRead.creationTime().equals(STATIC_CREATE_TIME)) continue;
                 FileUtils.copyFileToDirectory(file, to);
-                attributesRead = Files.readAttributes(toFile.toPath(), BasicFileAttributes.class);
-                BasicFileAttributeView attributes = Files.getFileAttributeView(toFile.toPath(), BasicFileAttributeView.class);
-                attributes.setTimes(attributesRead.lastModifiedTime(), attributesRead.lastAccessTime(), STATIC_CREATE_TIME);
+                toFile.setLastModified(value);
             }
         }
     }
@@ -93,7 +91,7 @@ public class BaseServerManager {
             }
 
             if (server.isStatic()) {
-                copyDirectoryCarefully(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory);
+                copyDirectoryCarefully(Base.getInstance().getFileManager().getGlobalDirectory(), temporaryDirectory,  STATIC_CREATE_TIME, 1);
             } else {
                 copyDirectory(templateDirectory, temporaryDirectory);
             }
@@ -146,7 +144,7 @@ public class BaseServerManager {
 
 
             ProcessBuilder pb = new ProcessBuilder(
-                    "/bin/bash", "-c",
+                    "/bin/sh", "-c",
                     "screen -mdS " + server.getName() +
                             " java -server " +
                             " -Xmx" + server.getRam() + "M" +
