@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>at.TimoCraft</groupId>
+    <groupId>cloud.timo</groupId>
     <artifactId>TimoCloud-Universal</artifactId>
     <parent>
         <artifactId>TimoCloud</artifactId>
-        <groupId>at.TimoCraft.TimoCloud</groupId>
-        <version>4.7.1</version>
+        <groupId>cloud.timo.TimoCloud</groupId>
+        <version>5.0.0</version>
     </parent>
     <version>${project.parent.version}</version>
 
@@ -47,10 +47,7 @@
                 <filtering>true</filtering>
                 <directory>${basedir}/src/main/resources/</directory>
                 <includes>
-                    <include>bungee.yml</include>
-                    <include>plugin.yml</include>
-                    <include>base/config.yml</include>
-                    <include>bungeecord/config.yml</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
         </resources>
@@ -69,7 +66,9 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>at.TimoCraft.TimoCloud.base.BaseLoader</mainClass>
+                            <mainClass>cloud.timo.TimoCloud.ModuleLoader</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -159,19 +158,19 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-common</artifactId>
-            <version>4.1.17.Final</version>
+            <version>4.1.19.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-transport</artifactId>
-            <version>4.1.17.Final</version>
+            <version>4.1.19.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.1.17.Final</version>
+            <version>4.1.19.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -197,11 +196,6 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.8.9</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>at.TimoCraft.TimoCloud</groupId>
-            <artifactId>TimoCloud-API</artifactId>
-            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -12,8 +12,8 @@
     </dependencies>
     <parent>
         <artifactId>TimoCloud</artifactId>
-        <groupId>at.TimoCraft.TimoCloud</groupId>
-        <version>4.7.1</version>
+        <groupId>cloud.timo.TimoCloud</groupId>
+        <version>5.0.0</version>
     </parent>
 
     <artifactId>TimoCloud-API</artifactId>

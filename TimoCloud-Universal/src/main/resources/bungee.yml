@@ -1,4 +1,4 @@
 name: TimoCloud
 version: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
 author: TimoCrafter
-main: at.TimoCraft.TimoCloud.lIlIllIIlIIIIlll.llIllllIIIIlIlIl
+main: cloud.timo.TimoCloud.lIlIllIIlIIIIlll.llIllllIIIIlIlIl

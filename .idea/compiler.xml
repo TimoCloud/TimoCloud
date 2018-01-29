@@ -18,6 +18,7 @@
       <module name="parent" target="1.8" />
       <module name="TimoCloud" target="1.8" />
       <module name="TimoCloud-API" target="1.5" />
+      <module name="TimoCloud-Core" target="1.5" />
       <module name="TimoCloud-parent" target="1.5" />
       <module name="TimoCloud-universal" target="1.8" />
       <module name="TimoCloud-Universal" target="1.8" />

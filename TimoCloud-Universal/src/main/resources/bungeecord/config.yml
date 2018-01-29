@@ -1,5 +1,4 @@
 prefix: '&6[&bTimo&fCloud&6]'
-socket-port: 5000
 fallbackGroup: 'Lobby'
 useFallback: true
 emergencyFallback: 'Economy'
