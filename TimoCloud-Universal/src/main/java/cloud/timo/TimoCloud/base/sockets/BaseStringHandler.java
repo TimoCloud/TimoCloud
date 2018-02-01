@@ -1,37 +1,39 @@
 package cloud.timo.TimoCloud.base.sockets;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
+
 public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
 
-    private String remaining = "";
-    private String parsed = "";
+    private StringBuilder parsed;
     private int open = 0;
+
+    public BaseStringHandler() {
+        parsed = new StringBuilder();
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
         TimoCloudBase.getInstance().getSocketClientHandler().setChannel(ctx.channel());
-        remaining = remaining + message;
-        read();
+        read(message);
     }
 
-    public void read() {
-        for (String c : remaining.split("")) {
-            parsed += c;
-            remaining = remaining.substring(1);
-            if (c.equals("{")) {
-                open++;
-            }
+    public void read(String message) {
+        for (String c : message.split("")) {
+            parsed.append(c);
+            if (c.equals("{")) open++;
             if (c.equals("}")) {
                 open--;
                 if (open == 0) {
-                    handleJSON((JSONObject) JSONValue.parse(parsed), parsed);
-                    parsed = "";
+                    handleJSON((JSONObject) JSONValue.parse(parsed.toString()), parsed.toString());
+                    parsed = new StringBuilder();
                 }
             }
         }
@@ -42,24 +44,54 @@ public class BaseStringHandler extends SimpleChannelInboundHandler<String> {
             TimoCloudBase.severe("Error while parsing json: " + message);
             return;
         }
-        String server = (String) json.get("server");
+        String name = (String) json.get("server");
         String type = (String) json.get("type");
         String data = (String) json.get("data");
         String token = (String) json.get("token");
         switch (type) {
-            case "STARTSERVER":
-                int port = 0;
-                port+= (Long) json.get("port");
-                int ram = 0;
-                ram += (Long) json.get("ram");
+            case "START_SERVER": {
+                int ram = (int) json.get("ram");
                 boolean isStatic = (Boolean) json.get("static");
                 String group = (String) json.get("group");
-                TimoCloudBase.getInstance().getServerManager().addToQueue(new BaseServerObject(server, port, ram, isStatic, group, token));
-                TimoCloudBase.info("Added server " + server + " to queue.");
+                String map = (String) json.get("map");
+                JSONObject templateHash = (JSONObject) json.get("templateHash");
+                JSONObject mapHash = json.containsKey("mapHash") ? (JSONObject) json.get("mapHash") : null;
+                JSONObject globalHash = (JSONObject) json.get("globalHash");
+                TimoCloudBase.getInstance().getServerManager().addToServerQueue(new BaseServerObject(name, group, ram, isStatic, map, token, templateHash, mapHash, globalHash));
+                TimoCloudBase.info("Added server " + name + " to queue.");
                 break;
-            case "SERVERSTOPPED":
-                TimoCloudBase.getInstance().getServerManager().onServerStopped(server);
+            }
+            case "START_PROXY": {
+                int ram = (int) json.get("ram");
+                boolean isStatic = (Boolean) json.get("static");
+                String group = (String) json.get("group");
+                JSONObject templateHash = (JSONObject) json.get("templateHash");
+                JSONObject globalHash = (JSONObject) json.get("globalHash");
+                TimoCloudBase.getInstance().getServerManager().addToProxyQueue(new BaseProxyObject(name, group, ram, isStatic, token, templateHash, globalHash));
+                TimoCloudBase.info("Added server " + name + " to queue.");
                 break;
+            }
+            case "SERVER_STOPPED":
+                TimoCloudBase.getInstance().getServerManager().onServerStopped(name);
+                break;
+            case "TRANSFER_FINISHED":
+                try {
+                    TimoCloudBase.getInstance().getFileChunkHandler().getFileOutputStream().close();
+                    TimoCloudBase.getInstance().getFileChunkHandler().setFileOutputStream(null);
+                    File file = TimoCloudBase.getInstance().getFileChunkHandler().getFile();
+                    switch ((String) json.get("transferType")) {
+                        case "SERVER_TEMPLATE":
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(file, new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), (String) json.get("template")));
+                            break;
+                        case "SERVER_GLOBAL_TEMPLATE":
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(file, TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory());
+                            break;
+                    }
+                    break;
+                } catch (Exception e) {
+                    TimoCloudBase.severe("Error while unpacking transfered files: ");
+                    e.printStackTrace();
+                }
             default:
                 TimoCloudBase.severe("Could not categorize json message: " + message);
         }

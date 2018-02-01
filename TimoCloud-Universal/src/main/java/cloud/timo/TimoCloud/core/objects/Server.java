@@ -27,11 +27,12 @@ public class Server implements Communicatable {
     private String token;
     private boolean starting;
 
-    public Server(String name, ServerGroup group, Base base, String token) {
+    public Server(String name, ServerGroup group, Base base, String map, String token) {
         this.name = name;
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getAddress(), getPort());
+        this.map = map;
         this.token = token;
     }
 
@@ -62,6 +63,7 @@ public class Server implements Communicatable {
 
     @Override
     public void onDisconnect() {
+        setChannel(null);
         TimoCloudCore.getInstance().info("Server " + getName() + " disconnected.");
         unregister();
     }
@@ -111,6 +113,12 @@ public class Server implements Communicatable {
             case "STOP_SERVER":
                 stop();
                 break;
+            case "SERVER_STARTED":
+                setPort((int) message.get("port"));
+                break;
+            case "SERVER_NOT_STARTED":
+                unregister();
+                break;
             default:
                 TimoCloudCore.getInstance().severe("Unknown server message type: '" + type + "'. Please report this.");
         }
@@ -141,6 +149,9 @@ public class Server implements Communicatable {
         return address;
     }
 
+    public void setAddress(InetSocketAddress address) {
+        this.address = address;
+    }
 
     public void setChannel(Channel channel) {
         this.channel = channel;
@@ -172,6 +183,11 @@ public class Server implements Communicatable {
 
     public int getPort() {
         return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+        setAddress(new InetSocketAddress(getAddress().getAddress(), port));
     }
 
     public int getCurrentPlayers() {

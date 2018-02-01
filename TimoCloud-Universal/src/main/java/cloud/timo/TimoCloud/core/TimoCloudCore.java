@@ -4,12 +4,17 @@ import cloud.timo.TimoCloud.ModuleType;
 import cloud.timo.TimoCloud.TimoCloudModule;
 import cloud.timo.TimoCloud.core.managers.CoreFileManager;
 import cloud.timo.TimoCloud.core.managers.CoreServerManager;
+import cloud.timo.TimoCloud.core.managers.TemplateManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.utils.options.OptionSet;
 
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -24,6 +29,7 @@ public class TimoCloudCore implements TimoCloudModule {
     private CoreSocketServer socketServer;
     private CoreSocketServerHandler socketServerHandler;
     private CoreServerManager serverManager;
+    private TemplateManager templateManager;
 
     static {
         System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
@@ -66,6 +72,8 @@ public class TimoCloudCore implements TimoCloudModule {
         this.socketServer = new CoreSocketServer();
         new Thread(this::initSocketServer).start();
         this.serverManager = new CoreServerManager();
+        this.templateManager = new TemplateManager();
+        registerTasks();
     }
 
     private void createLogger() throws IOException {
@@ -74,6 +82,15 @@ public class TimoCloudCore implements TimoCloudModule {
         SimpleFormatter formatter = new SimpleFormatter();
         fileHandler.setFormatter(formatter);
         logger.addHandler(fileHandler);
+    }
+
+    private void registerTasks() {
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(this::everySecond, 1, 1, TimeUnit.SECONDS);
+    }
+
+    private void everySecond() {
+        getServerManager().everySecond();
     }
 
     private void initSocketServer() {
@@ -100,6 +117,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public CoreServerManager getServerManager() {
         return serverManager;
+    }
+
+    public TemplateManager getTemplateManager() {
+        return templateManager;
     }
 
     public CoreSocketServerHandler getSocketServerHandler() {

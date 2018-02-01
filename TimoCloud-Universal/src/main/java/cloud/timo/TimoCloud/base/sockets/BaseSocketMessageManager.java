@@ -7,19 +7,23 @@ public class BaseSocketMessageManager {
 
 
     public void sendMessage(String type, Object data) {
-        try {
-            TimoCloudBase.getInstance().getSocketClientHandler().sendMessage(getJSON(type, data));
-        } catch (Exception e) {
-            e.printStackTrace();
-            TimoCloudBase.getInstance().onSocketDisconnect();
-        }
+        sendMessage(type, null, data);
     }
 
-    public String getJSON(String type, Object data) {
+    public void sendMessage(String type, String server, Object data) {
+        sendMessage(getJSON(type, server, data));
+    }
+
+    public void sendMessage(JSONObject jsonObject) {
+        TimoCloudBase.getInstance().getSocketClientHandler().sendMessage(jsonObject.toString());
+    }
+
+    public JSONObject getJSON(String type, String server, Object data) {
         JSONObject json = new JSONObject();
-        json.put("server", TimoCloudBase.getInstance().getName());
+        json.put("server", server);
         json.put("type", type);
         json.put("data", data);
-        return json.toString();
+        json.put("base", TimoCloudBase.getInstance().getName());
+        return json;
     }
 }

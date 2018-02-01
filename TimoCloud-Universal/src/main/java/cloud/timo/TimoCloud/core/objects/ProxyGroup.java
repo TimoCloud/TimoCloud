@@ -15,11 +15,12 @@ public class ProxyGroup implements Group {
     private int ram;
     private String motd;
     private boolean isStatic;
+    private int priority;
     private String  baseName;
     private List<Proxy> proxies;
 
-    public ProxyGroup(String name, int playersPerProxy, int maxPlayers, int maxAmount, int keepFreeSlots, int ram, String motd, boolean isStatic, String baseName) {
-        construct(name, playersPerProxy, maxPlayers, maxAmount, keepFreeSlots, ram, motd, isStatic, baseName);
+    public ProxyGroup(String name, int playersPerProxy, int maxPlayers, int maxAmount, int keepFreeSlots, int ram, String motd, boolean isStatic, int priority, String baseName) {
+        construct(name, playersPerProxy, maxPlayers, maxAmount, keepFreeSlots, ram, motd, isStatic, priority, baseName);
     }
 
     public ProxyGroup(JSONObject jsonObject) {
@@ -36,15 +37,16 @@ public class ProxyGroup implements Group {
                     (Integer) jsonObject.getOrDefault("keep-free-slots", 100),
                     (Integer) jsonObject.getOrDefault("ram", 1),
                     (String) jsonObject.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
-                    (Boolean) jsonObject.getOrDefault("static", true),
-                    (String) jsonObject.getOrDefault("base", "BASE-1"));
+                    (Boolean) jsonObject.getOrDefault("static", false),
+                    (Integer) jsonObject.getOrDefault("priority", 1),
+                    (String) jsonObject.getOrDefault("base", null));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + (String) jsonObject.get("name") + "':");
             e.printStackTrace();
         }
     }
 
-    public void construct(String name, int playersPerProxy, int maxPlayers, int maxAmount, int keepFreeSlots, int ram, String motd, boolean isStatic, String baseName) {
+    public void construct(String name, int playersPerProxy, int maxPlayers, int maxAmount, int keepFreeSlots, int ram, String motd, boolean isStatic, int priority, String baseName) {
         this.name = name;
         this.playersPerProxy = playersPerProxy;
         this.maxPlayers = maxPlayers;
@@ -53,7 +55,11 @@ public class ProxyGroup implements Group {
         this.ram = ram;
         this.motd = motd;
         this.isStatic = isStatic;
+        this.priority = priority;
         this.baseName = baseName;
+        if (isStatic() && getBaseName() == null) {
+            TimoCloudCore.getInstance().severe("Static proxy group " + getName() + " has no base specified. Please specify a base name in order to get the group started.");
+        }
         this.proxies = new ArrayList<>();
     }
 
@@ -67,8 +73,15 @@ public class ProxyGroup implements Group {
         properties.put("ram", getRam());
         properties.put("motd", isStatic());
         properties.put("static", isStatic());
+        properties.put("priority", getPriority());
         if (getBaseName() != null) properties.put("base", getBaseName());
         return new JSONObject(properties);
+    }
+
+    public void addStartingProxy(Proxy proxy) {
+        if (proxy == null) TimoCloudCore.getInstance().severe("Fatal error: Tried to add proxy which is null. Please report this.");
+        if (proxies.contains(proxy)) TimoCloudCore.getInstance().severe("Tried to add already existing starting proxy " + proxy + ". Please report this.");
+        proxies.add(proxy);
     }
 
     public String getName() {
@@ -103,16 +116,15 @@ public class ProxyGroup implements Group {
         return isStatic;
     }
 
+    public int getPriority() {
+        return priority;
+    }
+
     public String getBaseName() {
         return baseName;
     }
 
     public List<Proxy> getProxies() {
         return proxies;
-    }
-
-    public void addProxy(Proxy proxy) {
-        if (proxies.contains(proxy)) return;
-        proxies.add(proxy);
     }
 }

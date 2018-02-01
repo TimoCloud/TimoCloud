@@ -10,58 +10,55 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.stream.ChunkedFile;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
 
     private Map<Channel, Integer> open;
-    private Map<Channel, String> remaining;
-    private Map<Channel, String> parsed;
+    private Map<Channel, StringBuilder> parsed;
 
     public CoreStringHandler() {
         open = new HashMap<>();
-        remaining = new HashMap<>();
         parsed = new HashMap<>();
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
         try {
-            remaining.put(ctx.channel(), getRemaining(ctx.channel()) + message);
-            read(ctx.channel());
+            read(ctx.channel(), message);
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while parsing JSON message(s): " + getRemaining(ctx.channel()));
+            TimoCloudCore.getInstance().severe("Error while parsing JSON message: " + message);
             e.printStackTrace();
         }
     }
 
-    public void read(Channel channel) {
-        for (String c : getRemaining(channel).split("")) {
+    public void read(Channel channel, String message) {
+        for (String c : message.split("")) {
             if (c.equals("{")) open.put(channel, getOpen(channel) + 1);
-            if (getOpen(channel) > 0) {
-                parsed.put(channel, getParsed(channel) + c);
-                remaining.put(channel, getRemaining(channel).substring(1));
-            }
+            getParsed(channel).append(c);
             if (c.equals("}")) {
                 open.put(channel, getOpen(channel) - 1);
                 if (getOpen(channel) == 0) {
                     try {
-                        handleJSON((JSONObject) JSONValue.parse(getParsed(channel)), getParsed(channel), channel);
+                        handleJSON((JSONObject) JSONValue.parse(getParsed(channel).toString()), getParsed(channel).toString(), channel);
                     } catch (Exception e) {
                         TimoCloudCore.getInstance().severe("Error while parsing JSON message: " + getParsed(channel));
                         e.printStackTrace();
                     }
-                    parsed.put(channel, "");
+                    parsed.put(channel, new StringBuilder());
                 }
             }
         }
@@ -84,7 +81,7 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                     channel.close();
                     return;
                 }
-                if (! server.getToken().equals(data)) {
+                if (!server.getToken().equals(data)) {
                     channel.close();
                     break;
                 }
@@ -96,7 +93,7 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                     channel.close();
                     return;
                 }
-                if (! proxy.getToken().equals(data)) {
+                if (!proxy.getToken().equals(data)) {
                     channel.close();
                     break;
                 }
@@ -105,7 +102,7 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 break;
             case "BASE_HANDSHAKE":
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
-                if (! ((List<String>)TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
+                if (!((List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
                     TimoCloudCore.getInstance().severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
                     channel.close();
                     return;
@@ -119,11 +116,68 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
                 objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
                 try {
-                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalInstance().getGroups()) groups.add(objectMapper.writeValueAsString(serverGroupObject));
+                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalInstance().getGroups())
+                        groups.add(objectMapper.writeValueAsString(serverGroupObject));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "APIDATA", groups.toJSONString());
+                break;
+            case "SERVER_TEMPLATE_REQUEST":
+                JSONObject differences = (JSONObject) json.get("differences");
+                List<String> templateDifferences = differences.containsKey("templateDifferences") ? (List<String>) differences.get("templateDifferences") : null;
+                String template = json.containsKey("template") ? (String) json.get("template") : null;
+                List<String> mapDifferences = differences.containsKey("mapDifferences") ? (List<String>) differences.get("mapDifferences") : null;
+                String map = json.containsKey("map") ? (String) json.get("map") : null;
+                List<String> globalDifferences = differences.containsKey("globalDifferences") ? (List<String>) differences.get("globalDifferences") : null;
+                try {
+                    if (templateDifferences != null) {
+                        File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), template);
+                        List<File> templateFiles = new ArrayList<>();
+                        for (String fileName : templateDifferences) templateFiles.add(new File(templateDirectory, fileName));
+                        File output = new File(TimoCloudCore.getInstance().getFileManager().getTemporaryDirectory(), new Date().getTime() + "");
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, output);
+                        channel.write(new ChunkedFile(output)).addListener(future -> {
+                            output.delete();
+                            Map<String, Object> msg = new HashMap<>();
+                            msg.put("type", "TRANSFER_FINISHED");
+                            msg.put("transferType", "SERVER_TEMPLATE");
+                            msg.put("template", template);
+                            channel.writeAndFlush(new JSONObject(msg));
+                        });
+                    }
+                    if (mapDifferences != null) {
+                        File mapDirecotry = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), map);
+                        List<File> mapFiles = new ArrayList<>();
+                        for (String fileName : mapDifferences) mapFiles.add(new File(mapDirecotry, fileName));
+                        File output = new File(TimoCloudCore.getInstance().getFileManager().getTemporaryDirectory(), new Date().getTime() + "");
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(mapFiles, output, "MAP_TEMPLATE", map);
+                        channel.write(new ChunkedFile(output)).addListener(future -> {
+                            output.delete();
+                            Map<String, Object> msg = new HashMap<>();
+                            msg.put("type", "TRANSFER_FINISHED");
+                            msg.put("transferType", "SERVER_TEMPLATE");
+                            msg.put("template", template);
+                            channel.writeAndFlush(new JSONObject(msg));
+                        });
+                    }
+                    if (globalDifferences != null) {
+                        List<File> templateFiles = new ArrayList<>();
+                        for (String fileName : templateDifferences) templateFiles.add(new File(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory(), fileName));
+                        File output = new File(TimoCloudCore.getInstance().getFileManager().getTemporaryDirectory(), new Date().getTime() + "");
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, output, "GLOBAL_TEMPLATE", template);
+                        channel.write(new ChunkedFile(output)).addListener(future -> {
+                            output.delete();
+                            Map<String, Object> msg = new HashMap<>();
+                            msg.put("type", "TRANSFER_FINISHED");
+                            msg.put("transferType", "GLOBAL_SERVER_TEMPLATE");
+                            channel.writeAndFlush(new JSONObject(msg));
+                        });
+                    }
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe("Error while sending template files: ");
+                    e.printStackTrace();
+                }
                 break;
             default:
                 target.onMessage(json);
@@ -135,13 +189,8 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
         return open.get(channel);
     }
 
-    public String getRemaining(Channel channel) {
-        remaining.putIfAbsent(channel, "");
-        return remaining.get(channel);
-    }
-
-    public String getParsed(Channel channel) {
-        parsed.putIfAbsent(channel, "");
+    public StringBuilder getParsed(Channel channel) {
+        parsed.putIfAbsent(channel, new StringBuilder());
         return parsed.get(channel);
     }
 

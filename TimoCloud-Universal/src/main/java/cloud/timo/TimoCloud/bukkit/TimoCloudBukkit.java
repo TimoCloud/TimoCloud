@@ -78,9 +78,6 @@ public class TimoCloudBukkit extends JavaPlugin {
     public void onSocketConnect() {
         getSocketMessageManager().sendMessage("HANDSHAKE", System.getProperty("timocloud-token"));
         doEverySecond();
-        if (isRandomMap()) {
-            getSocketMessageManager().sendMessage("SET_MAP", getMapName());
-        }
     }
 
     public void onSocketDisconnect() {

@@ -14,9 +14,17 @@ public class BaseFileManager {
     private File baseDirectory;
     private File configsDirectory;
     private File templatesDirectory;
+        private File serverTemplatesDirectory;
+            private File serverGlobalDirectory;
+        private File proxyTemplatesDirectory;
+            private File proxyGlobalDirectory;
     private File temporaryDirectory;
+    private File serverTemporaryDirectory;
+    private File proxyTemporaryDirectory;
     private File staticDirectory;
-    private File globalDirectory;
+        private File serverStaticDirectory;
+        private File proxyStaticDirectory;
+    private File cacheDirectory;
     private File logsDirectory;
     private File configFile;
     private Map<String, Object> config;
@@ -33,13 +41,31 @@ public class BaseFileManager {
             configsDirectory.mkdirs();
             templatesDirectory = new File(baseDirectory, "templates/");
             templatesDirectory.mkdirs();
+            serverTemplatesDirectory = new File(templatesDirectory, "server/");
+            serverTemplatesDirectory.mkdirs();
+            serverGlobalDirectory = new File(serverTemplatesDirectory, "Global/");
+            serverGlobalDirectory.mkdirs();
+            proxyTemplatesDirectory = new File(templatesDirectory, "proxy/");
+            proxyTemplatesDirectory.mkdirs();
+            proxyGlobalDirectory = new File(proxyTemplatesDirectory, "Global/");
+            proxyGlobalDirectory.mkdirs();
             temporaryDirectory = new File(baseDirectory, "temporary/");
             temporaryDirectory.mkdirs();
+            serverTemporaryDirectory = new File(temporaryDirectory, "server/");
+            serverTemporaryDirectory.mkdirs();
+            proxyTemporaryDirectory = new File(temporaryDirectory, "proxy/");
+            proxyTemporaryDirectory.mkdirs();
             staticDirectory = new File(baseDirectory, "static/");
             staticDirectory.mkdirs();
-            globalDirectory = new File(templatesDirectory, "Global/");
-            globalDirectory.mkdirs();
-            new File(globalDirectory, "plugins/").mkdirs();
+            serverStaticDirectory = new File(staticDirectory, "server/");
+            serverStaticDirectory.mkdirs();
+            proxyStaticDirectory = new File(staticDirectory, "proxy/");
+            proxyStaticDirectory.mkdirs();
+
+            cacheDirectory = new File(serverTemporaryDirectory, "cache/");
+            cacheDirectory.mkdirs();
+
+            new File(serverGlobalDirectory, "plugins/").mkdirs();
             logsDirectory = new File(baseDirectory, "logs/");
             logsDirectory.mkdirs();
             if (new File("plugins/").exists()) {
@@ -72,6 +98,10 @@ public class BaseFileManager {
         }
     }
 
+    public File getBaseDirectory() {
+        return baseDirectory;
+    }
+
     public File getConfigsDirectory() {
         return configsDirectory;
     }
@@ -80,16 +110,48 @@ public class BaseFileManager {
         return templatesDirectory;
     }
 
+    public File getServerTemplatesDirectory() {
+        return serverTemplatesDirectory;
+    }
+
+    public File getServerGlobalDirectory() {
+        return serverGlobalDirectory;
+    }
+
+    public File getProxyTemplatesDirectory() {
+        return proxyTemplatesDirectory;
+    }
+
+    public File getProxyGlobalDirectory() {
+        return proxyGlobalDirectory;
+    }
+
     public File getTemporaryDirectory() {
         return temporaryDirectory;
+    }
+
+    public File getServerTemporaryDirectory() {
+        return serverTemporaryDirectory;
+    }
+
+    public File getProxyTemporaryDirectory() {
+        return proxyTemporaryDirectory;
     }
 
     public File getStaticDirectory() {
         return staticDirectory;
     }
 
-    public File getGlobalDirectory() {
-        return globalDirectory;
+    public File getServerStaticDirectory() {
+        return serverStaticDirectory;
+    }
+
+    public File getProxyStaticDirectory() {
+        return proxyStaticDirectory;
+    }
+
+    public File getCacheDirectory() {
+        return cacheDirectory;
     }
 
     public File getLogsDirectory() {

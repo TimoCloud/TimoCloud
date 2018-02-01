@@ -10,29 +10,28 @@ import org.json.simple.JSONValue;
 
 public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
-    String remaining = "";
-    String parsed = "";
-    int open = 0;
+    private StringBuilder parsed;
+    private int open = 0;
+
+    public BungeeStringHandler() {
+        parsed = new StringBuilder();
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
         TimoCloudBukkit.getInstance().getSocketClientHandler().setChannel(ctx.channel());
-        remaining = remaining + message;
-        read();
+        read(message);
     }
 
-    public void read() {
-        for (String c : remaining.split("")) {
-            parsed = parsed + c;
-            remaining = remaining.substring(1);
-            if (c.equals("{")) {
-                open++;
-            }
+    public void read(String message) {
+        for (String c : message.split("")) {
+            parsed.append(c);
+            if (c.equals("{")) open++;
             if (c.equals("}")) {
                 open--;
                 if (open == 0) {
-                    handleJSON((JSONObject) JSONValue.parse(parsed), parsed);
-                    parsed = "";
+                    handleJSON((JSONObject) JSONValue.parse(parsed.toString()), parsed.toString());
+                    parsed = new StringBuilder();
                 }
             }
         }

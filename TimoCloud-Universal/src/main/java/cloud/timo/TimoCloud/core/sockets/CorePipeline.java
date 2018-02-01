@@ -6,6 +6,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.CharsetUtil;
 
 public class CorePipeline extends ChannelInitializer<Channel> {
@@ -15,6 +16,7 @@ public class CorePipeline extends ChannelInitializer<Channel> {
         ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("handler", new CoreStringHandler());
+        ch.pipeline().addLast("chunkedWriteHandler", new ChunkedWriteHandler());
         ch.pipeline().addLast(TimoCloudCore.getInstance().getSocketServerHandler());
     }
 

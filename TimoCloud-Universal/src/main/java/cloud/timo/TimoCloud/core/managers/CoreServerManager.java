@@ -2,10 +2,13 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -75,6 +78,7 @@ public class CoreServerManager {
         }
     }
 
+
     public void saveGroups() {
         saveServerGroups();
         saveProxyGroups();
@@ -106,6 +110,10 @@ public class CoreServerManager {
         }
     }
 
+    public void everySecond() {
+        checkEnoughOnline();
+    }
+
     public ServerGroup getServerGroupByExactName(String name) {
         return serverGroups.get(name);
     }
@@ -128,32 +136,108 @@ public class CoreServerManager {
         return null;
     }
 
-    public void startServer(ServerGroup group) {
-        String name = getNotExistingName(group);
-        String token = UUID.randomUUID().toString();
-        Server server = new Server(name, group, token);
-        group.addStartingServer(server);
-        TimoCloudBungee.getInstance().getProxy().getScheduler().schedule(TimoCloudBungee.getInstance(), () -> {
-            TimoCloudBungee.getInstance().getProxy().getScheduler().runAsync(TimoCloudBungee.getInstance(), () -> startServerFromAsyncContext(name, group.getName(), group.getRam(), port, group.isStatic(), token, group.getBase()));
-            getServersWillBeStarted(group).remove(name);
-            server.onStart();
-        }, group.isStatic() ? STATIC_SERVER_START_DELAY : SERVER_START_DELAY, 0, TimeUnit.SECONDS);
+    public void start(Group group, Base base) {
+        if (group instanceof ServerGroup) {
+            startServer((ServerGroup) group, base);
+        } else if (group instanceof ProxyGroup) {
+            startProxy((ProxyGroup) group, base);
+        }
     }
 
-    public void startServerFromAsyncContext(String name, String group, int ram, int port, boolean isStatic, String token, Base base) {
+    public void startServer(ServerGroup group, Base base) {
+        String name = getNotExistingName(group);
+        String token = UUID.randomUUID().toString();
+
+        List<File> maps = getAvailableMaps(group);
+        String map = null;
+        if (maps.size() > 0) {
+            Map<String, Integer> occurrences = new HashMap<>();
+            for (Server server : group.getServers()) {
+                if (server.getMap() == null || server.getMap().isEmpty()) continue;
+                if (occurrences.containsKey(server.getMap())) occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
+                else occurrences.put(server.getMap(), 1);
+            }
+            int bestScore = -1;
+            String best = null;
+            for (String key : occurrences.keySet()) {
+                if (bestScore == -1 || occurrences.get(key) < bestScore) {
+                    best = key;
+                    bestScore = occurrences.get(key);
+                }
+            }
+            map = best;
+        }
+
+        Server server = new Server(name, group, base, map, token);
+        group.addStartingServer(server);
         JSONObject json = new JSONObject();
-        json.put("type", "STARTSERVER");
-        json.put("server", name);
-        json.put("group", group);
-        json.put("ram", ram);
-        json.put("port", port);
-        json.put("static", isStatic);
+        json.put("type", "START_SERVER");
+        json.put("name", name);
+        json.put("group", group.getName());
+        json.put("ram", group.getRam());
+        json.put("static", group.isStatic());
+        if (map != null) json.put("map", map);
         json.put("token", token);
+        if (! group.isStatic()) {
+            try {
+                json.put("templateHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), group.getName())));
+                if (map != null) json.put("mapHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory(), group.getName() + "_" + map)));
+                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
+            } catch (IOException e) {
+                TimoCloudCore.getInstance().severe("Error while hashing files while starting server " + name + ": ");
+                e.printStackTrace();
+                return;
+            }
+        }
         try {
             base.getChannel().writeAndFlush(json.toJSONString());
+            base.setReady(false);
+            base.setAvailableRam(base.getAvailableRam()-group.getRam());
             TimoCloudCore.getInstance().info("Told base " + base.getName() + " to start server " + name + ".");
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while starting server " + name + ": TimoCloudBase " + base.getName() + " not connected.");
+            return;
+        }
+    }
+
+    private List<File> getAvailableMaps(Group group) {
+        File templates = TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory();
+        List<File> valid = new ArrayList<>();
+        for (File sub : templates.listFiles()) {
+            if (sub.isDirectory() && sub.getName().startsWith(group.getName() + "_")) valid.add(sub);
+        }
+        return valid;
+    }
+
+    public void startProxy(ProxyGroup group, Base base) {
+        String name = getNotExistingName(group);
+        String token = UUID.randomUUID().toString();
+        Proxy proxy = new Proxy(name, group, base, token);
+        group.addStartingProxy(proxy);
+        JSONObject json = new JSONObject();
+        json.put("type", "START_PROXY");
+        json.put("name", name);
+        json.put("group", group.getName());
+        json.put("ram", group.getRam());
+        json.put("static", group.isStatic());
+        json.put("token", token);
+        if (! group.isStatic()) {
+            try {
+                json.put("templateHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), group.getName())));
+                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()));
+            } catch (IOException e) {
+                TimoCloudCore.getInstance().severe("Error while hashing files while starting proxy " + name + ": ");
+                e.printStackTrace();
+                return;
+            }
+        }
+        try {
+            base.getChannel().writeAndFlush(json.toJSONString());
+            base.setReady(false);
+            base.setAvailableRam(base.getAvailableRam()-group.getRam());
+            TimoCloudCore.getInstance().info("Told base " + base.getName() + " to start proxy " + name + ".");
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while starting proxy " + name + ": TimoCloudBase " + base.getName() + " not connected.");
             return;
         }
     }
@@ -201,23 +285,73 @@ public class CoreServerManager {
     public void checkEnoughOnline() {
         if (TimoCloudCore.getInstance().isShuttingDown()) return;
         List<GroupInstanceDemand> demands = new ArrayList<>();
+        List<GroupInstanceDemand> staticDemands = new ArrayList<>();
         for (ProxyGroup group : getProxyGroups()) {
             int amount = proxiesNeeded(group);
             if (amount <= 0) continue;
-            demands.add(new GroupInstanceDemand(group, amount));
+            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, amount));
+            else demands.add(new GroupInstanceDemand(group, amount));
         }
         for (ServerGroup group : getServerGroups()) {
             int amount = serversNeeded(group);
             if (amount <= 0) continue;
-            demands.add(new GroupInstanceDemand(group, amount));
+            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, amount));
+            else demands.add(new GroupInstanceDemand(group, amount));
         }
 
-        demands.sort(Comparator.comparingInt(GroupInstanceDemand::getAmount).reversed());
         List<Base> bases = new ArrayList<>();
         for (Base base : getBases()) {
             if (base.isReady()) bases.add(base);
         }
-        for (GroupInstanceDemand demand : de)
+
+        while (! (staticDemands.isEmpty() || bases.isEmpty())) {
+            GroupInstanceDemand demand = getMostImportant(staticDemands);
+            Base base = null;
+            for (Base b : bases) {
+                if (b.getName().equals(demand.getGroup().getBaseName())) base = b;
+            }
+            if (base == null) continue;
+            if (base.getAvailableRam()<demand.getGroup().getRam()) continue;
+            demands.remove(demand);
+            bases.remove(base);
+            demand.changeAmount(-1);
+            start(demand.getGroup(), base);
+        }
+
+        while (! (demands.isEmpty() || bases.isEmpty())) {
+            GroupInstanceDemand demand = getMostImportant(demands);
+            int bestDiff = -1;
+            Base bestBase = null;
+            for (Base base : bases) {
+                if (base.getAvailableRam() < demand.getGroup().getRam()) continue;
+                    int diff = base.getAvailableRam()-demand.getGroup().getRam();
+                    if (bestDiff == -1 || diff < bestDiff) {
+                        bestDiff = diff;
+                        bestBase = base;
+                }
+            }
+            if (bestBase == null) {
+                demands.remove(demand);
+                continue;
+            }
+            demand.changeAmount(-1);
+            if (demand.getAmount() <=0) demands.remove(demand);
+            bases.remove(bestBase);
+            start(demand.getGroup(), bestBase);
+        }
+    }
+
+    private GroupInstanceDemand getMostImportant(Collection<GroupInstanceDemand> demands) {
+        int best = -1;
+        GroupInstanceDemand bestDemand = null;
+        for (GroupInstanceDemand demand : demands) {
+            int score = demand.getAmount()*demand.getGroup().getPriority();
+            if (score > best) {
+                best = score;
+                bestDemand = demand;
+            }
+        }
+        return bestDemand;
     }
 
     private String getNotExistingName(ServerGroup group) {

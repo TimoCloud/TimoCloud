@@ -16,6 +16,7 @@ public class ServerGroup implements Group {
     private int maxAmount;
     private int ram;
     private boolean isStatic;
+    private int priority;
     private String baseName;
     private List<String> sortOutStates;
 
@@ -26,8 +27,8 @@ public class ServerGroup implements Group {
         construct(jsonObject);
     }
 
-    public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, String baseName, List<String> sortOutStates) {
-        construct(name, onlineAmount, maxAmount, ram, isStatic, baseName, sortOutStates);
+    public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
+        construct(name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
     }
 
     public void construct(JSONObject jsonObject) {
@@ -38,6 +39,7 @@ public class ServerGroup implements Group {
                     (Integer) jsonObject.getOrDefault("max-amount", 10),
                     (Integer) jsonObject.getOrDefault("ram", 1024),
                     (Boolean) jsonObject.getOrDefault("static", false),
+                    (Integer) jsonObject.getOrDefault("priority", 1),
                     (String) jsonObject.getOrDefault("base", null),
                     (List<String>) jsonObject.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
         } catch (Exception e) {
@@ -53,12 +55,13 @@ public class ServerGroup implements Group {
         properties.put("max-amount", getMaxAmount());
         properties.put("ram", getRam());
         properties.put("static", isStatic());
+        properties.put("priority", getPriority());
         if (getBaseName() != null) properties.put("base", getBaseName());
         properties.put("sort-out-states", getSortOutStates());
         return new JSONObject(properties);
     }
 
-    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String baseName, List<String> sortOutStates) {
+    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
         if (isStatic() && startupAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             return;
@@ -71,6 +74,9 @@ public class ServerGroup implements Group {
         setStatic(isStatic);
         setBaseName(baseName);
         setSortOutStates(sortOutStates);
+        if (isStatic() && getBaseName() == null) {
+            TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to get the group started.");
+        }
     }
 
     public String getName() {
@@ -132,6 +138,14 @@ public class ServerGroup implements Group {
 
     public boolean isStatic() {
         return isStatic;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public void setBaseName(String baseName) {

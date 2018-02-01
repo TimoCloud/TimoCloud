@@ -22,9 +22,11 @@ public class CoreFileManager {
     private File baseDirectory;
     private File configsDirectory;
     private File templatesDirectory;
+        private File serverTemplatesDirectory;
+            private File serverGlobalDirectory;
+        private File proxyTemplatesDirectory;
+            private File proxyGlobalDirectory;
     private File temporaryDirectory;
-    private File staticDirectory;
-    private File globalDirectory;
     private File logsDirectory;
 
     private File configFile;
@@ -44,13 +46,21 @@ public class CoreFileManager {
             configsDirectory.mkdirs();
             templatesDirectory = new File(baseDirectory, "templates/");
             templatesDirectory.mkdirs();
+
+            serverTemplatesDirectory = new File(templatesDirectory, "server");
+            serverTemplatesDirectory.mkdirs();
+            serverGlobalDirectory = new File(serverTemplatesDirectory, "Global/");
+            serverGlobalDirectory.mkdirs();
+            new File(serverGlobalDirectory, "plugins/").mkdirs();
+
+            proxyTemplatesDirectory = new File(templatesDirectory, "proxy");
+            proxyTemplatesDirectory.mkdirs();
+            proxyGlobalDirectory = new File(proxyTemplatesDirectory, "Global/");
+            proxyGlobalDirectory.mkdirs();
+            new File(proxyGlobalDirectory, "plugins/").mkdirs();
+
             temporaryDirectory = new File(baseDirectory, "temporary/");
             temporaryDirectory.mkdirs();
-            staticDirectory = new File(baseDirectory, "static/");
-            staticDirectory.mkdirs();
-            globalDirectory = new File(templatesDirectory, "Global/");
-            globalDirectory.mkdirs();
-            new File(globalDirectory, "plugins/").mkdirs();
             logsDirectory = new File(baseDirectory, "logs/");
             logsDirectory.mkdirs();
 
@@ -98,6 +108,10 @@ public class CoreFileManager {
         fileWriter.close();
     }
 
+    public File getBaseDirectory() {
+        return baseDirectory;
+    }
+
     public File getConfigsDirectory() {
         return configsDirectory;
     }
@@ -106,16 +120,24 @@ public class CoreFileManager {
         return templatesDirectory;
     }
 
+    public File getServerTemplatesDirectory() {
+        return serverTemplatesDirectory;
+    }
+
+    public File getServerGlobalDirectory() {
+        return serverGlobalDirectory;
+    }
+
+    public File getProxyTemplatesDirectory() {
+        return proxyTemplatesDirectory;
+    }
+
+    public File getProxyGlobalDirectory() {
+        return proxyGlobalDirectory;
+    }
+
     public File getTemporaryDirectory() {
         return temporaryDirectory;
-    }
-
-    public File getStaticDirectory() {
-        return staticDirectory;
-    }
-
-    public File getGlobalDirectory() {
-        return globalDirectory;
     }
 
     public File getLogsDirectory() {
