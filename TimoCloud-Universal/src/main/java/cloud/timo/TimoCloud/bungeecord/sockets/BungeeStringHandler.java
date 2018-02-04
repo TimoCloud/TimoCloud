@@ -1,12 +1,15 @@
 package cloud.timo.TimoCloud.bungeecord.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
-import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
+import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import net.md_5.bungee.api.config.ServerInfo;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+
+import java.net.InetSocketAddress;
 
 public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
@@ -19,7 +22,7 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String message) {
-        TimoCloudBukkit.getInstance().getSocketClientHandler().setChannel(ctx.channel());
+        TimoCloudBungee.getInstance().getSocketClientHandler().setChannel(ctx.channel());
         read(message);
     }
 
@@ -39,22 +42,27 @@ public class BungeeStringHandler extends SimpleChannelInboundHandler<String> {
 
     public void handleJSON(JSONObject json, String message) {
         if (json == null) {
-            TimoCloudBukkit.log("Error while parsing json: " + message);
+            TimoCloudBungee.severe("Error while parsing json: " + message);
             return;
         }
-        String server = (String) json.get("server");
+        String server = (String) json.get("target");
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
             case "APIDATA":
-                ((TimoCloudUniversalAPIBukkitImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
-                TimoCloudBukkit.getInstance().getStateByEventManager().setStateByPlayerCount();
+                ((TimoCloudUniversalAPIBungeeImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
                 break;
             case "EXECUTE_COMMAND":
-                TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data);
+                TimoCloudBungee.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloudBungee.getInstance().getProxy().getConsole(), (String) data);
+                break;
+            case "ADD_SERVER":
+                TimoCloudBungee.getInstance().getProxy().getServers().put(server, TimoCloudBungee.getInstance().getProxy().constructServerInfo(server, new InetSocketAddress((String) json.get("address"), (int) json.get("port")), "", false));
+                break;
+            case "REMOVE_SERVER":
+                TimoCloudBungee.getInstance().getProxy().getServers().remove(server);
                 break;
             default:
-                TimoCloudBukkit.log("Error: Could not categorize json message: " + message);
+                TimoCloudBungee.severe("Could not categorize json message: " + message);
         }
     }
 

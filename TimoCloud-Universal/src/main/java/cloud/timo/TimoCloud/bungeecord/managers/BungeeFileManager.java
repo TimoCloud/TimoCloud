@@ -20,9 +20,7 @@ public class BungeeFileManager {
     private String pluginsDirectory = "plugins/TimoCloudBungee/";
     private String configsDirectory = pluginsDirectory + "configs/";
     private File configFile;
-    private File groupsFile;
     private Configuration config;
-    private Configuration groups;
 
     public BungeeFileManager() {
         load();
@@ -47,9 +45,6 @@ public class BungeeFileManager {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configNew, configFile);
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
 
-            groupsFile = new File(configsDirectory, "groups.yml");
-            groupsFile.createNewFile();
-            groups = ConfigurationProvider.getProvider(YamlConfiguration.class).load(groupsFile);
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
             TimoCloudBungee.severe("Exception while initializing files:");
@@ -81,15 +76,8 @@ public class BungeeFileManager {
         return configFile;
     }
 
-    public File getGroupsFile() {
-        return groupsFile;
-    }
-
     public Configuration getConfig() {
         return config;
     }
 
-    public Configuration getGroups() {
-        return groups;
-    }
 }

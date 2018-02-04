@@ -12,4 +12,16 @@ public class ServerGroupObjectBungeeImplementation extends ServerGroupObjectBasi
         super(servers, name, startupAmount, maxAmount, ram, isStatic, base, sortOutStates);
     }
 
+    public ServerGroupObjectBungeeImplementation(ServerGroupObjectBasicImplementation groupObjectBasicImplementation) {
+        this(
+                groupObjectBasicImplementation.getServers(),
+                groupObjectBasicImplementation.getName(),
+                groupObjectBasicImplementation.getOnlineAmount(),
+                groupObjectBasicImplementation.getMaxAmount(),
+                groupObjectBasicImplementation.getRam(),
+                groupObjectBasicImplementation.isStatic(),
+                groupObjectBasicImplementation.getBase(),
+                groupObjectBasicImplementation.getSortOutStates());
+    }
+
 }

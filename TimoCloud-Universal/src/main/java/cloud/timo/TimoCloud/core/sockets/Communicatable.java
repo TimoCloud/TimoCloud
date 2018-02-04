@@ -8,4 +8,5 @@ public interface Communicatable {
     void onDisconnect();
     Channel getChannel();
     void onMessage(JSONObject message);
+    void sendMessage(JSONObject message);
 }

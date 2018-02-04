@@ -35,11 +35,11 @@ public class ServerGroup implements Group {
         try {
             construct(
                     (String) jsonObject.get("name"),
-                    (Integer) jsonObject.getOrDefault("online-amount", 1),
-                    (Integer) jsonObject.getOrDefault("max-amount", 10),
-                    (Integer) jsonObject.getOrDefault("ram", 1024),
+                    ((Long) jsonObject.getOrDefault("online-amount", 1)).intValue(),
+                    ((Long) jsonObject.getOrDefault("max-amount", 10)).intValue(),
+                    ((Long) jsonObject.getOrDefault("ram", 1024)).intValue(),
                     (Boolean) jsonObject.getOrDefault("static", false),
-                    (Integer) jsonObject.getOrDefault("priority", 1),
+                    ((Long) jsonObject.getOrDefault("priority", 1)).intValue(),
                     (String) jsonObject.getOrDefault("base", null),
                     (List<String>) jsonObject.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
         } catch (Exception e) {
@@ -83,6 +83,11 @@ public class ServerGroup implements Group {
         return name;
     }
 
+    @Override
+    public GroupType getType() {
+        return GroupType.SERVER;
+    }
+
     public int getOnlineAmount() {
         return onlineAmount;
     }
@@ -99,7 +104,7 @@ public class ServerGroup implements Group {
 
     public void addStartingServer(Server server) {
         if (server == null) TimoCloudCore.getInstance().severe("Fatal error: Tried to add server which is null. Please report this.");
-        if (servers.contains(server)) TimoCloudCore.getInstance().severe("Tried to add already existing starting server " + server + ". Please report this.");
+        if (servers.contains(server)) return;
         servers.add(server);
     }
 

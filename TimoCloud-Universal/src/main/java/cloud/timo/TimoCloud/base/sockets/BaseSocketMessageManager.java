@@ -20,7 +20,7 @@ public class BaseSocketMessageManager {
 
     public JSONObject getJSON(String type, String server, Object data) {
         JSONObject json = new JSONObject();
-        json.put("server", server);
+        json.put("target", server);
         json.put("type", type);
         json.put("data", data);
         json.put("base", TimoCloudBase.getInstance().getName());

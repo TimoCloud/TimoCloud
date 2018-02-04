@@ -10,6 +10,7 @@ import io.netty.handler.stream.ChunkedFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 
 @ChannelHandler.Sharable
@@ -33,7 +34,13 @@ public class BaseFileChunkHandler extends SimpleChannelInboundHandler<ChunkedFil
         getFileOutputStream().write(bytes, 0, bytes.length);
     }
 
-    public FileOutputStream getFileOutputStream() {
+    public FileOutputStream getFileOutputStream() throws IOException {
+        if (fileOutputStream == null) {
+            File file = new File(TimoCloudBase.getInstance().getFileManager().getCacheDirectory(), new Date().getTime() + "");
+            file.createNewFile();
+            setFile(file);
+            setFileOutputStream(new FileOutputStream(file));
+        }
         return fileOutputStream;
     }
 

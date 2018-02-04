@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.sockets;
 
-import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
+import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -16,9 +16,9 @@ public class BungeeSocketClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        TimoCloudBukkit.log("Successfully connected to bungee socket!");
+        TimoCloudBungee.info("Successfully connected to bungee socket!");
         this.channel = ctx.channel();
-        TimoCloudBukkit.getInstance().onSocketConnect();
+        TimoCloudBungee.getInstance().onSocketConnect();
         flush();
     }
 
@@ -47,7 +47,7 @@ public class BungeeSocketClientHandler extends ChannelInboundHandlerAdapter {
         // Close the connection when an exception is raised.
         cause.printStackTrace();
         ctx.close();
-        TimoCloudBukkit.getInstance().onSocketDisconnect();
+        TimoCloudBungee.getInstance().onSocketDisconnect();
     }
 
     public Channel getChannel() {

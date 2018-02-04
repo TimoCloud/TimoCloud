@@ -9,44 +9,46 @@ import java.net.InetSocketAddress;
 
 public class ServerObjectBungeeImplementation extends ServerObjectBasicImplementation implements ServerObject {
 
-    public ServerObjectBungeeImplementation(String name, String group, String token, String state, String extra, String map, String motd, int currentPlayers, int maxPlayers, InetSocketAddress socketAddress) {
-        super(name, group, token, state, extra, map, motd, currentPlayers, maxPlayers, socketAddress);
+    public ServerObjectBungeeImplementation(String name, String group, String token, String state, String extra, String map, String motd, int currentPlayers, int maxPlayers, String base, InetSocketAddress socketAddress) {
+        super(name, group, token, state, extra, map, motd, currentPlayers, maxPlayers, base, socketAddress);
     }
 
-    private Server getServer() {
-        return TimoCloudBungee.getInstance().getServerManager().getServerByToken(getToken());
+    public ServerObjectBungeeImplementation(ServerObjectBasicImplementation serverObjectBasicImplementation) {
+        this(
+                serverObjectBasicImplementation.getName(),
+                serverObjectBasicImplementation.getGroup().getName(),
+                serverObjectBasicImplementation.getToken(),
+                serverObjectBasicImplementation.getState(),
+                serverObjectBasicImplementation.getExtra(),
+                serverObjectBasicImplementation.getMap(),
+                serverObjectBasicImplementation.getMotd(),
+                serverObjectBasicImplementation.getOnlinePlayerCount(),
+                serverObjectBasicImplementation.getMaxPlayerCount(),
+                serverObjectBasicImplementation.getBase(),
+                serverObjectBasicImplementation.getSocketAddress()
+        );
     }
 
     @Override
     public void setState(String state) {
-        Server server = getServer();
-        if (server == null) {
-            TimoCloudBungee.severe("&cCould not set state per API access for server " + getName() + ": Server does not exist anymore.");
-            return;
-        }
         this.state = state;
-        server.setState(state);
+        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("SET_STATE", getName(), state);
     }
 
     @Override
     public void setExtra(String extra) {
-        Server server = getServer();
-        if (server == null) {
-            TimoCloudBungee.severe("&cCould not set extra per API access for server " + getName() + ": Server does not exist anymore.");
-            return;
-        }
         this.extra = extra;
-        server.setState(extra);
+        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getName(), extra);
     }
 
     @Override
     public void executeCommand(String command) {
-        getServer().executeCommand(command);
+        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getName(), command);
     }
 
     @Override
     public void stop() {
-        getServer().stop();
+        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getName(), "");
     }
 
 }

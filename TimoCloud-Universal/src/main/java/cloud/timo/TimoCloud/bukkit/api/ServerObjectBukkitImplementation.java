@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.bukkit.api;
 
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
@@ -10,21 +11,22 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
 
     public ServerObjectBukkitImplementation() {}
 
-    public ServerObjectBukkitImplementation(String name, String group, String token, String state, String extra, String map, String motd, int currentPlayers, int maxPlayers, InetSocketAddress socketAddress) {
-        super(name, group, token, state, extra, map, motd, currentPlayers, maxPlayers, socketAddress);
+    public ServerObjectBukkitImplementation(String name, String group, String token, String state, String extra, String map, String motd, int currentPlayers, int maxPlayers, String base, InetSocketAddress socketAddress) {
+        super(name, group, token, state, extra, map, motd, currentPlayers, maxPlayers, base, socketAddress);
     }
 
     public ServerObjectBukkitImplementation(ServerObjectBasicImplementation serverObjectBasicImplementation) {
         this(
                 serverObjectBasicImplementation.getName(),
-                serverObjectBasicImplementation.getGroupName(),
+                serverObjectBasicImplementation.getGroup().getName(),
                 serverObjectBasicImplementation.getToken(),
                 serverObjectBasicImplementation.getState(),
                 serverObjectBasicImplementation.getExtra(),
                 serverObjectBasicImplementation.getMap(),
                 serverObjectBasicImplementation.getMotd(),
-                serverObjectBasicImplementation.getCurrentPlayers(),
-                serverObjectBasicImplementation.getMaxPlayers(),
+                serverObjectBasicImplementation.getOnlinePlayerCount(),
+                serverObjectBasicImplementation.getMaxPlayerCount(),
+                serverObjectBasicImplementation.getBase(),
                 serverObjectBasicImplementation.getSocketAddress()
         );
     }

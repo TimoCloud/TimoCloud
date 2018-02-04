@@ -136,6 +136,7 @@ public class ModuleLoader {
                 break;
         }
         try {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> module.unload()));
             module.load(options);
         } catch (Exception e) {
             severe("Error while loading module of type " + moduleType + ": ");

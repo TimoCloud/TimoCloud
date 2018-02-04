@@ -9,11 +9,10 @@ import cloud.timo.TimoCloud.utils.TimeUtil;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.util.*;
@@ -42,7 +41,7 @@ public class BaseServerManager {
 
     public void updateResources() {
         boolean ready = serverQueue.isEmpty() && !startingServer && !startingProxy && TimoCloudBase.getInstance().getResourceManager().getCpuUsage() <= (Double) TimoCloudBase.getInstance().getFileManager().getConfig().get("cpu-max-load");
-        int freeRam = Math.max(0, TimoCloudBase.getInstance().getResourceManager().getFreeMemory() - (Integer) TimoCloudBase.getInstance().getFileManager().getConfig().get("ram-keep-free"));
+        long freeRam = Math.max(0, TimoCloudBase.getInstance().getResourceManager().getFreeMemory() - ((Integer) TimoCloudBase.getInstance().getFileManager().getConfig().get("ram-keep-free")).longValue());
         Map<String, Object> resourcesMap = new HashMap<>();
         resourcesMap.put("ready", ready);
         resourcesMap.put("availableRam", freeRam);
@@ -118,14 +117,19 @@ public class BaseServerManager {
         double millisBefore = System.currentTimeMillis();
         try {
             File templateDirectory = new File((server.isStatic() ? TimoCloudBase.getInstance().getFileManager().getServerStaticDirectory() : TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory()), server.getGroup());
-            if (!templateDirectory.exists()) {
-                TimoCloudBase.severe("Could not start server " + server.getName() + ": No template called " + server.getGroup() + " found. Please make sure the directory " + templateDirectory.getAbsolutePath() + " exists. (Put your minecraft server in there)");
-                return;
-            }
+            if (!templateDirectory.exists()) templateDirectory.mkdirs();
 
-            List<String> templateDifferences = HashUtil.getDifferentFiles("", server.getTemplateHash(), HashUtil.getHashes(templateDirectory));
-            List<String> mapDifferences = server.getMapHash() != null ? HashUtil.getDifferentFiles("", server.getMapHash(), HashUtil.getHashes(new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup() + "_" + server.getMap()))) : new ArrayList<>();
-            List<String> gloalDifferences = HashUtil.getDifferentFiles("", server.getGlobalHash(), HashUtil.getHashes(TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory()));
+            JSONObject templateHashes = HashUtil.getHashes(templateDirectory);
+            File mapDirectory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup() + "_" + server.getMap());
+            JSONObject mapHashes = (! server.isStatic() && server.getMapHash() != null) ? HashUtil.getHashes(mapDirectory) : new JSONObject();
+            JSONObject globalHashes = HashUtil.getHashes(TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory());
+            List<String> templateDifferences = server.isStatic() ? new ArrayList<>() : HashUtil.getDifferentFiles("", server.getTemplateHash(), templateHashes);
+            List<String> mapDifferences = (! server.isStatic() && server.getMapHash() != null) ? HashUtil.getDifferentFiles("", server.getMapHash(), mapHashes) : new ArrayList<>();
+            List<String> gloalDifferences = HashUtil.getDifferentFiles("", server.getGlobalHash(), globalHashes);
+
+            HashUtil.deleteIfNotExisting(templateDirectory, "", templateHashes, server.getTemplateHash());
+            if (server.getMapHash() != null) HashUtil.deleteIfNotExisting(mapDirectory, "", mapHashes, server.getMapHash());
+            HashUtil.deleteIfNotExisting(TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory(), "", globalHashes, server.getGlobalHash());
 
             if (templateDifferences.size() > 0 || mapDifferences.size() > 0 || gloalDifferences.size() > 0) {
                 Map<String, Object> differences = new HashMap<>();
@@ -136,7 +140,7 @@ public class BaseServerManager {
                 JSONObject differencesJson = new JSONObject(differences);
                 Map<String, Object> message = new HashMap<>();
                 message.put("type", "SERVER_TEMPLATE_REQUEST");
-                message.put("server", server.getName());
+                message.put("target", server.getName());
                 if (templateDifferences.size() > 0) message.put("template", templateDirectory.getName());
                 if (mapDifferences.size() > 0) message.put("map", server.getMap());
                 message.put("differences", differencesJson);
@@ -144,7 +148,7 @@ public class BaseServerManager {
                 return;
             }
 
-            File temporaryDirectory = server.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), server.getName());
+            File temporaryDirectory = server.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), server.getName() + "_" + server.getToken());
             if (!server.isStatic()) {
                 if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
                 copyDirectory(TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory(), temporaryDirectory);
@@ -160,7 +164,6 @@ public class BaseServerManager {
             String mapName = server.getMap() == null ? "default" : server.getMap();
             if (!server.isStatic() && server.getMap() != null) {
                 randomMap = true;
-                File mapDirectory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup() + "_" + server.getMap());
                 copyDirectory(mapDirectory, temporaryDirectory);
             }
 
@@ -203,7 +206,7 @@ public class BaseServerManager {
                             " -Xmx" + server.getRam() + "M" +
                             " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                             " -Dcom.mojang.eula.agree=true" +
-                            " -Dtimocloud-bungeecordhost=" + TimoCloudBase.getInstance().getBungeeSocketIP() + ":" + TimoCloudBase.getInstance().getBungeeSocketPort() +
+                            " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
                             " -Dtimocloud-randommap=" + randomMap +
                             " -Dtimocloud-mapname=" + mapName +
                             " -Dtimocloud-servername=" + server.getName() +
@@ -223,7 +226,7 @@ public class BaseServerManager {
 
             Map<String, Object> message = new HashMap<>();
             message.put("type", "SERVER_STARTED");
-            message.put("server", server.getName());
+            message.put("target", server.getName());
             message.put("token", server.getToken());
             message.put("port", port);
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(new JSONObject(message));
@@ -241,13 +244,14 @@ public class BaseServerManager {
         double millisBefore = System.currentTimeMillis();
         try {
             File templateDirectory = new File((proxy.isStatic() ? TimoCloudBase.getInstance().getFileManager().getProxyStaticDirectory() : TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory()), proxy.getGroup());
-            if (!templateDirectory.exists()) {
-                TimoCloudBase.severe("Could not start proxy " + proxy.getName() + ": No template called " + proxy.getGroup() + " found. Please make sure the directory " + templateDirectory.getAbsolutePath() + " exists. (Put your BungeeCord in there)");
-                return;
-            }
+            if (!templateDirectory.exists()) templateDirectory.mkdirs();
 
-            List<String> templateDifferences = HashUtil.getDifferentFiles("", proxy.getTemplateHash(), HashUtil.getHashes(templateDirectory));
-            List<String> gloalDifferences = HashUtil.getDifferentFiles("", proxy.getGlobalHash(), HashUtil.getHashes(TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory()));
+            JSONObject templateHashes = HashUtil.getHashes(templateDirectory);
+            JSONObject globalHashes = HashUtil.getHashes(TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
+            List<String> templateDifferences = proxy.isStatic() ? new ArrayList<>() : HashUtil.getDifferentFiles("", proxy.getTemplateHash(), templateHashes);
+            List<String> gloalDifferences = HashUtil.getDifferentFiles("", proxy.getGlobalHash(), globalHashes);
+            HashUtil.deleteIfNotExisting(templateDirectory, "", templateHashes, proxy.getTemplateHash());
+            HashUtil.deleteIfNotExisting(TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory(), "", globalHashes, proxy.getGlobalHash());
 
             if (templateDifferences.size() > 0 || gloalDifferences.size() > 0) {
                 Map<String, Object> differences = new HashMap<>();
@@ -257,14 +261,14 @@ public class BaseServerManager {
                 JSONObject differencesJson = new JSONObject(differences);
                 Map<String, Object> message = new HashMap<>();
                 message.put("type", "PROXY_TEMPLATE_REQUEST");
-                message.put("proxy", proxy.getName());
+                message.put("target", proxy.getName());
                 if (templateDifferences.size() > 0) message.put("template", templateDirectory.getName());
                 message.put("differences", differencesJson);
                 TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(new JSONObject(message));
                 return;
             }
 
-            File temporaryDirectory = proxy.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory(), proxy.getName());
+            File temporaryDirectory = proxy.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getProxyTemporaryDirectory(), proxy.getName() + "_" + proxy.getToken());
             if (!proxy.isStatic()) {
                 if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
                 copyDirectory(TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory(), temporaryDirectory);
@@ -300,42 +304,53 @@ public class BaseServerManager {
                 TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ": No free port found. Please report this!");
             }
 
-            File serverProperties = new File(temporaryDirectory, "server.properties");
-            setProperty(serverProperties, "online-mode", "false");
-            setProperty(serverProperties, "server-name", server.getName());
+            File configFile = new File(temporaryDirectory, "config.yml");
+            configFile.createNewFile();
+            Yaml yaml = new Yaml();
+            Map<String, Object> config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+            config.put("player_limit", proxy.getMaxPlayersPerProxy());
+            List<Map<String, Object>> listeners = (List) config.get("listeners");
+            Map<String, Object> map = listeners.size() == 0 ? new LinkedHashMap<>() : listeners.get(0);
+            map.put("motd", proxy.getMotd());
+            map.put("host", "0.0.0.0:" + port);
+            map.put("max_players", proxy.getMaxPlayers());
+            map.put("query_enabled", false);
+            if (listeners.size() == 0) listeners.add(map);
+            FileWriter writer = new FileWriter(configFile);
+            DumperOptions dumperOptions = new DumperOptions();
+            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            new Yaml(dumperOptions).dump(config, writer);
 
             double millisNow = System.currentTimeMillis();
-            TimoCloudBase.info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
+            TimoCloudBase.info("Successfully prepared starting proxy " + proxy.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
 
 
             ProcessBuilder pb = new ProcessBuilder(
                     "/bin/sh", "-c",
-                    "screen -mdS " + server.getName() +
+                    "screen -mdS " + proxy.getName() +
                             " java -server " +
-                            " -Xmx" + server.getRam() + "M" +
+                            " -Xmx" + proxy.getRam() + "M" +
                             " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                             " -Dcom.mojang.eula.agree=true" +
-                            " -Dtimocloud-bungeecordhost=" + TimoCloudBase.getInstance().getBungeeSocketIP() + ":" + TimoCloudBase.getInstance().getBungeeSocketPort() +
-                            " -Dtimocloud-randommap=" + randomMap +
-                            " -Dtimocloud-mapname=" + mapName +
-                            " -Dtimocloud-servername=" + server.getName() +
-                            " -Dtimocloud-static=" + server.isStatic() +
-                            " -Dtimocloud-token=" + server.getToken() +
+                            " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
+                            " -Dtimocloud-proxyname=" + proxy.getName() +
+                            " -Dtimocloud-static=" + proxy.isStatic() +
+                            " -Dtimocloud-token=" + proxy.getToken() +
                             " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                             " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                            " -jar spigot.jar -o false -h 0.0.0.0 -p " + port
+                            " -jar BungeeCord.jar"
             ).directory(temporaryDirectory);
             try {
                 pb.start();
-                TimoCloudBase.info("Successfully started screen session " + server.getName() + ".");
+                TimoCloudBase.info("Successfully started screen session " + proxy.getName() + ".");
             } catch (Exception e) {
-                TimoCloudBase.severe("Error while starting server " + server.getName() + ":");
+                TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ":");
                 e.printStackTrace();
             }
 
             Map<String, Object> message = new HashMap<>();
             message.put("type", "PROXY_STARTED");
-            message.put("proxy", proxy.getName());
+            message.put("target", proxy.getName());
             message.put("token", proxy.getToken());
             message.put("port", port);
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(new JSONObject(message));
@@ -383,8 +398,9 @@ public class BaseServerManager {
     }
 
 
-    public void onServerStopped(String name) {
-        File directory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), name);
+    public void onServerStopped(String name, String token) {
+        File directory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), name + "_" + token);
+        /*
         if ((Boolean) TimoCloudBase.getInstance().getFileManager().getConfig().get("save-logs")) {
             File log = new File(directory, "/logs/latest.log");
             if (log.exists()) {
@@ -399,6 +415,28 @@ public class BaseServerManager {
                 TimoCloudBase.severe("No log from server " + name + " exists.");
             }
         }
+        */
+        deleteDirectory(directory);
+    }
+
+    public void onProxyStopped(String name, String token) {
+        File directory = new File(TimoCloudBase.getInstance().getFileManager().getProxyTemporaryDirectory(), name + "_" + token);
+        /*
+        if ((Boolean) TimoCloudBase.getInstance().getFileManager().getConfig().get("save-logs")) {
+            File log = new File(directory, "proxy.log.0");
+            if (log.exists()) {
+                try {
+                    File dir = new File(TimoCloudBase.getInstance().getFileManager().getLogsDirectory(), ServerToGroupUtil.getGroupByServer(name));
+                    dir.mkdirs();
+                    Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                TimoCloudBase.severe("No log from proxy " + name + " exists.");
+            }
+        }
+        */
         deleteDirectory(directory);
     }
 }

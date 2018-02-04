@@ -12,13 +12,13 @@ import java.util.List;
 
 public class TimoCloudUniversalAPICoreImplementation implements TimoCloudUniversalAPI {
     @Override
-    public List<ServerGroupObject> getGroups() {
-        return Arrays.asList(TimoCloudCore.getInstance().getServerManager().getGroups().stream().map(ServerGroup::toGroupObject).toArray(ServerGroupObjectBasicImplementation[]::new));
+    public List<ServerGroupObject> getServerGroups() {
+        return Arrays.asList(TimoCloudCore.getInstance().getServerManager().getServerGroups().stream().map(ServerGroup::toGroupObject).toArray(ServerGroupObjectBasicImplementation[]::new));
     }
 
     @Override
-    public ServerGroupObject getGroup(String groupName) {
-        return TimoCloudCore.getInstance().getServerManager().getGroupByName(groupName).toGroupObject();
+    public ServerGroupObject getServerGroup(String groupName) {
+        return TimoCloudCore.getInstance().getServerManager().getServerGroupByName(groupName).toGroupObject();
     }
 
     @Override

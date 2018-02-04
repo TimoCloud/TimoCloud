@@ -20,7 +20,7 @@ public class BukkitSocketMessageManager {
 
     public String getJSON(String type, String server, Object data) {
         JSONObject json = new JSONObject();
-        json.put("server", server);
+        json.put("target", server);
         json.put("type", type);
         json.put("data", data);
         return json.toString();

@@ -60,13 +60,13 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
     }
 
     @Override
-    public List<ServerGroupObject> getGroups() {
+    public List<ServerGroupObject> getServerGroups() {
         return groups == null ? null : (ArrayList) groups.clone();
     }
 
     @Override
-    public ServerGroupObject getGroup(String groupName) {
-        List<ServerGroupObject> groups = getGroups();
+    public ServerGroupObject getServerGroup(String groupName) {
+        List<ServerGroupObject> groups = getServerGroups();
         if (groups == null) return null;
         for (ServerGroupObject group : groups) if (group.getName().equals(groupName)) return group;
         for (ServerGroupObject group : groups) if (group.getName().equalsIgnoreCase(groupName)) return group;
@@ -75,7 +75,7 @@ public class TimoCloudUniversalAPIBukkitImplementation implements TimoCloudUnive
 
     @Override
     public ServerObject getServer(String serverName) {
-        List<ServerGroupObject> groups = getGroups();
+        List<ServerGroupObject> groups = getServerGroups();
         if (groups == null) return null;
         for (ServerGroupObject group : groups)
             for (ServerObject server : group.getServers())

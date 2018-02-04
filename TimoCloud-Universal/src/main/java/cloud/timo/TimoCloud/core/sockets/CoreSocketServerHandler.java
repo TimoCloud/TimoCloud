@@ -43,7 +43,7 @@ public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
 
     public String getJSON(String server, String type, Object data) {
         JSONObject json = new JSONObject();
-        json.put("server", server);
+        json.put("target", server);
         json.put("type", type);
         json.put("data", data);
         return json.toString();

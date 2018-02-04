@@ -10,25 +10,38 @@ import java.util.zip.ZipOutputStream;
 
 public class TemplateManager {
 
-    public void zipFiles(Collection<File> files, File output, String ... entries) throws IOException {
+    public void zipFiles(Collection<File> files, File base, File output) throws IOException {
         FileOutputStream fos = new FileOutputStream(output);
         ZipOutputStream zos = new ZipOutputStream(fos);
-        for (String entry : entries) zos.putNextEntry(new ZipEntry(entry));
-        for (File file : files) addFile(file, zos);
+        for (File file : files) addFile(file, base, zos);
         zos.close();
         fos.close();
     }
 
-    private static void addFile(File file, ZipOutputStream zos) throws IOException {
-        FileInputStream fis = new FileInputStream(file);
-        ZipEntry zipEntry = new ZipEntry(file.getName());
-        zos.putNextEntry(zipEntry);
-        byte[] bytes = new byte[1024];
-        int length;
-        while ((length = fis.read(bytes)) >= 0) {
-            zos.write(bytes, 0, length);
+    private static void addFile(File file, File base, ZipOutputStream zos) throws IOException {
+        if (file.isDirectory() && file.listFiles().length > 0) {
+            for (File file1 : file.listFiles()) addFile(file1, base, zos);
+            return;
         }
-        zos.closeEntry();
-        fis.close();
+        try {
+            if (! file.exists()) return;
+            String relative = base.toURI().relativize(file.toURI()).getPath();
+            if (file.isDirectory() && ! relative.endsWith("/")) relative += "/";
+            ZipEntry zipEntry = new ZipEntry(relative);
+            zos.putNextEntry(zipEntry);
+            if (! file.isDirectory()) {
+                FileInputStream fis = new FileInputStream(file);
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = fis.read(bytes)) >= 0) {
+                    zos.write(bytes, 0, length);
+                }
+                fis.close();
+            }
+            zos.closeEntry();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
     }
 }

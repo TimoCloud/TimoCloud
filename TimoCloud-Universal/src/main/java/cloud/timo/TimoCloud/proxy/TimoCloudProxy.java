@@ -14,6 +14,11 @@ public class TimoCloudProxy implements TimoCloudModule {
     }
 
     @Override
+    public void unload() {
+
+    }
+
+    @Override
     public ModuleType getModuleType() {
         return ModuleType.PROXY;
     }

@@ -8,15 +8,21 @@ public class BaseProxyObject {
     private int ram;
     private boolean isStatic;
     private String token;
+    private String motd;
+    private int maxPlayers;
+    private int maxPlayersPerProxy;
     private JSONObject templateHash;
     private JSONObject globalHash;
 
-    public BaseProxyObject(String name, String group, int ram, boolean isStatic, String token, JSONObject templateHash, JSONObject globalHash) {
+    public BaseProxyObject(String name, String group, int ram, boolean isStatic, String token, String motd, int maxPlayers, int maxPlayersPerProxy, JSONObject templateHash, JSONObject globalHash) {
         this.name = name;
         this.group = group;
         this.ram = ram;
         this.isStatic = isStatic;
         this.token = token;
+        this.motd = motd;
+        this.maxPlayers = maxPlayers;
+        this.maxPlayersPerProxy = maxPlayersPerProxy;
         this.templateHash = templateHash;
         this.globalHash = globalHash;
     }
@@ -39,6 +45,18 @@ public class BaseProxyObject {
 
     public String getToken() {
         return token;
+    }
+
+    public String getMotd() {
+        return motd;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public int getMaxPlayersPerProxy() {
+        return maxPlayersPerProxy;
     }
 
     public JSONObject getTemplateHash() {

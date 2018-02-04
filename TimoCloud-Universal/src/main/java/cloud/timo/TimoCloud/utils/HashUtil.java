@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.utils;
 
+import org.apache.commons.io.FileDeleteStrategy;
 import org.json.simple.JSONObject;
 
 import java.io.File;
@@ -22,6 +23,7 @@ public class HashUtil {
         List<String> differences = new ArrayList<>();
         for (Object key : a.keySet()) {
             String name = (String) key;
+            if (name.endsWith(".DS_Store")) continue;
             String newName = prefix + File.separator + name;
             if (! b.containsKey(key)) {
                 differences.add(newName);
@@ -29,16 +31,33 @@ public class HashUtil {
             }
             if (a.get(key) instanceof JSONObject != b.get(key) instanceof JSONObject) {
                 differences.add(newName);
+                continue;
             }
             if (a.get(key) instanceof JSONObject) differences.addAll(getDifferentFiles(newName, (JSONObject) a.get(key), (JSONObject) b.get(key)));
             else if (! a.get(key).equals(b.get(key)));
         }
         for (Object key : b.keySet()) {
+            String name = (String) key;
+            if (name.endsWith(".DS_Store")) continue;
             if (! a.containsKey(key)) {
                 differences.add(prefix + File.separator + key);
             }
         }
         return differences;
+    }
+
+    public static void deleteIfNotExisting(File base, String prefix, JSONObject a, JSONObject b) throws IOException {
+        for (Object key : a.keySet()) {
+            if (! b.containsKey(key)) {
+                File file = new File(base, prefix + "/" + key);
+                if (a.get(key) instanceof JSONObject) FileDeleteStrategy.FORCE.deleteQuietly(file);
+                else Files.delete(file.toPath());
+            } else {
+                if (a.get(key) instanceof JSONObject && b.get(key) instanceof JSONObject) {
+                    deleteIfNotExisting(base, prefix + "/" + key, (JSONObject) a.get(key), (JSONObject) b.get(key));
+                }
+            }
+        }
     }
 
     public static JSONObject getHashes(File file) throws IOException {

@@ -11,17 +11,17 @@ import java.util.List;
 public interface TimoCloudUniversalAPI {
 
     /**
-     * Use this to get all groups
+     * Use this to get all server groups
      * @return A list of {@link ServerGroupObject} which contains all existing groups
      */
-    List<ServerGroupObject> getGroups();
+    List<ServerGroupObject> getServerGroups();
 
     /**
-     * Use this to get a group by name
+     * Use this to get a server group by name
      * @param groupName The groups name, case-insensitive
      * @return A {@link ServerGroupObject} which matches the given name
      */
-    ServerGroupObject getGroup(String groupName);
+    ServerGroupObject getServerGroup(String groupName);
 
     /**
      * Use this to get a server by name

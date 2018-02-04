@@ -18,6 +18,12 @@ public class TimoCloudCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+
+    }
+
+/**
+    @Override
+    public void execute(CommandSender sender, String[] args) {
         try {
             if (args.length < 1) {
                 sendVersion(sender);
@@ -222,7 +228,7 @@ public class TimoCloudCommand extends Command {
                     (server.getMap() == null || server.getMap().equals("") ? "" : (" &b(&6Map: &e" + server.getMap() + "&b)")));
         }
     }
-
+*/
     private void sendVersion(CommandSender sender) {
         PluginDescription description = TimoCloudBungee.getInstance().getDescription();
         BungeeMessageManager.sendMessage(sender, "&bTimoCloud Version &e[&6" + description.getVersion() + "&e] &bby &6TimoCrafter");

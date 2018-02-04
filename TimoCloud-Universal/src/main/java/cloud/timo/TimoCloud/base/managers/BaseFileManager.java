@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -50,6 +51,7 @@ public class BaseFileManager {
             proxyGlobalDirectory = new File(proxyTemplatesDirectory, "Global/");
             proxyGlobalDirectory.mkdirs();
             temporaryDirectory = new File(baseDirectory, "temporary/");
+            if (temporaryDirectory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(temporaryDirectory);
             temporaryDirectory.mkdirs();
             serverTemporaryDirectory = new File(temporaryDirectory, "server/");
             serverTemporaryDirectory.mkdirs();
@@ -62,7 +64,7 @@ public class BaseFileManager {
             proxyStaticDirectory = new File(staticDirectory, "proxy/");
             proxyStaticDirectory.mkdirs();
 
-            cacheDirectory = new File(serverTemporaryDirectory, "cache/");
+            cacheDirectory = new File(temporaryDirectory, "cache/");
             cacheDirectory.mkdirs();
 
             new File(serverGlobalDirectory, "plugins/").mkdirs();

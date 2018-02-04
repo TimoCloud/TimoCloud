@@ -13,8 +13,8 @@ public class BaseResourceManager {
         this.operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
     }
 
-    public int getFreeMemory() {
-        return (int) getOperatingSystemMXBean().getFreePhysicalMemorySize() / (1024*1024); // Convert to megabytes
+    public long getFreeMemory() {
+        return getOperatingSystemMXBean().getFreePhysicalMemorySize() / (1024*1024); // Convert to megabytes
     }
 
     public double getCpuUsage() {

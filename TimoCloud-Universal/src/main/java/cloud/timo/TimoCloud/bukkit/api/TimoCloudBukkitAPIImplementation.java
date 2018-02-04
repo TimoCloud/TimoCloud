@@ -11,9 +11,4 @@ public class TimoCloudBukkitAPIImplementation implements TimoCloudBukkitAPI {
     public ServerObject getThisServer() {
         return TimoCloudAPI.getUniversalInstance().getServer(TimoCloudBukkit.getInstance().getServerName());
     }
-
-    @Override
-    public void sendCommandToBungeeCord(String command) {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", command);
-    }
 }

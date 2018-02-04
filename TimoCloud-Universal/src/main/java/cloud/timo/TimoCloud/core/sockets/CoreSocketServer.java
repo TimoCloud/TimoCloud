@@ -26,6 +26,7 @@ public class CoreSocketServer {
 
             // Start the server.
             ChannelFuture f = b.bind(address, port).sync();
+            TimoCloudCore.getInstance().setChannel(f.channel());
             TimoCloudCore.getInstance().info("Successfully started socket server on " + address + ":" + port + "!");
             // Wait until the server socket is closed.
             try {

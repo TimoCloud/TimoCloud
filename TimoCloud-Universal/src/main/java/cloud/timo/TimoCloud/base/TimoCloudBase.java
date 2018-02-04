@@ -69,6 +69,11 @@ public class TimoCloudBase implements TimoCloudModule {
         scheduleConnecting();
     }
 
+    @Override
+    public void unload() {
+
+    }
+
     private void makeInstances() {
         instance = this;
         fileManager = new BaseFileManager();
@@ -106,24 +111,24 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public void alertConnecting() {
-        info("Connecting to BungeeCord...");
+        info("Connecting to Core...");
     }
 
     public void connectToSocket() {
         if (isConnected()) return;
         try {
-            getSocketClient().init(getBungeeSocketIP(), getBungeeSocketPort());
+            getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
         } catch (Exception e) {}
     }
 
     public void onSocketConnect() {
         setConnected(true);
         getSocketMessageManager().sendMessage("BASE_HANDSHAKE", null);
-        info("Successfully connected to BungeeCord socket!");
+        info("Successfully connected to Core socket!");
     }
 
     public void onSocketDisconnect() {
-        if (isConnected()) info("Disconnected from bungeecord. Reconnecting...");
+        if (isConnected()) info("Disconnected from Core. Reconnecting...");
         setConnected(false);
     }
 
@@ -135,11 +140,11 @@ public class TimoCloudBase implements TimoCloudModule {
         return (String) getFileManager().getConfig().get("name");
     }
 
-    public String getBungeeSocketIP() {
-        return (String) getFileManager().getConfig().get("bungeecord-ip");
+    public String getCoreSocketIP() {
+        return (String) getFileManager().getConfig().get("core-ip");
     }
 
-    public Integer getBungeeSocketPort() {
+    public Integer getCoreSocketPort() {
         return (Integer) getFileManager().getConfig().get("socket-port");
     }
 

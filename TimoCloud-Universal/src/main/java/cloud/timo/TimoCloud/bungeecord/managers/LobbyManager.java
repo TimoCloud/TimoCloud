@@ -1,9 +1,10 @@
 package cloud.timo.TimoCloud.bungeecord.managers;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.bungeecord.objects.LobbyChooseStrategy;
-import cloud.timo.TimoCloud.core.objects.Server;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -15,7 +16,7 @@ public class LobbyManager {
 
     private static final long INVALIDATE_CACHE_TIME = 5000;
 
-    private Map<UUID, List<ServerInfo>> lobbyHistory;
+    private Map<UUID, List<String>> lobbyHistory;
     private Map<UUID, Long> lastUpdate;
 
     public LobbyManager() {
@@ -23,7 +24,7 @@ public class LobbyManager {
         lastUpdate = new HashMap<>();
     }
 
-    private List<ServerInfo> getVisitedLobbies(UUID uuid) {
+    private List<String> getVisitedLobbies(UUID uuid) {
         lobbyHistory.putIfAbsent(uuid, new ArrayList<>());
         lastUpdate.putIfAbsent(uuid, 0L);
         if (new Date().getTime()-lastUpdate.get(uuid) >= INVALIDATE_CACHE_TIME) {
@@ -33,7 +34,7 @@ public class LobbyManager {
         return lobbyHistory.get(uuid);
     }
 
-    public void addToHistory(UUID uuid, ServerInfo server) {
+    public void addToHistory(UUID uuid, String server) {
         lobbyHistory.putIfAbsent(uuid, new ArrayList<>());
         lobbyHistory.get(uuid).add(server);
     }
@@ -44,15 +45,15 @@ public class LobbyManager {
     }
 
     private ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
-        ServerGroup group = TimoCloudBungee.getInstance().getServerManager().getGroupByName(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
-        List<Server> servers = new ArrayList<>(notThis == null ? group.getServers() : group.getServers().stream().filter(server -> !server.getName().equals(notThis.getName())).collect(Collectors.toList()));
-        List<Server> removeServers = new ArrayList<>();
-        Server notThisServer = notThis == null ? null : TimoCloudBungee.getInstance().getServerManager().getServerByName(notThis.getName());
+        ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
+        List<ServerObject> servers = new ArrayList<>(notThis == null ? group.getServers() : group.getServers().stream().filter(server -> !server.getName().equals(notThis.getName())).collect(Collectors.toList()));
+        List<ServerObject> removeServers = new ArrayList<>();
+        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalInstance().getServer(notThis.getName());
         if (notThisServer != null) removeServers.add(notThisServer);
-        List<ServerInfo> history = getVisitedLobbies(uuid);
+        List<String> history = getVisitedLobbies(uuid);
 
-        for (Server server : servers) {
-            if (history.contains(server.getServerInfo()) && ! removeServers.contains(server)) removeServers.add(server);
+        for (ServerObject server : servers) {
+            if (history.contains(server.getName()) && ! removeServers.contains(server)) removeServers.add(server);
         }
         servers.removeAll(removeServers);
 
@@ -60,20 +61,24 @@ public class LobbyManager {
             return null;
         }
 
-        servers.sort(Comparator.comparingInt(Server::getCurrentPlayers));
+        servers.sort(Comparator.comparingInt(ServerObject::getOnlinePlayerCount));
+        ServerObject target = null;
         switch (getLobbyChooseStrategy()) {
             case RANDOM:
-                return servers.get(new Random().nextInt(servers.size())).getServerInfo();
+                target = servers.get(new Random().nextInt(servers.size()));
             case FILL:
                 for (int i = servers.size()-1; i>= 0; i--) {
-                    Server server = servers.get(i);
-                    if (server.getCurrentPlayers() < server.getMaxPlayers()) return server.getServerInfo();
+                    ServerObject server = servers.get(i);
+                    if (server.getOnlinePlayerCount() < server.getMaxPlayerCount()) {
+                        target = server;
+                        break;
+                    }
                 }
                 break;
             case BALANCE:
-                return servers.get(0).getServerInfo();
+                target = servers.get(0);
         }
-        return servers.get(new Random().nextInt(servers.size())).getServerInfo();
+        return TimoCloudBungee.getInstance().getProxy().getServers().get(target.getName());
     }
 
     public ServerInfo getFreeLobby(UUID uuid, boolean kicked) {
@@ -86,7 +91,7 @@ public class LobbyManager {
             return TimoCloudBungee.getInstance().getProxy().getServerInfo(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
         }
 
-        if (kicked) addToHistory(uuid, serverInfo);
+        if (kicked) addToHistory(uuid, serverInfo.getName());
 
         return serverInfo;
     }

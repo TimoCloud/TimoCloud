@@ -39,45 +39,42 @@ public class CoreServerManager {
     }
 
     public void loadServerGroups() {
+        Map<String, ServerGroup> serverGroups = new HashMap<>();
         try {
-            serverGroups = new HashMap<>();
             JSONArray serverGroupsJson = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
             for (Object object : serverGroupsJson) {
                 JSONObject jsonObject = (JSONObject) object;
                 String name = (String) jsonObject.get("name");
-                if (getServerGroupByName(name) != null) {
-                    TimoCloudCore.getInstance().severe("Error while loading server group '" + name + "': A group with this name already exists.");
-                    continue;
-                }
-                ServerGroup serverGroup = new ServerGroup(jsonObject);
-                serverGroups.put(name, serverGroup);
+                ServerGroup serverGroup = getServerGroupByName(name);
+                if (serverGroup != null) serverGroup.construct(jsonObject);
+                else serverGroup = new ServerGroup(jsonObject);
+                serverGroups.put(serverGroup.getName(), serverGroup);
             }
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server groups: ");
             e.printStackTrace();
         }
+        this.serverGroups = serverGroups;
     }
 
     public void loadProxyGroups() {
         try {
-            proxyGroups = new HashMap<>();
+            Map<String, ProxyGroup> proxyGroups = new HashMap<>();
             JSONArray proxyGroupsJson = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
             for (Object object : proxyGroupsJson) {
                 JSONObject jsonObject = (JSONObject) object;
                 String name = (String) jsonObject.get("name");
-                if (getProxyGroupByName(name) != null) {
-                    TimoCloudCore.getInstance().severe("Error while loading proxy group '" + name + "': A group with this name already exists.");
-                    continue;
-                }
-                ProxyGroup proxyGroup = new ProxyGroup(jsonObject);
-                proxyGroups.put(name, proxyGroup);
+                ProxyGroup proxyGroup = getProxyGroupByName(name);
+                if (proxyGroup != null) proxyGroup.construct(jsonObject);
+                else proxyGroup = new ProxyGroup(jsonObject);
+                proxyGroups.put(proxyGroup.getName(), proxyGroup);
             }
+            this.proxyGroups = proxyGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading proxy groups: ");
             e.printStackTrace();
         }
     }
-
 
     public void saveGroups() {
         saveServerGroups();
@@ -114,6 +111,13 @@ public class CoreServerManager {
         checkEnoughOnline();
     }
 
+    public Group getGroupByName(String name) {
+        Group group = null;
+        group = getProxyGroupByName(name);
+        if (group != null) return group;
+        return getServerGroupByName(name);
+    }
+
     public ServerGroup getServerGroupByExactName(String name) {
         return serverGroups.get(name);
     }
@@ -134,6 +138,26 @@ public class CoreServerManager {
         for (ProxyGroup proxyGroup : proxyGroups.values())
             if (proxyGroup.getName().equalsIgnoreCase(name)) return proxyGroup;
         return null;
+    }
+
+    public void addGroup(ServerGroup group) {
+        serverGroups.put(group.getName(), group);
+    }
+
+    public void addGroup(ProxyGroup group) {
+        proxyGroups.put(group.getName(), group);
+    }
+
+    public void removeServerGroup(ServerGroup group) {
+        if (getServerGroups().contains(group)) getServerGroups().remove(group);
+        group.stopAllServers();
+        saveServerGroups();
+    }
+
+    public void removeProxyGroup(ProxyGroup group) {
+        if (getProxyGroups().contains(group)) getProxyGroups().remove(group);
+        group.stopAllProxies();
+        saveProxyGroups();
     }
 
     public void start(Group group, Base base) {
@@ -169,35 +193,7 @@ public class CoreServerManager {
         }
 
         Server server = new Server(name, group, base, map, token);
-        group.addStartingServer(server);
-        JSONObject json = new JSONObject();
-        json.put("type", "START_SERVER");
-        json.put("name", name);
-        json.put("group", group.getName());
-        json.put("ram", group.getRam());
-        json.put("static", group.isStatic());
-        if (map != null) json.put("map", map);
-        json.put("token", token);
-        if (! group.isStatic()) {
-            try {
-                json.put("templateHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), group.getName())));
-                if (map != null) json.put("mapHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory(), group.getName() + "_" + map)));
-                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
-            } catch (IOException e) {
-                TimoCloudCore.getInstance().severe("Error while hashing files while starting server " + name + ": ");
-                e.printStackTrace();
-                return;
-            }
-        }
-        try {
-            base.getChannel().writeAndFlush(json.toJSONString());
-            base.setReady(false);
-            base.setAvailableRam(base.getAvailableRam()-group.getRam());
-            TimoCloudCore.getInstance().info("Told base " + base.getName() + " to start server " + name + ".");
-        } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while starting server " + name + ": TimoCloudBase " + base.getName() + " not connected.");
-            return;
-        }
+        server.start();
     }
 
     private List<File> getAvailableMaps(Group group) {
@@ -213,33 +209,7 @@ public class CoreServerManager {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
         Proxy proxy = new Proxy(name, group, base, token);
-        group.addStartingProxy(proxy);
-        JSONObject json = new JSONObject();
-        json.put("type", "START_PROXY");
-        json.put("name", name);
-        json.put("group", group.getName());
-        json.put("ram", group.getRam());
-        json.put("static", group.isStatic());
-        json.put("token", token);
-        if (! group.isStatic()) {
-            try {
-                json.put("templateHash", HashUtil.getHashes(new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), group.getName())));
-                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()));
-            } catch (IOException e) {
-                TimoCloudCore.getInstance().severe("Error while hashing files while starting proxy " + name + ": ");
-                e.printStackTrace();
-                return;
-            }
-        }
-        try {
-            base.getChannel().writeAndFlush(json.toJSONString());
-            base.setReady(false);
-            base.setAvailableRam(base.getAvailableRam()-group.getRam());
-            TimoCloudCore.getInstance().info("Told base " + base.getName() + " to start proxy " + name + ".");
-        } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while starting proxy " + name + ": TimoCloudBase " + base.getName() + " not connected.");
-            return;
-        }
+        proxy.start();
     }
 
     public Collection<ServerGroup> getServerGroups() {
@@ -301,7 +271,7 @@ public class CoreServerManager {
 
         List<Base> bases = new ArrayList<>();
         for (Base base : getBases()) {
-            if (base.isReady()) bases.add(base);
+            if (base.isConnected() && base.isReady()) bases.add(base);
         }
 
         while (! (staticDemands.isEmpty() || bases.isEmpty())) {

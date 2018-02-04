@@ -44,7 +44,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public ServerGroupObject getGroup() {
-        return TimoCloudAPI.getUniversalInstance().getGroup(group);
+        return TimoCloudAPI.getUniversalInstance().getServerGroup(group);
     }
 
     protected void setGroup(String group) {

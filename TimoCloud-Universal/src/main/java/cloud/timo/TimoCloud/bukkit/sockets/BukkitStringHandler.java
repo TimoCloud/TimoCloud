@@ -38,13 +38,12 @@ public class BukkitStringHandler extends SimpleChannelInboundHandler<String> {
             TimoCloudBukkit.log("Error while parsing json: " + message);
             return;
         }
-        String server = (String) json.get("server");
+        String server = (String) json.get("target");
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
             case "APIDATA":
                 ((TimoCloudUniversalAPIBukkitImplementation) TimoCloudAPI.getUniversalInstance()).setData((String) data);
-                TimoCloudBukkit.getInstance().getStateByEventManager().setStateByPlayerCount();
                 break;
             case "EXECUTE_COMMAND":
                 TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data);

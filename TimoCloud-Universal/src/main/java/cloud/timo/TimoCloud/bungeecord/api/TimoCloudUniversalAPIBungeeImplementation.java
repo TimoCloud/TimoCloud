@@ -37,37 +37,37 @@ public class TimoCloudUniversalAPIBungeeImplementation implements TimoCloudUnive
                 ObjectMapper objectMapper = new ObjectMapper();
                 SimpleModule module = new SimpleModule();
                 SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
-                resolver.addMapping(ServerObject.class, ServerObjectBukkitImplementation.class);
+                resolver.addMapping(ServerObject.class, ServerObjectBungeeImplementation.class);
                 module.setAbstractTypes(resolver);
 
                 objectMapper.registerModule(module);
 
                 objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
                 objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-                ServerGroupObjectBukkitImplementation groupObject = new ServerGroupObjectBukkitImplementation(objectMapper.readValue((String) object, ServerGroupObjectBasicImplementation.class));
+                ServerGroupObjectBungeeImplementation groupObject = new ServerGroupObjectBungeeImplementation(objectMapper.readValue((String) object, ServerGroupObjectBasicImplementation.class));
                 List<ServerObject> serverObjects = new ArrayList<>();
                 for (ServerObject serverObject : groupObject.getServers())
-                    serverObjects.add(new ServerObjectBukkitImplementation((ServerObjectBasicImplementation) serverObject));
+                    serverObjects.add(new ServerObjectBungeeImplementation((ServerObjectBasicImplementation) serverObject));
                 groupObject.getServers().clear();
                 groupObject.getServers().addAll(serverObjects);
                 groups.add(groupObject);
             }
             this.groups = groups;
         } catch (Exception e) {
-            TimoCloudBukkit.log("&cError while creating objects from JSON API data: &e'" + json + "'&c. Please report this!");
+            TimoCloudBungee.severe("&cError while creating objects from JSON API data: &e'" + json + "'&c. Please report this!");
             e.printStackTrace();
         }
 
     }
 
     @Override
-    public List<ServerGroupObject> getGroups() {
+    public List<ServerGroupObject> getServerGroups() {
         return groups == null ? null : (ArrayList) groups.clone();
     }
 
     @Override
-    public ServerGroupObject getGroup(String groupName) {
-        List<ServerGroupObject> groups = getGroups();
+    public ServerGroupObject getServerGroup(String groupName) {
+        List<ServerGroupObject> groups = getServerGroups();
         if (groups == null) return null;
         for (ServerGroupObject group : groups) if (group.getName().equals(groupName)) return group;
         for (ServerGroupObject group : groups) if (group.getName().equalsIgnoreCase(groupName)) return group;
@@ -76,7 +76,7 @@ public class TimoCloudUniversalAPIBungeeImplementation implements TimoCloudUnive
 
     @Override
     public ServerObject getServer(String serverName) {
-        List<ServerGroupObject> groups = getGroups();
+        List<ServerGroupObject> groups = getServerGroups();
         if (groups == null) return null;
         for (ServerGroupObject group : groups)
             for (ServerObject server : group.getServers())

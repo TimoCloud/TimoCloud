@@ -101,7 +101,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage("HANDSHAKE", System.getProperty("timocloud-token"));
+        getSocketMessageManager().sendMessage("PROXY_HANDSHAKE", System.getProperty("timocloud-token"));
         everySecond();
     }
 

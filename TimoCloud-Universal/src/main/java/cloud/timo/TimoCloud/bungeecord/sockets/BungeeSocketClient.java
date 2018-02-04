@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.bungeecord.sockets;
 
-import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -24,13 +23,13 @@ public class BungeeSocketClient {
             try {
                 f = b.connect(host, port).sync();
             } catch (Exception e) {
-                TimoCloudBukkit.getInstance().onSocketDisconnect();
+                TimoCloudBungee.getInstance().onSocketDisconnect();
             }
             // Wait until the connection is closed.
             try {
                 f.channel().closeFuture().sync();
             } catch (Exception e) {
-                TimoCloudBukkit.getInstance().onSocketDisconnect();
+                TimoCloudBungee.getInstance().onSocketDisconnect();
             }
         } finally {
             // Shut down the event loop to terminate all threads.

@@ -76,7 +76,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage("HANDSHAKE", System.getProperty("timocloud-token"));
+        getSocketMessageManager().sendMessage("SERVER_HANDSHAKE", System.getProperty("timocloud-token"));
         doEverySecond();
     }
 

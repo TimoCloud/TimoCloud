@@ -1,5 +1,5 @@
 name: BASE-1
-bungeecord-ip: 127.0.0.1
+core-ip: 127.0.0.1
 socket-port: 5000
 ram: 4096
 ram-keep-free: 1024

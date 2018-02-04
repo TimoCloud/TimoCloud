@@ -19,6 +19,7 @@ public class Base implements Communicatable {
     private boolean connected;
     private boolean ready;
     private List<Server> servers;
+    private List<Proxy> proxies;
 
     public Base(String name, InetAddress address, Channel channel) {
         this.name = name;
@@ -26,6 +27,7 @@ public class Base implements Communicatable {
         this.channel = channel;
         setReady(false);
         servers = new ArrayList<>();
+        proxies = new ArrayList<>();
     }
 
     public String getName() {
@@ -59,19 +61,24 @@ public class Base implements Communicatable {
     @Override
     public void onMessage(JSONObject message) {
         String type = (String) message.get("type");
-        String data = (String) message.get("data");
+        Object data = message.get("data");
         switch (type) {
             case "RESOURCES":
                 Map<String, Object> map = (Map<String, Object>) message.get("data");
                 setReady((boolean) map.get("ready"));
-                int maxRam = (int) map.get("maxRam");;
-                int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum();
-                int availableRam = (int) map.get("availableRam");
+                int maxRam = ((Long) map.get("maxRam")).intValue();
+                int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
+                int availableRam = ((Long) map.get("availableRam")).intValue();
                 setAvailableRam(Math.max(0, Math.min(availableRam, maxRam-usedRam)));
                 break;
             default:
                 TimoCloudCore.getInstance().severe("Unknown base message type: '" + type + "'. Please report this.");
         }
+    }
+
+    @Override
+    public void sendMessage(JSONObject message) {
+        getChannel().writeAndFlush(message.toString());
     }
 
     public void setChannel(Channel channel) {
@@ -117,5 +124,9 @@ public class Base implements Communicatable {
 
     public List<Server> getServers() {
         return servers;
+    }
+
+    public List<Proxy> getProxies() {
+        return proxies;
     }
 }

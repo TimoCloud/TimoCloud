@@ -19,7 +19,7 @@ public class SendBungeeCommand implements CommandExecutor {
             cmd += args[i] + " ";
         }
         cmd = cmd.trim();
-        TimoCloudAPI.getBukkitInstance().sendCommandToBungeeCord(cmd);
+        //TimoCloudAPI.getBukkitInstance().sendCommandToBungeeCord(cmd); //TODO readd
         return false;
     }
 }
