@@ -8,14 +8,16 @@ import java.util.List;
 
 public class ServerGroupObjectBungeeImplementation extends ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
-    public ServerGroupObjectBungeeImplementation(List<ServerObject> servers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
-        super(servers, name, startupAmount, maxAmount, ram, isStatic, base, sortOutStates);
+    public ServerGroupObjectBungeeImplementation() {}
+
+    public ServerGroupObjectBungeeImplementation(String name, List<ServerObject> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
+        super(name, servers, onlineAmount, maxAmount, ram, isStatic, base, sortOutStates);
     }
 
     public ServerGroupObjectBungeeImplementation(ServerGroupObjectBasicImplementation groupObjectBasicImplementation) {
         this(
-                groupObjectBasicImplementation.getServers(),
                 groupObjectBasicImplementation.getName(),
+                groupObjectBasicImplementation.getServers(),
                 groupObjectBasicImplementation.getOnlineAmount(),
                 groupObjectBasicImplementation.getMaxAmount(),
                 groupObjectBasicImplementation.getRam(),

@@ -13,7 +13,7 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        this.channel = ctx.channel();
+        setChannel(ctx.channel());
         TimoCloudBase.getInstance().onSocketConnect();
     }
 
@@ -24,13 +24,13 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendMessage(String message) {
-        channel.writeAndFlush(message);
+        if (channel != null && channel.isActive()) channel.writeAndFlush(message);
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
-        cause.printStackTrace();
+        //cause.printStackTrace();
         ctx.close();
         TimoCloudBase.getInstance().onSocketDisconnect();
     }

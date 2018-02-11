@@ -4,35 +4,28 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 /**
- * A proxy object stands for a BungeeCord instance
+ * A cord object stands for a BungeeCord instance
  */
 
 public interface ProxyObject {
 
     /**
-     * @return The proxy's name
+     * @return The cord's name
      */
     String getName();
 
     /**
-     * @return The group the proxy is part of
+     * @return The group the cord is part of
      */
     ProxyGroupObject getGroup();
 
     /**
-     * The proxy's current player count
-     * @return An integer containing the amount of players currently online
+     * @return The cord's current player count
      */
     int getOnlinePlayerCount();
 
     /**
-     * The proxy's maximum player count
-     * @return An integer containing the amount of maximum online players
-     */
-    int getMaxPlayerCount();
-
-    /**
-     * @return The proxy's IP address and port players can connect to
+     * @return The cord's IP address and port players can connect to
      */
     InetSocketAddress getSocketAddress();
 
@@ -48,7 +41,7 @@ public interface ProxyObject {
 
     /**
      * Executes the given command as ConsoleSender on the server
-     * @param command *Without leading /*
+     * @param command Without leading '/'
      */
     void executeCommand(String command);
 

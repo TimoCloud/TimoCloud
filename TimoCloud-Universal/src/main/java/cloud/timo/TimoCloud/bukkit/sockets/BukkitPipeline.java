@@ -14,7 +14,7 @@ public class BukkitPipeline extends ChannelInitializer<Channel> {
         ch.pipeline().addLast(TimoCloudBukkit.getInstance().getSocketClientHandler());
         ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
-        ch.pipeline().addLast("handler", new BukkitStringHandler());
+        ch.pipeline().addLast("handler", TimoCloudBukkit.getInstance().getStringHandler());
     }
 
 }

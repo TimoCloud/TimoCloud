@@ -24,9 +24,9 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(List<ServerObject> servers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
-        this.servers = servers;
+    public ServerGroupObjectBasicImplementation(String name, List<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
         this.name = name;
+        this.servers = servers;
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;

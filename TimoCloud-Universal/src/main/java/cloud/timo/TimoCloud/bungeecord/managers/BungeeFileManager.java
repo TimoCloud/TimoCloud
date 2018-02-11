@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class BungeeFileManager {
-    private String pluginsDirectory = "plugins/TimoCloudBungee/";
+    private String pluginsDirectory = "plugins/TimoCloud/";
     private String configsDirectory = pluginsDirectory + "configs/";
     private File configFile;
     private Configuration config;

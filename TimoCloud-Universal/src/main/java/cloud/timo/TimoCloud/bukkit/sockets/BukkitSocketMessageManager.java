@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 
 public class BukkitSocketMessageManager {
 
-    public void sendMessage(String type, String server, Object data) {
+    public void sendMessage(String type, String target, Object data) {
         try {
-            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, server, data));
+            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, target, data));
         } catch (Exception e) {
             e.printStackTrace();
             TimoCloudBukkit.getInstance().onSocketDisconnect();
@@ -15,12 +15,12 @@ public class BukkitSocketMessageManager {
     }
 
     public void sendMessage(String type, String data) {
-        sendMessage(type, TimoCloudBukkit.getInstance().getServerName(), data);
+        sendMessage(type, TimoCloudBukkit.getInstance().getToken(), data);
     }
 
-    public String getJSON(String type, String server, Object data) {
+    public String getJSON(String type, String target, Object data) {
         JSONObject json = new JSONObject();
-        json.put("target", server);
+        json.put("target", target);
         json.put("type", type);
         json.put("data", data);
         return json.toString();

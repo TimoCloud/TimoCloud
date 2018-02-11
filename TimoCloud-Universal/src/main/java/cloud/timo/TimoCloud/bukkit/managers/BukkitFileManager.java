@@ -32,7 +32,7 @@ public class BukkitFileManager {
 
     public void load() {
         try {
-            path  = new File(TimoCloudBukkit.getInstance().getTemplateDirectory(), "/plugins/TimoCloud/");
+            path  = new File(TimoCloudBukkit.getInstance().getTemporaryDirectory(), "/plugins/TimoCloud/");
             path.mkdirs();
 
             loadConfig();

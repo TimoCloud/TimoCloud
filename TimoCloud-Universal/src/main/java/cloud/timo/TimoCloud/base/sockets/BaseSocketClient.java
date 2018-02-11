@@ -11,31 +11,21 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class BaseSocketClient {
     public void init(String host, int port) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
+        Bootstrap b = new Bootstrap();
+        b.group(group)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(new BasePipeline());
+        ChannelFuture f = null;
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new BasePipeline());
-
-            // Start the client.
-            ChannelFuture f = null;
-            try {
-                f = b.connect(host, port).sync();
-            } catch (Exception e) {
-                TimoCloudBase.getInstance().onSocketDisconnect();
-            }
-            // Wait until the connection is closed.
-            try {
-                f.channel().closeFuture().sync();
-            } catch (Exception e) {
-                f.channel().close();
-                TimoCloudBase.getInstance().onSocketDisconnect();
-            }
-        } finally {
-            // Shut down the event loop to terminate all threads.
+            f = b.connect(host, port).sync();
+        } catch (Exception e) {
+            TimoCloudBase.getInstance().onSocketDisconnect();
+            f.channel().close();
+        }
+        f.channel().closeFuture().addListener(future -> {
             group.shutdownGracefully();
             TimoCloudBase.getInstance().onSocketDisconnect();
-        }
+        });
     }
 }

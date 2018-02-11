@@ -34,9 +34,7 @@ public class CoreFileManager {
     private File serverGroupsFile;
     private File proxyGroupsFile;
 
-    public CoreFileManager() {
-        load();
-    }
+    public CoreFileManager() {}
 
     public void load() {
         try {
@@ -53,7 +51,7 @@ public class CoreFileManager {
             serverGlobalDirectory.mkdirs();
             new File(serverGlobalDirectory, "plugins/").mkdirs();
 
-            proxyTemplatesDirectory = new File(templatesDirectory, "proxy");
+            proxyTemplatesDirectory = new File(templatesDirectory, "proxy/");
             proxyTemplatesDirectory.mkdirs();
             proxyGlobalDirectory = new File(proxyTemplatesDirectory, "Global/");
             proxyGlobalDirectory.mkdirs();
@@ -109,6 +107,7 @@ public class CoreFileManager {
     }
 
     public File getBaseDirectory() {
+        if (baseDirectory == null) return new File("core/");
         return baseDirectory;
     }
 
@@ -141,6 +140,7 @@ public class CoreFileManager {
     }
 
     public File getLogsDirectory() {
+        if (logsDirectory == null) return new File(getBaseDirectory(), "logs/");
         return logsDirectory;
     }
 

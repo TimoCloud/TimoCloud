@@ -78,7 +78,7 @@ public class Base implements Communicatable {
 
     @Override
     public void sendMessage(JSONObject message) {
-        getChannel().writeAndFlush(message.toString());
+        if (getChannel() != null) getChannel().writeAndFlush(message.toString());
     }
 
     public void setChannel(Channel channel) {

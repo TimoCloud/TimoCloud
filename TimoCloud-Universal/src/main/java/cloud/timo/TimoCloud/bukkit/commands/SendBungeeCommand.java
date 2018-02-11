@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.bukkit.commands;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bukkit.managers.BukkitMessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

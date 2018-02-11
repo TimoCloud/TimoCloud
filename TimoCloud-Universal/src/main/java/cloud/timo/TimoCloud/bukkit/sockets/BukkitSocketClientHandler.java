@@ -45,7 +45,7 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
-        cause.printStackTrace();
+        //cause.printStackTrace();
         ctx.close();
         TimoCloudBukkit.getInstance().onSocketDisconnect();
     }

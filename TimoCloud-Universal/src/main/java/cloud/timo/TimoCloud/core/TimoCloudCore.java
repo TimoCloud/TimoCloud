@@ -11,19 +11,23 @@ import cloud.timo.TimoCloud.core.managers.TemplateManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketMessageManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
+import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
 import cloud.timo.TimoCloud.utils.options.OptionSet;
 import io.netty.channel.Channel;
+import org.jline.builtins.Completers;
+import org.jline.reader.*;
+import org.jline.reader.impl.DefaultParser;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
-
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 
 public class TimoCloudCore implements TimoCloudModule {
 
@@ -31,9 +35,11 @@ public class TimoCloudCore implements TimoCloudModule {
     private boolean shuttingDown;
     private OptionSet options;
     private CoreFileManager fileManager;
+    SimpleFormatter simpleFormatter = new SimpleFormatter();
     Logger logger;
     private CoreSocketServer socketServer;
     private CoreSocketServerHandler socketServerHandler;
+    private CoreStringHandler stringHandler;
     private CoreServerManager serverManager;
     private Channel channel;
     private TemplateManager templateManager;
@@ -41,48 +47,41 @@ public class TimoCloudCore implements TimoCloudModule {
     private CoreSocketMessageManager socketMessageManager;
     private boolean running;
     private boolean waitingForCommand = false;
+    private LineReader reader;
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
 
     static {
         System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
     }
 
     public void info(String message) {
-        if (isWaitingForCommand()) System.out.println();
-        if (logger == null) {
+        if (getReader() == null) {
             System.out.println(message);
             return;
         }
-        logger.info(message);
-        if (isWaitingForCommand()) waitForInput();
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.INFO, message)));
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+        getReader().getTerminal().writer().flush();
+
+        if (getLogger() != null) getLogger().info(message);
     }
 
     public void severe(String message) {
-        if (isWaitingForCommand()) System.out.println();
-        if (logger == null) {
+        if (getReader() == null) {
             System.err.println(message);
             return;
         }
-        logger.severe(message);
-        if (isWaitingForCommand()) waitForInput();
-    }
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.SEVERE, ANSI_RED + message + ANSI_RESET)));
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+        getReader().getTerminal().writer().flush();
 
-    public void waitForCommands() {
-        Scanner scanner = new Scanner(System.in);
-        while (running) {
-            waitForInput();
-            waitingForCommand = true;
-            String line = scanner.nextLine().trim();
-            waitingForCommand = false;
-            String[] split = line.split(" ");
-            if (split.length == 0) continue;
-            String command = split[0];
-            String[] args = command.length() == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
-            getCommandManager().onCommand(command, args);
-        }
-    }
-
-    private void waitForInput() {
-        System.out.print("> ");
+        if (getLogger() != null) getLogger().severe(message);
     }
 
     @Override
@@ -92,15 +91,57 @@ public class TimoCloudCore implements TimoCloudModule {
         this.options = optionSet;
         makeInstances();
         getServerManager().init();
+        new Thread(this::initSocketServer).start();
         registerTasks();
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICoreImplementation());
-        waitForCommands();
+        try {
+            waitForCommands();
+        } catch (IOException e) {
+            severe("Error while initializing terminal: ");
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void unload() {
+        getServerManager().saveGroups();
         channel.close();
-        channel.parent().close();
+    }
+
+    public void waitForCommands() throws IOException {
+        TerminalBuilder builder = TerminalBuilder.builder();
+        builder.encoding(Charset.defaultCharset());
+        builder.system(true);
+        Terminal terminal = builder.build();
+        Completer completer = new Completers.TreeCompleter(Completers.TreeCompleter.node(""));
+        Parser parser = new DefaultParser();
+        String prompt = "> ";
+        String rightPrompt = null;
+        LineReader reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .completer(completer)
+                .parser(parser)
+                .build();
+        this.reader = reader;
+        while (running) {
+            waitingForCommand = true;
+            String line = null;
+            try {
+                line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
+            } catch (UserInterruptException e) {
+            } catch (EndOfFileException e) {
+                return;
+            }
+            if (line == null) continue;
+            waitingForCommand = false;
+            line = line.trim();
+            if (line.isEmpty()) continue;
+            String[] split = line.split(" ");
+            if (split.length == 0) continue;
+            String command = split[0];
+            String[] args = command.length() == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
+            getCommandManager().onCommand(command, args);
+        }
     }
 
     private void makeInstances() {
@@ -113,9 +154,10 @@ public class TimoCloudCore implements TimoCloudModule {
             e.printStackTrace();
             System.exit(1);
         }
+        fileManager.load();
         this.socketServerHandler = new CoreSocketServerHandler();
         this.socketServer = new CoreSocketServer();
-        new Thread(this::initSocketServer).start();
+        this.stringHandler = new CoreStringHandler();
         this.serverManager = new CoreServerManager();
         this.templateManager = new TemplateManager();
         this.commandManager = new CommandManager();
@@ -124,7 +166,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     private void createLogger() throws IOException {
         logger = Logger.getLogger("TimoCloudCore");
-        FileHandler fileHandler = new FileHandler(getFileManager().getLogsDirectory().getCanonicalPath() + "/core-%g.log");
+        logger.setUseParentHandlers(false);
+        File logsDirectory = getFileManager().getLogsDirectory();
+        logsDirectory.mkdirs();
+        FileHandler fileHandler = new FileHandler(logsDirectory.getCanonicalPath() + "/core-%g.log");
         SimpleFormatter formatter = new SimpleFormatter();
         fileHandler.setFormatter(formatter);
         logger.addHandler(fileHandler);
@@ -136,7 +181,12 @@ public class TimoCloudCore implements TimoCloudModule {
     }
 
     private void everySecond() {
-        getServerManager().everySecond();
+        try {
+            getServerManager().everySecond();
+        } catch (Exception e) {
+            severe("An error occured:");
+            e.printStackTrace();
+        }
     }
 
     private void initSocketServer() {
@@ -165,6 +215,14 @@ public class TimoCloudCore implements TimoCloudModule {
         return fileManager;
     }
 
+    public SimpleFormatter getSimpleFormatter() {
+        return simpleFormatter;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
     public CoreServerManager getServerManager() {
         return serverManager;
     }
@@ -181,8 +239,16 @@ public class TimoCloudCore implements TimoCloudModule {
         return socketMessageManager;
     }
 
+    public CoreSocketServer getSocketServer() {
+        return socketServer;
+    }
+
     public CoreSocketServerHandler getSocketServerHandler() {
         return socketServerHandler;
+    }
+
+    public CoreStringHandler getStringHandler() {
+        return stringHandler;
     }
 
     public Channel getChannel() {
@@ -191,6 +257,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+    }
+
+    public LineReader getReader() {
+        return reader;
     }
 
     @Override

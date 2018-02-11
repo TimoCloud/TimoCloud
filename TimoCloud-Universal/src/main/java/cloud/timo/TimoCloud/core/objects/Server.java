@@ -34,7 +34,7 @@ public class Server implements Communicatable {
         this.name = name;
         this.group = group;
         this.base = base;
-        this.address = new InetSocketAddress(base.getAddress(), getPort());
+        this.address = new InetSocketAddress(base.getAddress(), 0);
         this.map = map;
         this.token = token;
     }
@@ -55,7 +55,7 @@ public class Server implements Communicatable {
         json.put("token", getToken());
         if (! getGroup().isStatic()) {
             File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
-            File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory(), getGroup().getName() + "_" + getMap());
+            File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
             try {
                 templateDirectory.mkdirs();
                 if (getMap() != null) mapDirectory.mkdirs();
@@ -159,7 +159,7 @@ public class Server implements Communicatable {
                 stop();
                 break;
             case "SERVER_STARTED":
-                setPort((int) message.get("port"));
+                setPort(((Long) message.get("port")).intValue());
                 break;
             case "SERVER_NOT_STARTED":
                 unregister();
@@ -174,7 +174,7 @@ public class Server implements Communicatable {
 
     @Override
     public void sendMessage(JSONObject message) {
-        getChannel().writeAndFlush(message.toString());
+        if (getChannel() != null) getChannel().writeAndFlush(message.toString());
     }
 
     public String getName() {

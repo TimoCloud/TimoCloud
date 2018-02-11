@@ -40,13 +40,15 @@ public class LobbyManager {
     }
 
     private LobbyChooseStrategy getLobbyChooseStrategy() {
-        LobbyChooseStrategy lobbyChooseStrategy = LobbyChooseStrategy.valueOf(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("LobbyChooseStrategy"));
-        return lobbyChooseStrategy == null ? LobbyChooseStrategy.RANDOM : lobbyChooseStrategy;
+        return LobbyChooseStrategy.valueOf(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("LobbyChooseStrategy"));
     }
 
-    private ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
+    public ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
         ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
-        List<ServerObject> servers = new ArrayList<>(notThis == null ? group.getServers() : group.getServers().stream().filter(server -> !server.getName().equals(notThis.getName())).collect(Collectors.toList()));
+        List<ServerObject> servers = new ArrayList<>(notThis == null ? group.getServers() : group.getServers().stream()
+                .filter(server -> !server.getName().equals(notThis.getName()))
+                .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
+                .collect(Collectors.toList()));
         List<ServerObject> removeServers = new ArrayList<>();
         ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalInstance().getServer(notThis.getName());
         if (notThisServer != null) removeServers.add(notThisServer);
@@ -66,6 +68,7 @@ public class LobbyManager {
         switch (getLobbyChooseStrategy()) {
             case RANDOM:
                 target = servers.get(new Random().nextInt(servers.size()));
+                break;
             case FILL:
                 for (int i = servers.size()-1; i>= 0; i--) {
                     ServerObject server = servers.get(i);
@@ -77,6 +80,7 @@ public class LobbyManager {
                 break;
             case BALANCE:
                 target = servers.get(0);
+                break;
         }
         return TimoCloudBungee.getInstance().getProxy().getServers().get(target.getName());
     }

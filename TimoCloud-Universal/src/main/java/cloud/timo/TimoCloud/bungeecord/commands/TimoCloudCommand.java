@@ -6,10 +6,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 public class TimoCloudCommand extends Command {
 
     public TimoCloudCommand() {

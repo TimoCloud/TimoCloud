@@ -1,13 +1,14 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class Proxy implements Communicatable {
         getGroup().onProxyConnect(this);
         this.starting = false;
         this.registered = true;
-        TimoCloudCore.getInstance().info("Proxy " + getName() + " registered.");
+        for (Server server : getGroup().getRegisteredServers()) registerServer(server);
     }
 
     public void unregister() {
@@ -59,8 +60,8 @@ public class Proxy implements Communicatable {
         json.put("static", getGroup().isStatic());
         json.put("token", getToken());
         json.put("motd", getGroup().getMotd());
-        json.put("maxplayers", getGroup().getMaxPlayers());
-        json.put("maxplayersperproxy", getGroup().getPlayersPerProxy());
+        json.put("maxplayers", getGroup().getMaxPlayerCount());
+        json.put("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy());
         if (! getGroup().isStatic()) {
             File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
             try {
@@ -87,13 +88,13 @@ public class Proxy implements Communicatable {
     }
 
     public void stop() {
-        channel.close();
+        if (channel != null) channel.close();
     }
 
     public void registerServer(Server server) {
         Map<String, Object> map = new HashMap<>();
         map.put("type", "ADD_SERVER");
-        map.put("target", server.getName());
+        map.put("name", server.getName());
         map.put("address", server.getAddress().getAddress().getHostAddress());
         map.put("port", server.getPort());
         sendMessage(new JSONObject(map));
@@ -120,9 +121,6 @@ public class Proxy implements Communicatable {
             case "EXECUTE_COMMAND":
                 executeCommand((String) data);
                 break;
-            case "REGISTER":
-                register();
-                break;
             case "SET_PLAYER_COUNT":
                 this.onlinePlayerCount = ((Long) data).intValue();
                 break;
@@ -133,12 +131,13 @@ public class Proxy implements Communicatable {
 
     @Override
     public void sendMessage(JSONObject message) {
-        getChannel().writeAndFlush(message.toJSONString());
+        if (getChannel() != null) getChannel().writeAndFlush(message.toJSONString());
     }
 
     @Override
     public void onConnect(Channel channel) {
         setChannel(channel);
+        register();
         TimoCloudCore.getInstance().info("Proxy " + getName() + " connected.");
     }
 
@@ -201,6 +200,16 @@ public class Proxy implements Communicatable {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    public ProxyObject toProxyObject() {
+        return new ProxyObjectCoreImplementation(
+                getName(),
+                getGroup().getName(),
+                getToken(),
+                getOnlinePlayerCount(),
+                getAddress()
+        );
     }
 
     @Override

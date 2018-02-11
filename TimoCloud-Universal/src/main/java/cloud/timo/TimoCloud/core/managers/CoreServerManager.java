@@ -2,22 +2,22 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
-import cloud.timo.TimoCloud.utils.HashUtil;
+import com.sun.management.OperatingSystemMXBean;
 import io.netty.channel.Channel;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class CoreServerManager {
 
     private Map<String, ServerGroup> serverGroups;
     private Map<String, ProxyGroup> proxyGroups;
     private Map<String, Base> bases;
+    private Map<String, Cord> cords;
 
     private static final int MAX_SERVERS = 2500;
     private static final int MAX_PROXIES = 500;
@@ -31,6 +31,7 @@ public class CoreServerManager {
         serverGroups = new HashMap<>();
         proxyGroups = new HashMap<>();
         bases = new HashMap<>();
+        cords = new HashMap<>();
     }
 
     public void loadGroups() {
@@ -311,6 +312,10 @@ public class CoreServerManager {
         }
     }
 
+    public long getFreeMemory() {
+        return ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getFreePhysicalMemorySize() / (1024*1024); // Convert to megabytes
+    }
+
     private GroupInstanceDemand getMostImportant(Collection<GroupInstanceDemand> demands) {
         int best = -1;
         GroupInstanceDemand bestDemand = null;
@@ -370,13 +375,13 @@ public class CoreServerManager {
 
     public int proxiesNeeded(ProxyGroup group) {
         int running = group.getProxies().size();
-        int playersOnline = group.getProxies().stream().mapToInt((proxy) -> proxy.getOnlinePlayerCount()).sum();
+        int playersOnline = group.getOnlinePlayerCount();
         int slotsWanted = playersOnline + group.getKeepFreeSlots();
-        int wanted = divideRoundUp(slotsWanted, group.getPlayersPerProxy());
+        int wanted = divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy());
         int needed = Math.max(wanted - running, 0);
         return Math.max(0,
                 Math.min(
-                        divideRoundUp(group.getMaxPlayers(), group.getPlayersPerProxy()),
+                        divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()),
                         group.getMaxAmount() > 0 ? Math.min(
                                 needed,
                                 group.getMaxAmount()) : needed));
@@ -400,6 +405,22 @@ public class CoreServerManager {
 
     public Base getBase(String name) {
         return bases.get(name);
+    }
+
+    public Cord getCord(String name, InetAddress address, Channel channel) {
+        Cord cord = cords.get(name);
+        if (cord == null) {
+            cord = new Cord(name, address, channel);
+            cords.put(name, cord);
+        } else {
+            cord.setChannel(channel);
+            cord.setAddress(address);
+        }
+        return cord;
+    }
+
+    public Cord getCord(String name) {
+        return cords.get(name);
     }
 
     public Collection<Base> getBases() {

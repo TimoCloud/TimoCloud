@@ -8,14 +8,16 @@ import java.util.List;
 
 public class ServerGroupObjectBukkitImplementation extends ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
-    public ServerGroupObjectBukkitImplementation(List<ServerObject> servers, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
-        super(servers, name, onlineAmount, maxAmount, ram, isStatic, base, sortOutStates);
+    public ServerGroupObjectBukkitImplementation() {}
+
+    public ServerGroupObjectBukkitImplementation(String name, List<ServerObject> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
+        super(name, servers, onlineAmount, maxAmount, ram, isStatic, base, sortOutStates);
     }
 
     public ServerGroupObjectBukkitImplementation(ServerGroupObjectBasicImplementation groupObjectBasicImplementation) {
         this(
-                groupObjectBasicImplementation.getServers(),
                 groupObjectBasicImplementation.getName(),
+                groupObjectBasicImplementation.getServers(),
                 groupObjectBasicImplementation.getOnlineAmount(),
                 groupObjectBasicImplementation.getMaxAmount(),
                 groupObjectBasicImplementation.getRam(),

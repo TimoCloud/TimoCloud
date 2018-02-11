@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 public interface TimoCloudBukkitAPI {
 
     /**
-     *
      * @return The server you are on as ServerObject
      */
     ServerObject getThisServer();

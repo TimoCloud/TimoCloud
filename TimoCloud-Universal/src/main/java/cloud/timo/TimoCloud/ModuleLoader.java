@@ -1,8 +1,8 @@
 package cloud.timo.TimoCloud;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.proxy.TimoCloudProxy;
 import cloud.timo.TimoCloud.utils.options.OptionParser;
 import cloud.timo.TimoCloud.utils.options.OptionSet;
 
@@ -131,8 +131,8 @@ public class ModuleLoader {
             case BASE:
                 module = new TimoCloudBase();
                 break;
-            case PROXY:
-                module = new TimoCloudProxy();
+            case CORD:
+                module = new TimoCloudCord();
                 break;
         }
         try {

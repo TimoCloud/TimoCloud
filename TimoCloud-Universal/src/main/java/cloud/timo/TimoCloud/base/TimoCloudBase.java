@@ -6,7 +6,10 @@ import cloud.timo.TimoCloud.base.managers.BaseFileManager;
 import cloud.timo.TimoCloud.base.managers.BaseResourceManager;
 import cloud.timo.TimoCloud.base.managers.BaseServerManager;
 import cloud.timo.TimoCloud.base.managers.BaseTemplateManager;
-import cloud.timo.TimoCloud.base.sockets.*;
+import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
+import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
+import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
+import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
 import cloud.timo.TimoCloud.utils.options.OptionSet;
 
 import java.io.File;
@@ -32,16 +35,15 @@ public class TimoCloudBase implements TimoCloudModule {
 
     private static TimoCloudBase instance;
     private OptionSet options;
-    private String prefix = ANSI_YELLOW + "[" +ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
+    private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
     private BaseServerManager serverManager;
     private BaseTemplateManager templateManager;
     private BaseSocketClient socketClient;
     private BaseSocketClientHandler socketClientHandler;
-    private BaseFileChunkHandler fileChunkHandler;
     private BaseSocketMessageManager socketMessageManager;
-    private BaseResourceManager resourceManager;
     private BaseStringHandler stringHandler;
+    private BaseResourceManager resourceManager;
     private ScheduledExecutorService scheduler;
     private boolean connected = false;
 
@@ -81,7 +83,6 @@ public class TimoCloudBase implements TimoCloudModule {
         templateManager = new BaseTemplateManager();
         socketClient = new BaseSocketClient();
         socketClientHandler = new BaseSocketClientHandler();
-        fileChunkHandler = new BaseFileChunkHandler();
         socketMessageManager = new BaseSocketMessageManager();
         resourceManager = new BaseResourceManager();
         stringHandler = new BaseStringHandler();
@@ -97,8 +98,9 @@ public class TimoCloudBase implements TimoCloudModule {
         long delay = 1000;
         String prop = System.getProperty("serverStartDelay");
         try {
-            delay = Long.parseLong(prop);
-        } catch (Exception e) {}
+            //delay = Long.parseLong(prop);
+        } catch (Exception e) {
+        }
         return delay;
     }
 
@@ -145,7 +147,7 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public Integer getCoreSocketPort() {
-        return (Integer) getFileManager().getConfig().get("socket-port");
+        return (Integer) getFileManager().getConfig().get("core-port");
     }
 
     public static TimoCloudBase getInstance() {
@@ -170,10 +172,6 @@ public class TimoCloudBase implements TimoCloudModule {
 
     public BaseSocketClientHandler getSocketClientHandler() {
         return socketClientHandler;
-    }
-
-    public BaseFileChunkHandler getFileChunkHandler() {
-        return fileChunkHandler;
     }
 
     public BaseSocketMessageManager getSocketMessageManager() {

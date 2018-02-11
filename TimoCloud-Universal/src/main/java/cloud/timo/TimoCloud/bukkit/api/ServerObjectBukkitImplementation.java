@@ -1,8 +1,7 @@
 package cloud.timo.TimoCloud.bukkit.api;
 
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 
 import java.net.InetSocketAddress;
@@ -18,7 +17,7 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
     public ServerObjectBukkitImplementation(ServerObjectBasicImplementation serverObjectBasicImplementation) {
         this(
                 serverObjectBasicImplementation.getName(),
-                serverObjectBasicImplementation.getGroup().getName(),
+                serverObjectBasicImplementation.getGroupName(),
                 serverObjectBasicImplementation.getToken(),
                 serverObjectBasicImplementation.getState(),
                 serverObjectBasicImplementation.getExtra(),
@@ -34,22 +33,22 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
     @Override
     public void setState(String state) {
         this.state = state;
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("SET_STATE", getName(), state);
+        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("SET_STATE", getToken(), state);
     }
 
     @Override
     public void setExtra(String extra) {
         this.extra = extra;
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getName(), extra);
+        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getToken(), extra);
     }
 
     @Override
     public void executeCommand(String command) {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getName(), command);
+        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getToken(), command);
     }
 
     @Override
     public void stop() {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getName(), "");
+        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getToken(), "");
     }
 }

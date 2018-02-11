@@ -14,7 +14,7 @@ public class BungeePipeline extends ChannelInitializer<Channel> {
         ch.pipeline().addLast(TimoCloudBungee.getInstance().getSocketClientHandler());
         ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
-        ch.pipeline().addLast("handler", new BungeeStringHandler());
+        ch.pipeline().addLast("handler", TimoCloudBungee.getInstance().getBungeeStringHandler());
     }
 
 }

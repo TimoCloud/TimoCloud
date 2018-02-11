@@ -5,9 +5,9 @@ import org.json.simple.JSONObject;
 
 public class BungeeSocketMessageManager {
 
-    public void sendMessage(String type, String server, Object data) {
+    public void sendMessage(String type, String target, Object data) {
         try {
-            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(getJSON(type, server, data));
+            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(getJSON(type, target, data));
         } catch (Exception e) {
             e.printStackTrace();
             TimoCloudBungee.getInstance().onSocketDisconnect();
@@ -15,12 +15,12 @@ public class BungeeSocketMessageManager {
     }
 
     public void sendMessage(String type, Object data) {
-        sendMessage(type, TimoCloudBungee.getInstance().getProxyName(), data);
+        sendMessage(type, TimoCloudBungee.getInstance().getToken(), data);
     }
 
-    public String getJSON(String type, String server, Object data) {
+    public String getJSON(String type, String target, Object data) {
         JSONObject json = new JSONObject();
-        json.put("target", server);
+        json.put("target", target);
         json.put("type", type);
         json.put("data", data);
         return json.toString();

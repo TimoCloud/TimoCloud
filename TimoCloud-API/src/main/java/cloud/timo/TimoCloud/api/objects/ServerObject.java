@@ -28,37 +28,31 @@ public interface ServerObject {
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
-     * @return The server's extra
      */
     String getExtra();
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
-     * @param extra A string containing the extra
      */
     void setExtra(String extra);
 
     /**
      * If a server's map is assigned randomly, the map name will be the part of the map directory's name after the '_'. E.g. 'BedWars_VILLAGE' becomes 'VILLAGE'. If no random maps exists, the 'defaultMapName' property from config.yml will be used.
-     * @return The server's map name
      */
     String getMap();
 
     /**
      * The server's MOTD (= message of the day)
-     * @return A string containing the MOTD
      */
     String getMotd();
 
     /**
-     * The server's current player count
-     * @return An integer containing the amount of players currently online
+     * The server's current online player count
      */
     int getOnlinePlayerCount();
 
     /**
      * The server's maximum player count
-     * @return An integer containing the amount of maximum online players
      */
     int getMaxPlayerCount();
 

@@ -11,30 +11,21 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class BungeeSocketClient {
     public void init(String host, int port) throws Exception {
         EventLoopGroup group = new NioEventLoopGroup();
+        Bootstrap b = new Bootstrap();
+        b.group(group)
+                .channel(NioSocketChannel.class)
+                .option(ChannelOption.TCP_NODELAY, true)
+                .handler(new BungeePipeline());
+        ChannelFuture f = null;
         try {
-            Bootstrap b = new Bootstrap();
-            b.group(group)
-                    .channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new BungeePipeline());
-
-            // Start the client.
-            ChannelFuture f = null;
-            try {
-                f = b.connect(host, port).sync();
-            } catch (Exception e) {
-                TimoCloudBungee.getInstance().onSocketDisconnect();
-            }
-            // Wait until the connection is closed.
-            try {
-                f.channel().closeFuture().sync();
-            } catch (Exception e) {
-                TimoCloudBungee.getInstance().onSocketDisconnect();
-            }
-        } finally {
-            // Shut down the event loop to terminate all threads.
+            f = b.connect(host, port).sync();
+        } catch (Exception e) {
+            TimoCloudBungee.getInstance().onSocketDisconnect();
+            f.channel().close();
+        }
+        f.channel().closeFuture().addListener(future -> {
             group.shutdownGracefully();
             TimoCloudBungee.getInstance().onSocketDisconnect();
-        }
+        });
     }
 }

@@ -4,6 +4,7 @@ public class TimoCloudAPI {
 
     private static TimoCloudUniversalAPI timoCloudUniversalAPI;
     private static TimoCloudBukkitAPI timoCloudBukkitAPI;
+    private static TimoCloudBungeeAPI timoCloudBungeeAPI;
 
     /**
      * Do not use this method. This will be done by TimoCloud
@@ -33,5 +34,20 @@ public class TimoCloudAPI {
      */
     public static TimoCloudBukkitAPI getBukkitInstance() {
         return timoCloudBukkitAPI;
+    }
+
+    /**
+     * Do not use this method. This will be done by TimoCloud
+     */
+    public static void setBungeeImplementation(TimoCloudBungeeAPI implementation) {
+        timoCloudBungeeAPI = implementation;
+    }
+
+    /**
+     * This API is for BungeeCord plugins
+     * @return Bungee API instance
+     */
+    public static TimoCloudBungeeAPI getBungeeInstance() {
+        return timoCloudBungeeAPI;
     }
 }

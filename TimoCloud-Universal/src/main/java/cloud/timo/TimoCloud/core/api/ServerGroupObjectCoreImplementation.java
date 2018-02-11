@@ -8,8 +8,8 @@ import java.util.List;
 
 public class ServerGroupObjectCoreImplementation extends ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
-    public ServerGroupObjectCoreImplementation(List<ServerObject> servers, String name, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
-        super(servers, name, startupAmount, maxAmount, ram, isStatic, base, sortOutStates);
+    public ServerGroupObjectCoreImplementation(String name, List<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
+        super(name, servers, startupAmount, maxAmount, ram, isStatic, base, sortOutStates);
     }
 
 }

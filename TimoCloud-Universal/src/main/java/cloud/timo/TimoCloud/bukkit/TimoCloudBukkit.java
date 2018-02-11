@@ -14,6 +14,7 @@ import cloud.timo.TimoCloud.bukkit.managers.StateByEventManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
+import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     private BukkitFileManager fileManager;
     private BukkitSocketClientHandler socketClientHandler;
     private BukkitSocketMessageManager socketMessageManager;
+    private BukkitStringHandler stringHandler;
     private SignManager signManager;
     private StateByEventManager stateByEventManager;
     private String prefix = "[TimoCloudBukkit]";
@@ -72,11 +74,12 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     private void registerAtBungeeCord() {
-        getSocketMessageManager().sendMessage("REGISTER", System.getProperty("timocloud-token"));
+        getSocketMessageManager().sendMessage("REGISTER", getToken());
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage("SERVER_HANDSHAKE", System.getProperty("timocloud-token"));
+        getSocketMessageManager().sendMessage("SERVER_HANDSHAKE", getToken());
+        getSocketMessageManager().sendMessage("SET_MAP", getMapName());
         doEverySecond();
     }
 
@@ -98,6 +101,7 @@ public class TimoCloudBukkit extends JavaPlugin {
         fileManager = new BukkitFileManager();
         socketClientHandler = new BukkitSocketClientHandler();
         socketMessageManager = new BukkitSocketMessageManager();
+        stringHandler = new BukkitStringHandler();
         signManager = new SignManager();
         stateByEventManager = new StateByEventManager();
     }
@@ -148,6 +152,10 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public int getTimoCloudCoreSocketPort() {
         return Integer.parseInt(System.getProperty("timocloud-corehost").split(":")[1]);
+    }
+
+    public String getToken() {
+        return System.getProperty("timocloud-token");
     }
 
     public File getTemplateDirectory() {
@@ -243,6 +251,10 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public BukkitSocketMessageManager getSocketMessageManager() {
         return socketMessageManager;
+    }
+
+    public BukkitStringHandler getStringHandler() {
+        return stringHandler;
     }
 
     public SignManager getSignManager() {
