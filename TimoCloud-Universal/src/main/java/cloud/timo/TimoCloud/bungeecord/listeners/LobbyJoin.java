@@ -44,7 +44,6 @@ public class LobbyJoin implements Listener {
             TimoCloudBungee.severe("No lobby server found.");
             return;
         }
-        System.out.println("Target address: " + info.getAddress());
         event.setTarget(info);
         pending.put(player.getUniqueId(), false);
     }

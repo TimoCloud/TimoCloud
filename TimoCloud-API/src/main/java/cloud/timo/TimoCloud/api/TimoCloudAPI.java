@@ -5,6 +5,7 @@ public class TimoCloudAPI {
     private static TimoCloudUniversalAPI timoCloudUniversalAPI;
     private static TimoCloudBukkitAPI timoCloudBukkitAPI;
     private static TimoCloudBungeeAPI timoCloudBungeeAPI;
+    private static TimoCloudEventAPI timoCloudEventAPI;
 
     /**
      * Do not use this method. This will be done by TimoCloud
@@ -49,5 +50,19 @@ public class TimoCloudAPI {
      */
     public static TimoCloudBungeeAPI getBungeeInstance() {
         return timoCloudBungeeAPI;
+    }
+
+    /**
+     * Do not use this method. This will be done by TimoCloud
+     */
+    public static void setEventImplementation(TimoCloudEventAPI implementation) {
+        timoCloudEventAPI = implementation;
+    }
+
+    /**
+     * @return The event API instance
+     */
+    public static TimoCloudEventAPI getEventImplementation() {
+        return timoCloudEventAPI;
     }
 }

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api.objects;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 public interface ServerObject {
 
@@ -45,6 +46,11 @@ public interface ServerObject {
      * The server's MOTD (= message of the day)
      */
     String getMotd();
+
+    /**
+     * @return A list with all online players
+     */
+    List<PlayerObject> getOnlinePlayers();
 
     /**
      * The server's current online player count

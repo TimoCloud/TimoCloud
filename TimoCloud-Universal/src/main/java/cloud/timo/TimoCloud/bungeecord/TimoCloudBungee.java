@@ -2,13 +2,16 @@ package cloud.timo.TimoCloud.bungeecord;
 
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
+import cloud.timo.TimoCloud.bungeecord.listeners.EventMonitor;
 import cloud.timo.TimoCloud.bungeecord.listeners.LobbyJoin;
 import cloud.timo.TimoCloud.bungeecord.listeners.ProxyPing;
 import cloud.timo.TimoCloud.bungeecord.listeners.ServerKick;
+import cloud.timo.TimoCloud.bungeecord.managers.BungeeEventManager;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
 import cloud.timo.TimoCloud.bungeecord.managers.LobbyManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
@@ -26,6 +29,7 @@ public class TimoCloudBungee extends Plugin {
     private static TimoCloudBungee instance;
     private BungeeFileManager fileManager;
     private LobbyManager lobbyManager;
+    private BungeeEventManager eventManager;
     private BungeeSocketClient socketClient;
     private BungeeSocketClientHandler socketClientHandler;
     private BungeeSocketMessageManager socketMessageManager;
@@ -68,12 +72,15 @@ public class TimoCloudBungee extends Plugin {
     private void makeInstances() {
         fileManager = new BungeeFileManager();
         lobbyManager = new LobbyManager();
+        eventManager = new BungeeEventManager();
         socketClient = new BungeeSocketClient();
         socketClientHandler = new BungeeSocketClientHandler();
         socketMessageManager = new BungeeSocketMessageManager();
         bungeeStringHandler = new BungeeStringHandler();
+
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
         TimoCloudAPI.setBungeeImplementation(new TimoCloudBungeeAPIImplementation());
+        TimoCloudAPI.setEventImplementation(new EventManager());
     }
 
     private void registerCommands() {
@@ -138,6 +145,7 @@ public class TimoCloudBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new LobbyJoin());
         getProxy().getPluginManager().registerListener(this, new ServerKick());
         getProxy().getPluginManager().registerListener(this, new ProxyPing());
+        getProxy().getPluginManager().registerListener(this, new EventMonitor());
     }
 
     public String getProxyName() {
@@ -158,6 +166,10 @@ public class TimoCloudBungee extends Plugin {
 
     public LobbyManager getLobbyManager() {
         return lobbyManager;
+    }
+
+    public BungeeEventManager getEventManager() {
+        return eventManager;
     }
 
     public String getPrefix() {

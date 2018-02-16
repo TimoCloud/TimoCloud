@@ -107,7 +107,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <obfuscate>true</obfuscate>
+                    <obfuscate>false</obfuscate>
                     <injar>${project.build.finalName}-jar-with-dependencies.jar</injar>
                     <outjar>${project.build.finalName}-small.jar</outjar>
                     <outputDirectory>${project.build.directory}</outputDirectory>
@@ -118,6 +118,7 @@
                     </libs>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -206,6 +207,11 @@
             <groupId>org.jline</groupId>
             <artifactId>jline</artifactId>
             <version>3.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.timo.TimoCloud</groupId>
+            <artifactId>TimoCloud-API</artifactId>
+            <version>5.0.0</version>
         </dependency>
     </dependencies>
 </project>

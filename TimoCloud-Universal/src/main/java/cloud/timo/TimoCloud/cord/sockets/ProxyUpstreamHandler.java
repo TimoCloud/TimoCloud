@@ -1,11 +1,14 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
+import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.releaseByteBuf;
 
 public class ProxyUpstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
@@ -25,7 +28,13 @@ public class ProxyUpstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        getDownstreamHandler().getChannel().close();
+        getChannel().close();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        TimoCloudCord.getInstance().severe("Exception in UpStreamHandler");
+        cause.printStackTrace();
     }
 
     public Channel getChannel() {

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import com.sun.management.OperatingSystemMXBean;
 import io.netty.channel.Channel;
 import org.json.simple.JSONArray;
@@ -11,6 +12,8 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CoreServerManager {
 
@@ -179,7 +182,8 @@ public class CoreServerManager {
             Map<String, Integer> occurrences = new HashMap<>();
             for (Server server : group.getServers()) {
                 if (server.getMap() == null || server.getMap().isEmpty()) continue;
-                if (occurrences.containsKey(server.getMap())) occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
+                if (occurrences.containsKey(server.getMap()))
+                    occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
                 else occurrences.put(server.getMap(), 1);
             }
             int bestScore = -1;
@@ -219,6 +223,13 @@ public class CoreServerManager {
 
     public Collection<ProxyGroup> getProxyGroups() {
         return proxyGroups.values();
+    }
+
+    public List<Communicatable> getAllCommunicatableInstances() {
+        return Stream.concat(
+                getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(List::stream),
+                getServerGroups().stream().map(ServerGroup::getServers).flatMap(List::stream)
+        ).collect(Collectors.toList());
     }
 
     public Server getServerByName(String name) {
@@ -275,30 +286,30 @@ public class CoreServerManager {
             if (base.isConnected() && base.isReady()) bases.add(base);
         }
 
-        while (! (staticDemands.isEmpty() || bases.isEmpty())) {
+        while (!(staticDemands.isEmpty() || bases.isEmpty())) {
             GroupInstanceDemand demand = getMostImportant(staticDemands);
             Base base = null;
             for (Base b : bases) {
                 if (b.getName().equals(demand.getGroup().getBaseName())) base = b;
             }
             if (base == null) continue;
-            if (base.getAvailableRam()<demand.getGroup().getRam()) continue;
+            if (base.getAvailableRam() < demand.getGroup().getRam()) continue;
             demands.remove(demand);
             bases.remove(base);
             demand.changeAmount(-1);
             start(demand.getGroup(), base);
         }
 
-        while (! (demands.isEmpty() || bases.isEmpty())) {
+        while (!(demands.isEmpty() || bases.isEmpty())) {
             GroupInstanceDemand demand = getMostImportant(demands);
             int bestDiff = -1;
             Base bestBase = null;
             for (Base base : bases) {
                 if (base.getAvailableRam() < demand.getGroup().getRam()) continue;
-                    int diff = base.getAvailableRam()-demand.getGroup().getRam();
-                    if (bestDiff == -1 || diff < bestDiff) {
-                        bestDiff = diff;
-                        bestBase = base;
+                int diff = base.getAvailableRam() - demand.getGroup().getRam();
+                if (bestDiff == -1 || diff < bestDiff) {
+                    bestDiff = diff;
+                    bestBase = base;
                 }
             }
             if (bestBase == null) {
@@ -306,21 +317,21 @@ public class CoreServerManager {
                 continue;
             }
             demand.changeAmount(-1);
-            if (demand.getAmount() <=0) demands.remove(demand);
+            if (demand.getAmount() <= 0) demands.remove(demand);
             bases.remove(bestBase);
             start(demand.getGroup(), bestBase);
         }
     }
 
     public long getFreeMemory() {
-        return ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getFreePhysicalMemorySize() / (1024*1024); // Convert to megabytes
+        return ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getFreePhysicalMemorySize() / (1024 * 1024); // Convert to megabytes
     }
 
     private GroupInstanceDemand getMostImportant(Collection<GroupInstanceDemand> demands) {
         int best = -1;
         GroupInstanceDemand bestDemand = null;
         for (GroupInstanceDemand demand : demands) {
-            int score = demand.getAmount()*demand.getGroup().getPriority();
+            int score = demand.getAmount() * demand.getGroup().getPriority();
             if (score > best) {
                 best = score;
                 bestDemand = demand;

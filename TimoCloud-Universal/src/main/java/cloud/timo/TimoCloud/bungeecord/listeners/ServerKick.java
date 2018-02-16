@@ -1,15 +1,22 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 public class ServerKick implements Listener {
-    @EventHandler
+    @EventHandler (priority = 65)
     public void onServerKickEvent(ServerKickEvent event) {
         if (! TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;
+        ServerInfo server = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true);
+        if (server == null) {
+            TimoCloudBungee.info("No fallback server found");
+            return;
+        }
+        TimoCloudBungee.info("Connecting to fallback server: " + server.getName());
         event.setCancelled(true);
-        event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true));
+        event.setCancelServer(server);
     }
 }

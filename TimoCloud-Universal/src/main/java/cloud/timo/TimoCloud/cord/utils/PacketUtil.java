@@ -21,11 +21,6 @@ import java.util.Map;
 public class PacketUtil {
 
     public final static AttributeKey<ConnectionState> CONNECTION_STATE = AttributeKey.valueOf("connectionstate");
-    public final static AttributeKey<Channel> PROXY_CHANNEL = AttributeKey.valueOf("proxychannel");
-    public final static AttributeKey<String> HOSTNAME = AttributeKey.valueOf("hostname");
-    public final static AttributeKey<ByteBuf> LOGIN_PACKET = AttributeKey.valueOf("loginpacket");
-    public final static AttributeKey<LinkedList<ByteBuf>> LOGIN_PACKETS = AttributeKey.valueOf("loginpackets");
-    public final static AttributeKey<Boolean> RECONNECTED = AttributeKey.valueOf("reconnected");
     public final static AttributeKey<ProxyUpstreamHandler> UPSTREAM_HANDLER = AttributeKey.valueOf("upstreamhandler");
     public final static AttributeKey<ProxyDownstreamHandler> DOWNSTREAM_HANDLER = AttributeKey.valueOf("downstreamhandler");
 
@@ -66,6 +61,11 @@ public class PacketUtil {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static void releaseByteBuf(ByteBuf buf) {
+        buf.readBytes(buf.readableBytes());
+        buf.release();
     }
 
     public static int readVarInt(ByteBuf input) {

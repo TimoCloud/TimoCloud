@@ -1,5 +1,8 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.ProxyRegisterEvent;
+import cloud.timo.TimoCloud.api.events.ProxyUnregisterEvent;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
@@ -10,7 +13,9 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Proxy implements Communicatable {
@@ -22,6 +27,7 @@ public class Proxy implements Communicatable {
     private Base base;
     private String token;
     private int onlinePlayerCount;
+    private List<PlayerObject> onlinePlayers;
     private Channel channel;
     private boolean starting;
     private boolean registered;
@@ -32,6 +38,7 @@ public class Proxy implements Communicatable {
         this.base = base;
         this.token = token;
         this.address = new InetSocketAddress(base.getAddress(), 0);
+        this.onlinePlayers = new ArrayList<>();
     }
 
     public void register() {
@@ -40,6 +47,7 @@ public class Proxy implements Communicatable {
         this.starting = false;
         this.registered = true;
         for (Server server : getGroup().getRegisteredServers()) registerServer(server);
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyRegisterEvent(toProxyObject()));
     }
 
     public void unregister() {
@@ -48,6 +56,7 @@ public class Proxy implements Communicatable {
         getBase().getProxies().remove(this);
 
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "PROXY_STOPPED", getToken());
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
     }
 
     public void start() {
@@ -102,6 +111,14 @@ public class Proxy implements Communicatable {
 
     public void unregisterServer(Server server) {
         sendMessage(TimoCloudCore.getInstance().getSocketMessageManager().getMessage("REMOVE_SERVER", server.getName()));
+    }
+
+    public void onPlayerConnect(PlayerObject playerObject) {
+        if (! getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
+    }
+
+    public void onPlayerDisconnect(PlayerObject playerObject) {
+        if (getOnlinePlayers().contains(playerObject)) getOnlinePlayers().remove(playerObject);
     }
 
     @Override
@@ -185,6 +202,10 @@ public class Proxy implements Communicatable {
         return onlinePlayerCount;
     }
 
+    public List<PlayerObject> getOnlinePlayers() {
+        return onlinePlayers;
+    }
+
     @Override
     public Channel getChannel() {
         return this.channel;
@@ -207,6 +228,7 @@ public class Proxy implements Communicatable {
                 getName(),
                 getGroup().getName(),
                 getToken(),
+                getOnlinePlayers(),
                 getOnlinePlayerCount(),
                 getAddress()
         );

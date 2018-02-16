@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.bukkit;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudBukkitAPIImplementation;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.bukkit.commands.SendBungeeCommand;
@@ -52,8 +53,6 @@ public class TimoCloudBukkit extends JavaPlugin {
         registerListeners();
         registerTasks();
         registerChannel();
-        TimoCloudAPI.setBukkitImplementation(new TimoCloudBukkitAPIImplementation());
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBukkitImplementation());
         Executors.newSingleThreadExecutor().submit(this::connectToCore);
         log("&ahas been enabled!");
     }
@@ -104,6 +103,10 @@ public class TimoCloudBukkit extends JavaPlugin {
         stringHandler = new BukkitStringHandler();
         signManager = new SignManager();
         stateByEventManager = new StateByEventManager();
+
+        TimoCloudAPI.setBukkitImplementation(new TimoCloudBukkitAPIImplementation());
+        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBukkitImplementation());
+        TimoCloudAPI.setEventImplementation(new EventManager());
     }
 
     private void registerCommands() {

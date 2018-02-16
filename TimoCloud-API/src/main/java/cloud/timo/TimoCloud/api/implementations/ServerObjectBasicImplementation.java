@@ -1,11 +1,13 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 public class ServerObjectBasicImplementation implements ServerObject, Comparable {
 
@@ -16,6 +18,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     protected String extra;
     private String map;
     private String motd;
+    private List<PlayerObject> onlinePlayers;
     private int onlinePlayerCount;
     private int maxPlayerCount;
     private String base;
@@ -23,7 +26,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     public ServerObjectBasicImplementation() {}
 
-    public ServerObjectBasicImplementation(String name, String group, String token, String state, String extra, String map, String motd, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
+    public ServerObjectBasicImplementation(String name, String group, String token, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
         this.name = name;
         this.group = group;
         this.token = token;
@@ -31,6 +34,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
         this.extra = extra;
         this.map = map;
         this.motd = motd;
+        this.onlinePlayers = onlinePlayers;
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
         this.base = base;
@@ -90,6 +94,11 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
+    public List<PlayerObject> getOnlinePlayers() {
+        return onlinePlayers;
+    }
+
+    @Override
     public int getOnlinePlayerCount() {
         return onlinePlayerCount;
     }
@@ -142,7 +151,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
         if (! (o instanceof ServerObject)) return 1;
         ServerObject so = (ServerObject) o;
         try {
-            return Integer.parseInt(getName().split("-")[getName().split("-").length-1])-Integer.parseInt(so.getName().split("-")[so.getName().split("-").length-1]);
+            return Integer.parseInt(getName().split("-")[getName().split("-").length-1]) - Integer.parseInt(so.getName().split("-")[so.getName().split("-").length-1]);
         } catch (Exception e) {
             return getName().compareTo(so.getName());
         }

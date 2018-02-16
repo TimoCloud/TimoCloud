@@ -6,6 +6,6 @@ import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementa
 public class TimoCloudUniversalAPIBungeeImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
     public TimoCloudUniversalAPIBungeeImplementation() {
-        super(ServerObjectBungeeImplementation.class, ProxyObjectBungeeImplementation.class, ServerGroupObjectBungeeImplementation.class, ProxyGroupObjectBungeeImplementation.class);
+        super(ServerObjectBungeeImplementation.class, ProxyObjectBungeeImplementation.class, ServerGroupObjectBungeeImplementation.class, ProxyGroupObjectBungeeImplementation.class, PlayerObjectBungeeImplementation.class);
     }
 }

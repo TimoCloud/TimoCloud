@@ -3,11 +3,9 @@ package cloud.timo.TimoCloud.core;
 import cloud.timo.TimoCloud.ModuleType;
 import cloud.timo.TimoCloud.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
-import cloud.timo.TimoCloud.core.managers.CommandManager;
-import cloud.timo.TimoCloud.core.managers.CoreFileManager;
-import cloud.timo.TimoCloud.core.managers.CoreServerManager;
-import cloud.timo.TimoCloud.core.managers.TemplateManager;
+import cloud.timo.TimoCloud.core.managers.*;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketMessageManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
@@ -44,6 +42,7 @@ public class TimoCloudCore implements TimoCloudModule {
     private Channel channel;
     private TemplateManager templateManager;
     private CommandManager commandManager;
+    private CoreEventManager eventManager;
     private CoreSocketMessageManager socketMessageManager;
     private boolean running;
     private boolean waitingForCommand = false;
@@ -93,7 +92,6 @@ public class TimoCloudCore implements TimoCloudModule {
         getServerManager().init();
         new Thread(this::initSocketServer).start();
         registerTasks();
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICoreImplementation());
         try {
             waitForCommands();
         } catch (IOException e) {
@@ -161,7 +159,12 @@ public class TimoCloudCore implements TimoCloudModule {
         this.serverManager = new CoreServerManager();
         this.templateManager = new TemplateManager();
         this.commandManager = new CommandManager();
+        this.eventManager = new CoreEventManager();
         this.socketMessageManager = new CoreSocketMessageManager();
+
+        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICoreImplementation());
+        TimoCloudAPI.setEventImplementation(new EventManager());
+        TimoCloudAPI.getEventImplementation().registerListener(getEventManager());
     }
 
     private void createLogger() throws IOException {
@@ -184,20 +187,25 @@ public class TimoCloudCore implements TimoCloudModule {
         try {
             getServerManager().everySecond();
         } catch (Exception e) {
-            severe("An error occured:");
+            severe("Unknown error while executing every-second task:");
             e.printStackTrace();
         }
     }
 
+    public int getSocketPort() {
+        return (Integer) getFileManager().getConfig().get("socket-port");
+    }
+
     private void initSocketServer() {
         try {
-            socketServer.init("0.0.0.0", (Integer) getFileManager().getConfig().get("socket-port"));
+            socketServer.init("0.0.0.0", getSocketPort());
         } catch (Exception e) {
             severe("Error while initializing socket server:");
             e.printStackTrace();
             System.exit(1);
         }
     }
+
 
     public static TimoCloudCore getInstance() {
         return instance;
@@ -233,6 +241,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public CommandManager getCommandManager() {
         return commandManager;
+    }
+
+    public CoreEventManager getEventManager() {
+        return eventManager;
     }
 
     public CoreSocketMessageManager getSocketMessageManager() {

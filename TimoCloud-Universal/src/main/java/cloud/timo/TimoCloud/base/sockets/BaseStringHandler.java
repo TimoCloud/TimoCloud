@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.sockets.BasicStringHandler;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -16,7 +17,7 @@ import java.util.Date;
 public class BaseStringHandler extends BasicStringHandler {
 
     @Override
-    public void handleJSON(JSONObject json, String message) {
+    public void handleJSON(JSONObject json, String message, Channel channel) {
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {

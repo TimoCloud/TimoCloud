@@ -1,5 +1,8 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.ServerRegisterEvent;
+import cloud.timo.TimoCloud.api.events.ServerUnregisterEvent;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
@@ -11,6 +14,8 @@ import org.json.simple.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server implements Communicatable {
 
@@ -24,7 +29,8 @@ public class Server implements Communicatable {
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private int currentPlayers = 0;
+    private List<PlayerObject> onlinePlayers;
+    private int onlinePlayerCount = 0;
     private int maxPlayers = 0;
     private String map = "";
     private String token;
@@ -35,6 +41,7 @@ public class Server implements Communicatable {
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getAddress(), 0);
+        this.onlinePlayers = new ArrayList<>();
         this.map = map;
         this.token = token;
     }
@@ -116,6 +123,7 @@ public class Server implements Communicatable {
         this.starting = false;
         this.registered = true;
         TimoCloudCore.getInstance().info("Server " + getName() + " registered.");
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEvent(toServerObject()));
     }
 
     public void unregister() {
@@ -129,6 +137,15 @@ public class Server implements Communicatable {
         }
         this.registered = false;
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "SERVER_STOPPED", getToken());
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
+    }
+
+    public void onPlayerConnect(PlayerObject playerObject) {
+        if (! getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
+    }
+
+    public void onPlayerDisconnect(PlayerObject playerObject) {
+        if (getOnlinePlayers().contains(playerObject)) getOnlinePlayers().remove(playerObject);
     }
 
     @Override
@@ -149,7 +166,7 @@ public class Server implements Communicatable {
                 setMap((String) data);
                 break;
             case "SET_PLAYERS":
-                setCurrentPlayers(Integer.parseInt(((String) data).split("/")[0]));
+                setOnlinePlayerCount(Integer.parseInt(((String) data).split("/")[0]));
                 setMaxPlayers(Integer.parseInt(((String) data).split("/")[1]));
                 break;
             case "EXECUTE_COMMAND":
@@ -184,7 +201,6 @@ public class Server implements Communicatable {
     public boolean isRegistered() {
         return registered;
     }
-
 
     public ServerGroup getGroup() {
         return group;
@@ -234,6 +250,10 @@ public class Server implements Communicatable {
         this.motd = motd;
     }
 
+    public List<PlayerObject> getOnlinePlayers() {
+        return onlinePlayers;
+    }
+
     public int getPort() {
         return port;
     }
@@ -243,12 +263,12 @@ public class Server implements Communicatable {
         setAddress(new InetSocketAddress(getAddress().getAddress(), port));
     }
 
-    public int getCurrentPlayers() {
-        return currentPlayers;
+    public int getOnlinePlayerCount() {
+        return onlinePlayerCount;
     }
 
-    public void setCurrentPlayers(int currentPlayers) {
-        this.currentPlayers = currentPlayers;
+    public void setOnlinePlayerCount(int onlinePlayerCount) {
+        this.onlinePlayerCount = onlinePlayerCount;
     }
 
     public int getMaxPlayers() {
@@ -288,7 +308,8 @@ public class Server implements Communicatable {
                 getExtra(),
                 getMap(),
                 getMotd(),
-                getCurrentPlayers(),
+                getOnlinePlayers(),
+                getOnlinePlayerCount(),
                 getMaxPlayers(),
                 getBase() == null ? null : getBase().getName(),
                 getAddress()

@@ -1,10 +1,7 @@
-package cloud.timo.TimoCloud.implementations;
+package cloud.timo.TimoCloud.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
-import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.api.objects.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +12,8 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
@@ -25,12 +24,27 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     private final Class<? extends ProxyObject> proxyObjectImplementation;
     private final Class<? extends ServerGroupObject> serverGroupObjectImplementation;
     private final Class<? extends ProxyGroupObject> proxyGroupObjectImplementation;
+    private final Class<? extends PlayerObject> playerObjectImplementation;
 
-    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation) {
+    private ObjectMapper objectMapper;
+
+    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation) {
         this.serverObjectImplementation = serverObjectImplementation;
         this.proxyObjectImplementation = proxyObjectImplementation;
         this.serverGroupObjectImplementation = serverGroupObjectImplementation;
         this.proxyGroupObjectImplementation = proxyGroupObjectImplementation;
+        this.playerObjectImplementation = playerObjectImplementation;
+
+        objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
+        resolver.addMapping(ServerObject.class, serverObjectImplementation);
+        resolver.addMapping(ProxyObject.class, proxyObjectImplementation);
+        resolver.addMapping(PlayerObject.class, playerObjectImplementation);
+        module.setAbstractTypes(resolver);
+        objectMapper.registerModule(module);
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
     public void setData(JSONObject json) {
@@ -38,18 +52,8 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         ArrayList proxyGroups = new ArrayList();
 
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            SimpleModule module = new SimpleModule();
-            SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
-            resolver.addMapping(ServerObject.class, serverObjectImplementation);
-            resolver.addMapping(ProxyObject.class, proxyObjectImplementation);
-            module.setAbstractTypes(resolver);
-            objectMapper.registerModule(module);
-            objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-            objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
             for (Object object : (JSONArray) json.get("serverGroups")) {
-                ServerGroupObject groupObject = objectMapper.readValue((String) object, serverGroupObjectImplementation);
+                ServerGroupObject groupObject = getObjectMapper().readValue((String) object, serverGroupObjectImplementation);
                 List<ServerObject> serverObjects = new ArrayList<>();
                 for (ServerObject serverObject : groupObject.getServers())
                     serverObjects.add(serverObject);
@@ -59,7 +63,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
             }
             this.serverGroups = serverGroups;
             for (Object object : (JSONArray) json.get("proxyGroups")) {
-                ProxyGroupObject groupObject = objectMapper.readValue((String) object, proxyGroupObjectImplementation);
+                ProxyGroupObject groupObject = getObjectMapper().readValue((String) object, proxyGroupObjectImplementation);
                 List<ProxyObject> proxyObjects = new ArrayList<>();
                 for (ProxyObject proxyObject : groupObject.getProxies())
                     proxyObjects.add(proxyObject);
@@ -122,4 +126,23 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         return null;
     }
 
+    @Override
+    public PlayerObject getPlayer(UUID uuid) {
+        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(List::stream).collect(Collectors.toList()))
+            for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
+                if (playerObject.getUuid().equals(uuid)) return playerObject;
+        return null;
+    }
+
+    @Override
+    public PlayerObject getPlayer(String name) {
+        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(List::stream).collect(Collectors.toList()))
+            for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
+                if (playerObject.getName().equals(name)) return playerObject;
+        return null;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
 }

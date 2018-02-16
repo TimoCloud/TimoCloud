@@ -55,7 +55,7 @@ public class ProxyGroup implements Group {
                     (String) jsonObject.getOrDefault("proxy-choose-strategy", "BALANCE"),
                     (List<String>) jsonObject.getOrDefault("hostNames", new ArrayList<String>()));
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while loading server group '" + (String) jsonObject.get("name") + "':");
+            TimoCloudCore.getInstance().severe("Error while loading server group '" + jsonObject.get("name") + "':");
             e.printStackTrace();
         }
     }

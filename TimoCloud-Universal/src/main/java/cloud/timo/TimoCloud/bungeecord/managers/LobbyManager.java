@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class LobbyManager {
 
-    private static final long INVALIDATE_CACHE_TIME = 5000;
+    private static final long INVALIDATE_CACHE_TIME = 2000;
 
     private Map<UUID, List<String>> lobbyHistory;
     private Map<UUID, Long> lastUpdate;
@@ -45,10 +45,15 @@ public class LobbyManager {
 
     public ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
         ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
-        List<ServerObject> servers = new ArrayList<>(notThis == null ? group.getServers() : group.getServers().stream()
-                .filter(server -> !server.getName().equals(notThis.getName()))
+        if (group == null) {
+            TimoCloudBungee.severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
+            return null;
+        }
+        String notThisName = notThis == null ? "" : notThis.getName();
+        List<ServerObject> servers = group.getServers().stream()
+                .filter(server -> !server.getName().equals(notThisName))
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
         List<ServerObject> removeServers = new ArrayList<>();
         ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalInstance().getServer(notThis.getName());
         if (notThisServer != null) removeServers.add(notThisServer);
@@ -58,7 +63,6 @@ public class LobbyManager {
             if (history.contains(server.getName()) && ! removeServers.contains(server)) removeServers.add(server);
         }
         servers.removeAll(removeServers);
-
         if (servers.size() == 0) {
             return null;
         }

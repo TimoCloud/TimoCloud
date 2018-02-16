@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api.objects;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * A cord object stands for a BungeeCord instance
@@ -18,6 +19,11 @@ public interface ProxyObject {
      * @return The group the cord is part of
      */
     ProxyGroupObject getGroup();
+
+    /**
+     * @return A list with all online players
+     */
+    List<PlayerObject> getOnlinePlayers();
 
     /**
      * @return The cord's current player count

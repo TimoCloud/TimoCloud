@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.cord;
 import cloud.timo.TimoCloud.ModuleType;
 import cloud.timo.TimoCloud.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
@@ -92,7 +93,9 @@ public class TimoCloudCord implements TimoCloudModule {
         stringHandler = new CordStringHandler();
         scheduler = Executors.newScheduledThreadPool(1);
         workerGroup = new NioEventLoopGroup();
+
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICordImplementation());
+        TimoCloudAPI.setEventImplementation(new EventManager());
     }
 
     private void scheduleConnecting() {

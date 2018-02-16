@@ -34,7 +34,7 @@ public class HashUtil {
             }
             if (a.get(key) instanceof JSONObject)
                 differences.addAll(getDifferentFiles(newName, (JSONObject) a.get(key), (JSONObject) b.get(key)));
-            else if (!a.get(key).equals(b.get(key))) ;
+            else if (!a.get(key).equals(b.get(key))) differences.add(newName);
         }
         for (Object key : b.keySet()) {
             String name = (String) key;

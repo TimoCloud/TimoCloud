@@ -44,7 +44,7 @@ public class ServerGroup implements Group {
                     (String) jsonObject.getOrDefault("base", null),
                     (List<String>) jsonObject.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while loading server group '" + (String) jsonObject.get("name") + "':");
+            TimoCloudCore.getInstance().severe("Error while loading server group '" + jsonObject.get("name") + "':");
             e.printStackTrace();
         }
     }

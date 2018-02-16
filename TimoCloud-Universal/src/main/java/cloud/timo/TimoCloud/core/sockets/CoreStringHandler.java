@@ -1,14 +1,19 @@
 package cloud.timo.TimoCloud.core.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.utils.DoAfterAmount;
+import cloud.timo.TimoCloud.utils.EnumUtil;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,50 +33,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @ChannelHandler.Sharable
-public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
-
-    private Map<Channel, Integer> open;
-    private Map<Channel, StringBuilder> parsed;
-    private Map<Channel, Boolean> isString;
-
-    public CoreStringHandler() {
-        open = new HashMap<>();
-        parsed = new HashMap<>();
-        isString = new HashMap<>();
-    }
+public class CoreStringHandler extends BasicStringHandler {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String message) {
-        try {
-            read(ctx.channel(), message);
-        } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while parsing JSON message: " + message);
-            e.printStackTrace();
-        }
-    }
-
-    public void read(Channel channel, String message) {
-        for (String c : message.split("")) {
-            if (c.equals("\"") && (getParsed(channel).length() < 2 || !Character.toString(getParsed(channel).charAt(getParsed(channel).length() - 2)).equals("\\"))) setIsString(channel, !isString(channel));
-            getParsed(channel).append(c);
-            if (isString(channel)) continue;
-            if (c.equals("{")) open.put(channel, getOpen(channel) + 1);
-            if (c.equals("}")) {
-                open.put(channel, getOpen(channel) - 1);
-                if (getOpen(channel) == 0) {
-                    try {
-                        handleJSON((JSONObject) JSONValue.parse(getParsed(channel).toString()), getParsed(channel).toString(), channel);
-                    } catch (Exception e) {
-                        TimoCloudCore.getInstance().severe("Error while parsing JSON message: " + getParsed(channel));
-                        e.printStackTrace();
-                    }
-                    parsed.put(channel, new StringBuilder());
-                }
-            }
-        }
-    }
-
     public void handleJSON(JSONObject json, String message, Channel channel) {
+        Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         String targetToken = (String) json.get("target");
         Server server = TimoCloudCore.getInstance().getServerManager().getServerByToken(targetToken);
         Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByToken(targetToken);
@@ -85,7 +51,7 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         String type = (String) json.get("type");
         Object data = json.get("data");
-        switch (type) {
+        switch (type) { // Handshakes
             case "SERVER_HANDSHAKE": {
                 if (server == null) {
                     channel.close();
@@ -93,11 +59,11 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 if (!server.getToken().equals(data)) {
                     channel.close();
-                    break;
+                    return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, server);
                 server.onConnect(channel);
-                break;
+                return;
             }
             case "PROXY_HANDSHAKE": {
                 if (proxy == null) {
@@ -106,11 +72,11 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 }
                 if (!proxy.getToken().equals(data)) {
                     channel.close();
-                    break;
+                    return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, proxy);
                 proxy.onConnect(channel);
-                break;
+                return;
             }
             case "BASE_HANDSHAKE": {
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
@@ -122,7 +88,7 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 Base base = TimoCloudCore.getInstance().getServerManager().getBase(baseName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel);
-                break;
+                return;
             }
             case "CORD_HANDSHAKE": {
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
@@ -134,14 +100,22 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 Cord cord = TimoCloudCore.getInstance().getServerManager().getCord(cordName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, cord);
                 cord.onConnect(channel);
-                break;
+                return;
             }
+        }
+
+        // No Handshake, so we have to check if the channel is registered
+        if (sender == null) {
+            channel.close();
+            TimoCloudCore.getInstance().severe("Unknown connection from " + channel.remoteAddress() + ", blocking. Please make sure to block the TimoCloudCore socket port (" + TimoCloudCore.getInstance().getSocketPort() + ") in your firewall to avoid this.");
+            return;
+        }
+
+        switch (type) {
             case "GET_API_DATA": {
                 JSONArray serverGroups = new JSONArray();
                 JSONArray proxyGroups = new JSONArray();
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
-                objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+                ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper();
                 try {
                     for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalInstance().getServerGroups())
                         serverGroups.add(objectMapper.writeValueAsString(serverGroupObject));
@@ -155,6 +129,18 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
                 map.put("proxyGroups", proxyGroups);
                 JSONObject jsonObject = new JSONObject(map);
                 TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", jsonObject);
+                break;
+            }
+            case "FIRE_EVENT": {
+                try {
+                    TimoCloudCore.getInstance().getEventManager().fireEvent(
+                            ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper().readValue(
+                                    (String) data, EventUtil.getClassByEventType(
+                                            EnumUtil.valueOf(EventType.class, (String) json.get("eventType")))));
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe("Error while firing event: ");
+                    e.printStackTrace();
+                }
                 break;
             }
             case "SERVER_TEMPLATE_REQUEST": {
@@ -287,24 +273,6 @@ public class CoreStringHandler extends SimpleChannelInboundHandler<String> {
     private String fileToString(File file) throws Exception {
         byte[] encoded = Base64.getEncoder().encode(FileUtils.readFileToByteArray(file));
         return new String(encoded, StandardCharsets.UTF_8);
-    }
-
-    private int getOpen(Channel channel) {
-        open.putIfAbsent(channel, 0);
-        return open.get(channel);
-    }
-
-    private StringBuilder getParsed(Channel channel) {
-        parsed.putIfAbsent(channel, new StringBuilder());
-        return parsed.get(channel);
-    }
-
-    private boolean isString(Channel channel) {
-        return this.isString.getOrDefault(channel, false);
-    }
-
-    private void setIsString(Channel channel, boolean isString) {
-        this.isString.put(channel, isString);
     }
 
 }

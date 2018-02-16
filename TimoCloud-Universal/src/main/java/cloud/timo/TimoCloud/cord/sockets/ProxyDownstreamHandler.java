@@ -1,11 +1,11 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
+import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 
-import static cloud.timo.TimoCloud.cord.utils.PacketUtil.RECONNECTED;
-import static cloud.timo.TimoCloud.cord.utils.PacketUtil.isCompressed;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.releaseByteBuf;
 
 public class ProxyDownstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
@@ -18,14 +18,19 @@ public class ProxyDownstreamHandler extends SimpleChannelInboundHandler<ByteBuf>
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
         ByteBuf clone = Unpooled.copiedBuffer(buf);
-        if (getChannel().attr(RECONNECTED).get() && ! isCompressed(buf)) return;
         getChannel().writeAndFlush(clone);
-        buf.release();
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (getChannel().isActive()) MinecraftDecoder.connectClient(channel, true);
+        //if (getChannel().isActive()) MinecraftDecoder.connectClient(channel, true);
+        getChannel().close();
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        TimoCloudCord.getInstance().severe("Exception in DownStreamHandler");
+        cause.printStackTrace();
     }
 
     public Channel getChannel() {

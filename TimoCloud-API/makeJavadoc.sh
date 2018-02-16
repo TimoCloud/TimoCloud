@@ -1,6 +1,6 @@
 rm -R javadoc
-javadoc src/main/java/at/TimoCraft/TimoCloud/api/*.java \
-src/main/java/at/TimoCraft/TimoCloud/api/objects/GroupObject.java \
-src/main/java/at/TimoCraft/TimoCloud/api/objects/ServerObject.java \
+javadoc src/main/java/cloud/timo/TimoCloud/api/*.java \
+src/main/java/cloud/timo/TimoCloud/api/objects/*.java \
+src/main/java/cloud/timo/TimoCloud/api/events/*.java \
 -footer "<a href="https://impressum.timo.cloud">Impressum</a>" \
 -d javadoc

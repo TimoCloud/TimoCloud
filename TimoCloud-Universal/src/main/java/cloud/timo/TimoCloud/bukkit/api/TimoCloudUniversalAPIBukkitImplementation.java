@@ -6,6 +6,6 @@ import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementa
 
 public class TimoCloudUniversalAPIBukkitImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
     public TimoCloudUniversalAPIBukkitImplementation() {
-        super(ServerObjectBukkitImplementation.class, ProxyObjectBukkitImplementation.class, ServerGroupObjectBukkitImplementation.class, ProxyGroupObjectBukkitImplementation.class);
+        super(ServerObjectBukkitImplementation.class, ProxyObjectBukkitImplementation.class, ServerGroupObjectBukkitImplementation.class, ProxyGroupObjectBukkitImplementation.class, PlayerObjectBukkitImplementation.class);
     }
 }

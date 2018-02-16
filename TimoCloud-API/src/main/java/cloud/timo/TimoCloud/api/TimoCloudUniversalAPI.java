@@ -1,11 +1,9 @@
 package cloud.timo.TimoCloud.api;
 
-import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.api.objects.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Use {@link TimoCloudAPI#getUniversalInstance()} to get an instance of this class
@@ -49,4 +47,16 @@ public interface TimoCloudUniversalAPI {
      * @return A {@link ServerObject} which matches the given name
      */
     ProxyObject getProxy(String proxyName);
+
+    /**
+     * @param uuid The player's Minecraft UUID
+     * @return If the player is online, this will return a PlayerObject, else null
+     */
+    PlayerObject getPlayer(UUID uuid);
+
+    /**
+     * @param name The player's Minecraft name
+     * @return If the player is online, this will return a PlayerObject, else null
+     */
+    PlayerObject getPlayer(String name);
 }
