@@ -1,14 +1,14 @@
 package cloud.timo.TimoCloud.cord;
 
-import cloud.timo.TimoCloud.ModuleType;
-import cloud.timo.TimoCloud.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
 import cloud.timo.TimoCloud.cord.sockets.*;
-import cloud.timo.TimoCloud.utils.options.OptionSet;
+import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -142,6 +142,10 @@ public class TimoCloudCord implements TimoCloudModule {
     public void onSocketDisconnect() {
         if (isConnected()) info("Disconnected from Core. Reconnecting...");
         setConnected(false);
+    }
+
+    public void onHandshakeSuccess() {
+
     }
 
     private void initSocketServer() {

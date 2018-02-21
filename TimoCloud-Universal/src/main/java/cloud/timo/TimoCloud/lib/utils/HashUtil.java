@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils;
+package cloud.timo.TimoCloud.lib.utils;
 
 import org.apache.commons.io.FileDeleteStrategy;
 import org.json.simple.JSONObject;

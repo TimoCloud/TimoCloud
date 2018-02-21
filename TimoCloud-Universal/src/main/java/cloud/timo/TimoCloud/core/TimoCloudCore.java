@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.core;
 
-import cloud.timo.TimoCloud.ModuleType;
-import cloud.timo.TimoCloud.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
@@ -10,22 +10,26 @@ import cloud.timo.TimoCloud.core.sockets.CoreSocketMessageManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
-import cloud.timo.TimoCloud.utils.options.OptionSet;
+import cloud.timo.TimoCloud.core.utils.completers.*;
+import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import io.netty.channel.Channel;
 import org.jline.builtins.Completers;
 import org.jline.reader.*;
 import org.jline.reader.impl.DefaultParser;
+import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+
+import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class TimoCloudCore implements TimoCloudModule {
 
@@ -111,7 +115,23 @@ public class TimoCloudCore implements TimoCloudModule {
         builder.encoding(Charset.defaultCharset());
         builder.system(true);
         Terminal terminal = builder.build();
-        Completer completer = new Completers.TreeCompleter(Completers.TreeCompleter.node(""));
+        Completer completer = new Completers.TreeCompleter(
+                node("help"),
+                node("version"),
+                node("reload"),
+                node("addgroup",
+                        node("server"),
+                        node("proxy")),
+                node("removegroup"),
+                node("editgroup", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter()), Collections.emptyList())),
+                node("restart", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList())),
+                node("listgroups"),
+                node("groupinfo", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter()), Collections.emptyList())),
+                node("listgroups"),
+                node("baseinfo", new Completers.TreeCompleter.Node(new BaseNameCompleter(), Collections.emptyList())),
+                node("listbases"),
+                node("sendcommand", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList()))
+                );
         Parser parser = new DefaultParser();
         String prompt = "> ";
         String rightPrompt = null;
@@ -127,6 +147,7 @@ public class TimoCloudCore implements TimoCloudModule {
             try {
                 line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
             } catch (UserInterruptException e) {
+                System.exit(0);
             } catch (EndOfFileException e) {
                 return;
             }
@@ -134,11 +155,7 @@ public class TimoCloudCore implements TimoCloudModule {
             waitingForCommand = false;
             line = line.trim();
             if (line.isEmpty()) continue;
-            String[] split = line.split(" ");
-            if (split.length == 0) continue;
-            String command = split[0];
-            String[] args = command.length() == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
-            getCommandManager().onCommand(command, args);
+            getCommandManager().onCommand(line);
         }
     }
 

@@ -3,9 +3,10 @@ package cloud.timo.TimoCloud.base.sockets;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
-import cloud.timo.TimoCloud.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 
@@ -21,6 +22,9 @@ public class BaseStringHandler extends BasicStringHandler {
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
+            case "HANDSHAKE_SUCCESS":
+                TimoCloudBase.getInstance().onHandshakeSuccess();
+                break;
             case "START_SERVER": {
                 String serverName = (String) json.get("name");
                 String token = (String) json.get("token");
@@ -55,6 +59,10 @@ public class BaseStringHandler extends BasicStringHandler {
                 break;
             case "PROXY_STOPPED":
                 TimoCloudBase.getInstance().getServerManager().onProxyStopped((String) json.get("target"), (String) data);
+                break;
+            case "DELETE_DIRECTORY":
+                File dir = new File((String) data);
+                if (dir.exists() && dir.isDirectory()) FileDeleteStrategy.FORCE.deleteQuietly(dir);
                 break;
             case "TRANSFER":
                 try {

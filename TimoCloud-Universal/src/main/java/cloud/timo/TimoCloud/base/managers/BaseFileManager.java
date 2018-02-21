@@ -51,7 +51,6 @@ public class BaseFileManager {
             proxyGlobalDirectory = new File(proxyTemplatesDirectory, "Global/");
             proxyGlobalDirectory.mkdirs();
             temporaryDirectory = new File(baseDirectory, "temporary/");
-            if (temporaryDirectory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(temporaryDirectory);
             temporaryDirectory.mkdirs();
             serverTemporaryDirectory = new File(temporaryDirectory, "server/");
             serverTemporaryDirectory.mkdirs();

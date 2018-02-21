@@ -10,8 +10,6 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import java.util.LinkedList;
-
 import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
 
 
@@ -27,8 +25,13 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             ConnectionState connectionState = ctx.channel().attr(CONNECTION_STATE).get();
             if (connectionState == null) {
                 ByteBuf bufClone = Unpooled.copiedBuffer(buf);
-                ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
                 final int packetLength = readVarInt(buf);
+                if (buf.readableBytes() < packetLength) {
+                    buf.readBytes(buf.readableBytes());
+                    bufClone.readBytes(bufClone.readableBytes());
+                    return;
+                }
+                ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
                 final int packetID = readVarInt(buf);
                 if (packetID == 0) {
                     final int clientVersion = readVarInt(buf);
@@ -100,7 +103,7 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                     channel.attr(UPSTREAM_HANDLER).get().setChannel(cf.channel());
                 }
                 if (channel.pipeline().get("minecraftdecoder") != null) channel.pipeline().remove("minecraftdecoder");
-                future.channel().writeAndFlush(Unpooled.copiedBuffer(loginPacket));
+                future.channel().writeAndFlush(loginPacket);
                 channel.attr(CONNECTION_STATE).set(ConnectionState.PROXY);
             } else {
                 channel.close();

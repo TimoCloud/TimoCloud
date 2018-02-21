@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils;
+package cloud.timo.TimoCloud.lib.utils;
 
 public class EnumUtil {
     public static <E extends Enum<E>> E valueOf(Class<E> e, String name) {

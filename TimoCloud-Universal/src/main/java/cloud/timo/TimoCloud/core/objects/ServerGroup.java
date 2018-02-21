@@ -4,7 +4,6 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,32 +23,32 @@ public class ServerGroup implements Group {
     public ServerGroup() {
     }
 
-    public ServerGroup(JSONObject jsonObject) {
-        construct(jsonObject);
+    public ServerGroup(Map<String, Object> properties) {
+        construct(properties);
     }
 
     public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
         construct(name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
     }
 
-    public void construct(JSONObject jsonObject) {
+    public void construct(Map<String, Object> properties) {
         try {
             construct(
-                    (String) jsonObject.get("name"),
-                    ((Long) jsonObject.getOrDefault("online-amount", 1)).intValue(),
-                    ((Long) jsonObject.getOrDefault("max-amount", 10)).intValue(),
-                    ((Long) jsonObject.getOrDefault("ram", 1024)).intValue(),
-                    (Boolean) jsonObject.getOrDefault("static", false),
-                    ((Long) jsonObject.getOrDefault("priority", 1)).intValue(),
-                    (String) jsonObject.getOrDefault("base", null),
-                    (List<String>) jsonObject.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
+                    (String) properties.get("name"),
+                    ((Long) properties.getOrDefault("online-amount", 1)).intValue(),
+                    ((Long) properties.getOrDefault("max-amount", 10)).intValue(),
+                    ((Long) properties.getOrDefault("ram", 1024)).intValue(),
+                    (Boolean) properties.getOrDefault("static", false),
+                    ((Long) properties.getOrDefault("priority", 1)).intValue(),
+                    (String) properties.getOrDefault("base", null),
+                    (List<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while loading server group '" + jsonObject.get("name") + "':");
+            TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
         }
     }
 
-    public JSONObject toJsonObject() {
+    public Map<String, Object> getProperties() {
         Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("name", getName());
         properties.put("online-amount", getOnlineAmount());
@@ -59,7 +58,7 @@ public class ServerGroup implements Group {
         properties.put("priority", getPriority());
         if (getBaseName() != null) properties.put("base", getBaseName());
         properties.put("sort-out-states", getSortOutStates());
-        return new JSONObject(properties);
+        return properties;
     }
 
     public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {

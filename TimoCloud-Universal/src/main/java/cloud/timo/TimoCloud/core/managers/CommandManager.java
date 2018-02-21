@@ -2,11 +2,12 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.lib.utils.ChatColorUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.net.InetAddress;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CommandManager {
 
@@ -18,20 +19,41 @@ public class CommandManager {
         TimoCloudCore.getInstance().severe(message);
     }
 
-    public void onCommand(String command, String ... args) {
+    private void sendError(Consumer<String> sendMessage, String message) {
+        sendMessage.accept("&c" + message);
+    }
+    
+    private void sendError(Consumer<String> sendMessage, boolean local, String message) {
+        if (local) sendError(sendMessage, message);
+        else sendError(sendMessage, message);
+    }
+
+    public void onCommand(String command) {
+        onCommand((str) -> send(ChatColorUtil.toLegacyText(str + "&r")), true, command);
+    }
+
+    public void onCommand(Consumer<String> sendMessage, boolean local, String command) {
+        String[] split = command.split(" ");
+        if (split.length < 1) return;
+        String cmd = split[0];
+        String[] args = split.length == 1 ? new String[0] : Arrays.copyOfRange(split, 1, split.length);
+        onCommand(sendMessage, local, cmd, args);
+    }
+
+    public void onCommand(Consumer<String> sendMessage, boolean local, String command, String ... args) {
         try {
             if (command.equalsIgnoreCase("reload")) {
                 TimoCloudCore.getInstance().getFileManager().load();
                 TimoCloudCore.getInstance().getServerManager().loadGroups();
-                send("Successfully reloaded from configuration!");
+                sendMessage.accept("&2Successfully reloaded from configuration!");
                 return;
             }
             if (command.equalsIgnoreCase("version")) {
-                send("TimoCloud version " + TimoCloudCore.class.getPackage().getImplementationVersion() + " by TimoCrafter.");
+                sendMessage.accept("&bTimo&fCloud &6version &e" + TimoCloudCore.class.getPackage().getImplementationVersion() + " &6by &cTimoCrafter.");
                 return;
             }
             if (command.equalsIgnoreCase("help")) {
-                sendHelp();
+                sendHelp(sendMessage);
                 return;
             }
             if (Arrays.asList("stop", "end", "exit", "quit").contains(command.toLowerCase())) {
@@ -39,78 +61,86 @@ public class CommandManager {
                 return;
             }
 
+            if (command.equalsIgnoreCase("groupinfo")) {
+                Group group = TimoCloudCore.getInstance().getServerManager().getGroupByName(args[0]);
+                displayGroup(sendMessage, group);
+                return;
+            }
+
+            if (command.equalsIgnoreCase("baseinfo")) {
+                Base base = TimoCloudCore.getInstance().getServerManager().getBase(args[0]);
+                if (base == null) {
+                    sendError(sendMessage, "Could not find base '" + args[0] + "'.");
+                    return;
+                }
+                displayBase(sendMessage, base);
+                return;
+            }
+
             if (command.equalsIgnoreCase("listgroups")) {
                 Collection<ServerGroup> serverGroups = TimoCloudCore.getInstance().getServerManager().getServerGroups();
                 Collection<ProxyGroup> proxyGroups = TimoCloudCore.getInstance().getServerManager().getProxyGroups();
 
-                send("ServerGroups (" + serverGroups.size() + "):");
+                sendMessage.accept("&6ServerGroups (&3" + serverGroups.size() + "&6):");
                 for (ServerGroup group : serverGroups) {
-                    displayGroup(group);
+                    displayGroup(sendMessage, group);
                 }
-                send("ProxyGroups (" + proxyGroups.size() + "):");
+                sendMessage.accept("&6ProxyGroups (&3" + proxyGroups.size() + "&6):");
                 for (ProxyGroup group : proxyGroups) {
-                    displayGroup(group);
+                    displayGroup(sendMessage, group);
                 }
                 return;
             }
-            if (command.equalsIgnoreCase("removegroup")) {
+
+            if (command.equalsIgnoreCase("listbases")) {
+                List<Base> bases = TimoCloudCore.getInstance().getServerManager().getBases().stream().filter(Base::isConnected).collect(Collectors.toList());
+                sendMessage.accept("&6Bases (&3" + bases.size() + "&6):");
+                for (Base base : bases) {
+                    displayBase(sendMessage, base);
+                }
+                return;
+            }
+
+            if (command.equalsIgnoreCase("removegroup") || command.equalsIgnoreCase("deletegroup")) {
                 String name = args[0];
                 try {
                     ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(name);
                     ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(name);
                     if (serverGroup == null && proxyGroup == null) {
-                        sendError("The group " + name + " does not exist. Type 'listgroups' for a list of all groups.");
+                        sendError(sendMessage, local, "The group " + name + " does not exist. Type 'listgroups' for a list of all groups.");
                         return;
                     }
                     if (serverGroup != null)
                         TimoCloudCore.getInstance().getServerManager().removeServerGroup(serverGroup);
                     if (proxyGroup != null) TimoCloudCore.getInstance().getServerManager().removeProxyGroup(proxyGroup);
 
-                    send("Successfully deleted group &e" + name);
+                    sendMessage.accept("Successfully deleted group &e" + name);
                 } catch (Exception e) {
-                    sendError("Error while saving groups.yml. See console for mor information.");
+                    sendError(sendMessage, local, "Error while saving groups.yml. See console for mor information.");
                     e.printStackTrace();
                 }
                 return;
             }
-            if (command.equalsIgnoreCase("restartgroup")) {
-                String name = args[0];
-                ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(name);
-                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(name);
-                if (serverGroup == null && proxyGroup == null) {
-                    sendError("Group " + name + " does not exist.");
+
+            if (command.equalsIgnoreCase("restart") || command.equalsIgnoreCase("stop")) {
+                String target = args[0];
+                ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(target);
+                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(target);
+
+                Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(target);
+                Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
+
+                if (server == null && proxyGroup == null && server == null && proxy == null) {
+                    sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
                     return;
                 }
-                if (serverGroup != null) {
-                    serverGroup.stopAllServers();
-                    send("All servers of group " + serverGroup.getName() + " have successfully been restarted.");
-                }
-                if (proxyGroup != null) {
-                    proxyGroup.stopAllProxies();
-                    send("All proxies of group " + proxyGroup.getName() + " have successfully been restarted.");
-                }
-                return;
-            }
-            if (command.equalsIgnoreCase("stopserver") || command.equalsIgnoreCase("restartserver")) {
-                String name = args[0];
-                Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(name);
-                if (server == null) {
-                    sendError("Server " + name + " does not exist.");
-                    return;
-                }
-                server.stop();
-                send("Server " + server.getName() + " has successfully been stopped.");
-                return;
-            }
-            if (command.equalsIgnoreCase("stopproxy") || command.equalsIgnoreCase("restartproxy")) {
-                String name = args[0];
-                Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(name);
-                if (proxy == null) {
-                    sendError("Proxy " + name + " does not exist.");
-                    return;
-                }
-                proxy.stop();
-                send("Proxy " + proxy.getName() + " has successfully been stopped.");
+
+                if (serverGroup != null) serverGroup.stopAllServers();
+                if (proxyGroup != null) proxyGroup.stopAllProxies();
+                if (server != null) server.stop();
+                if (proxy != null) proxy.stop();
+
+                sendMessage.accept("&2The group/server/proxy has successfully been stopped/restarted.");
                 return;
             }
             if (command.equalsIgnoreCase("sendcommand")) {
@@ -122,15 +152,15 @@ public class CommandManager {
                 Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
 
                 if (server == null && proxyGroup == null && server == null && proxy == null) {
-                    sendError("Could not find any group, server or proxy with the name '" + target + "'");
+                    sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
                     return;
                 }
                 String cmd = "";
                 for (int i = 1; i < args.length; i++) cmd += args[i] + " ";
                 cmd = cmd.trim();
                 if (cmd.length() == 0) {
-                    sendError("Please provide a command.");
-                    sendHelp();
+                    sendError(sendMessage, local, "Please provide a command.");
+                    sendHelp(sendMessage);
                     return;
                 }
 
@@ -139,7 +169,7 @@ public class CommandManager {
                 if (server != null) server.executeCommand(cmd);
                 if (proxy != null) proxy.executeCommand(cmd);
 
-                send("The command has successfully been executed on the target.");
+                sendMessage.accept("&2The command has successfully been executed on the target.");
                 return;
             }
             if (command.equalsIgnoreCase("addgroup")) {
@@ -147,7 +177,7 @@ public class CommandManager {
                 String name = args[1];
 
                 if (TimoCloudCore.getInstance().getServerManager().getGroupByName(name) != null) {
-                    sendError("This group already exists.");
+                    sendError(sendMessage, local, "This group already exists.");
                     return;
                 }
                 Group group = null;
@@ -178,14 +208,14 @@ public class CommandManager {
                     TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
                     group = proxyGroup;
                 } else {
-                    sendError("Unknown group type: '" + type + "'");
+                    sendError(sendMessage, local, "Unknown group type: '" + type + "'");
                 }
 
                 try {
-                    send("Group " + name + " has successfully been created.");
-                    displayGroup(group);
+                    sendMessage.accept("&2Group &e" + name + " &2has successfully been created.");
+                    displayGroup(sendMessage, group);
                 } catch (Exception e) {
-                    sendError("Error while saving group: ");
+                    sendError(sendMessage, local, "Error while saving group: ");
                     e.printStackTrace();
                 }
                 return;
@@ -194,7 +224,7 @@ public class CommandManager {
                 String groupName = args[0];
                 Group group = TimoCloudCore.getInstance().getServerManager().getGroupByName(groupName);
                 if (group == null) {
-                    sendError("Group " + groupName + " not found. Get a list of all groups with 'listgroups'");
+                    sendError(sendMessage, local, "Group " + groupName + " not found. Get a list of all groups with 'listgroups'");
                     return;
                 }
                 String key = args[1];
@@ -227,7 +257,7 @@ public class CommandManager {
                             serverGroup.setPriority(priority);
                             break;
                         default:
-                            sendError("No valid argument found. Please use \n" +
+                            sendError(sendMessage, local, "No valid argument found. Please use \n" +
                                     "editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
                             return;
                     }
@@ -266,79 +296,102 @@ public class CommandManager {
                             proxyGroup.setPriority(priority);
                             break;
                         default:
-                            sendError("No valid argument found. Please use \n" +
+                            sendError(sendMessage, local, "No valid argument found. Please use \n" +
                                     "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
                             return;
                     }
                     TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
                 }
-                send("Group " + group.getName() + " has successfully been edited. New data: ");
-                displayGroup(group);
+                sendMessage.accept("&2Group &e" + group.getName() + " &2has successfully been edited. New data: ");
+                displayGroup(sendMessage, group);
                 return;
             }
         } catch (Exception e) {
-            sendError("Wrong usage.");
-            sendHelp();
+            sendError(sendMessage, local, "Wrong usage.");
+            sendHelp(sendMessage);
             return;
         }
-        sendError("Unknown command: " + command);
-        sendHelp();
+        sendError(sendMessage, local, "Unknown command: " + command);
+        sendHelp(sendMessage);
     }
 
-    private void displayGroup(Group group) {
-        if (group instanceof ServerGroup) displayGroup((ServerGroup) group);
-        else if (group instanceof ProxyGroup) displayGroup((ProxyGroup) group);
+    private void displayGroup(Consumer<String> sendMessage, Group group) {
+        if (group instanceof ServerGroup) displayGroup(sendMessage, (ServerGroup) group);
+        else if (group instanceof ProxyGroup) displayGroup(sendMessage, (ProxyGroup) group);
     }
 
-    private void displayGroup(ServerGroup group) {
-        send("  " + group.getName() +
-                        " (RAM: " + group.getRam() + "M" +
-                        ",7Keep-Online-Amount: " + group.getOnlineAmount() +
-                        ", Max-Amount: " + group.getMaxAmount() +
-                        ", static: " + group.isStatic() +
-                        ")");
-        send("  Servers: " + group.getServers().size());
+    private void displayGroup(Consumer<String> sendMessage, ServerGroup group) {
+        sendMessage.accept("  &e" + group.getName() +
+                        " &7(&6RAM&7: &2" + group.getRam() + "MB" +
+                        "&7, &6Keep-Online-Amount&7: &2" + group.getOnlineAmount() +
+                        "&7, &6Max-Amount&7: &2" + group.getMaxAmount() +
+                        "&7, &6static&7: &2" + group.isStatic() +
+                        "&7)");
+        sendMessage.accept("  &6Servers&7: &2" + group.getServers().size());
         for (Server server : group.getServers()) {
-            send("    " + server.getName() +
-                    " (Base: " + server.getBase().getName() + ") " +
-                    " (State: " + server.getState() + ") " +
-                    (server.getMap() == null || server.getMap().equals("") ? "" : (" (Map: &e" + server.getMap() + ")")));
+            sendMessage.accept("    &e" + server.getName() +
+                    " &7(&6Base&7: &2" + server.getBase().getName() + "&7) " +
+                    " &7(&6State&7: " + server.getState() + "&7) " +
+                    (server.getMap() == null || server.getMap().equals("") ? "" : (" &7(&6Map&7: &e" + server.getMap() + "&7)")));
         }
     }
 
-    private void displayGroup(ProxyGroup group) {
-        send("  " + group.getName() +
-                " (RAM: " + group.getRam() + "M" +
-                ", Current-Online-Players: " + group.getOnlinePlayerCount() +
-                ", Total-Max-Players: " + group.getMaxPlayerCount() +
-                ", Players-Per-Proxy: " + group.getMaxPlayerCountPerProxy() +
-                ", Keep-Free-Slots: " + group.getKeepFreeSlots() +
-                ", Max-Amount: " + group.getMaxAmount() +
-                ", Priority: " + group.getPriority() +
-                ", static: " + group.isStatic() +
-                ")");
-        send("  Proxies: " + group.getProxies().size());
+    private void displayGroup(Consumer<String> sendMessage, ProxyGroup group) {
+        sendMessage.accept("  &e" + group.getName() +
+                " &7(&6RAM&7: &2" + group.getRam() + "MB" +
+                "&7, &6Current-Online-Players&7: &2" + group.getOnlinePlayerCount() +
+                "&7, &6Total-Max-Players&7: &2" + group.getMaxPlayerCount() +
+                "&7, &6Players-Per-Proxy&7: &2" + group.getMaxPlayerCountPerProxy() +
+                "&7, &6Keep-Free-Slots&7: &2" + group.getKeepFreeSlots() +
+                "&7, &6Max-Amount&7: &2" + group.getMaxAmount() +
+                "&7, &6Priority&7: &2" + group.getPriority() +
+                "&7, &6static&7: &2" + group.isStatic() +
+                "&7)");
+        sendMessage.accept("  &6Proxies&7: &2" + group.getProxies().size());
         for (Proxy proxy : group.getProxies()) {
-            send("    " + proxy.getName() +
-                    " (Base: " + proxy.getBase().getName() + ") " +
-                    " (Players: " + proxy.getOnlinePlayerCount() + ") ");
+            sendMessage.accept("    " + proxy.getName() +
+                    " &7(&6Base&7: &2" + proxy.getBase().getName() + "&7) " +
+                    " &7(&6Players&7: &2" + proxy.getOnlinePlayerCount() + "&7) ");
         }
     }
 
-    public void sendHelp() {
-        send("Available commands for TimoCloud:");
-        send("  help - shows this page");
-        send("  version - shows the plugin version");
-        send("  reload - reloads all configs");
-        send("  addgroup server <groupName (String)> <onlineAmount (int)> <maxAmount (int)> <ram (int)> <static (boolean)> <priority (int)> <base (String), optional> - creates a server group. If no base is specified, one will get chosen dynamically.");
-        send("  addgroup proxy <groupName (String)> <playersPerProxy (int)> <maxPlayers (int)> <keepFreeSlots (int)> <maxAmount (int)> <ram (int)> <static (boolean)> <priority (int)> <base (String), optional> - creates a cord group. If no base is specified, one will get chosen dynamically.");
-        send("  removegroup <groupName> - deletes a group");
-        send("  editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value> - edits the give setting of a server group");
-        send("  editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value> - edits the give setting of a cord group");
-        send("  listgroups - lists all groups and started servers");
-        send("  restartgroup <groupName> - restarts all servers in a given group");
-        send("  restartserver <serverName> - restarts the given server");
-        send("  sendcommand <groupName/serverName> <command> - sends the given command to all server of a given group or the given server");
+    private void displayBase(Consumer<String> sendMessage, Base base) {
+        sendMessage.accept("  &e" + base.getName() +
+                " &7(&6Free RAM&7: &2" + base.getAvailableRam() + "MB" +
+                "&7, &6Max RAM&7: &2" + base.getMaxRam() + "MB" +
+                "&7, &6CPU load&7: &2" + (int) base.getCpu() + "%" +
+                "&7, &6IP Address&7: &2" + formatIp(base.getAddress()) +
+                "&7, &6Ready&7: &2" + formatBoolean(base.isReady()) +
+                "&7, &6Connected&7: &2" + formatBoolean(base.isConnected()) +
+                "&7)");
+    }
+
+    private void sendHelp(Consumer<String> sendMessage) {
+        sendMessage.accept("&6Available commands for &bTimo&fCloud&7:");
+        sendMessage.accept("  &6help &7- &7shows this page");
+        sendMessage.accept("  &6version &7- &7shows the plugin version");
+        sendMessage.accept("  &6reload &7- &7reloads all configs");
+        sendMessage.accept("  &6addgroup server &7<&2groupName &7(&9String&7)> <&2onlineAmount &7(&9int&7)> <&2maxAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2priority &7(&9int&7)> - &7creates a server group");
+        sendMessage.accept("  &6addgroup proxy &7<&2groupName &7(&9String&7)> <&2playersPerProxy &7(&9int&7)> <&2maxPlayers &7(&9int&7)> <&2keepFreeSlots &7(&9int&7)> <&2maxAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2priority &7(&9int&7)> - &7creates a proxy group");
+        sendMessage.accept("  &6removegroup &7<&2groupName&7> - &7deletes a group");
+        sendMessage.accept("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a server group");
+        sendMessage.accept("  &6editgroup &7<&2name&7> <&2playersPerProxy &7(&9int&7) | &2maxPlayers &7(&9int&7) | &2keepFreeSlots &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a proxy group");
+        sendMessage.accept("  &6restart &7<&2groupName&7|&2serverName&7|&2proxyName&7> - &7restarts the given group, server or proxy");
+        sendMessage.accept("  &6groupinfo &7<&2groupName&7> - displays group info");
+        sendMessage.accept("  &6listgroups &7- &7lists all groups and started servers");
+        sendMessage.accept("  &6baseinfo &7<&2baseName&7> - displays base info");
+        sendMessage.accept("  &6listbases &7- &7lists all bases");
+        sendMessage.accept("  &6sendcommand &7<&2groupName&7/&2serverName&7/&2proxyName&7> <&2command&7> - &7sends the given command to all server of a given group or the given server");
+    }
+
+    private static String formatBoolean(boolean b) {
+        return b ? "&2true" : "&cfalse";
+    }
+
+    private static String formatIp(InetAddress ip) {
+        String s = ip.toString();
+        if (s.startsWith("/")) s = s.substring(1);
+        return s;
     }
 
 }

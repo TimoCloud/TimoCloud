@@ -6,7 +6,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
-import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
     public TimoCloudUniversalAPICoreImplementation() {
-        super(ServerObjectCoreImplementation.class, ProxyObjectCoreImplementation.class, ServerGroupObjectCoreImplementation.class, ProxyGroupObjectCoreImplementation.class, PlayerObjectCoreImplementation.class);
+        super(ServerObjectCoreImplementation.class, ProxyObjectCoreImplementation.class, ServerGroupObjectCoreImplementation.class, ProxyGroupObjectCoreImplementation.class, PlayerObjectCoreImplementation.class, CordObjectCoreImplementation.class);
     }
 
     @Override

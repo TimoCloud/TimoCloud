@@ -36,6 +36,7 @@ public class BaseTemplateManager {
             while ((length = is.read(bytes)) >= 0) fos.write(bytes, 0, length);
             is.close();
             fos.close();
+            file.setLastModified(zipEntry.getTime());
         }
         zipFile.close();
     }

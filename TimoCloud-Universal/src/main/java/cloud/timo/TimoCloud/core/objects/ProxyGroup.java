@@ -5,8 +5,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
-import cloud.timo.TimoCloud.utils.EnumUtil;
-import org.json.simple.JSONObject;
+import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,28 +33,28 @@ public class ProxyGroup implements Group {
         construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
     }
 
-    public ProxyGroup(JSONObject jsonObject) {
-        construct(jsonObject);
+    public ProxyGroup(Map<String, Object> properties) {
+        construct(properties);
     }
 
-    public void construct(JSONObject jsonObject) {
+    public void construct(Map<String, Object> properties) {
         try {
             construct(
-                    (String) jsonObject.get("name"),
-                    ((Long) jsonObject.getOrDefault("players-per-proxy", 500)).intValue(),
-                    ((Long) jsonObject.getOrDefault("max-players", 100)).intValue(),
-                    ((Long) jsonObject.getOrDefault("keep-free-slots", 100)).intValue(),
-                    ((Long) jsonObject.getOrDefault("max-amount", 1)).intValue(),
-                    ((Long) jsonObject.getOrDefault("ram", 1)).intValue(),
-                    (String) jsonObject.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
-                    (Boolean) jsonObject.getOrDefault("static", false),
-                    ((Long) jsonObject.getOrDefault("priority", 1)).intValue(),
-                    (List<String>) jsonObject.getOrDefault("serverGroups", Collections.singletonList("*")),
-                    (String) jsonObject.getOrDefault("base", null),
-                    (String) jsonObject.getOrDefault("proxy-choose-strategy", "BALANCE"),
-                    (List<String>) jsonObject.getOrDefault("hostNames", new ArrayList<String>()));
+                    (String) properties.get("name"),
+                    ((Long) properties.getOrDefault("players-per-proxy", 500)).intValue(),
+                    ((Long) properties.getOrDefault("max-players", 100)).intValue(),
+                    ((Long) properties.getOrDefault("keep-free-slots", 100)).intValue(),
+                    ((Long) properties.getOrDefault("max-amount", 1)).intValue(),
+                    ((Long) properties.getOrDefault("ram", 1)).intValue(),
+                    (String) properties.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
+                    (Boolean) properties.getOrDefault("static", false),
+                    ((Long) properties.getOrDefault("priority", 1)).intValue(),
+                    (List<String>) properties.getOrDefault("serverGroups", Collections.singletonList("*")),
+                    (String) properties.getOrDefault("base", null),
+                    (String) properties.getOrDefault("proxy-choose-strategy", "BALANCE"),
+                    (List<String>) properties.getOrDefault("hostNames", new ArrayList<String>()));
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while loading server group '" + jsonObject.get("name") + "':");
+            TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
         }
     }
@@ -94,7 +93,7 @@ public class ProxyGroup implements Group {
         this.hostNames = hostnames.stream().map(String::trim).collect(Collectors.toList());
     }
 
-    public JSONObject toJsonObject() {
+    public Map<String, Object> getProperties() {
         Map<String, Object> properties = new LinkedHashMap<>();
         properties.put("name", getName());
         properties.put("players-per-proxy", getMaxPlayerCountPerProxy());
@@ -108,7 +107,7 @@ public class ProxyGroup implements Group {
         properties.put("serverGroups", getServerGroups());
         properties.put("hostNames", getHostNames());
         if (getBaseName() != null) properties.put("base", getBaseName());
-        return new JSONObject(properties);
+        return properties;
     }
 
     public void addStartingProxy(Proxy proxy) {

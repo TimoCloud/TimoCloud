@@ -7,7 +7,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.utils.HashUtil;
+import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
@@ -97,7 +97,8 @@ public class Proxy implements Communicatable {
     }
 
     public void stop() {
-        if (channel != null) channel.close();
+        if (channel == null) unregister();
+        else channel.close();
     }
 
     public void registerServer(Server server) {
@@ -163,6 +164,11 @@ public class Proxy implements Communicatable {
         setChannel(null);
         TimoCloudCore.getInstance().info("Proxy " + getName() + " disconnected.");
         unregister();
+    }
+
+    @Override
+    public void onHandshakeSuccess() {
+        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
     }
 
     public void executeCommand(String command) {

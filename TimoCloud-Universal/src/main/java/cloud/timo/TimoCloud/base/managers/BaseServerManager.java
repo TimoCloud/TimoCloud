@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.base.exceptions.ProxyStartException;
 import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
-import cloud.timo.TimoCloud.utils.HashUtil;
+import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.util.*;
@@ -43,13 +44,14 @@ public class BaseServerManager {
     }
 
     public void updateResources() {
-        boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy && TimoCloudBase.getInstance().getResourceManager().getCpuUsage() <= (Double) TimoCloudBase.getInstance().getFileManager().getConfig().get("cpu-max-load");
+        double cpu = TimoCloudBase.getInstance().getResourceManager().getCpuUsage();
+        boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy && cpu <= (Double) TimoCloudBase.getInstance().getFileManager().getConfig().get("cpu-max-load");
         long freeRam = Math.max(0, TimoCloudBase.getInstance().getResourceManager().getFreeMemory() - ((Integer) TimoCloudBase.getInstance().getFileManager().getConfig().get("ram-keep-free")).longValue());
-        //System.out.println(TimoCloudBase.getInstance().getResourceManager().getFreeMemory() + " " + freeRam);
         Map<String, Object> resourcesMap = new HashMap<>();
         resourcesMap.put("ready", ready);
         resourcesMap.put("availableRam", freeRam);
         resourcesMap.put("maxRam", TimoCloudBase.getInstance().getFileManager().getConfig().get("ram"));
+        resourcesMap.put("cpu", cpu);
         TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("RESOURCES", new JSONObject(resourcesMap));
     }
 
@@ -241,7 +243,12 @@ public class BaseServerManager {
                             " -jar spigot.jar -o false -h 0.0.0.0 -p " + port
             ).directory(temporaryDirectory);
             try {
-                pb.start();
+                Process p = pb.start();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
                 TimoCloudBase.info("Successfully started screen session " + server.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.severe("Error while starting server " + server.getName() + ":");
@@ -370,7 +377,7 @@ public class BaseServerManager {
                             " java -server " +
                             " -Xmx" + proxy.getRam() + "M" +
                             " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                            " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" +
+                            //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" +
                             " -Dcom.mojang.eula.agree=true" +
                             " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
                             " -Dtimocloud-proxyname=" + proxy.getName() +
@@ -415,11 +422,18 @@ public class BaseServerManager {
 
     private boolean portIsFree(int port) {
         if (recentlyUsedPorts.containsKey(port)) return false;
+        ServerSocket serverSocket = null;
         try {
-            new ServerSocket(port).close();
+            serverSocket = new ServerSocket(port);
             return true;
         } catch (Exception e) {
             return false;
+        } finally {
+            try {
+                if (serverSocket != null) serverSocket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

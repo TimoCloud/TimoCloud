@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.core.sockets;
 
+import cloud.timo.TimoCloud.core.TimoCloudCore;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -19,34 +20,15 @@ public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void sendMessage(Channel channel, String type, Object data) {
-        try {
-            channel.writeAndFlush(getJSON(type, data));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sendMessage(channel, TimoCloudCore.getInstance().getSocketMessageManager().getMessage(type, data));
     }
 
-    public void sendMessage(Channel channel, String server, String type, Object data) {
-        try {
-            channel.writeAndFlush(getJSON(server, type, data));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void sendMessage(Channel channel, String target, String type, Object data) {
+        sendMessage(channel, TimoCloudCore.getInstance().getSocketMessageManager().getJSON(type, target, data));
     }
 
-    public String getJSON(String type, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("type", type);
-        json.put("data", data);
-        return json.toString();
-    }
-
-    public String getJSON(String server, String type, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("target", server);
-        json.put("type", type);
-        json.put("data", data);
-        return json.toString();
+    public void sendMessage(Channel channel, JSONObject json) {
+        if (channel != null && channel.isActive()) channel.writeAndFlush(json.toString());
     }
 
     @Override
@@ -65,7 +47,6 @@ public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
         ctx.close();
     }
 

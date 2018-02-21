@@ -78,13 +78,16 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public void onSocketConnect() {
         getSocketMessageManager().sendMessage("SERVER_HANDSHAKE", getToken());
-        getSocketMessageManager().sendMessage("SET_MAP", getMapName());
-        doEverySecond();
     }
 
     public void onSocketDisconnect() {
         log("Disconnected from TimoCloudCore. Stopping server.");
         stop();
+    }
+
+    public void onHandshakeSuccess() {
+        getSocketMessageManager().sendMessage("SET_MAP", getMapName());
+        doEverySecond();
     }
 
     private void stop() {

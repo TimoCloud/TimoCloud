@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base;
 
-import cloud.timo.TimoCloud.ModuleType;
-import cloud.timo.TimoCloud.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.base.managers.BaseFileManager;
 import cloud.timo.TimoCloud.base.managers.BaseResourceManager;
 import cloud.timo.TimoCloud.base.managers.BaseServerManager;
@@ -10,7 +10,8 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
-import cloud.timo.TimoCloud.utils.options.OptionSet;
+import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
+import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -126,12 +127,25 @@ public class TimoCloudBase implements TimoCloudModule {
     public void onSocketConnect() {
         setConnected(true);
         getSocketMessageManager().sendMessage("BASE_HANDSHAKE", null);
+
         info("Successfully connected to Core socket!");
     }
 
     public void onSocketDisconnect() {
         if (isConnected()) info("Disconnected from Core. Reconnecting...");
         setConnected(false);
+    }
+
+    public void onHandshakeSuccess() {
+        deleteOldDirectories();
+    }
+
+    private void deleteOldDirectories() { // Some servers/proxies might be running, so we have to check if we can delete the directories
+        for (File dir : getFileManager().getServerTemporaryDirectory().listFiles()) {
+            if (! dir.isDirectory()) continue;
+            if (! dir.getName().contains("_") || dir.getName().split("_").length != 2) FileDeleteStrategy.FORCE.deleteQuietly(dir);
+            getSocketMessageManager().sendMessage("CHECK_IF_DELETABLE", dir.getName().split("_")[1], dir.getAbsolutePath());
+        }
     }
 
     public String getFileName() {

@@ -9,4 +9,5 @@ public interface Communicatable {
     Channel getChannel();
     void onMessage(JSONObject message);
     void sendMessage(JSONObject message);
+    void onHandshakeSuccess();
 }

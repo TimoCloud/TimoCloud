@@ -49,6 +49,17 @@ public interface TimoCloudUniversalAPI {
     ProxyObject getProxy(String proxyName);
 
     /**
+     * @return Returns a list of all connected {@link CordObject}s
+     */
+    List<CordObject> getCords();
+
+    /**
+     * @param name The cord's name, case-insensitive
+     * @return A {@link CordObject} which matches the given name
+     */
+    CordObject getCord(String name);
+
+    /**
      * @param uuid The player's Minecraft UUID
      * @return If the player is online, this will return a PlayerObject, else null
      */

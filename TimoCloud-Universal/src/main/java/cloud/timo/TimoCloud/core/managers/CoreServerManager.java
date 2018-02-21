@@ -6,7 +6,6 @@ import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import com.sun.management.OperatingSystemMXBean;
 import io.netty.channel.Channel;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -45,13 +44,14 @@ public class CoreServerManager {
     public void loadServerGroups() {
         Map<String, ServerGroup> serverGroups = new HashMap<>();
         try {
-            JSONArray serverGroupsJson = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
-            for (Object object : serverGroupsJson) {
-                JSONObject jsonObject = (JSONObject) object;
-                String name = (String) jsonObject.get("name");
+            List serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
+            if (serverGroupsList == null) serverGroupsList = new ArrayList();
+            for (Object object : serverGroupsList) {
+                Map<String, Object> properties = (Map<String, Object>) object;
+                String name = (String) properties.get("name");
                 ServerGroup serverGroup = getServerGroupByName(name);
-                if (serverGroup != null) serverGroup.construct(jsonObject);
-                else serverGroup = new ServerGroup(jsonObject);
+                if (serverGroup != null) serverGroup.construct(properties);
+                else serverGroup = new ServerGroup(properties);
                 serverGroups.put(serverGroup.getName(), serverGroup);
             }
         } catch (Exception e) {
@@ -64,13 +64,14 @@ public class CoreServerManager {
     public void loadProxyGroups() {
         try {
             Map<String, ProxyGroup> proxyGroups = new HashMap<>();
-            JSONArray proxyGroupsJson = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
-            for (Object object : proxyGroupsJson) {
-                JSONObject jsonObject = (JSONObject) object;
-                String name = (String) jsonObject.get("name");
+            List proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
+            if (proxyGroupsList == null) proxyGroupsList = new ArrayList();
+            for (Object object : proxyGroupsList) {
+                Map<String, Object> properties = (Map<String, Object>) object;
+                String name = (String) properties.get("name");
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
-                if (proxyGroup != null) proxyGroup.construct(jsonObject);
-                else proxyGroup = new ProxyGroup(jsonObject);
+                if (proxyGroup != null) proxyGroup.construct(properties);
+                else proxyGroup = new ProxyGroup(properties);
                 proxyGroups.put(proxyGroup.getName(), proxyGroup);
             }
             this.proxyGroups = proxyGroups;
@@ -86,12 +87,10 @@ public class CoreServerManager {
     }
 
     public void saveServerGroups() {
-        JSONArray jsonArray = new JSONArray();
-        for (ServerGroup serverGroup : getServerGroups()) {
-            jsonArray.add(serverGroup.toJsonObject());
-        }
+        JSONArray serverGroups = new JSONArray();
+        serverGroups.addAll(getServerGroups().stream().map(ServerGroup::getProperties).collect(Collectors.toList()));
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(jsonArray, TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(serverGroups, TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving server groups: ");
             e.printStackTrace();
@@ -99,12 +98,10 @@ public class CoreServerManager {
     }
 
     public void saveProxyGroups() {
-        JSONArray jsonArray = new JSONArray();
-        for (ProxyGroup proxyGroup : getProxyGroups()) {
-            jsonArray.add(proxyGroup.toJsonObject());
-        }
+        JSONArray proxyGroups = new JSONArray();
+        proxyGroups.addAll(getProxyGroups().stream().map(ProxyGroup::getProperties).collect(Collectors.toList()));
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(jsonArray, TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(proxyGroups, TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
             e.printStackTrace();
@@ -415,6 +412,12 @@ public class CoreServerManager {
     }
 
     public Base getBase(String name) {
+        if (! bases.containsKey(name)) {
+            for (String base : bases.keySet()) {
+                if (base.equalsIgnoreCase(name)) return bases.get(base);
+            }
+            return null;
+        }
         return bases.get(name);
     }
 

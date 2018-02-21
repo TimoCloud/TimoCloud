@@ -34,7 +34,7 @@ public class LobbyJoin implements Listener {
     }
 
     @EventHandler
-    public void onServerChange(ServerConnectEvent event) {
+    public void onServerConnect(ServerConnectEvent event) {
         if (! isPending(event.getPlayer().getUniqueId())) {
             return;
         }

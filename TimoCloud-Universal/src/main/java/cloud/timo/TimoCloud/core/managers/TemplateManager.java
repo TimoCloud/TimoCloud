@@ -38,6 +38,7 @@ public class TemplateManager {
                 }
                 fis.close();
             }
+            zipEntry.setTime(file.lastModified());
             zos.closeEntry();
         } catch (Exception e) {
             e.printStackTrace();

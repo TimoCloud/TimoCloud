@@ -6,9 +6,9 @@ import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
-import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.utils.EnumUtil;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.json.simple.JSONObject;
@@ -21,7 +21,10 @@ public class CordStringHandler extends BasicStringHandler {
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
-            case ("API_DATA"): {
+            case "HANDSHAKE_SUCCESS":
+                TimoCloudCord.getInstance().onHandshakeSuccess();
+                break;
+            case "API_DATA": {
                 ((TimoCloudUniversalAPICordImplementation) TimoCloudAPI.getUniversalInstance()).setData((JSONObject) data);
                 break;
             }

@@ -16,6 +16,7 @@ public class Base implements Communicatable {
     private Channel channel;
     private int availableRam;
     private int maxRam;
+    private double cpu;
     private boolean connected;
     private boolean ready;
     private List<Server> servers;
@@ -70,6 +71,7 @@ public class Base implements Communicatable {
                 int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
                 int availableRam = ((Long) map.get("availableRam")).intValue();
                 setAvailableRam(Math.max(0, Math.min(availableRam, maxRam-usedRam)));
+                setCpu(((Double) map.get("cpu")));
                 break;
             default:
                 TimoCloudCore.getInstance().severe("Unknown base message type: '" + type + "'. Please report this.");
@@ -79,6 +81,11 @@ public class Base implements Communicatable {
     @Override
     public void sendMessage(JSONObject message) {
         if (getChannel() != null) getChannel().writeAndFlush(message.toString());
+    }
+
+    @Override
+    public void onHandshakeSuccess() {
+        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
     }
 
     public void setChannel(Channel channel) {
@@ -104,6 +111,14 @@ public class Base implements Communicatable {
 
     public void setMaxRam(int maxRam) {
         this.maxRam = maxRam;
+    }
+
+    public double getCpu() {
+        return cpu;
+    }
+
+    public void setCpu(double cpu) {
+        this.cpu = cpu;
     }
 
     public boolean isConnected() {

@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.bungeecord.managers;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.Event;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONObject;
 

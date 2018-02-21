@@ -34,6 +34,7 @@ public class TimoCloudBungee extends Plugin {
     private BungeeSocketClientHandler socketClientHandler;
     private BungeeSocketMessageManager socketMessageManager;
     private BungeeStringHandler bungeeStringHandler;
+    private TimoCloudCommand timoCloudCommand;
     private String prefix;
     private boolean shuttingDown = false;
 
@@ -77,6 +78,7 @@ public class TimoCloudBungee extends Plugin {
         socketClientHandler = new BungeeSocketClientHandler();
         socketMessageManager = new BungeeSocketMessageManager();
         bungeeStringHandler = new BungeeStringHandler();
+        timoCloudCommand = new TimoCloudCommand();
 
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
         TimoCloudAPI.setBungeeImplementation(new TimoCloudBungeeAPIImplementation());
@@ -84,7 +86,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void registerCommands() {
-        getProxy().getPluginManager().registerCommand(this, new TimoCloudCommand());
+        getProxy().getPluginManager().registerCommand(this, getTimoCloudCommand());
         List<String> lobbyCommands = getFileManager().getConfig().getStringList("lobbyCommands");
         if (lobbyCommands.size() > 0) {
             String[] aliases = lobbyCommands.subList(1, lobbyCommands.size()).toArray(new String[0]);
@@ -116,12 +118,15 @@ public class TimoCloudBungee extends Plugin {
 
     public void onSocketConnect() {
         getSocketMessageManager().sendMessage("PROXY_HANDSHAKE", getToken());
-        everySecond();
     }
 
     public void onSocketDisconnect() {
         info("Disconnected from TimoCloudCore. Shutting down....");
         stop();
+    }
+
+    public void onHandshakeSuccess() {
+        everySecond();
     }
 
     private void stop() {
@@ -194,6 +199,10 @@ public class TimoCloudBungee extends Plugin {
 
     public BungeeStringHandler getBungeeStringHandler() {
         return bungeeStringHandler;
+    }
+
+    public TimoCloudCommand getTimoCloudCommand() {
+        return timoCloudCommand;
     }
 
     public boolean isShuttingDown() {

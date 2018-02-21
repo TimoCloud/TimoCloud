@@ -6,9 +6,9 @@ import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
-import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.utils.EnumUtil;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
@@ -26,6 +26,9 @@ public class BungeeStringHandler extends BasicStringHandler {
         String type = (String) json.get("type");
         Object data = json.get("data");
         switch (type) {
+            case "HANDSHAKE_SUCCESS":
+                TimoCloudBungee.getInstance().onHandshakeSuccess();
+                break;
             case "API_DATA":
                 ((TimoCloudUniversalAPIBungeeImplementation) TimoCloudAPI.getUniversalInstance()).setData((JSONObject) data);
                 break;
@@ -38,6 +41,9 @@ public class BungeeStringHandler extends BasicStringHandler {
                     e.printStackTrace();
                 }
                 break;
+            case "SEND_MESSAGE_TO_SENDER": {
+                TimoCloudBungee.getInstance().getTimoCloudCommand().sendMessage((String) json.get("sender"), (String) data);
+            }
             case "EXECUTE_COMMAND":
                 TimoCloudBungee.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloudBungee.getInstance().getProxy().getConsole(), (String) data);
                 break;

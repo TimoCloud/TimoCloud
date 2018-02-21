@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.core.managers;
 
-import cloud.timo.TimoCloud.base.TimoCloudBase;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
@@ -15,17 +14,17 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CoreFileManager {
     private File baseDirectory;
     private File configsDirectory;
     private File templatesDirectory;
-        private File serverTemplatesDirectory;
-            private File serverGlobalDirectory;
-        private File proxyTemplatesDirectory;
-            private File proxyGlobalDirectory;
+    private File serverTemplatesDirectory;
+    private File serverGlobalDirectory;
+    private File proxyTemplatesDirectory;
+    private File proxyGlobalDirectory;
     private File temporaryDirectory;
     private File logsDirectory;
 
@@ -34,7 +33,8 @@ public class CoreFileManager {
     private File serverGroupsFile;
     private File proxyGroupsFile;
 
-    public CoreFileManager() {}
+    public CoreFileManager() {
+    }
 
     public void load() {
         try {
@@ -64,10 +64,9 @@ public class CoreFileManager {
 
             this.configFile = new File(configsDirectory, "config.yml");
             configFile.createNewFile();
-            Yaml yaml = new Yaml();
-            this.config = (Map<String, Object>) yaml.load(new FileReader(configFile));
-            if (this.config == null) this.config = new HashMap<>();
-            Map<String, Object> defaults = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/core/config.yml"));
+            config = (Map<String, Object>) loadYaml(configFile);
+            if (config == null) config = new LinkedHashMap<>();
+            Map<String, Object> defaults = (Map<String, Object>) new Yaml().load(this.getClass().getResourceAsStream("/core/config.yml"));
             for (String key : defaults.keySet()) {
                 if (!config.containsKey(key)) config.put(key, defaults.get(key));
             }
@@ -83,16 +82,23 @@ public class CoreFileManager {
         }
     }
 
-    private void saveConfig() {
-        try {
-            FileWriter writer = new FileWriter(configFile);
-            DumperOptions dumperOptions = new DumperOptions();
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            new Yaml(dumperOptions).dump(config, writer);
-        } catch (Exception e) {
-            TimoCloudBase.severe("Error while saving config: ");
-            e.printStackTrace();
-        }
+    private void saveConfig() throws IOException {
+        saveYaml(config, configFile);
+    }
+
+    public Object loadYaml(File file) throws IOException {
+        FileReader reader = new FileReader(file);
+        Object data = new Yaml().load(reader);
+        reader.close();
+        return data;
+    }
+
+    public void saveYaml(Object data, File file) throws IOException {
+        FileWriter writer = new FileWriter(file);
+        DumperOptions dumperOptions = new DumperOptions();
+        dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        new Yaml(dumperOptions).dump(data, writer);
+        writer.close();
     }
 
     public JSONArray loadJson(File file) throws IOException, ParseException {

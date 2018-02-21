@@ -3,8 +3,10 @@ package cloud.timo.TimoCloud;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.utils.options.OptionParser;
-import cloud.timo.TimoCloud.utils.options.OptionSet;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.utils.options.OptionParser;
+import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 
 import java.util.Scanner;
 

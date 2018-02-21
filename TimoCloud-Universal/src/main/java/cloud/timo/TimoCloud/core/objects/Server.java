@@ -7,7 +7,7 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.utils.HashUtil;
+import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
@@ -89,14 +89,8 @@ public class Server implements Communicatable {
     }
 
     public void stop() {
-        TimoCloudCore.getInstance().info("Stopping server " + getName() + "...");
-        if (channel == null) {
-            TimoCloudCore.getInstance().info("Did not stop server " + getName() + " because it was not connected. Will stop itself.");
-            return;
-        }
-        channel.close();
-        getBase().getServers().remove(this);
-        TimoCloudCore.getInstance().info("Stopped " + getName() + ".");
+        if (channel == null) unregister();
+        else channel.close();
     }
 
     @Override
@@ -192,6 +186,11 @@ public class Server implements Communicatable {
     @Override
     public void sendMessage(JSONObject message) {
         if (getChannel() != null) getChannel().writeAndFlush(message.toString());
+    }
+
+    @Override
+    public void onHandshakeSuccess() {
+        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
     }
 
     public String getName() {

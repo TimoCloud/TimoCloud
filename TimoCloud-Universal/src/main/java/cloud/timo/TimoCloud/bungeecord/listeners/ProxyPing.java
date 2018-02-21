@@ -2,7 +2,6 @@ package cloud.timo.TimoCloud.bungeecord.listeners;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;

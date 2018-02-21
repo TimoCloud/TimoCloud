@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils.options;
+package cloud.timo.TimoCloud.lib.utils.options;
 
 import java.util.HashMap;
 import java.util.Map;

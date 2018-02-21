@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
+package cloud.timo.TimoCloud.lib.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.objects.*;
@@ -19,21 +19,24 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     private ArrayList<ServerGroupObject> serverGroups = new ArrayList<>();
     private ArrayList<ProxyGroupObject> proxyGroups = new ArrayList<>();
+    private ArrayList<CordObject> cords = new ArrayList<>();
 
     private final Class<? extends ServerObject> serverObjectImplementation;
     private final Class<? extends ProxyObject> proxyObjectImplementation;
     private final Class<? extends ServerGroupObject> serverGroupObjectImplementation;
     private final Class<? extends ProxyGroupObject> proxyGroupObjectImplementation;
     private final Class<? extends PlayerObject> playerObjectImplementation;
+    private final Class<? extends CordObject> cordObjectImplementation;
 
     private ObjectMapper objectMapper;
 
-    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation) {
+    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation, Class<? extends CordObject> cordObjectImplementation) {
         this.serverObjectImplementation = serverObjectImplementation;
         this.proxyObjectImplementation = proxyObjectImplementation;
         this.serverGroupObjectImplementation = serverGroupObjectImplementation;
         this.proxyGroupObjectImplementation = proxyGroupObjectImplementation;
         this.playerObjectImplementation = playerObjectImplementation;
+        this.cordObjectImplementation = cordObjectImplementation;
 
         objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -41,6 +44,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         resolver.addMapping(ServerObject.class, serverObjectImplementation);
         resolver.addMapping(ProxyObject.class, proxyObjectImplementation);
         resolver.addMapping(PlayerObject.class, playerObjectImplementation);
+        resolver.addMapping(CordObject.class, cordObjectImplementation);
         module.setAbstractTypes(resolver);
         objectMapper.registerModule(module);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
@@ -50,6 +54,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     public void setData(JSONObject json) {
         ArrayList serverGroups = new ArrayList<>();
         ArrayList proxyGroups = new ArrayList();
+        ArrayList cords = new ArrayList();
 
         try {
             for (Object object : (JSONArray) json.get("serverGroups")) {
@@ -72,6 +77,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
                 proxyGroups.add(groupObject);
             }
             this.proxyGroups = proxyGroups;
+            for (Object object : (JSONArray) json.get("cords")) {
+                CordObject cord = getObjectMapper().readValue((String) object, cordObjectImplementation);
+                cords.add(cord);
+            }
+            this.cords = cords;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -105,7 +115,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     @Override
     public List<ProxyGroupObject> getProxyGroups() {
-        return serverGroups == null ? new ArrayList<>() : (ArrayList) proxyGroups.clone();
+        return proxyGroups == null ? new ArrayList<>() : (ArrayList) proxyGroups.clone();
     }
 
     @Override
@@ -139,6 +149,20 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(List::stream).collect(Collectors.toList()))
             for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
                 if (playerObject.getName().equals(name)) return playerObject;
+        return null;
+    }
+
+    @Override
+    public List<CordObject> getCords() {
+        return cords == null ? new ArrayList<>() : (ArrayList) cords.clone();
+    }
+
+    @Override
+    public CordObject getCord(String name) {
+        for (CordObject cordObject : getCords())
+            if (cordObject.getName().equals(name)) return cordObject;
+        for (CordObject cordObject : getCords())
+            if (cordObject.getName().equalsIgnoreCase(name)) return cordObject;
         return null;
     }
 

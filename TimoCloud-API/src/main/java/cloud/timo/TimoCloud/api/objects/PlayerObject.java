@@ -31,8 +31,7 @@ public interface PlayerObject {
     InetAddress getIpAddress();
 
     /**
-     * If the player just left the game, this will return false.
-     * If the player is offline and didn't recently leave the game, you won't be able to find the player, so any getPlayer method will return null.
+     * Normally, a Player is always online if you are able to get its PlayerObject. However, when the Player is currently disconnecting, this will return false
      */
     boolean isOnline();
 

@@ -21,6 +21,10 @@ public class EventUtil {
                 return ProxyRegisterEvent.class;
             case PROXY_UNREGISTER:
                 return ProxyUnregisterEvent.class;
+            case CORD_CONNECT:
+                return CordConnectEvent.class;
+            case CORD_DISCONNECT:
+                return CordDisconnectEvent.class;
             default:
                 return null;
         }

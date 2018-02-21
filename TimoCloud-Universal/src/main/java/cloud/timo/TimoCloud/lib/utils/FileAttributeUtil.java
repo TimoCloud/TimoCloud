@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils;
+package cloud.timo.TimoCloud.lib.utils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

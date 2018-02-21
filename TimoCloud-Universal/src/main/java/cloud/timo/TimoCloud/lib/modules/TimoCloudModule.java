@@ -1,6 +1,6 @@
-package cloud.timo.TimoCloud;
+package cloud.timo.TimoCloud.lib.modules;
 
-import cloud.timo.TimoCloud.utils.options.OptionSet;
+import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 
 public interface TimoCloudModule {
     void load(OptionSet optionSet);

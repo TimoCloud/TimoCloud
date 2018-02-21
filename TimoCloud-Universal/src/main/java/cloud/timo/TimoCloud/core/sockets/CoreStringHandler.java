@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventType;
+import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
@@ -10,21 +11,16 @@ import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.utils.DoAfterAmount;
-import cloud.timo.TimoCloud.utils.EnumUtil;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
+import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -53,60 +49,56 @@ public class CoreStringHandler extends BasicStringHandler {
         Object data = json.get("data");
         switch (type) { // Handshakes
             case "SERVER_HANDSHAKE": {
-                if (server == null) {
-                    channel.close();
-                    return;
-                }
-                if (!server.getToken().equals(data)) {
-                    channel.close();
+                if (server == null || !server.getToken().equals(data)) {
+                    closeChannel(channel);
                     return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, server);
                 server.onConnect(channel);
+                server.onHandshakeSuccess();
                 return;
             }
             case "PROXY_HANDSHAKE": {
-                if (proxy == null) {
-                    channel.close();
-                    return;
-                }
-                if (!proxy.getToken().equals(data)) {
-                    channel.close();
+                if (proxy == null || !proxy.getToken().equals(data)) {
+                    closeChannel(channel);
                     return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, proxy);
                 proxy.onConnect(channel);
+                proxy.onHandshakeSuccess();
                 return;
             }
             case "BASE_HANDSHAKE": {
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
                 if (!((List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
                     TimoCloudCore.getInstance().severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
-                    channel.close();
+                    closeChannel(channel);
                     return;
                 }
                 Base base = TimoCloudCore.getInstance().getServerManager().getBase(baseName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel);
+                base.onHandshakeSuccess();
                 return;
             }
             case "CORD_HANDSHAKE": {
                 InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
                 if (!((List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
                     TimoCloudCore.getInstance().severe("Unknown cord connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
-                    channel.close();
+                    closeChannel(channel);
                     return;
                 }
                 Cord cord = TimoCloudCore.getInstance().getServerManager().getCord(cordName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, cord);
                 cord.onConnect(channel);
+                cord.onHandshakeSuccess();
                 return;
             }
         }
 
         // No Handshake, so we have to check if the channel is registered
         if (sender == null) {
-            channel.close();
+            closeChannel(channel);
             TimoCloudCore.getInstance().severe("Unknown connection from " + channel.remoteAddress() + ", blocking. Please make sure to block the TimoCloudCore socket port (" + TimoCloudCore.getInstance().getSocketPort() + ") in your firewall to avoid this.");
             return;
         }
@@ -115,20 +107,25 @@ public class CoreStringHandler extends BasicStringHandler {
             case "GET_API_DATA": {
                 JSONArray serverGroups = new JSONArray();
                 JSONArray proxyGroups = new JSONArray();
+                JSONArray cords = new JSONArray();
                 ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper();
                 try {
                     for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalInstance().getServerGroups())
                         serverGroups.add(objectMapper.writeValueAsString(serverGroupObject));
                     for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalInstance().getProxyGroups())
                         proxyGroups.add(objectMapper.writeValueAsString(proxyGroupObject));
+                    for (CordObject cordObject : TimoCloudAPI.getUniversalInstance().getCords())
+                        cords.add(objectMapper.writeValueAsString(cordObject));
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("serverGroups", serverGroups);
+                    map.put("proxyGroups", proxyGroups);
+                    map.put("cords", cords);
+                    JSONObject jsonObject = new JSONObject(map);
+                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", jsonObject);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Map<String, Object> map = new HashMap<>();
-                map.put("serverGroups", serverGroups);
-                map.put("proxyGroups", proxyGroups);
-                JSONObject jsonObject = new JSONObject(map);
-                TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", jsonObject);
+
                 break;
             }
             case "FIRE_EVENT": {
@@ -140,6 +137,22 @@ public class CoreStringHandler extends BasicStringHandler {
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe("Error while firing event: ");
                     e.printStackTrace();
+                }
+                break;
+            }
+            case "PARSE_COMMAND": {
+                TimoCloudCore.getInstance().getCommandManager().onCommand((str) -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("type", "SEND_MESSAGE_TO_SENDER");
+                    map.put("sender", json.get("sender"));
+                    map.put("data", str);
+                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, new JSONObject(map));
+                }, false, (String) data);
+                break;
+            }
+            case "CHECK_IF_DELETABLE": {
+                if (target == null) {
+                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "DELETE_DIRECTORY", data);
                 }
                 break;
             }

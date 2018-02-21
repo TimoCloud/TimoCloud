@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils;
+package cloud.timo.TimoCloud.lib.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

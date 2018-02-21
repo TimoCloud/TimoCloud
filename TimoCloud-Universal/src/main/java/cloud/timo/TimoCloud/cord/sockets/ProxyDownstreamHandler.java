@@ -3,9 +3,9 @@ package cloud.timo.TimoCloud.cord.sockets;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
-
-import static cloud.timo.TimoCloud.cord.utils.PacketUtil.releaseByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 
 public class ProxyDownstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 

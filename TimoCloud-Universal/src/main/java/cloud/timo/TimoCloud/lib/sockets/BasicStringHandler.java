@@ -1,22 +1,11 @@
-package cloud.timo.TimoCloud.sockets;
+package cloud.timo.TimoCloud.lib.sockets;
 
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import java.io.File;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,6 +65,13 @@ public class BasicStringHandler extends SimpleChannelInboundHandler<String> {
 
     private void setIsString(Channel channel, boolean isString) {
         this.isString.put(channel, isString);
+    }
+
+    public void closeChannel(Channel channel) {
+        channel.close();
+        open.remove(channel);
+        parsed.remove(channel);
+        isString.remove(channel);
     }
 
 }

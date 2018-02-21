@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.utils.options;
+package cloud.timo.TimoCloud.lib.utils.options;
 
 public class Option {
     private String[] names;

@@ -2,20 +2,14 @@ package cloud.timo.TimoCloud.cord.utils;
 
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
-import cloud.timo.TimoCloud.cord.sockets.MinecraftDecoder;
 import cloud.timo.TimoCloud.cord.sockets.ProxyDownstreamHandler;
 import cloud.timo.TimoCloud.cord.sockets.ProxyUpstreamHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 
 public class PacketUtil {
