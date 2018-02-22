@@ -33,11 +33,17 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
             final int packetID = readVarInt(buf);
             if (packetID == 0) {
-                final int clientVersion = readVarInt(buf);
-                final String hostName = readString(buf);
-                final int port = buf.readUnsignedShort();
-                final int state = readVarInt(buf);
-                connectClient(ctx.channel(), hostName, bufClone);
+                try {
+                    final int clientVersion = readVarInt(buf);
+                    final String hostName = readString(buf);
+                    final int port = buf.readUnsignedShort();
+                    final int state = readVarInt(buf);
+                    connectClient(ctx.channel(), hostName, bufClone);
+                } catch (Exception e) {
+                    buf.resetReaderIndex(); // Wait until we receive the full packet
+                    bufClone.readBytes(bufClone.readableBytes());
+                    return;
+                }
             }
         } catch (Exception e) {
             TimoCloudCord.getInstance().severe("Error while handling incoming connection: ");

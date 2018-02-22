@@ -1,5 +1,0 @@
-core-ip: 127.0.0.1
-socket-port: 5000
-name: CORD-1
-core-port: 5000
-proxy-port: 25565
