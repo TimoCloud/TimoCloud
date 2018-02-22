@@ -5,6 +5,8 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
+import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import cloud.timo.TimoCloud.bungeecord.listeners.EventMonitor;
@@ -87,6 +89,8 @@ public class TimoCloudBungee extends Plugin {
 
     private void registerCommands() {
         getProxy().getPluginManager().registerCommand(this, getTimoCloudCommand());
+        getProxy().getPluginManager().registerCommand(this, new GlistCommand());
+        getProxy().getPluginManager().registerCommand(this, new FindCommand());
         List<String> lobbyCommands = getFileManager().getConfig().getStringList("lobbyCommands");
         if (lobbyCommands.size() > 0) {
             String[] aliases = lobbyCommands.subList(1, lobbyCommands.size()).toArray(new String[0]);

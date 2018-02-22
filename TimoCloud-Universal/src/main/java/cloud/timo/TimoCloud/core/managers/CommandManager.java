@@ -130,7 +130,7 @@ public class CommandManager {
                 Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(target);
                 Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
 
-                if (server == null && proxyGroup == null && server == null && proxy == null) {
+                if (serverGroup == null && proxyGroup == null && server == null && proxy == null) {
                     sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
                     return;
                 }

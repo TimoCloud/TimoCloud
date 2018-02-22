@@ -23,26 +23,21 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
         try {
             ConnectionState connectionState = ctx.channel().attr(CONNECTION_STATE).get();
-            if (connectionState == null) {
-                ByteBuf bufClone = Unpooled.copiedBuffer(buf);
-                final int packetLength = readVarInt(buf);
-                if (buf.readableBytes() < packetLength) {
-                    buf.readBytes(buf.readableBytes());
-                    bufClone.readBytes(bufClone.readableBytes());
-                    return;
-                }
-                ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
-                final int packetID = readVarInt(buf);
-                if (packetID == 0) {
-                    final int clientVersion = readVarInt(buf);
-                    final String hostName = readString(buf);
-                    final int port = buf.readUnsignedShort();
-                    final int state = readVarInt(buf);
-                    connectClient(ctx.channel(), hostName, bufClone);
-                }
-            } else {
-                //This actually shouldn't happen
-                TimoCloudCord.getInstance().severe("Received packets of a connection which actually should already be proxied. Please report this.");
+            ByteBuf bufClone = Unpooled.copiedBuffer(buf);
+            final int packetLength = readVarInt(buf);
+            if (buf.readableBytes() < packetLength) {
+                buf.resetReaderIndex(); // Wait until we receive the full packet
+                bufClone.readBytes(bufClone.readableBytes());
+                return;
+            }
+            ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
+            final int packetID = readVarInt(buf);
+            if (packetID == 0) {
+                final int clientVersion = readVarInt(buf);
+                final String hostName = readString(buf);
+                final int port = buf.readUnsignedShort();
+                final int state = readVarInt(buf);
+                connectClient(ctx.channel(), hostName, bufClone);
             }
         } catch (Exception e) {
             TimoCloudCord.getInstance().severe("Error while handling incoming connection: ");
