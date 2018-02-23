@@ -15,12 +15,6 @@ public class ModuleLoader {
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
 
-    private static final String ANSI_FG_GREY = "\033[38;5;188m";
-    private static final String ANSI_FG_CYAN = "\033[38;5;117m";
-    private static final String ANSI_BG_GREY = "\033[48;5;188m";
-    private static final String ANSI_BG_CYAN = "\033[48;5;117m";
-
-
     private static final String asciiArt =
             "  _____ _                  ____ _                 _ \n" +
             " \033[48;5;117m|_   _(_)\u001B[0m_ __ ___   ___  \033[48;5;188m/ ___| |\u001B[0m ___  _   _  __\033[48;5;188m| |\u001B[0m\n" +
@@ -36,7 +30,7 @@ public class ModuleLoader {
     private static OptionSet options;
 
     private static void info(String message) {
-        System.out.println(message);
+        System.out.println(message + ANSI_RESET);
     }
 
     private static void severe(String message) {
@@ -49,8 +43,7 @@ public class ModuleLoader {
 
     public static void main(String ... args) {
         info(asciiArt);
-        info("TimoCloud version " + getVersion() + " by TimoCrafter.");
-        info(ANSI_RED + "Please note that using TimoCloud without having bought it before is a crime. Do not give TimoCloud to anybody else, because you are responsible for everybody who uses the plugin with your download ID.\n" + ANSI_RESET);
+        info("\033[1;38;5;117mTimo\u001B[1;38;5;188mCloud\u001B[0m version \u001B[1;33m" + getVersion() + "\u001B[0m by \u001B[1;32mTimoCrafter\u001B[0m.");
 
         parseOptions(args);
 

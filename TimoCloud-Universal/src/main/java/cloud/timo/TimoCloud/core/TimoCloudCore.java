@@ -148,8 +148,8 @@ public class TimoCloudCore implements TimoCloudModule {
                 line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
             } catch (UserInterruptException e) {
                 System.exit(0);
-            } catch (EndOfFileException e) {
-                return;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             if (line == null) continue;
             waitingForCommand = false;

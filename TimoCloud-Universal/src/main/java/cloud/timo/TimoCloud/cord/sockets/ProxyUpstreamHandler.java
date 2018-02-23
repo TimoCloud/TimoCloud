@@ -19,8 +19,10 @@ public class ProxyUpstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        ByteBuf sendBuf = Unpooled.copiedBuffer(buf);
-        getChannel().writeAndFlush(sendBuf);
+        byte[] bytes = new byte[buf.readableBytes()];
+        buf.readBytes(bytes);
+        getChannel().writeAndFlush(Unpooled.buffer().writeBytes(bytes));
+        buf.release();
     }
 
     @Override
@@ -30,8 +32,8 @@ public class ProxyUpstreamHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        TimoCloudCord.getInstance().severe("Exception in UpStreamHandler");
-        cause.printStackTrace();
+        //TimoCloudCord.getInstance().severe("Exception in UpStreamHandler");
+        //cause.printStackTrace();
     }
 
     public Channel getChannel() {

@@ -180,35 +180,44 @@ public class CommandManager {
                     sendError(sendMessage, local, "This group already exists.");
                     return;
                 }
-                Group group = null;
+                Group group;
                 if (type.equalsIgnoreCase("server")) {
-                    int amount = Integer.parseInt(args[2]);
-                    int maxAmount = Integer.parseInt(args[3]);
-                    int ram = Integer.parseInt(args[4]);
-                    boolean isStatic = Boolean.parseBoolean(args[5]);
-                    int priority = Integer.parseInt(args[6]);
-                    String base = args.length > 7 ? args[7] : null;
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put("name", name);
+                    properties.put("online-amount", Integer.parseInt(args[2]));
+                    properties.put("ram", Integer.parseInt(args[3]));
+                    boolean isStatic = Boolean.parseBoolean(args[4]);
+                    properties.put("static", isStatic);
+                    if (args.length > 5) properties.put("base", args[5]);
 
-                    ServerGroup serverGroup = new ServerGroup(name, amount, maxAmount, ram, isStatic, priority, base, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
+                    if (isStatic && ! properties.containsKey("base")) {
+                        sendError(sendMessage, "If you create a static group, you have to specify a base!");
+                        return;
+                    }
+
+                    ServerGroup serverGroup = new ServerGroup(properties);
                     TimoCloudCore.getInstance().getServerManager().addGroup(serverGroup);
                     TimoCloudCore.getInstance().getServerManager().saveServerGroups();
                     group = serverGroup;
                 } else if (type.equalsIgnoreCase("proxy")) {
-                    int playersPerProxy = Integer.parseInt(args[2]);
-                    int maxPlayers = Integer.parseInt(args[3]);
-                    int keepFreeSlots = Integer.parseInt(args[4]);
-                    int maxAmount = Integer.parseInt(args[5]);
-                    int ram = Integer.parseInt(args[6]);
-                    boolean isStatic = Boolean.parseBoolean(args[7]);
-                    int priority = Integer.parseInt(args[8]);
-                    String baseName = args.length > 9 ? args[9] : null;
+                    Map<String, Object> properties = new HashMap<>();
+                    properties.put("name", name);
+                    properties.put("ram", Integer.parseInt(args[2]));
+                    boolean isStatic = Boolean.parseBoolean(args[3]);
+                    properties.put("static", isStatic);
+                    if (args.length > 4) properties.put("base", args[4]);
 
-                    ProxyGroup proxyGroup = new ProxyGroup(name, playersPerProxy, maxPlayers, keepFreeSlots, maxAmount, ram, null, isStatic, priority, Collections.singletonList("*"), baseName, null, new ArrayList<>());
+                    if (isStatic && ! properties.containsKey("base")) {
+                        sendError(sendMessage, "If you create a static group, you have to specify a base!");
+                        return;
+                    }
+                    ProxyGroup proxyGroup = new ProxyGroup(properties);
                     TimoCloudCore.getInstance().getServerManager().addGroup(proxyGroup);
                     TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
                     group = proxyGroup;
                 } else {
                     sendError(sendMessage, local, "Unknown group type: '" + type + "'");
+                    return;
                 }
 
                 try {
@@ -274,6 +283,9 @@ public class CommandManager {
                         case "keepfreeslots":
                             proxyGroup.setKeepFreeSlots(Integer.parseInt(value));
                             break;
+                        case "minamount":
+                            proxyGroup.setMinAmount(Integer.parseInt(value));
+                            break;
                         case "maxamount":
                             proxyGroup.setMaxAmount(Integer.parseInt(value));
                             break;
@@ -297,7 +309,7 @@ public class CommandManager {
                             break;
                         default:
                             sendError(sendMessage, local, "No valid argument found. Please use \n" +
-                                    "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
+                                    "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
                             return;
                     }
                     TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
@@ -344,6 +356,7 @@ public class CommandManager {
                 "&7, &6Players-Per-Proxy&7: &2" + group.getMaxPlayerCountPerProxy() +
                 "&7, &6Keep-Free-Slots&7: &2" + group.getKeepFreeSlots() +
                 "&7, &6Max-Amount&7: &2" + group.getMaxAmount() +
+                "&7, &6Min-Amount&7: &2" + group.getMinAmount() +
                 "&7, &6Priority&7: &2" + group.getPriority() +
                 "&7, &6static&7: &2" + group.isStatic() +
                 "&7)");
@@ -371,10 +384,10 @@ public class CommandManager {
         sendMessage.accept("  &6help &7- &7shows this page");
         sendMessage.accept("  &6version &7- &7shows the plugin version");
         sendMessage.accept("  &6reload &7- &7reloads all configs");
-        sendMessage.accept("  &6addgroup server &7<&2groupName &7(&9String&7)> <&2onlineAmount &7(&9int&7)> <&2maxAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2priority &7(&9int&7)> - &7creates a server group");
-        sendMessage.accept("  &6addgroup proxy &7<&2groupName &7(&9String&7)> <&2playersPerProxy &7(&9int&7)> <&2maxPlayers &7(&9int&7)> <&2keepFreeSlots &7(&9int&7)> <&2maxAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2priority &7(&9int&7)> - &7creates a proxy group");
+        sendMessage.accept("  &6addgroup server &7<&2groupName &7(&9String&7)> <&2onlineAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a server group");
+        sendMessage.accept("  &6addgroup proxy &7<&2groupName &7(&9String&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a proxy group");
         sendMessage.accept("  &6removegroup &7<&2groupName&7> - &7deletes a group");
-        sendMessage.accept("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a server group");
+        sendMessage.accept("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2minAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a server group");
         sendMessage.accept("  &6editgroup &7<&2name&7> <&2playersPerProxy &7(&9int&7) | &2maxPlayers &7(&9int&7) | &2keepFreeSlots &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a proxy group");
         sendMessage.accept("  &6restart &7<&2groupName&7|&2serverName&7|&2proxyName&7> - &7restarts the given group, server or proxy");
         sendMessage.accept("  &6groupinfo &7<&2groupName&7> - displays group info");

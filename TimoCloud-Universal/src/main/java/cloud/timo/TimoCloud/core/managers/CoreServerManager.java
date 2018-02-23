@@ -387,12 +387,14 @@ public class CoreServerManager {
         int slotsWanted = playersOnline + group.getKeepFreeSlots();
         int wanted = divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy());
         int needed = Math.max(wanted - running, 0);
+        int limit = divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()); // We don't need more slots than maxPlayerCount
         return Math.max(0,
-                Math.min(
-                        divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()),
-                        group.getMaxAmount() > 0 ? Math.min(
-                                needed,
-                                group.getMaxAmount()) : needed));
+                Math.max(group.getMinAmount(), // Min Amount
+                        Math.min(
+                                limit,
+                                group.getMaxAmount() > 0 ? Math.min( // Max Amount
+                                        needed,
+                                        group.getMaxAmount()) : needed)));
     }
 
     private boolean isStateActive(String state, ServerGroup group) {
@@ -412,7 +414,7 @@ public class CoreServerManager {
     }
 
     public Base getBase(String name) {
-        if (! bases.containsKey(name)) {
+        if (!bases.containsKey(name)) {
             for (String base : bases.keySet()) {
                 if (base.equalsIgnoreCase(name)) return bases.get(base);
             }

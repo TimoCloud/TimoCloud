@@ -93,7 +93,7 @@ public class SignManager {
                         (String) jsonObject.get("template"),
                         getSignTemplate((String) jsonObject.get("template")),
                         (boolean) jsonObject.get("dynamic"),
-                        ((Long) jsonObject.get("priority")).intValue()
+                        ((Number) jsonObject.get("priority")).intValue()
                 ));
             }
         } catch (Exception e) {

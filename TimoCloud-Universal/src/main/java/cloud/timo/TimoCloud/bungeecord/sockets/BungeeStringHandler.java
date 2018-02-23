@@ -48,7 +48,7 @@ public class BungeeStringHandler extends BasicStringHandler {
                 TimoCloudBungee.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloudBungee.getInstance().getProxy().getConsole(), (String) data);
                 break;
             case "ADD_SERVER":
-                TimoCloudBungee.getInstance().getProxy().getServers().put(server, TimoCloudBungee.getInstance().getProxy().constructServerInfo(server, new InetSocketAddress((String) json.get("address"), ((Long) json.get("port")).intValue()), "", false));
+                TimoCloudBungee.getInstance().getProxy().getServers().put(server, TimoCloudBungee.getInstance().getProxy().constructServerInfo(server, new InetSocketAddress((String) json.get("address"), ((Number) json.get("port")).intValue()), "", false));
                 break;
             case "REMOVE_SERVER":
                 TimoCloudBungee.getInstance().getProxy().getServers().remove(server);

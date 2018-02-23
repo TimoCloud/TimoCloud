@@ -16,6 +16,7 @@ public class ProxyGroup implements Group {
     private int maxPlayerCountPerProxy;
     private int maxPlayerCount;
     private int keepFreeSlots;
+    private int minAmount;
     private int maxAmount;
     private int ram;
     private String motd;
@@ -29,8 +30,8 @@ public class ProxyGroup implements Group {
     private List<Proxy> proxies = new ArrayList<>();
     private List<Server> registeredServers = new ArrayList<>();
 
-    public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostNames) {
-        construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
+    public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostNames) {
+        construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
     }
 
     public ProxyGroup(Map<String, Object> properties) {
@@ -41,14 +42,15 @@ public class ProxyGroup implements Group {
         try {
             construct(
                     (String) properties.get("name"),
-                    ((Long) properties.getOrDefault("players-per-proxy", 500)).intValue(),
-                    ((Long) properties.getOrDefault("max-players", 100)).intValue(),
-                    ((Long) properties.getOrDefault("keep-free-slots", 100)).intValue(),
-                    ((Long) properties.getOrDefault("max-amount", 1)).intValue(),
-                    ((Long) properties.getOrDefault("ram", 1)).intValue(),
+                    ((Number) properties.getOrDefault("players-per-proxy", 500)).intValue(),
+                    ((Number) properties.getOrDefault("max-players", 100)).intValue(),
+                    ((Number) properties.getOrDefault("keep-free-slots", 100)).intValue(),
+                    ((Number) properties.getOrDefault("min-amount", 0)).intValue(),
+                    ((Number) properties.getOrDefault("max-amount", 3)).intValue(),
+                    ((Number) properties.getOrDefault("ram", 1)).intValue(),
                     (String) properties.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
                     (Boolean) properties.getOrDefault("static", false),
-                    ((Long) properties.getOrDefault("priority", 1)).intValue(),
+                    ((Number) properties.getOrDefault("priority", 1)).intValue(),
                     (List<String>) properties.getOrDefault("serverGroups", Collections.singletonList("*")),
                     (String) properties.getOrDefault("base", null),
                     (String) properties.getOrDefault("proxy-choose-strategy", "BALANCE"),
@@ -59,11 +61,12 @@ public class ProxyGroup implements Group {
         }
     }
 
-    public void construct(String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostnames) {
+    public void construct(String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostnames) {
         this.name = name;
         this.maxPlayerCountPerProxy = playersPerProxy;
         this.maxPlayerCount = maxPlayers;
         this.keepFreeSlots = keepFreeSlots;
+        this.minAmount = minAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;
         this.motd = motd;
@@ -98,6 +101,7 @@ public class ProxyGroup implements Group {
         properties.put("name", getName());
         properties.put("players-per-proxy", getMaxPlayerCountPerProxy());
         properties.put("max-players", getMaxPlayerCount());
+        properties.put("min-amount", getMinAmount());
         properties.put("max-amount", getMaxAmount());
         properties.put("keep-free-slots", getKeepFreeSlots());
         properties.put("ram", getRam());
@@ -176,6 +180,14 @@ public class ProxyGroup implements Group {
 
     public void setKeepFreeSlots(int keepFreeSlots) {
         this.keepFreeSlots = keepFreeSlots;
+    }
+
+    public int getMinAmount() {
+        return minAmount;
+    }
+
+    public void setMinAmount(int minAmount) {
+        this.minAmount = minAmount;
     }
 
     public int getMaxAmount() {

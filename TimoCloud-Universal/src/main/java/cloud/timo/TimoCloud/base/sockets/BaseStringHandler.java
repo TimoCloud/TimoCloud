@@ -28,7 +28,7 @@ public class BaseStringHandler extends BasicStringHandler {
             case "START_SERVER": {
                 String serverName = (String) json.get("name");
                 String token = (String) json.get("token");
-                int ram = ((Long) json.get("ram")).intValue();
+                int ram = ((Number) json.get("ram")).intValue();
                 boolean isStatic = (Boolean) json.get("static");
                 String group = (String) json.get("group");
                 String map = (String) json.get("map");
@@ -42,12 +42,12 @@ public class BaseStringHandler extends BasicStringHandler {
             case "START_PROXY": {
                 String token = (String) json.get("token");
                 String proxyName = (String) json.get("name");
-                int ram = ((Long) json.get("ram")).intValue();
+                int ram = ((Number) json.get("ram")).intValue();
                 boolean isStatic = (Boolean) json.get("static");
                 String group = (String) json.get("group");
                 String motd = (String) json.get("motd");
-                int maxPlayers = ((Long) json.get("maxplayers")).intValue();
-                int maxPlayersPerProxy = ((Long) json.get("maxplayersperproxy")).intValue();
+                int maxPlayers = ((Number) json.get("maxplayers")).intValue();
+                int maxPlayersPerProxy = ((Number) json.get("maxplayersperproxy")).intValue();
                 JSONObject templateHash = (JSONObject) json.get("templateHash");
                 JSONObject globalHash = (JSONObject) json.get("globalHash");
                 TimoCloudBase.getInstance().getServerManager().addToProxyQueue(new BaseProxyObject(proxyName, group, ram, isStatic, token, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));

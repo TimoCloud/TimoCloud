@@ -131,7 +131,7 @@ public class Proxy implements Communicatable {
                 stop();
                 break;
             case "PROXY_STARTED":
-                setPort(((Long) message.get("port")).intValue());
+                setPort(((Number) message.get("port")).intValue());
                 break;
             case "PROXY_NOT_STARTED":
                 unregister();
@@ -140,7 +140,7 @@ public class Proxy implements Communicatable {
                 executeCommand((String) data);
                 break;
             case "SET_PLAYER_COUNT":
-                this.onlinePlayerCount = ((Long) data).intValue();
+                this.onlinePlayerCount = ((Number) data).intValue();
                 break;
             default:
                 TimoCloudCore.getInstance().severe("Unknown proxy message type: '" + type + "'. Please report this.");

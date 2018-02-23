@@ -62,7 +62,6 @@ public class TimoCloudBungee extends Plugin {
         registerTasks();
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
 
-        info("&cPlease note that using TimoCloudBungee without having bought it before is a crime. Do not give TimoCloud to anybody else, because you are responsible for everybody who uses the plugin with your download ID.");
         info("&aSuccessfully started TimoCloudBungee!");
     }
 

@@ -19,13 +19,12 @@ public class BaseSocketClient {
         ChannelFuture f = null;
         try {
             f = b.connect(host, port).sync();
+            f.channel().closeFuture().sync();
         } catch (Exception e) {
-            TimoCloudBase.getInstance().onSocketDisconnect();
-            f.channel().close();
-        }
-        f.channel().closeFuture().addListener(future -> {
+
+        } finally {
             group.shutdownGracefully();
             TimoCloudBase.getInstance().onSocketDisconnect();
-        });
+        }
     }
 }

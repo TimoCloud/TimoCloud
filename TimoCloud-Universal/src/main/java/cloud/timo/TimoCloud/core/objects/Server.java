@@ -170,7 +170,7 @@ public class Server implements Communicatable {
                 stop();
                 break;
             case "SERVER_STARTED":
-                setPort(((Long) message.get("port")).intValue());
+                setPort(((Number) message.get("port")).intValue());
                 break;
             case "SERVER_NOT_STARTED":
                 unregister();

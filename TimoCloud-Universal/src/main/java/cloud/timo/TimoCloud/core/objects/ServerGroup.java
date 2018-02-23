@@ -35,13 +35,13 @@ public class ServerGroup implements Group {
         try {
             construct(
                     (String) properties.get("name"),
-                    ((Long) properties.getOrDefault("online-amount", 1)).intValue(),
-                    ((Long) properties.getOrDefault("max-amount", 10)).intValue(),
-                    ((Long) properties.getOrDefault("ram", 1024)).intValue(),
+                    ((Number) properties.getOrDefault("online-amount", 1)).intValue(),
+                    ((Number) properties.getOrDefault("max-amount", 10)).intValue(),
+                    ((Number) properties.getOrDefault("ram", 1024)).intValue(),
                     (Boolean) properties.getOrDefault("static", false),
-                    ((Long) properties.getOrDefault("priority", 1)).intValue(),
+                    ((Number) properties.getOrDefault("priority", 1)).intValue(),
                     (String) properties.getOrDefault("base", null),
-                    (List<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "RESTARTING")));
+                    (List<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING")));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();

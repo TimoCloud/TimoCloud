@@ -67,9 +67,9 @@ public class Base implements Communicatable {
             case "RESOURCES":
                 Map<String, Object> map = (Map<String, Object>) message.get("data");
                 setReady((boolean) map.get("ready"));
-                int maxRam = ((Long) map.get("maxRam")).intValue();
+                int maxRam = ((Number) map.get("maxRam")).intValue();
                 int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
-                int availableRam = ((Long) map.get("availableRam")).intValue();
+                int availableRam = ((Number) map.get("availableRam")).intValue();
                 setAvailableRam(Math.max(0, Math.min(availableRam, maxRam-usedRam)));
                 setCpu(((Double) map.get("cpu")));
                 break;

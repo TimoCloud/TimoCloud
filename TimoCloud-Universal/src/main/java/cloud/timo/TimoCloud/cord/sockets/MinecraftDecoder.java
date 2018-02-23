@@ -25,12 +25,6 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             ConnectionState connectionState = ctx.channel().attr(CONNECTION_STATE).get();
             ByteBuf bufClone = Unpooled.copiedBuffer(buf);
             final int packetLength = readVarInt(buf);
-            if (buf.readableBytes() < packetLength) {
-                buf.resetReaderIndex(); // Wait until we receive the full packet
-                bufClone.readBytes(bufClone.readableBytes());
-                return;
-            }
-            ctx.channel().attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
             final int packetID = readVarInt(buf);
             if (packetID == 0) {
                 try {
@@ -42,6 +36,7 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                 } catch (Exception e) {
                     buf.resetReaderIndex(); // Wait until we receive the full packet
                     bufClone.readBytes(bufClone.readableBytes());
+                    bufClone.release();
                     return;
                 }
             }
@@ -80,6 +75,7 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     public static void connectClient(Channel channel, ProxyObject proxyObject, String hostName, ByteBuf loginPacket) {
         ProxyDownstreamHandler downstreamHandler = channel.attr(DOWNSTREAM_HANDLER).get() == null ? new ProxyDownstreamHandler(channel) : channel.attr(DOWNSTREAM_HANDLER).get();
         channel.attr(DOWNSTREAM_HANDLER).set(downstreamHandler);
+        channel.attr(CONNECTION_STATE).set(ConnectionState.HANDSHAKE);
         Bootstrap b = new Bootstrap();
         b
                 .group(TimoCloudCord.getInstance().getWorkerGroup())
@@ -99,7 +95,9 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
             if (future.isSuccess()) {
                 TimoCloudCord.getInstance().info("[" + channel.remoteAddress() + "] connected to hostname '" + hostName + "'. Using proxy " + proxyObject.getName() + " of group " + proxyObject.getGroup().getName() + ".");
                 if (channel.attr(UPSTREAM_HANDLER).get() == null) {
-                    channel.pipeline().addLast(new ProxyUpstreamHandler(cf.channel(), downstreamHandler));
+                    ProxyUpstreamHandler upstreamHandler = new ProxyUpstreamHandler(cf.channel(), downstreamHandler);
+                    channel.pipeline().addLast(upstreamHandler);
+                    channel.attr(UPSTREAM_HANDLER).set(upstreamHandler);
                 } else {
                     channel.attr(UPSTREAM_HANDLER).get().setChannel(cf.channel());
                 }

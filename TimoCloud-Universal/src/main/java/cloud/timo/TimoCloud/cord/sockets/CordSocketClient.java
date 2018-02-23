@@ -19,13 +19,12 @@ public class CordSocketClient {
         ChannelFuture f = null;
         try {
             f = b.connect(host, port).sync();
+            f.channel().closeFuture().sync();
         } catch (Exception e) {
-            TimoCloudCord.getInstance().onSocketDisconnect();
-            f.channel().close();
-        }
-        f.channel().closeFuture().addListener(future -> {
+
+        } finally {
             group.shutdownGracefully();
             TimoCloudCord.getInstance().onSocketDisconnect();
-        });
+        }
     }
 }
