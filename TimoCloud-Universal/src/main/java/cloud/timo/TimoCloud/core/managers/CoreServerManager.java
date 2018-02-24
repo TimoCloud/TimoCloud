@@ -267,14 +267,27 @@ public class CoreServerManager {
         List<GroupInstanceDemand> staticDemands = new ArrayList<>();
         for (ProxyGroup group : getProxyGroups()) {
             int amount = proxiesNeeded(group);
-            if (amount <= 0) continue;
-            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, amount));
-            else demands.add(new GroupInstanceDemand(group, amount));
+            if (amount == 0) continue;
+            if (amount > 0) {
+                if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, 1));
+                else demands.add(new GroupInstanceDemand(group, amount));
+            } else { // We have too many proxies
+                int stop = -amount;
+                for (int i = 0; i<stop; i++) {
+                    Proxy stoppable = null;
+                    for (Proxy proxy : group.getProxies()) {
+                        if (proxy.getOnlinePlayerCount() == 0) stoppable = proxy;
+                    }
+                    if (stoppable == null) break;
+                    TimoCloudCore.getInstance().info("Stopping proxy " + stoppable.getName() + " because no players are online and it is not needed anymore.");
+                    stoppable.stop();
+                }
+            }
         }
         for (ServerGroup group : getServerGroups()) {
             int amount = serversNeeded(group);
             if (amount <= 0) continue;
-            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, amount));
+            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, 1));
             else demands.add(new GroupInstanceDemand(group, amount));
         }
 
@@ -283,7 +296,7 @@ public class CoreServerManager {
             if (base.isConnected() && base.isReady()) bases.add(base);
         }
 
-        while (!(staticDemands.isEmpty() || bases.isEmpty())) {
+        while (!(staticDemands.isEmpty() || bases.isEmpty())) { // Start static servers first
             GroupInstanceDemand demand = getMostImportant(staticDemands);
             Base base = null;
             for (Base b : bases) {
@@ -297,7 +310,7 @@ public class CoreServerManager {
             start(demand.getGroup(), base);
         }
 
-        while (!(demands.isEmpty() || bases.isEmpty())) {
+        while (!(demands.isEmpty() || bases.isEmpty())) { // Start non-static servers
             GroupInstanceDemand demand = getMostImportant(demands);
             int bestDiff = -1;
             Base bestBase = null;
@@ -375,34 +388,41 @@ public class CoreServerManager {
         return group.isStatic() ? group.getName() : group.getName() + "-" + n;
     }
 
-    public int serversNeeded(ServerGroup group) {
+    private int serversNeeded(ServerGroup group) {
         int running = (int) group.getServers().stream().filter((server) -> isStateActive(server.getState(), group) || server.isStarting()).count();
         int needed = group.getOnlineAmount() - running;
         return Math.max(0, group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount()) : needed);
     }
 
-    public int proxiesNeeded(ProxyGroup group) {
+    private int proxiesNeeded(ProxyGroup group) {
         int running = group.getProxies().size();
         int playersOnline = group.getOnlinePlayerCount();
         int slotsWanted = playersOnline + group.getKeepFreeSlots();
-        int wanted = divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy());
-        int needed = Math.max(wanted - running, 0);
-        int limit = divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()); // We don't need more slots than maxPlayerCount
-        return Math.max(0,
-                Math.max(group.getMinAmount(), // Min Amount
-                        Math.min(
-                                limit,
-                                group.getMaxAmount() > 0 ? Math.min( // Max Amount
-                                        needed,
-                                        group.getMaxAmount()) : needed)));
+        int wanted = Math.max(
+                divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy()),
+                group.getMinAmount());
+        int slotsLimit = divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()); // We don't need more slots than maxPlayerCount
+        wanted = Math.min(wanted, slotsLimit);
+        if (group.getMaxAmount() > 0) wanted = Math.min(wanted, group.getMaxAmount());
+        return wanted - running;
     }
 
     private boolean isStateActive(String state, ServerGroup group) {
         return !(state.equals("OFFLINE") || group.getSortOutStates().contains(state));
     }
 
-    public Base getBase(String name, InetAddress address, Channel channel) {
-        Base base = bases.get(name);
+    public boolean isBaseConnected(String name) {
+        Base base = getBase(name);
+        return base != null && base.isConnected();
+    }
+
+    public boolean isCordConnected(String name) {
+        Cord cord = getCord(name);
+        return cord != null && cord.isConnected();
+    }
+
+    public Base getOrCreateBase(String name, InetAddress address, Channel channel) {
+        Base base = bases.getOrDefault(name, null);
         if (base == null) {
             base = new Base(name, address, channel);
             bases.put(name, base);
@@ -414,17 +434,11 @@ public class CoreServerManager {
     }
 
     public Base getBase(String name) {
-        if (!bases.containsKey(name)) {
-            for (String base : bases.keySet()) {
-                if (base.equalsIgnoreCase(name)) return bases.get(base);
-            }
-            return null;
-        }
-        return bases.get(name);
+        return (Base) searchInMap(name, bases);
     }
 
-    public Cord getCord(String name, InetAddress address, Channel channel) {
-        Cord cord = cords.get(name);
+    public Cord getOrCreateCord(String name, InetAddress address, Channel channel) {
+        Cord cord = cords.getOrDefault(name, null);
         if (cord == null) {
             cord = new Cord(name, address, channel);
             cords.put(name, cord);
@@ -436,7 +450,15 @@ public class CoreServerManager {
     }
 
     public Cord getCord(String name) {
-        return cords.get(name);
+        return (Cord) searchInMap(name, cords);
+    }
+
+    private static Object searchInMap(String key, Map<String, ?> map) {
+        if (map.containsKey(key)) return map.get(key);
+        for (String k : map.keySet()) {
+            if (k.equalsIgnoreCase(key)) return map.get(k);
+        }
+        return null;
     }
 
     public Collection<Base> getBases() {

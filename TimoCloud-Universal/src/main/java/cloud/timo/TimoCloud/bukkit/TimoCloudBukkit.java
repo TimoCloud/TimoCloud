@@ -4,7 +4,6 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudBukkitAPIImplementation;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
-import cloud.timo.TimoCloud.bukkit.commands.SendBungeeCommand;
 import cloud.timo.TimoCloud.bukkit.commands.SignsCommand;
 import cloud.timo.TimoCloud.bukkit.commands.TimoCloudBukkitCommand;
 import cloud.timo.TimoCloud.bukkit.listeners.*;
@@ -40,8 +39,12 @@ public class TimoCloudBukkit extends JavaPlugin {
     private StateByEventManager stateByEventManager;
     private String prefix = "[TimoCloudBukkit]";
 
-    public static void log(String message) {
-        BukkitMessageManager.sendMessage(Bukkit.getConsoleSender(), message);
+    public void info(String message) {
+        getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
+    }
+
+    public void severe(String message) {
+        getLogger().severe(ChatColor.translateAlternateColorCodes('&', " &c" + message));
     }
 
     @Override
@@ -54,17 +57,17 @@ public class TimoCloudBukkit extends JavaPlugin {
         registerTasks();
         registerChannel();
         Executors.newSingleThreadExecutor().submit(this::connectToCore);
-        log("&ahas been enabled!");
+        info("&ahas been enabled!");
     }
 
     @Override
     public void onDisable() {
-        log("&chas been disabled!");
+        info("&chas been disabled!");
     }
 
     private void connectToCore() {
         try {
-            log("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
+            info("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
             new BukkitSocketClient().init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
             e.printStackTrace();
@@ -81,7 +84,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public void onSocketDisconnect() {
-        log("Disconnected from TimoCloudCore. Stopping server.");
+        info("Disconnected from TimoCloudCore. Stopping server.");
         stop();
     }
 
@@ -114,7 +117,6 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     private void registerCommands() {
         getCommand("signs").setExecutor(new SignsCommand());
-        getCommand("sendbungee").setExecutor(new SendBungeeCommand());
         TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
         getCommand("timocloudbukkit").setExecutor(timoCloudBukkitCommand);
         getCommand("tcb").setExecutor(timoCloudBukkitCommand);
@@ -138,7 +140,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             out.writeUTF("Connect");
             out.writeUTF(server);
         } catch (Exception e) {
-            log("&cError while sending player &e" +  player + " &c to server &e" + server + "&c. Please report this: ");
+            severe("Error while sending player &e" +  player + " &c to server &e" + server + "&c. Please report this: ");
             e.printStackTrace();
         }
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
@@ -201,7 +203,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             getSocketMessageManager().sendMessage("SET_MOTD", event.getMotd());
             getStateByEventManager().setStateByMotd(event.getMotd().trim());
         } catch (Exception e) {
-            log("Error while sending MOTD: ");
+            severe("Error while sending MOTD: ");
             e.printStackTrace();
             getSocketMessageManager().sendMessage("SET_MOTD", Bukkit.getMotd());
         }
@@ -213,7 +215,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             Bukkit.getPluginManager().callEvent(event);
             return event.getNumPlayers();
         } catch (Exception e) {
-            TimoCloudBukkit.log("&cError while calling ServerListPingEvent: ");
+            severe("Error while calling ServerListPingEvent: ");
             e.printStackTrace();
             return Bukkit.getOnlinePlayers().size();
         }
@@ -225,7 +227,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             Bukkit.getPluginManager().callEvent(event);
             return event.getMaxPlayers();
         } catch (Exception e) {
-            TimoCloudBukkit.log("&cError while calling ServerListPingEvent: ");
+            severe("Error while calling ServerListPingEvent: ");
             e.printStackTrace();
             return Bukkit.getMaxPlayers();
         }

@@ -126,9 +126,12 @@ public class TimoCloudCord implements TimoCloudModule {
 
     private void connectToSocket() {
         if (isConnected()) return;
-        try {
-            getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
-        } catch (Exception e) {}
+        new Thread(() -> {
+            try {
+                getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
+            } catch (Exception e) {
+            }
+        }).start();
     }
 
 

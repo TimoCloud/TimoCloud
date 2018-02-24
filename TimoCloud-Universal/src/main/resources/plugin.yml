@@ -7,4 +7,3 @@ commands:
   timocloudbukkit:
     aliases: [tcb]
   signs:
-  sendbungee:

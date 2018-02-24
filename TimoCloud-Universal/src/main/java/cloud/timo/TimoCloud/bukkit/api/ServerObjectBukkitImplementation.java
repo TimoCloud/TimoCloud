@@ -47,7 +47,7 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
 
     @Override
     public void executeCommand(String command) {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getToken(), command);
+        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
     }
 
     @Override

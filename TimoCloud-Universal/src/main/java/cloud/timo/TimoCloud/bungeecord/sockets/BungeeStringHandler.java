@@ -9,9 +9,11 @@ import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementa
 import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
+import cloud.timo.TimoCloud.lib.utils.InetAddressUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class BungeeStringHandler extends BasicStringHandler {
@@ -19,7 +21,7 @@ public class BungeeStringHandler extends BasicStringHandler {
     @Override
     public void handleJSON(JSONObject json, String message, Channel channel) {
         if (json == null) {
-            TimoCloudBungee.severe("Error while parsing json (json is null): " + message);
+            TimoCloudBungee.getInstance().severe("Error while parsing json (json is null): " + message);
             return;
         }
         String server = (String) json.get("name");
@@ -53,8 +55,18 @@ public class BungeeStringHandler extends BasicStringHandler {
             case "REMOVE_SERVER":
                 TimoCloudBungee.getInstance().getProxy().getServers().remove(server);
                 break;
+            case "SET_IP":
+                try {
+                    TimoCloudBungee.getInstance().getIpManager().setAddresses(
+                            InetAddressUtil.getSocketAddressByName((String) json.get("CHANNEL_ADDRESS")),
+                            InetAddressUtil.getSocketAddressByName((String) json.get("CLIENT_ADDRESS")));
+                } catch (Exception e) {
+                    TimoCloudBungee.getInstance().severe("Error while parsing IP addresses (" + json.get("CHANNEL_ADDRESS") + ", " + json.get("CLIENT_ADDRESS") + "): ");
+                    e.printStackTrace();
+                }
+                break;
             default:
-                TimoCloudBungee.severe("Could not categorize json message: " + message);
+                TimoCloudBungee.getInstance().severe("Could not categorize json message: " + message);
         }
     }
 

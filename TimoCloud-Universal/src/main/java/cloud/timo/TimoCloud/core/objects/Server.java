@@ -179,7 +179,7 @@ public class Server implements Communicatable {
                 register();
                 break;
             default:
-                TimoCloudCore.getInstance().severe("Unknown server message type: '" + type + "'. Please report this.");
+                sendMessage(message);
         }
     }
 

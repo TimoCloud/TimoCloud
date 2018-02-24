@@ -34,6 +34,7 @@ public class EventMonitor implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
+        TimoCloudBungee.getInstance().sendPlayerCount();
         pending.put(event.getPlayer().getUniqueId(), true);
     }
 
@@ -54,6 +55,7 @@ public class EventMonitor implements Listener {
 
     @EventHandler
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
+        TimoCloudBungee.getInstance().sendPlayerCount();
         TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerDisconnectEvent(getPlayer(event.getPlayer())));
     }
 

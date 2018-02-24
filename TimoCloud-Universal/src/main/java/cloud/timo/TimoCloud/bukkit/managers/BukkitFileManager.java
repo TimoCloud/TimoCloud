@@ -51,7 +51,7 @@ public class BukkitFileManager {
 
             addConfigDefaults();
         } catch (Exception e) {
-            TimoCloudBukkit.log("&cError while loading config.yml: ");
+            TimoCloudBukkit.getInstance().severe("Error while loading config.yml: ");
             e.printStackTrace();
         }
     }
@@ -68,19 +68,14 @@ public class BukkitFileManager {
             signInstancesFile = new File(signsPath, "signInstances.json");
             signInstancesFile.createNewFile();
 
-            if (new File(path, "signLayouts.yml").exists() || new File(path, "signs.yml").exists() || new File(path, "dynamicSigns.yml").exists()) {
-                TimoCloudBukkit.log("&eOld signLayouts.yml, signs.yml and dynamicSigns.yml are no longer supported and will be ignored. Please update your configuration to the new layout in the 'signs' folder and delete the old files to hide this warning.");
-            }
-
             addSignTemplatesDefaults();
         } catch (Exception e) {
-            TimoCloudBukkit.log("Error while load sign configs: ");
+            TimoCloudBukkit.getInstance().severe("Error while load sign configs: ");
             e.printStackTrace();
         }
     }
 
     private void addConfigDefaults() {
-        if (config.get("updateSignsInServerTicks") != null) TimoCloudBukkit.log("&eThe 'updateSignsInServerTicks' setting is no longer supported and will be ignored. Remove it from config to hide this warning.");
         config.options().copyDefaults(true);
         config.addDefault("prefix", "&6[&bTimo&fCloud&6]");
         config.addDefault("defaultMapName", "Village");

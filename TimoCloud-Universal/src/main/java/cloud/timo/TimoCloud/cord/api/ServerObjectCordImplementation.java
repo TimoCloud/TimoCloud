@@ -47,7 +47,7 @@ public class ServerObjectCordImplementation extends ServerObjectBasicImplementat
 
     @Override
     public void executeCommand(String command) {
-        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getToken(), command);
+        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
     }
 
     @Override

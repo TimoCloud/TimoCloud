@@ -16,7 +16,7 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        TimoCloudBukkit.log("Successfully connected to Core socket!");
+        TimoCloudBukkit.getInstance().info("Successfully connected to Core socket!");
         this.channel = ctx.channel();
         TimoCloudBukkit.getInstance().onSocketConnect();
         flush();

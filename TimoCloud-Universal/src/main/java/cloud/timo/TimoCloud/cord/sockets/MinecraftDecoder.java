@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
+import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
@@ -9,6 +10,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.json.simple.JSONObject;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
 
@@ -22,27 +29,21 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
         try {
-            ConnectionState connectionState = ctx.channel().attr(CONNECTION_STATE).get();
-            ByteBuf bufClone = Unpooled.copiedBuffer(buf);
             final int packetLength = readVarInt(buf);
             final int packetID = readVarInt(buf);
             if (packetID == 0) {
-                try {
-                    final int clientVersion = readVarInt(buf);
-                    final String hostName = readString(buf);
-                    final int port = buf.readUnsignedShort();
-                    final int state = readVarInt(buf);
-                    connectClient(ctx.channel(), hostName, bufClone);
-                } catch (Exception e) {
-                    buf.resetReaderIndex(); // Wait until we receive the full packet
-                    bufClone.readBytes(bufClone.readableBytes());
-                    bufClone.release();
-                    return;
-                }
+                final int clientVersion = readVarInt(buf);
+                final String hostName = readString(buf);
+                final int port = buf.readUnsignedShort();
+                final int state = readVarInt(buf);
+                buf.retain();
+                connectClient(ctx.channel(), hostName, buf);
+            } else {
+                //TimoCloudCord.getInstance().severe("FATAL ERROR: Received non-status packet: " + packetID);
             }
         } catch (Exception e) {
-            TimoCloudCord.getInstance().severe("Error while handling incoming connection: ");
-            e.printStackTrace();
+            buf.resetReaderIndex(); // Wait until we receive the full packet
+            return;
         }
     }
 
@@ -102,13 +103,26 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                     channel.attr(UPSTREAM_HANDLER).get().setChannel(cf.channel());
                 }
                 if (channel.pipeline().get("minecraftdecoder") != null) channel.pipeline().remove("minecraftdecoder");
-                future.channel().writeAndFlush(loginPacket);
+
+                sendIpToBungee(proxyObject, (InetSocketAddress) channel.remoteAddress(), (InetSocketAddress) cf.channel().localAddress());
+
+                loginPacket.resetReaderIndex();
+                future.channel().writeAndFlush(loginPacket.retain());
                 channel.attr(CONNECTION_STATE).set(ConnectionState.PROXY);
             } else {
                 channel.close();
                 cf.channel().close();
             }
         });
+    }
+
+    private static void sendIpToBungee(ProxyObject proxyObject, InetSocketAddress clientAddress, InetSocketAddress channelAddress) {
+        Map<String, Object> json = new HashMap<>();
+        json.put("type", "SET_IP");
+        json.put("target", ((ProxyObjectBasicImplementation) proxyObject).getToken());
+        json.put("CLIENT_ADDRESS", clientAddress.toString());
+        json.put("CHANNEL_ADDRESS", channelAddress.toString());
+        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage(new JSONObject(json));
     }
 
 }

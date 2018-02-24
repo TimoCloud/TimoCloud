@@ -17,10 +17,7 @@ public class ProxyDownstreamHandler extends SimpleChannelInboundHandler<ByteBuf>
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.readBytes(bytes);
-        getChannel().writeAndFlush(Unpooled.buffer().writeBytes(bytes));
-        buf.release();
+        getChannel().writeAndFlush(buf.retain());
     }
 
     @Override

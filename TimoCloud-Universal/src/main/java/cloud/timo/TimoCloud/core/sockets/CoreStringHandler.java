@@ -47,10 +47,15 @@ public class CoreStringHandler extends BasicStringHandler {
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         String type = (String) json.get("type");
         Object data = json.get("data");
+        InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
         switch (type) { // Handshakes
             case "SERVER_HANDSHAKE": {
                 if (server == null || !server.getToken().equals(data)) {
                     closeChannel(channel);
+                    return;
+                }
+                if (! address.equals(server.getBase().getAddress())) {
+                    TimoCloudCore.getInstance().severe("Server connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, server);
@@ -63,32 +68,42 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
+                if (! address.equals(proxy.getBase().getAddress())) {
+                    TimoCloudCore.getInstance().severe("Proxy connected with different InetAddress than its base. Refusing connection.");
+                    return;
+                }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, proxy);
                 proxy.onConnect(channel);
                 proxy.onHandshakeSuccess();
                 return;
             }
             case "BASE_HANDSHAKE": {
-                InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
-                if (!((List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
+                if (! ipAllowed(address)) {
                     TimoCloudCore.getInstance().severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
                     closeChannel(channel);
                     return;
                 }
-                Base base = TimoCloudCore.getInstance().getServerManager().getBase(baseName, address, channel);
+                if (TimoCloudCore.getInstance().getServerManager().isBaseConnected(baseName)) {
+                    TimoCloudCore.getInstance().severe("Error while base handshake: A base with the name '" + baseName + "' is already conencted.");
+                    return;
+                }
+                Base base = TimoCloudCore.getInstance().getServerManager().getOrCreateBase(baseName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel);
                 base.onHandshakeSuccess();
                 return;
             }
             case "CORD_HANDSHAKE": {
-                InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
-                if (!((List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")).contains(address.getHostAddress())) {
+                if (! ipAllowed(address)) {
                     TimoCloudCore.getInstance().severe("Unknown cord connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
                     closeChannel(channel);
                     return;
                 }
-                Cord cord = TimoCloudCore.getInstance().getServerManager().getCord(cordName, address, channel);
+                if (TimoCloudCore.getInstance().getServerManager().isCordConnected(baseName)) {
+                    TimoCloudCore.getInstance().severe("Error while cord handshake: A cord with the name '" + baseName + "' is already conencted.");
+                    return;
+                }
+                Cord cord = TimoCloudCore.getInstance().getServerManager().getOrCreateCord(cordName, address, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, cord);
                 cord.onConnect(channel);
                 cord.onHandshakeSuccess();
@@ -286,6 +301,20 @@ public class CoreStringHandler extends BasicStringHandler {
     private String fileToString(File file) throws Exception {
         byte[] encoded = Base64.getEncoder().encode(FileUtils.readFileToByteArray(file));
         return new String(encoded, StandardCharsets.UTF_8);
+    }
+
+    private boolean ipAllowed(InetAddress inetAddress) {
+        for (String ipString : (List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")) {
+            try {
+                for (InetAddress allowed : InetAddress.getAllByName(ipString)) {
+                    if (inetAddress.equals(allowed)) return true;
+                }
+            } catch (Exception e) {
+                TimoCloudCore.getInstance().severe("Error while parsing InetAddress: ");
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
 }

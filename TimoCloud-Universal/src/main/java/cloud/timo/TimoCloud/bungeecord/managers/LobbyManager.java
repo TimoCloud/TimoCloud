@@ -46,7 +46,7 @@ public class LobbyManager {
     public ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
         ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
         if (group == null) {
-            TimoCloudBungee.severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
+            TimoCloudBungee.getInstance().severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
             return null;
         }
         String notThisName = notThis == null ? "" : notThis.getName();

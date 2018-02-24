@@ -15,7 +15,7 @@ public class PlayerUtil {
         return new PlayerObjectBasicImplementation(
                 player.getName(),
                 player.getUniqueId(),
-                player.getServer().getInfo().getName(),
+                player.getServer() == null ? null : player.getServer().getInfo().getName(),
                 TimoCloudBungee.getInstance().getProxyName(),
                 player.getAddress().getAddress(),
                 online,

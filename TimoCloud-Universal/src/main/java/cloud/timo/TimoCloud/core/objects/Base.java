@@ -74,7 +74,7 @@ public class Base implements Communicatable {
                 setCpu(((Double) map.get("cpu")));
                 break;
             default:
-                TimoCloudCore.getInstance().severe("Unknown base message type: '" + type + "'. Please report this.");
+                sendMessage(message);
         }
     }
 

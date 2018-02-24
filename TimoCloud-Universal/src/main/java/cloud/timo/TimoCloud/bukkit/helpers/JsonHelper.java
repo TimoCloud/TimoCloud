@@ -25,7 +25,7 @@ public class JsonHelper {
         World world = Bukkit.getWorld(UUID.fromString((String) jsonObject.get("worldUUID")));
         if (world == null) world = Bukkit.getWorld((String) jsonObject.get("worldName"));
         if (world == null) {
-            TimoCloudBukkit.log("&cCould not find world '" + jsonObject.get("worldName") + "'.");
+            TimoCloudBukkit.getInstance().severe("Could not find world '" + jsonObject.get("worldName") + "'.");
             return null;
         }
         return new Location(world, Integer.parseInt((String) jsonObject.get("x")), Integer.parseInt((String) jsonObject.get("y")), Integer.parseInt((String) jsonObject.get("z")));

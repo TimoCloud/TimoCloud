@@ -49,7 +49,7 @@ public class TimoCloudCommand extends Command {
             if (args[0].equalsIgnoreCase("reload")) {
                 TimoCloudBungee.getInstance().getFileManager().load();
                 BungeeMessageManager.sendMessage(sender, "&aSuccessfully reloaded from configuration!");
-                return;
+                // Do not return because we want to reload the Core configuration as well
             }
             if (args[0].equalsIgnoreCase("version")) {
                 sendVersion(sender);

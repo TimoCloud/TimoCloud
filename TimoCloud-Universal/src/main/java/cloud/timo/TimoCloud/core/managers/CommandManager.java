@@ -188,7 +188,7 @@ public class CommandManager {
                     properties.put("ram", Integer.parseInt(args[3]));
                     boolean isStatic = Boolean.parseBoolean(args[4]);
                     properties.put("static", isStatic);
-                    if (args.length > 5) properties.put("base", args[5]);
+                    if (isStatic && args.length > 5) properties.put("base", args[5]);
 
                     if (isStatic && ! properties.containsKey("base")) {
                         sendError(sendMessage, "If you create a static group, you have to specify a base!");
@@ -205,12 +205,13 @@ public class CommandManager {
                     properties.put("ram", Integer.parseInt(args[2]));
                     boolean isStatic = Boolean.parseBoolean(args[3]);
                     properties.put("static", isStatic);
-                    if (args.length > 4) properties.put("base", args[4]);
+                    if (isStatic && args.length > 4) properties.put("base", args[4]);
 
                     if (isStatic && ! properties.containsKey("base")) {
                         sendError(sendMessage, "If you create a static group, you have to specify a base!");
                         return;
                     }
+
                     ProxyGroup proxyGroup = new ProxyGroup(properties);
                     TimoCloudCore.getInstance().getServerManager().addGroup(proxyGroup);
                     TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
@@ -387,14 +388,14 @@ public class CommandManager {
         sendMessage.accept("  &6addgroup server &7<&2groupName &7(&9String&7)> <&2onlineAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a server group");
         sendMessage.accept("  &6addgroup proxy &7<&2groupName &7(&9String&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a proxy group");
         sendMessage.accept("  &6removegroup &7<&2groupName&7> - &7deletes a group");
-        sendMessage.accept("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2minAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a server group");
-        sendMessage.accept("  &6editgroup &7<&2name&7> <&2playersPerProxy &7(&9int&7) | &2maxPlayers &7(&9int&7) | &2keepFreeSlots &7(&9int&7) | &2maxAmount &7(&9int&7) | &2base &7(&9String&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7)> <&2value&7> - &7edits the give setting of a proxy group");
-        sendMessage.accept("  &6restart &7<&2groupName&7|&2serverName&7|&2proxyName&7> - &7restarts the given group, server or proxy");
+        sendMessage.accept("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7) | &2base &7(&9String&7)> <&2value&7> - &7edits the give setting of a server group");
+        sendMessage.accept("  &6editgroup &7<&2name&7> <&2playersPerProxy &7(&9int&7) | &2maxPlayers &7(&9int&7) | &2keepFreeSlots &7(&9int&7) | &2minAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7) | &2base &7(&9String&7)> <&2value&7> - &7edits the give setting of a proxy group");
+        sendMessage.accept("  &6restart &7<&2groupName&7 | &2serverName&7 | &2proxyName&7> - &7restarts the given group, server or proxy");
         sendMessage.accept("  &6groupinfo &7<&2groupName&7> - displays group info");
         sendMessage.accept("  &6listgroups &7- &7lists all groups and started servers");
         sendMessage.accept("  &6baseinfo &7<&2baseName&7> - displays base info");
         sendMessage.accept("  &6listbases &7- &7lists all bases");
-        sendMessage.accept("  &6sendcommand &7<&2groupName&7/&2serverName&7/&2proxyName&7> <&2command&7> - &7sends the given command to all server of a given group or the given server");
+        sendMessage.accept("  &6sendcommand &7<&2groupName&7 | &2serverName&7 | &2proxyName&7> <&2command&7> - &7sends the given command to all server of a given group or the given server");
     }
 
     private static String formatBoolean(boolean b) {

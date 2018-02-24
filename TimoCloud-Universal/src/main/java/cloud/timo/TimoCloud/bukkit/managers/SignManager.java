@@ -35,7 +35,7 @@ public class SignManager {
         loadSignTemplates();
         loadSignInstances();
 
-        TimoCloudBukkit.log("Successfully loaded signs!");
+        TimoCloudBukkit.getInstance().info("Successfully loaded signs!");
     }
 
     private void loadSignTemplates() {
@@ -76,7 +76,7 @@ public class SignManager {
                 }
                 signTemplates.add(new SignTemplate(template, layouts));
             } catch (Exception e) {
-                TimoCloudBukkit.log("&cCould not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c. Reason: &e" + errorReason);
+                TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c. Reason: &e" + errorReason);
             }
         }
     }
@@ -224,7 +224,7 @@ public class SignManager {
 
     private void processStaticSign(SignInstance signInstance) {
         if (signInstance.isDynamic()) {
-            TimoCloudBukkit.log("&cFatal error: Wanted to process dynamic sign as static sign. This should never happen - please report this!");
+            TimoCloudBukkit.getInstance().severe("Fatal error: Wanted to process dynamic sign as static sign. This should never happen - please report this!");
             return;
         }
         writeSign(TimoCloudAPI.getUniversalInstance().getServer(signInstance.getTarget()), signInstance.getTemplate(), signInstance);

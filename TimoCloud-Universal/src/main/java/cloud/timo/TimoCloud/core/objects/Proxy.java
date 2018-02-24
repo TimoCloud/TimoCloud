@@ -143,7 +143,7 @@ public class Proxy implements Communicatable {
                 this.onlinePlayerCount = ((Number) data).intValue();
                 break;
             default:
-                TimoCloudCore.getInstance().severe("Unknown proxy message type: '" + type + "'. Please report this.");
+                sendMessage(message);
         }
     }
 

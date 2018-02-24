@@ -23,7 +23,7 @@ public class BungeeEventManager {
             map.put("data", getObjectMapper().writeValueAsString(event));
             TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(new JSONObject(map).toString());
         } catch (Exception e) {
-            TimoCloudBungee.severe("Error while sending event: ");
+            TimoCloudBungee.getInstance().severe("Error while sending event: ");
             e.printStackTrace();
         }
     }

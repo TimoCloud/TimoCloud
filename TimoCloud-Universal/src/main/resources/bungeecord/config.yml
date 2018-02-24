@@ -3,8 +3,6 @@ fallbackGroup: 'Lobby'
 useFallback: true
 emergencyFallback: 'Economy'
 LobbyChooseStrategy: "RANDOM"
-allowedIPs:
-- 127.0.0.1
 lobbyCommands:
 - lobby
 - hub

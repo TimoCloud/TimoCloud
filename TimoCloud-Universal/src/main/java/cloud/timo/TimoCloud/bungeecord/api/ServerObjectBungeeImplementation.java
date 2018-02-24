@@ -47,7 +47,7 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
 
     @Override
     public void executeCommand(String command) {
-        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("REDIRECT_COMMAND", getToken(), command);
+        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
     }
 
     @Override

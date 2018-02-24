@@ -47,7 +47,7 @@ public class BungeeFileManager {
 
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
-            TimoCloudBungee.severe("Exception while initializing files:");
+            TimoCloudBungee.getInstance().severe("Exception while initializing files:");
             e.printStackTrace();
         }
     }

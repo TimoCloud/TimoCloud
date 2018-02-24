@@ -17,7 +17,7 @@ public class BukkitStringHandler extends BasicStringHandler {
     @Override
     public void handleJSON(JSONObject json, String message, Channel channel) {
         if (json == null) {
-            TimoCloudBukkit.log("Error while parsing json (json is null): " + message);
+            TimoCloudBukkit.getInstance().severe("Error while parsing json (json is null): " + message);
             return;
         }
         String server = (String) json.get("target");
@@ -43,7 +43,7 @@ public class BukkitStringHandler extends BasicStringHandler {
                 TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data);
                 break;
             default:
-                TimoCloudBukkit.log("Error: Could not categorize json message: " + message);
+                TimoCloudBukkit.getInstance().severe("Error: Could not categorize json message: " + message);
         }
     }
 

@@ -9,12 +9,10 @@ import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
-import cloud.timo.TimoCloud.bungeecord.listeners.EventMonitor;
-import cloud.timo.TimoCloud.bungeecord.listeners.LobbyJoin;
-import cloud.timo.TimoCloud.bungeecord.listeners.ProxyPing;
-import cloud.timo.TimoCloud.bungeecord.listeners.ServerKick;
+import cloud.timo.TimoCloud.bungeecord.listeners.*;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeEventManager;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
+import cloud.timo.TimoCloud.bungeecord.managers.IpManager;
 import cloud.timo.TimoCloud.bungeecord.managers.LobbyManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
@@ -32,6 +30,7 @@ public class TimoCloudBungee extends Plugin {
     private BungeeFileManager fileManager;
     private LobbyManager lobbyManager;
     private BungeeEventManager eventManager;
+    private IpManager ipManager;
     private BungeeSocketClient socketClient;
     private BungeeSocketClientHandler socketClientHandler;
     private BungeeSocketMessageManager socketMessageManager;
@@ -40,12 +39,12 @@ public class TimoCloudBungee extends Plugin {
     private String prefix;
     private boolean shuttingDown = false;
 
-    public static void info(String message) {
-        getInstance().getLogger().info(" " + ChatColor.translateAlternateColorCodes('&', message));
+    public void info(String message) {
+        getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
     }
 
-    public static void severe(String message) {
-        getInstance().getLogger().severe(" " + ChatColor.translateAlternateColorCodes('&', message));
+    public void severe(String message) {
+        getLogger().severe(ChatColor.translateAlternateColorCodes('&', " &c" + message));
     }
 
     @Override
@@ -75,6 +74,7 @@ public class TimoCloudBungee extends Plugin {
         fileManager = new BungeeFileManager();
         lobbyManager = new LobbyManager();
         eventManager = new BungeeEventManager();
+        ipManager = new IpManager();
         socketClient = new BungeeSocketClient();
         socketClientHandler = new BungeeSocketClientHandler();
         socketMessageManager = new BungeeSocketMessageManager();
@@ -146,6 +146,10 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void sendEverything() {
+        sendPlayerCount();
+    }
+
+    public void sendPlayerCount() {
         getSocketMessageManager().sendMessage("SET_PLAYER_COUNT", getProxy().getOnlineCount());
     }
 
@@ -154,6 +158,7 @@ public class TimoCloudBungee extends Plugin {
         getProxy().getPluginManager().registerListener(this, new ServerKick());
         getProxy().getPluginManager().registerListener(this, new ProxyPing());
         getProxy().getPluginManager().registerListener(this, new EventMonitor());
+        getProxy().getPluginManager().registerListener(this, new IpInjector());
     }
 
     public String getProxyName() {
@@ -178,6 +183,10 @@ public class TimoCloudBungee extends Plugin {
 
     public BungeeEventManager getEventManager() {
         return eventManager;
+    }
+
+    public IpManager getIpManager() {
+        return ipManager;
     }
 
     public String getPrefix() {

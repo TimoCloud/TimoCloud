@@ -189,7 +189,7 @@ public class TimoCloudCore implements TimoCloudModule {
         logger.setUseParentHandlers(false);
         File logsDirectory = getFileManager().getLogsDirectory();
         logsDirectory.mkdirs();
-        FileHandler fileHandler = new FileHandler(logsDirectory.getCanonicalPath() + "/core-%g.log");
+        FileHandler fileHandler = new FileHandler(logsDirectory.getCanonicalPath() + "/core-%g.log", 5242880, 100, false);
         SimpleFormatter formatter = new SimpleFormatter();
         fileHandler.setFormatter(formatter);
         logger.addHandler(fileHandler);
