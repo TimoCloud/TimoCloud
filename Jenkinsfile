@@ -1,33 +1,21 @@
 node {
-    // Clean workspace before doing anything
     deleteDir()
-
-    try {
-        stage ('Clone') {
-            checkout scm
-        }
-        stage ('Build') {
-            steps {
-                sh 'mvn -Dmaven.test.failure.ignore=true install' 
-            }
-            post {
-                success {
-
-                }
-            }
-        }
-        stage ('Tests') {
-            parallel 'static': {
-            },
-            'unit': {
-            },
-            'integration': {
-            }
-        }
-        stage ('Deploy') {
-        }
-    } catch (err) {
-        currentBuild.result = 'FAILED'
-        throw err
+    stage ('Clone') {
+        checkout scm
+    }
+    stage('Build') {
+        echo 'Building..'
+        sh '''
+           echo "PATH = ${PATH}"
+           echo "M2_HOME = ${M2_HOME}"
+        ''' 
+        sh 'mvn clean install'
+        archiveArtifacts artifacts: 'TimoCloud-Universal/target/TimoCloud.jar', fingerprint: true  
+    }
+    stage('Test') {
+        echo 'Testing..'
+    }
+    stage('Deploy') {
+        echo 'Deploying....'
     }
 }

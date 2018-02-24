@@ -15,6 +15,7 @@
         <module>TimoCloud-API</module>
     </modules>
 
+    <!--
     <pluginRepositories>
         <pluginRepository>
             <id>TimoCloud-API</id>
@@ -41,4 +42,6 @@
             <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
         </snapshotRepository>
     </distributionManagement>
+
+    -->
 </project>
