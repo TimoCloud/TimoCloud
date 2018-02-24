@@ -5,10 +5,6 @@ node {
     }
     stage('Build') {
         echo 'Building..'
-        sh '''
-           echo "PATH = ${PATH}"
-           echo "M2_HOME = ${M2_HOME}"
-        ''' 
         sh 'mvn clean install'
         archiveArtifacts artifacts: 'TimoCloud-Universal/target/TimoCloud.jar', fingerprint: true  
     }
