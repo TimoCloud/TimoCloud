@@ -16,6 +16,9 @@ TimoCloud is full of innovative features. Here is a list of the most important o
  ## Setup
  See the [Wiki](https://github.com/TimoCrafter/TimoCloud/wiki)
  
+ ## Download
+ You can download the latest version [here](https://jenkins.timo.cloud/job/TimoCloud/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar)
+ 
  ## Building from source
  ```
  git clone https://github.com/TimoCrafter/TimoCloud
