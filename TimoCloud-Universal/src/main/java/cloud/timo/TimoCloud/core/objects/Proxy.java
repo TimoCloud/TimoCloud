@@ -134,7 +134,7 @@ public class Proxy implements Communicatable {
                 setPort(((Number) message.get("port")).intValue());
                 break;
             case "PROXY_NOT_STARTED":
-                unregister();
+                //unregister();
                 break;
             case "EXECUTE_COMMAND":
                 executeCommand((String) data);

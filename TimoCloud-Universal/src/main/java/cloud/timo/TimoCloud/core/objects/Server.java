@@ -173,7 +173,7 @@ public class Server implements Communicatable {
                 setPort(((Number) message.get("port")).intValue());
                 break;
             case "SERVER_NOT_STARTED":
-                unregister();
+                //unregister();
                 break;
             case "REGISTER":
                 register();
