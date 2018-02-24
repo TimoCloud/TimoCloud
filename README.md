@@ -13,12 +13,12 @@ TimoCloud is full of innovative features. Here is a list of the most important o
  - **Beautiful, live-updating sign system**: Use the integrated server join sign system to let players access all your servers. Signs are dynamic - that means only _free_ servers will be displayed - and can be animated.
  - **Included proxy**: Use the included proxy, *TimoCloudCord*, to spread your players over your BungeeCord proxies.
  
- ## Setup
- See the [Wiki](https://github.com/TimoCrafter/TimoCloud/wiki)
- 
  ## Download
  You can download the latest version [here](https://jenkins.timo.cloud/job/TimoCloud/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar)
  
+ ## Setup
+ See the [Wiki](https://github.com/TimoCrafter/TimoCloud/wiki)
+
  ## Building from source
  ```
  git clone https://github.com/TimoCrafter/TimoCloud
