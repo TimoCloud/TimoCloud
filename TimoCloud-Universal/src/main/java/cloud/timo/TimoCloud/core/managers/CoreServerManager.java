@@ -268,19 +268,22 @@ public class CoreServerManager {
         for (ProxyGroup group : getProxyGroups()) {
             int amount = proxiesNeeded(group);
             if (amount == 0) continue;
-            if (amount > 0) {
-                if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, 1));
-                else demands.add(new GroupInstanceDemand(group, amount));
-            } else { // We have too many proxies
-                int stop = -amount;
-                for (int i = 0; i<stop; i++) {
-                    Proxy stoppable = null;
-                    for (Proxy proxy : group.getProxies()) {
-                        if (proxy.getOnlinePlayerCount() == 0) stoppable = proxy;
+            if (group.isStatic()) {
+                if (amount > 0) staticDemands.add(new GroupInstanceDemand(group, 1));
+            } else {
+                if (amount > 0) {
+                    demands.add(new GroupInstanceDemand(group, amount));
+                } else { // We have too many proxies
+                    int stop = -amount;
+                    for (int i = 0; i < stop; i++) {
+                        Proxy stoppable = null;
+                        for (Proxy proxy : group.getProxies()) {
+                            if (proxy.getOnlinePlayerCount() == 0) stoppable = proxy;
+                        }
+                        if (stoppable == null) break;
+                        TimoCloudCore.getInstance().info("Stopping proxy " + stoppable.getName() + " because no players are online and it is not needed anymore.");
+                        stoppable.stop();
                     }
-                    if (stoppable == null) break;
-                    TimoCloudCore.getInstance().info("Stopping proxy " + stoppable.getName() + " because no players are online and it is not needed anymore.");
-                    stoppable.stop();
                 }
             }
         }
@@ -404,6 +407,8 @@ public class CoreServerManager {
         int slotsLimit = divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()); // We don't need more slots than maxPlayerCount
         wanted = Math.min(wanted, slotsLimit);
         if (group.getMaxAmount() > 0) wanted = Math.min(wanted, group.getMaxAmount());
+
+        if (group.isStatic()) wanted = 1;
         return wanted - running;
     }
 

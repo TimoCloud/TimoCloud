@@ -64,12 +64,12 @@ public class ServerGroup implements Group {
     public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
         if (isStatic() && startupAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
-            return;
+            startupAmount = 1;
         }
         this.name = name;
         setOnlineAmount(startupAmount);
         setMaxAmount(maxAmount);
-        if (ram <=128) ram*=1024;
+        if (ram <128) ram*=1024;
         setRam(ram);
         setStatic(isStatic);
         setBaseName(baseName);
