@@ -401,13 +401,12 @@ public class CoreServerManager {
         int running = group.getProxies().size();
         int playersOnline = group.getOnlinePlayerCount();
         int slotsWanted = playersOnline + group.getKeepFreeSlots();
-        int wanted = Math.max(
-                divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy()),
-                group.getMinAmount());
         int slotsLimit = divideRoundUp(group.getMaxPlayerCount(), group.getMaxPlayerCountPerProxy()); // We don't need more slots than maxPlayerCount
-        wanted = Math.min(wanted, slotsLimit);
+        int wanted = Math.min(
+                divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy()),
+                slotsLimit);
+        wanted = Math.max(wanted, group.getMinAmount());
         if (group.getMaxAmount() > 0) wanted = Math.min(wanted, group.getMaxAmount());
-
         if (group.isStatic()) wanted = 1;
         return wanted - running;
     }

@@ -108,7 +108,7 @@ public class ProxyGroup implements Group {
         properties.put("motd", getMotd());
         properties.put("static", isStatic());
         properties.put("priority", getPriority());
-        properties.put("serverGroups", getServerGroups());
+        properties.put("serverGroups", allServerGroups ? Collections.singletonList("*") : getServerGroups());
         properties.put("hostNames", getHostNames());
         if (getBaseName() != null) properties.put("base", getBaseName());
         return properties;

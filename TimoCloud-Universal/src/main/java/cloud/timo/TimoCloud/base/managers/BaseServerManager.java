@@ -188,7 +188,7 @@ public class BaseServerManager {
             String mapName = server.getMap() == null ? "default" : server.getMap();
             if (!server.isStatic() && server.getMap() != null) {
                 randomMap = true;
-                copyDirectory(mapDirectory, temporaryDirectory);
+                if (mapDirectory.exists()) copyDirectory(mapDirectory, temporaryDirectory);
             }
 
             File spigotJar = new File(temporaryDirectory, "spigot.jar");
@@ -263,8 +263,7 @@ public class BaseServerManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(new JSONObject(message));
 
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while starting server " + server.getName() + ":");
-            e.printStackTrace();
+            TimoCloudBase.severe("Error while starting server " + server.getName() + ": " + e.getMessage());
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("SERVER_NOT_STARTED", server.getToken(), server.getToken());
         }
     }
@@ -403,8 +402,7 @@ public class BaseServerManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(new JSONObject(message));
 
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ":");
-            e.printStackTrace();
+            TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("PROXY_NOT_STARTED", proxy.getToken(), proxy.getToken());
         }
     }

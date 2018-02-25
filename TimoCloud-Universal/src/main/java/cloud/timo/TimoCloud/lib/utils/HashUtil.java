@@ -63,6 +63,7 @@ public class HashUtil {
     }
 
     public static JSONObject getHashes(File file) throws IOException {
+        if (! file.exists()) return new JSONObject();
         Map<String, Object> layer = new HashMap<>();
         for (File file1 : file.listFiles()) {
             if (!file1.isDirectory() && IGNORE_NAMES.contains(file1.getName())) continue;
