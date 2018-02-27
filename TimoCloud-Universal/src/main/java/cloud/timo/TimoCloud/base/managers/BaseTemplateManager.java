@@ -14,6 +14,7 @@ import java.util.zip.ZipFile;
 public class BaseTemplateManager {
 
     public void extractFiles(File zip, File destination) throws IOException {
+        destination.mkdirs();
         ZipFile zipFile = new ZipFile(zip);
         Enumeration<?> enu = zipFile.entries();
         while (enu.hasMoreElements()) {
@@ -28,6 +29,7 @@ public class BaseTemplateManager {
                 if (file.isDirectory()) FileDeleteStrategy.FORCE.deleteQuietly(file);
                 else Files.delete(file.toPath());
             }
+            file.mkdirs();
             file.createNewFile();
             InputStream is = zipFile.getInputStream(zipEntry);
             FileOutputStream fos = new FileOutputStream(file);

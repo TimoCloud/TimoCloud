@@ -23,6 +23,7 @@ public class HashUtil {
             boolean cont = false;
             for (String ignore : IGNORE_NAMES) if (name.endsWith(ignore)) cont = true;
             if (cont) continue;
+            if (prefix.endsWith("/")) prefix = prefix.substring(0, prefix.length()-1);
             String newName = prefix + File.separator + name;
             if (!b.containsKey(key)) {
                 differences.add(newName);
@@ -67,7 +68,7 @@ public class HashUtil {
         Map<String, Object> layer = new HashMap<>();
         for (File file1 : file.listFiles()) {
             if (!file1.isDirectory() && IGNORE_NAMES.contains(file1.getName())) continue;
-            layer.put(file1.getName(), file1.isDirectory() ? getHashes(file1) : getFileHash(file1));
+            layer.put(file1.getName() + (file1.isDirectory() ? "/" : ""), file1.isDirectory() ? getHashes(file1) : getFileHash(file1));
         }
         return new JSONObject(layer);
     }

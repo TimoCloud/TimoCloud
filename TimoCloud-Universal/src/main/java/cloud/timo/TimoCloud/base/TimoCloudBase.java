@@ -15,10 +15,13 @@ import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TimoCloudBase implements TimoCloudModule {
 
@@ -144,8 +147,11 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     private void deleteOldDirectories() { // Some servers/proxies might be running, so we have to check if we can delete the directories
-        for (File dir : getFileManager().getServerTemporaryDirectory().listFiles()) {
-            if (! dir.isDirectory()) continue;
+        for (File dir : Stream.concat(Arrays.stream(getFileManager().getServerTemporaryDirectory().listFiles()), Arrays.stream(getFileManager().getProxyTemporaryDirectory().listFiles())).collect(Collectors.toList())) {
+            if (! dir.isDirectory()) {
+                dir.delete();
+                continue;
+            }
             if (! dir.getName().contains("_") || dir.getName().split("_").length != 2) FileDeleteStrategy.FORCE.deleteQuietly(dir);
             getSocketMessageManager().sendMessage("CHECK_IF_DELETABLE", dir.getName().split("_")[1], dir.getAbsolutePath());
         }

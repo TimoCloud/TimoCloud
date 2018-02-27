@@ -173,22 +173,21 @@ public class CoreServerManager {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
 
-        List<File> maps = getAvailableMaps(group);
+        List<String> maps = getAvailableMaps(group);
         String map = null;
         if (maps.size() > 0) {
             Map<String, Integer> occurrences = new HashMap<>();
+            for (String map1 : maps) occurrences.put(map1, 0);
             for (Server server : group.getServers()) {
-                if (server.getMap() == null || server.getMap().isEmpty()) continue;
-                if (occurrences.containsKey(server.getMap()))
-                    occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
-                else occurrences.put(server.getMap(), 1);
+                if (server.getMap() == null || server.getMap().isEmpty() || !occurrences.containsKey(server.getMap())) continue;
+                occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
             }
             int bestScore = -1;
             String best = null;
-            for (String key : occurrences.keySet()) {
-                if (bestScore == -1 || occurrences.get(key) < bestScore) {
-                    best = key;
-                    bestScore = occurrences.get(key);
+            for (String map1 : maps) {
+                if (bestScore == -1 || occurrences.get(map1) < bestScore) {
+                    best = map1;
+                    bestScore = occurrences.get(map1);
                 }
             }
             map = best;
@@ -198,13 +197,19 @@ public class CoreServerManager {
         server.start();
     }
 
-    private List<File> getAvailableMaps(Group group) {
+    private List<String> getAvailableMaps(Group group) {
         File templates = TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory();
-        List<File> valid = new ArrayList<>();
+        List<String> valid = new ArrayList<>();
         for (File sub : templates.listFiles()) {
-            if (sub.isDirectory() && sub.getName().startsWith(group.getName() + "_")) valid.add(sub);
+            if (sub.isDirectory() && sub.getName().startsWith(group.getName() + "_")) valid.add(fileToMapName(sub));
         }
         return valid;
+    }
+
+    private static String fileToMapName(File file) {
+        if (!file.getName().contains("_")) return file.getName();
+        String[] split = file.getName().split("_");
+        return Arrays.stream(Arrays.copyOfRange(split, 1, split.length)).collect(Collectors.joining("_"));
     }
 
     public void startProxy(ProxyGroup group, Base base) {

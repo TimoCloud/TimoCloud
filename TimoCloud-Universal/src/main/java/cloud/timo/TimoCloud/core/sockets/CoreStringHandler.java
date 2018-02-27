@@ -166,7 +166,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case "CHECK_IF_DELETABLE": {
-                if (target == null) {
+                if (target == null || target instanceof Base) {
                     TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "DELETE_DIRECTORY", data);
                 }
                 break;
@@ -204,17 +204,17 @@ public class CoreStringHandler extends BasicStringHandler {
                         doAfterAmount.addOne();
                     }
                     if (mapDifferences != null) {
-                        File mapDirecotry = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), map);
+                        File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup().getName() + "_" + map);
                         List<File> mapFiles = new ArrayList<>();
-                        for (String fileName : mapDifferences) mapFiles.add(new File(mapDirecotry, fileName));
+                        for (String fileName : mapDifferences) mapFiles.add(new File(mapDirectory, fileName));
                         File output = new File(TimoCloudCore.getInstance().getFileManager().getTemporaryDirectory(), new Date().getTime() + "");
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(mapFiles, mapDirecotry, output);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(mapFiles, mapDirectory, output);
                         String content = fileToString(output);
                         output.delete();
                         Map<String, Object> msg = new HashMap<>();
                         msg.put("type", "TRANSFER");
                         msg.put("transferType", "SERVER_TEMPLATE");
-                        msg.put("template", template);
+                        msg.put("template", server.getGroup().getName() + "_" + map);
                         msg.put("file", content);
                         channel.writeAndFlush(new JSONObject(msg).toString());
                         doAfterAmount.addOne();
