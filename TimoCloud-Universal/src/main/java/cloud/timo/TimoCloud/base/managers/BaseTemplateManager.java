@@ -24,12 +24,11 @@ public class BaseTemplateManager {
                 file.mkdirs();
                 continue;
             }
-            file.getParentFile().mkdirs();
             if (file.exists()) {
                 if (file.isDirectory()) FileDeleteStrategy.FORCE.deleteQuietly(file);
                 else Files.delete(file.toPath());
             }
-            file.mkdirs();
+            file.getParentFile().mkdirs();
             file.createNewFile();
             InputStream is = zipFile.getInputStream(zipEntry);
             FileOutputStream fos = new FileOutputStream(file);
