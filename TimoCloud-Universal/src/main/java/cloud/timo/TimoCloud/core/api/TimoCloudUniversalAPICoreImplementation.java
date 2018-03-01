@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 
@@ -25,12 +26,14 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
 
     @Override
     public ServerGroupObject getServerGroup(String groupName) {
-        return TimoCloudCore.getInstance().getServerManager().getServerGroupByName(groupName).toGroupObject();
+        ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(groupName);
+        return serverGroup == null ? null : serverGroup.toGroupObject();
     }
 
     @Override
     public ServerObject getServer(String serverName) {
-        return TimoCloudCore.getInstance().getServerManager().getServerByName(serverName).toServerObject();
+        Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(serverName);
+        return server == null ? null : server.toServerObject();
     }
 
     @Override
@@ -40,12 +43,14 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
 
     @Override
     public ProxyGroupObject getProxyGroup(String groupName) {
-        return TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(groupName).toGroupObject();
+        ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(groupName);
+        return proxyGroup == null ? null : proxyGroup.toGroupObject();
     }
 
     @Override
     public ProxyObject getProxy(String proxyName) {
-        return TimoCloudCore.getInstance().getServerManager().getProxyByName(proxyName).toProxyObject();
+        Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(proxyName);
+        return proxy == null ? null : proxy.toProxyObject();
     }
 
     @Override
