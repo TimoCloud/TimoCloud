@@ -28,6 +28,8 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     private final Class<? extends PlayerObject> playerObjectImplementation;
     private final Class<? extends CordObject> cordObjectImplementation;
 
+    private boolean gotAnyData = false;
+
     private ObjectMapper objectMapper;
 
     public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation, Class<? extends CordObject> cordObjectImplementation) {
@@ -55,7 +57,6 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         ArrayList serverGroups = new ArrayList<>();
         ArrayList proxyGroups = new ArrayList();
         ArrayList cords = new ArrayList();
-
         try {
             for (Object object : (JSONArray) json.get("serverGroups")) {
                 ServerGroupObject groupObject = getObjectMapper().readValue((String) object, serverGroupObjectImplementation);
@@ -85,7 +86,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        gotAnyData = true;
     }
 
     @Override
@@ -168,5 +169,9 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     public ObjectMapper getObjectMapper() {
         return objectMapper;
+    }
+
+    public boolean gotAnyData() {
+        return gotAnyData;
     }
 }

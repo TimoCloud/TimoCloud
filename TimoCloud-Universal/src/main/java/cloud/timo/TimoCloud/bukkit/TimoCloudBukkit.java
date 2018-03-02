@@ -15,6 +15,7 @@ import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -40,23 +41,23 @@ public class TimoCloudBukkit extends JavaPlugin {
     private String prefix = "[TimoCloudBukkit]";
 
     public void info(String message) {
-        getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " " + message));
     }
 
     public void severe(String message) {
-        getLogger().severe(ChatColor.translateAlternateColorCodes('&', " &c" + message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " &c" + message));
     }
 
     @Override
     public void onEnable() {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&',
-                "&eEnabling &bTimoCloud &oBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e..."));
+        info("&eEnabling &bTimoCloud &oBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
         makeInstances();
         registerCommands();
         registerListeners();
         registerTasks();
         registerChannel();
         Executors.newSingleThreadExecutor().submit(this::connectToCore);
+        while (! ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData());// Wait until we get the API data
         info("&ahas been enabled!");
     }
 

@@ -18,6 +18,7 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
+import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -51,16 +52,12 @@ public class TimoCloudBungee extends Plugin {
     public void onEnable() {
         instance = this;
         info("&eEnabling &bTimoCloudBungee &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
-        getProxy().getScheduler().schedule(this, this::enableDelayed, 1, 0, TimeUnit.SECONDS);
-    }
-
-    private void enableDelayed() {
         makeInstances();
         registerCommands();
         registerListeners();
         registerTasks();
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
-
+        while (! ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
         info("&aSuccessfully started TimoCloudBungee!");
     }
 
