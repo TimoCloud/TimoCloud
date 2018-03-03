@@ -23,6 +23,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBungee extends Plugin {
@@ -57,7 +58,8 @@ public class TimoCloudBungee extends Plugin {
         registerListeners();
         registerTasks();
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
-        while (! ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
+        Executors.newSingleThreadExecutor().submit(this::connectToCore);
+        while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
         info("&aSuccessfully started TimoCloudBungee!");
     }
 
@@ -94,17 +96,18 @@ public class TimoCloudBungee extends Plugin {
         }
     }
 
-    private void registerTasks() {
-        getProxy().getScheduler().runAsync(this, () -> {
-            info("Connecting to TimoCloudCore...");
+    private void connectToCore() {
+        info("Connecting to TimoCloudCore...");
+        try {
+            socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
+        } catch (Exception e) {
+            severe("Error while connecting to Core:");
+            e.printStackTrace();
+            onSocketDisconnect();
+        }
+    }
 
-            try {
-                socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
-            } catch (Exception e) {
-                severe("Error while initializing socketServer:");
-                e.printStackTrace();
-            }
-        });
+    private void registerTasks() {
         getProxy().getScheduler().schedule(this, this::everySecond, 1L, 1L, TimeUnit.SECONDS);
     }
 

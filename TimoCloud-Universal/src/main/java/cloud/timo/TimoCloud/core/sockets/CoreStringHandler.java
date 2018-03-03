@@ -172,8 +172,8 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case "SERVER_TEMPLATE_REQUEST": {
-                if (server != null)
-                    server.getBase().setAvailableRam(server.getBase().getAvailableRam() + server.getGroup().getRam()); // Start paused, hence ram is free
+                server.getBase().setAvailableRam(server.getBase().getAvailableRam() + server.getGroup().getRam()); // Start paused, hence ram is free
+                TimoCloudCore.getInstance().info("Base requested template update for server " + server.getName() + ". Sending update and starting server again...");
                 JSONObject differences = (JSONObject) json.get("differences");
                 List<String> templateDifferences = differences.containsKey("templateDifferences") ? (List<String>) differences.get("templateDifferences") : null;
                 String template = json.containsKey("template") ? (String) json.get("template") : null;
@@ -243,8 +243,8 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case "PROXY_TEMPLATE_REQUEST": {
-                if (proxy != null)
-                    proxy.getBase().setAvailableRam(proxy.getBase().getAvailableRam() + proxy.getGroup().getRam()); // Start paused, hence ram is free
+                proxy.getBase().setAvailableRam(proxy.getBase().getAvailableRam() + proxy.getGroup().getRam()); // Start paused, hence ram is free
+                TimoCloudCore.getInstance().info("Base requested template update for proxy " + server.getName() + ". Sending update and starting server again...");
                 JSONObject differences = (JSONObject) json.get("differences");
                 List<String> templateDifferences = differences.containsKey("templateDifferences") ? (List<String>) differences.get("templateDifferences") : null;
                 String template = json.containsKey("template") ? (String) json.get("template") : null;

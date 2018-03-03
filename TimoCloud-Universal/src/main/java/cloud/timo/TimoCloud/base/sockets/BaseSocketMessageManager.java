@@ -18,9 +18,9 @@ public class BaseSocketMessageManager {
         TimoCloudBase.getInstance().getSocketClientHandler().sendMessage(jsonObject.toString());
     }
 
-    public JSONObject getJSON(String type, String server, Object data) {
+    public JSONObject getJSON(String type, String target, Object data) {
         JSONObject json = new JSONObject();
-        json.put("target", server);
+        json.put("target", target);
         json.put("type", type);
         json.put("data", data);
         json.put("base", TimoCloudBase.getInstance().getName());

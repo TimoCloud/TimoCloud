@@ -86,7 +86,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         } catch (Exception e) {
             e.printStackTrace();
         }
-        gotAnyData = true;
+        this.gotAnyData = true;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         return objectMapper;
     }
 
-    public boolean gotAnyData() {
+    public synchronized boolean gotAnyData() {
         return gotAnyData;
     }
 }

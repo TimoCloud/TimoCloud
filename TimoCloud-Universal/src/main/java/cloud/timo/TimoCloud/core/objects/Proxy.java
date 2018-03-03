@@ -31,6 +31,7 @@ public class Proxy implements Communicatable {
     private Channel channel;
     private boolean starting;
     private boolean registered;
+    private List<Server> registeredServers;
 
     public Proxy(String name, ProxyGroup group, Base base, String token) {
         this.name = name;
@@ -39,6 +40,7 @@ public class Proxy implements Communicatable {
         this.token = token;
         this.address = new InetSocketAddress(base.getAddress(), 0);
         this.onlinePlayers = new ArrayList<>();
+        this.registeredServers = new ArrayList<>();
     }
 
     public void register() {
@@ -108,10 +110,12 @@ public class Proxy implements Communicatable {
         map.put("address", server.getAddress().getAddress().getHostAddress());
         map.put("port", server.getPort());
         sendMessage(new JSONObject(map));
+        if (! registeredServers.contains(server)) registeredServers.add(server);
     }
 
     public void unregisterServer(Server server) {
         sendMessage(TimoCloudCore.getInstance().getSocketMessageManager().getMessage("REMOVE_SERVER", server.getName()));
+        if (registeredServers.contains(server)) registeredServers.remove(server);
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
@@ -227,6 +231,10 @@ public class Proxy implements Communicatable {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    public List<Server> getRegisteredServers() {
+        return registeredServers;
     }
 
     public ProxyObject toProxyObject() {

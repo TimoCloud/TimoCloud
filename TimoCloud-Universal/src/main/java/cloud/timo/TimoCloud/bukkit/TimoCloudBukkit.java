@@ -38,26 +38,26 @@ public class TimoCloudBukkit extends JavaPlugin {
     private BukkitStringHandler stringHandler;
     private SignManager signManager;
     private StateByEventManager stateByEventManager;
-    private String prefix = "[TimoCloudBukkit]";
+    private String prefix = "[TimoCloud] ";
 
     public void info(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " " + message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
     }
 
     public void severe(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', " &c" + message));
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + "&c" + message));
     }
 
     @Override
     public void onEnable() {
-        info("&eEnabling &bTimoCloud &oBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+        info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
         makeInstances();
         registerCommands();
         registerListeners();
         registerTasks();
         registerChannel();
         Executors.newSingleThreadExecutor().submit(this::connectToCore);
-        while (! ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData());// Wait until we get the API data
+        while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
         info("&ahas been enabled!");
     }
 
@@ -95,11 +95,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     private void stop() {
-        if (isStatic()) {
-            Bukkit.shutdown();
-        } else {
-            Runtime.getRuntime().halt(0);
-        }
+        Bukkit.shutdown();
     }
 
     private void makeInstances() {

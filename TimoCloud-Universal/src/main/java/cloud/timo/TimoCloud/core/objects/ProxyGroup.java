@@ -28,7 +28,6 @@ public class ProxyGroup implements Group {
     private List<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
     private List<Proxy> proxies = new ArrayList<>();
-    private List<Server> registeredServers = new ArrayList<>();
 
     public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostNames) {
         construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
@@ -94,6 +93,8 @@ public class ProxyGroup implements Group {
         if (this.proxyChooseStrategy == null) this.proxyChooseStrategy = ProxyChooseStrategy.BALANCE;
 
         this.hostNames = hostnames.stream().map(String::trim).collect(Collectors.toList());
+
+        reload();
     }
 
     public Map<String, Object> getProperties() {
@@ -130,12 +131,10 @@ public class ProxyGroup implements Group {
     }
 
     public void registerServer(Server server) {
-        registeredServers.add(server);
         for (Proxy proxy : getProxies()) proxy.registerServer(server);
     }
 
     public void unregisterServer(Server server) {
-        if (registeredServers.contains(server)) registeredServers.remove(server);
         for (Proxy proxy : getProxies()) proxy.unregisterServer(server);
     }
 
@@ -145,6 +144,19 @@ public class ProxyGroup implements Group {
         this.proxies.removeAll(proxies);
     }
 
+    public List<Server> getRegisteredServers() {
+        return getServerGroups().stream().map(ServerGroup::getServers).flatMap(List::stream).filter(Server::isRegistered).collect(Collectors.toList());
+    }
+
+    public void reload() {
+        for (Proxy proxy : getProxies()) {
+            List<Server> removeServers = new ArrayList<>(proxy.getRegisteredServers());
+            for (Server server : removeServers) proxy.unregisterServer(server);
+            for (Server server : getRegisteredServers()) proxy.registerServer(server);
+        }
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -258,10 +270,6 @@ public class ProxyGroup implements Group {
         return proxies;
     }
 
-    public List<Server> getRegisteredServers() {
-        return registeredServers;
-    }
-
     public ProxyGroupObject toGroupObject() {
         ProxyGroupObjectCoreImplementation groupObject = new ProxyGroupObjectCoreImplementation(
                 getName(),
@@ -293,16 +301,18 @@ public class ProxyGroup implements Group {
         if (maxPlayerCountPerProxy != that.maxPlayerCountPerProxy) return false;
         if (maxPlayerCount != that.maxPlayerCount) return false;
         if (keepFreeSlots != that.keepFreeSlots) return false;
+        if (minAmount != that.minAmount) return false;
         if (maxAmount != that.maxAmount) return false;
         if (ram != that.ram) return false;
         if (isStatic != that.isStatic) return false;
         if (priority != that.priority) return false;
+        if (allServerGroups != that.allServerGroups) return false;
         if (!name.equals(that.name)) return false;
         if (motd != null ? !motd.equals(that.motd) : that.motd != null) return false;
         if (serverGroups != null ? !serverGroups.equals(that.serverGroups) : that.serverGroups != null) return false;
         if (baseName != null ? !baseName.equals(that.baseName) : that.baseName != null) return false;
-        if (proxies != null ? !proxies.equals(that.proxies) : that.proxies != null) return false;
-        return registeredServers != null ? registeredServers.equals(that.registeredServers) : that.registeredServers == null;
+        if (hostNames != null ? !hostNames.equals(that.hostNames) : that.hostNames != null) return false;
+        return proxyChooseStrategy == that.proxyChooseStrategy;
     }
 
     @Override
@@ -311,15 +321,17 @@ public class ProxyGroup implements Group {
         result = 31 * result + maxPlayerCountPerProxy;
         result = 31 * result + maxPlayerCount;
         result = 31 * result + keepFreeSlots;
+        result = 31 * result + minAmount;
         result = 31 * result + maxAmount;
         result = 31 * result + ram;
         result = 31 * result + (motd != null ? motd.hashCode() : 0);
         result = 31 * result + (isStatic ? 1 : 0);
         result = 31 * result + priority;
         result = 31 * result + (serverGroups != null ? serverGroups.hashCode() : 0);
+        result = 31 * result + (allServerGroups ? 1 : 0);
         result = 31 * result + (baseName != null ? baseName.hashCode() : 0);
-        result = 31 * result + (proxies != null ? proxies.hashCode() : 0);
-        result = 31 * result + (registeredServers != null ? registeredServers.hashCode() : 0);
+        result = 31 * result + (hostNames != null ? hostNames.hashCode() : 0);
+        result = 31 * result + (proxyChooseStrategy != null ? proxyChooseStrategy.hashCode() : 0);
         return result;
     }
 
