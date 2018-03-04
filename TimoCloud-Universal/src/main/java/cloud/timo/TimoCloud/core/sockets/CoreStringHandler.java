@@ -244,7 +244,7 @@ public class CoreStringHandler extends BasicStringHandler {
             }
             case "PROXY_TEMPLATE_REQUEST": {
                 proxy.getBase().setAvailableRam(proxy.getBase().getAvailableRam() + proxy.getGroup().getRam()); // Start paused, hence ram is free
-                TimoCloudCore.getInstance().info("Base requested template update for proxy " + server.getName() + ". Sending update and starting server again...");
+                TimoCloudCore.getInstance().info("Base requested template update for proxy " + proxy.getName() + ". Sending update and starting server again...");
                 JSONObject differences = (JSONObject) json.get("differences");
                 List<String> templateDifferences = differences.containsKey("templateDifferences") ? (List<String>) differences.get("templateDifferences") : null;
                 String template = json.containsKey("template") ? (String) json.get("template") : null;
