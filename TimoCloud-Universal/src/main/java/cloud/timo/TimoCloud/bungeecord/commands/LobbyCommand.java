@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.commands;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeMessageManager;
 import net.md_5.bungee.api.CommandSender;
@@ -21,6 +22,12 @@ public class LobbyCommand extends Command {
         }
         ProxiedPlayer player = (ProxiedPlayer) sender;
         ServerInfo serverInfo = TimoCloudBungee.getInstance().getLobbyManager().searchFreeLobby(player.getUniqueId(), player.getServer().getInfo());
-        if (serverInfo != null) player.connect(serverInfo);
+        if (serverInfo == null) {
+            BungeeMessageManager.sendMessage(sender, TimoCloudBungee.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));
+            return;
+        }
+        player.connect(serverInfo);
+        BungeeMessageManager.sendMessage(sender, TimoCloudBungee.getInstance().getFileManager().getMessages().getString("LobbyConnect")
+                .replace("{server_name}", serverInfo.getName()));
     }
 }

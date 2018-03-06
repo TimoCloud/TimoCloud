@@ -21,6 +21,8 @@ public class BungeeFileManager {
     private String configsDirectory = pluginsDirectory + "configs/";
     private File configFile;
     private Configuration config;
+    private File messagesFile;
+    private Configuration messages;
 
     public BungeeFileManager() {
         load();
@@ -31,6 +33,7 @@ public class BungeeFileManager {
             File configs = new File(configsDirectory);
             configs.mkdirs();
 
+            //Load configFile
             configFile = new File(configsDirectory, "config.yml");
             if (!configFile.exists()) {
                 configFile.createNewFile();
@@ -44,6 +47,21 @@ public class BungeeFileManager {
             }
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configNew, configFile);
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+
+            //Load messagesFile
+            messagesFile = new File(configsDirectory, "messages.yml");
+            if (!messagesFile.exists()) {
+                messagesFile.createNewFile();
+            }
+            messages = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messagesFile);
+            messagesFile.delete();
+            Files.copy(this.getClass().getResourceAsStream("/bungeecord/messages.yml"), messagesFile.toPath());
+            Configuration messagesNew = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messagesFile);
+            for (String key : messages.getKeys()) {
+                messagesNew.set(key, messages.get(key));
+            }
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(messagesNew, messagesFile);
+            messages = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messagesFile);
 
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
@@ -80,4 +98,11 @@ public class BungeeFileManager {
         return config;
     }
 
+    public File getMessagesFile() {
+        return messagesFile;
+    }
+
+    public Configuration getMessages() {
+        return messages;
+    }
 }
