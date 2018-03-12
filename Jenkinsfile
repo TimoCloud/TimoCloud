@@ -10,6 +10,7 @@ node {
     }
     stage('Test') {
         echo 'Testing..'
+        sh 'mvn clean test'
     }
     stage('Deploy') {
         echo 'Deploying....'
