@@ -5,9 +5,10 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import cloud.timo.TimoCloud.bukkit.helpers.JsonHelper;
-import cloud.timo.TimoCloud.bukkit.objects.SignInstance;
-import cloud.timo.TimoCloud.bukkit.objects.SignLayout;
-import cloud.timo.TimoCloud.bukkit.objects.SignTemplate;
+import cloud.timo.TimoCloud.bukkit.signs.SignInstance;
+import cloud.timo.TimoCloud.bukkit.signs.SignLayout;
+import cloud.timo.TimoCloud.bukkit.signs.SignParseException;
+import cloud.timo.TimoCloud.bukkit.signs.SignTemplate;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,7 +43,6 @@ public class SignManager {
         signTemplates = new ArrayList<>();
         FileConfiguration config = TimoCloudBukkit.getInstance().getFileManager().getSignTemplates();
         for (String template : config.getKeys(false)) {
-            String errorReason = "Unknown";
             Map<String, SignLayout> layouts = new HashMap<>();
             try {
                 for (String layout : config.getConfigurationSection(template + ".layouts").getKeys(false)) {
@@ -50,17 +50,18 @@ public class SignManager {
                     for (int i = 0; i < 4; i++) {
                         String line = config.getString(template + ".layouts." + layout + ".lines." + (i + 1));
                         if (line == null)
-                            errorReason = "Line " + (i + 1) + " (signTemplates.yml section '" + template + ".layouts.lines." + (i + 1) + ") is not defined.";
+                            throw new SignParseException("Line " + (i + 1) + " (signTemplates.yml section '" + template + ".layouts.lines." + (i + 1) + ") is not defined.");
                         lines[i] = Arrays.asList(line.split(";"));
                     }
                     Material signBlockMaterial = null;
                     int signBlockData = 0;
                     try {
-                        signBlockMaterial = Material.getMaterial(config.getString(template + ".layouts." + layout + ".signBlockMaterial"));
+                        String materialString = config.getString(template + ".layouts." + layout + ".signBlockMaterial");
+                        if (materialString != null) materialString = materialString.toUpperCase();
+                        signBlockMaterial = Material.getMaterial(materialString);
                         signBlockData = config.getInt(template + ".layouts." + layout + ".signBlockData");
                     } catch (Exception e) {
-                        errorReason = "Invalid signBlockMaterial or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)";
-                        throw new Exception();
+                        throw new SignParseException("Invalid signBlockMaterial or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
                     }
 
                     layouts.put(layout, new SignLayout(
@@ -71,12 +72,12 @@ public class SignManager {
                     ));
                 }
                 if (!layouts.containsKey("Default")) {
-                    errorReason = "Template " + template + " does not have a default layout 'Default'. Please add it and type /signs reload";
-                    throw new Exception();
+                    throw new SignParseException("Template " + template + " does not have a default layout 'Default'. Please add it and type /signs reload");
                 }
                 signTemplates.add(new SignTemplate(template, layouts));
             } catch (Exception e) {
-                TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c. Reason: &e" + errorReason);
+                TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c.");
+                e.printStackTrace();
             }
         }
     }

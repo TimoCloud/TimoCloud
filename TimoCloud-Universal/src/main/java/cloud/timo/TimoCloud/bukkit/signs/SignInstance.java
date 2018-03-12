@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.bukkit.objects;
+package cloud.timo.TimoCloud.bukkit.signs;
 
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import org.bukkit.Location;

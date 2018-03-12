@@ -5,17 +5,13 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.json.simple.JSONObject;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
 
@@ -117,12 +113,12 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     private static void sendIpToBungee(ProxyObject proxyObject, InetSocketAddress clientAddress, InetSocketAddress channelAddress) {
-        Map<String, Object> json = new HashMap<>();
-        json.put("type", "SET_IP");
-        json.put("target", ((ProxyObjectBasicImplementation) proxyObject).getToken());
-        json.put("CLIENT_ADDRESS", clientAddress.toString());
-        json.put("CHANNEL_ADDRESS", channelAddress.toString());
-        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage(new JSONObject(json));
+        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage(JSONBuilder.create()
+                .setType("SET_IP")
+                .setTarget(((ProxyObjectBasicImplementation) proxyObject).getToken())
+                .set("CLIENT_ADDRESS", clientAddress.toString())
+                .set("CHANNEL_ADDRESS", channelAddress.toString())
+                .toJson());
     }
 
 }

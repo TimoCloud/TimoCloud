@@ -16,16 +16,18 @@ public class ProxyObjectBasicImplementation implements ProxyObject {
     private String token;
     private List<PlayerObject> onlinePlayers;
     private int onlinePlayerCount;
+    private String base;
     private InetSocketAddress inetSocketAddress;
 
     public ProxyObjectBasicImplementation() {}
 
-    public ProxyObjectBasicImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, InetSocketAddress inetSocketAddress) {
+    public ProxyObjectBasicImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
         this.name = name;
         this.group = group;
         this.token = token;
         this.onlinePlayers = onlinePlayers;
         this.onlinePlayerCount = onlinePlayerCount;
+        this.base = base;
         this.inetSocketAddress = inetSocketAddress;
     }
 
@@ -55,6 +57,11 @@ public class ProxyObjectBasicImplementation implements ProxyObject {
     @Override
     public int getOnlinePlayerCount() {
         return onlinePlayerCount;
+    }
+
+    @Override
+    public String getBase() {
+        return base;
     }
 
     @Override

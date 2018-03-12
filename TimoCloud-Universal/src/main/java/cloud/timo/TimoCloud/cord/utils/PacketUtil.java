@@ -4,13 +4,10 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
 import cloud.timo.TimoCloud.cord.sockets.ProxyDownstreamHandler;
 import cloud.timo.TimoCloud.cord.sockets.ProxyUpstreamHandler;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.AttributeKey;
-import org.json.simple.JSONObject;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class PacketUtil {
 
@@ -19,22 +16,21 @@ public class PacketUtil {
     public final static AttributeKey<ProxyDownstreamHandler> DOWNSTREAM_HANDLER = AttributeKey.valueOf("downstreamhandler");
 
     public static ByteBuf createStatusPacket(ProxyGroupObject proxyGroupObject, int protocolVersion) {
-        Map<String, Object> json = new LinkedHashMap<>();
-        Map<String, Object> version = new LinkedHashMap<>();
-        Map<String, Object> players = new LinkedHashMap<>();
-        Map<String, Object> description = new LinkedHashMap<>();
-        version.put("name", "TimoCloudCord");
-        version.put("protocol", protocolVersion);
-        json.put("version", new JSONObject(version));
-        players.put("max", proxyGroupObject.getMaxPlayerCount());
-        players.put("online", proxyGroupObject.getOnlinePlayerCount());
-        json.put("players", new JSONObject(players));
-        description.put("text", proxyGroupObject.getMotd());
-        json.put("description", description);
-
         ByteBuf buf = Unpooled.buffer();
         writeVarInt(0, buf);
-        writeString(new JSONObject(json).toString(), buf);
+        writeString(JSONBuilder.create()
+                .set("version", JSONBuilder.create()
+                        .set("name", "TimoCloudCord")
+                        .set("protocol", protocolVersion)
+                        .toJson())
+                .set("players", JSONBuilder.create()
+                        .set("max", proxyGroupObject.getMaxPlayerCount())
+                        .set("online", proxyGroupObject.getOnlinePlayerCount())
+                        .toJson())
+                .set("description", JSONBuilder.create()
+                        .set("text", proxyGroupObject.getMotd())
+                        .toJson())
+                .toString(), buf);
         return buf;
     }
 

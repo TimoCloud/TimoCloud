@@ -1,0 +1,6 @@
+enabled: false
+email: mail@yourdomain.com
+api-key: your-api-key
+hostnames:
+- play.yourdomain.com
+- premium.yourdomain.com

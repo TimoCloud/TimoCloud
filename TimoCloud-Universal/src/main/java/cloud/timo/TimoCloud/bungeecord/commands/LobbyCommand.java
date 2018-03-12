@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.bungeecord.commands;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeMessageManager;
 import net.md_5.bungee.api.CommandSender;

@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.bungeecord.sockets;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import org.json.simple.JSONObject;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 
 public class BungeeSocketMessageManager {
 
@@ -19,10 +19,10 @@ public class BungeeSocketMessageManager {
     }
 
     public String getJSON(String type, String target, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("target", target);
-        json.put("type", type);
-        json.put("data", data);
-        return json.toString();
+        return JSONBuilder.create()
+                .setType(type)
+                .setTarget(target)
+                .setData(data)
+                .toString();
     }
 }

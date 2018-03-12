@@ -29,7 +29,9 @@ public class CoreFileManager {
     private File logsDirectory;
 
     private File configFile;
+    private File cloudFlareConfigFile;
     private Map<String, Object> config;
+    private Map<String, Object> cloudFlareConfig;
     private File serverGroupsFile;
     private File proxyGroupsFile;
 
@@ -70,7 +72,16 @@ public class CoreFileManager {
             for (String key : defaults.keySet()) {
                 if (!config.containsKey(key)) config.put(key, defaults.get(key));
             }
-            saveConfig();
+
+            this.cloudFlareConfigFile = new File(configsDirectory, "cloudFlare.yml");
+            cloudFlareConfigFile.createNewFile();
+            cloudFlareConfig = (Map<String, Object>) loadYaml(cloudFlareConfigFile);
+            if (cloudFlareConfig == null) cloudFlareConfig = new LinkedHashMap<>();
+            Map<String, Object> cloudFlareDefaults = (Map<String, Object>) new Yaml().load(this.getClass().getResourceAsStream("/core/cloudFlare.yml"));
+            for (String key : cloudFlareDefaults.keySet()) {
+                if (!cloudFlareConfig.containsKey(key)) cloudFlareConfig.put(key, cloudFlareDefaults.get(key));
+            }
+            saveConfigs();
 
             this.serverGroupsFile = new File(configsDirectory, "serverGroups.json");
             serverGroupsFile.createNewFile();
@@ -82,8 +93,9 @@ public class CoreFileManager {
         }
     }
 
-    private void saveConfig() throws IOException {
+    private void saveConfigs() throws IOException {
         saveYaml(config, configFile);
+        saveYaml(cloudFlareConfig, cloudFlareConfigFile);
     }
 
     public Object loadYaml(File file) throws IOException {
@@ -156,6 +168,14 @@ public class CoreFileManager {
 
     public Map getConfig() {
         return config;
+    }
+
+    public File getCloudFlareConfigFile() {
+        return cloudFlareConfigFile;
+    }
+
+    public Map<String, Object> getCloudFlareConfig() {
+        return cloudFlareConfig;
     }
 
     public File getServerGroupsFile() {

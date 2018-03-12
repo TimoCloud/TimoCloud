@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
@@ -51,34 +52,34 @@ public class Server implements Communicatable {
     }
 
     public void start() {
-        this.starting = true;
-        JSONObject json = new JSONObject();
-        json.put("type", "START_SERVER");
-        json.put("name", getName());
-        json.put("group", getGroup().getName());
-        json.put("ram", getGroup().getRam());
-        json.put("static", getGroup().isStatic());
-        if (getMap() != null) json.put("map", getMap());
-        json.put("token", getToken());
-        if (! getGroup().isStatic()) {
-            File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
-            File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
-            try {
-                templateDirectory.mkdirs();
-                if (getMap() != null) mapDirectory.mkdirs();
-                json.put("templateHash", HashUtil.getHashes(templateDirectory));
-                if (getMap() != null) json.put("mapHash", HashUtil.getHashes(mapDirectory));
-                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
-            } catch (IOException e) {
-                TimoCloudCore.getInstance().severe("Error while hashing files while starting server " + getName() + ": ");
-                e.printStackTrace();
-                return;
-            }
-        }
         try {
-            getBase().sendMessage(json);
+            this.starting = true;
+            JSONBuilder json = JSONBuilder.create()
+                    .setType("START_SERVER")
+                    .set("name", getName())
+                    .set("group", getGroup().getName())
+                    .set("ram", getGroup().getRam())
+                    .set("static", getGroup().isStatic())
+                    .setIfNotNull("map", getMap())
+                    .set("token", getToken())
+                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
+            if (!getGroup().isStatic()) {
+                File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
+                File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
+                try {
+                    templateDirectory.mkdirs();
+                    if (getMap() != null) mapDirectory.mkdirs();
+                    json.set("templateHash", HashUtil.getHashes(templateDirectory));
+                    if (getMap() != null) json.set("mapHash", HashUtil.getHashes(mapDirectory));
+                } catch (IOException e) {
+                    TimoCloudCore.getInstance().severe("Error while hashing files while starting server " + getName() + ": ");
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            getBase().sendMessage(json.toJson());
             getBase().setReady(false);
-            getBase().setAvailableRam(getBase().getAvailableRam()-getGroup().getRam());
+            getBase().setAvailableRam(getBase().getAvailableRam() - getGroup().getRam());
             TimoCloudCore.getInstance().info("Told base " + getBase().getName() + " to start server " + getName() + ".");
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while starting server " + getName() + ": TimoCloudBase " + getBase().getName() + " not connected.");
@@ -111,7 +112,7 @@ public class Server implements Communicatable {
         getGroup().onServerConnect(this);
         setState("ONLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getServerManager().getProxyGroups()) {
-            if (! proxyGroup.getServerGroups().contains(getGroup())) continue;
+            if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.registerServer(this);
         }
         this.starting = false;
@@ -122,20 +123,20 @@ public class Server implements Communicatable {
 
     public void unregister() {
         if (!isRegistered()) return;
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
         getGroup().removeServer(this);
         getBase().getServers().remove(this);
         setState("OFFLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getServerManager().getProxyGroups()) {
-            if (! proxyGroup.getServerGroups().contains(getGroup())) continue;
+            if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.unregisterServer(this);
         }
         this.registered = false;
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "SERVER_STOPPED", getToken());
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
-        if (! getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
+        if (!getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
     }
 
     public void onPlayerDisconnect(PlayerObject playerObject) {

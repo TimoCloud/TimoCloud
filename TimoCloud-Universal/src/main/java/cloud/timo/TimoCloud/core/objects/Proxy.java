@@ -6,7 +6,9 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
+import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
@@ -14,9 +16,7 @@ import org.json.simple.JSONObject;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Proxy implements Communicatable {
 
@@ -31,6 +31,7 @@ public class Proxy implements Communicatable {
     private Channel channel;
     private boolean starting;
     private boolean registered;
+    private DnsRecord dnsRecord;
     private List<Server> registeredServers;
 
     public Proxy(String name, ProxyGroup group, Base base, String token) {
@@ -54,41 +55,41 @@ public class Proxy implements Communicatable {
 
     public void unregister() {
         this.registered = false;
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
         getGroup().removeProxy(this);
         getBase().getProxies().remove(this);
 
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "PROXY_STOPPED", getToken());
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
     }
 
     public void start() {
-        starting = true;
-        JSONObject json = new JSONObject();
-        json.put("type", "START_PROXY");
-        json.put("name", getName());
-        json.put("group", getGroup().getName());
-        json.put("ram", getGroup().getRam());
-        json.put("static", getGroup().isStatic());
-        json.put("token", getToken());
-        json.put("motd", getGroup().getMotd());
-        json.put("maxplayers", getGroup().getMaxPlayerCount());
-        json.put("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy());
-        if (! getGroup().isStatic()) {
-            File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
-            try {
-                templateDirectory.mkdirs();
-                json.put("templateHash", HashUtil.getHashes(templateDirectory));
-                json.put("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()));
-            } catch (Exception e) {
-                TimoCloudCore.getInstance().severe("Error while hashing files while starting proxy " + getName() + ": ");
-                e.printStackTrace();
-                return;
-            }
-        }
         try {
-            getBase().sendMessage(json);
+            starting = true;
+            JSONBuilder json = JSONBuilder.create()
+                    .setType("START_PROXY")
+                    .set("name", getName())
+                    .set("group", getGroup().getName())
+                    .set("ram", getGroup().getRam())
+                    .set("static", getGroup().isStatic())
+                    .set("token", getToken())
+                    .set("motd", getGroup().getMotd())
+                    .set("maxplayers", getGroup().getMaxPlayerCount())
+                    .set("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy())
+                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()));
+            if (!getGroup().isStatic()) {
+                File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
+                try {
+                    templateDirectory.mkdirs();
+                    json.set("templateHash", HashUtil.getHashes(templateDirectory));
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe("Error while hashing files while starting proxy " + getName() + ": ");
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            getBase().sendMessage(json.toJson());
             getBase().setReady(false);
-            getBase().setAvailableRam(getBase().getAvailableRam()-getGroup().getRam());
+            getBase().setAvailableRam(getBase().getAvailableRam() - getGroup().getRam());
             TimoCloudCore.getInstance().info("Told base " + getBase().getName() + " to start proxy " + getName() + ".");
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while starting proxy " + getName() + ": TimoCloudBase " + getBase().getName() + " not connected.");
@@ -104,13 +105,13 @@ public class Proxy implements Communicatable {
     }
 
     public void registerServer(Server server) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("type", "ADD_SERVER");
-        map.put("name", server.getName());
-        map.put("address", server.getAddress().getAddress().getHostAddress());
-        map.put("port", server.getPort());
-        sendMessage(new JSONObject(map));
-        if (! registeredServers.contains(server)) registeredServers.add(server);
+        sendMessage(JSONBuilder.create()
+                .setType("ADD_SERVER")
+                .set("name", server.getName())
+                .set("address", server.getAddress().getAddress().getHostAddress())
+                .set("port", server.getPort())
+                .toJson());
+        if (!registeredServers.contains(server)) registeredServers.add(server);
     }
 
     public void unregisterServer(Server server) {
@@ -119,7 +120,7 @@ public class Proxy implements Communicatable {
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
-        if (! getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
+        if (!getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
     }
 
     public void onPlayerDisconnect(PlayerObject playerObject) {
@@ -233,6 +234,14 @@ public class Proxy implements Communicatable {
         return registered;
     }
 
+    public DnsRecord getDnsRecord() {
+        return dnsRecord;
+    }
+
+    public void setDnsRecord(DnsRecord dnsRecord) {
+        this.dnsRecord = dnsRecord;
+    }
+
     public List<Server> getRegisteredServers() {
         return registeredServers;
     }
@@ -244,6 +253,7 @@ public class Proxy implements Communicatable {
                 getToken(),
                 getOnlinePlayers(),
                 getOnlinePlayerCount(),
+                getBase().getName(),
                 getAddress()
         );
     }

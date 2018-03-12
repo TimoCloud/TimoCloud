@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.bukkit.commands.SignsCommand;
 import cloud.timo.TimoCloud.bukkit.commands.TimoCloudBukkitCommand;
 import cloud.timo.TimoCloud.bukkit.listeners.*;
 import cloud.timo.TimoCloud.bukkit.managers.BukkitFileManager;
-import cloud.timo.TimoCloud.bukkit.managers.BukkitMessageManager;
 import cloud.timo.TimoCloud.bukkit.managers.SignManager;
 import cloud.timo.TimoCloud.bukkit.managers.StateByEventManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;

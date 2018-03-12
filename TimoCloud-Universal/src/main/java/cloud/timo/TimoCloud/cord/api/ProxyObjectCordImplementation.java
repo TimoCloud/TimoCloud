@@ -4,16 +4,16 @@ import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
+import lombok.NoArgsConstructor;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 
+@NoArgsConstructor
 public class ProxyObjectCordImplementation extends ProxyObjectBasicImplementation implements ProxyObject {
 
-    public ProxyObjectCordImplementation() {}
-
-    public ProxyObjectCordImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, InetSocketAddress inetSocketAddress) {
-        super(name, group, token, onlinePlayers, onlinePlayerCount, inetSocketAddress);
+    public ProxyObjectCordImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
+        super(name, group, token, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
     }
 
     @Override

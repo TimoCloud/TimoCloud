@@ -1,7 +1,5 @@
 package cloud.timo.TimoCloud.base;
 
-import cloud.timo.TimoCloud.lib.modules.ModuleType;
-import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.base.managers.BaseFileManager;
 import cloud.timo.TimoCloud.base.managers.BaseResourceManager;
 import cloud.timo.TimoCloud.base.managers.BaseServerManager;
@@ -10,10 +8,17 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import org.apache.commons.io.FileDeleteStrategy;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -132,8 +137,8 @@ public class TimoCloudBase implements TimoCloudModule {
 
     public void onSocketConnect() {
         setConnected(true);
-        getSocketMessageManager().sendMessage("BASE_HANDSHAKE", null);
 
+        getSocketMessageManager().sendMessage(JSONBuilder.create().setType("BASE_HANDSHAKE").set("base", getName()).set("publicAddress", getPublicIpAddress()).toJson());
         info("Successfully connected to Core socket!");
     }
 
@@ -144,6 +149,19 @@ public class TimoCloudBase implements TimoCloudModule {
 
     public void onHandshakeSuccess() {
         deleteOldDirectories();
+    }
+
+    private String getPublicIpAddress() {
+        try {
+            return new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
+        } catch (Exception e) {}
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception e) {
+            severe("Error while retrieving own IP address: ");
+            e.printStackTrace();
+        }
+        return "127.0.0.1";
     }
 
     private void deleteOldDirectories() { // Some servers/proxies might be running, so we have to check if we can delete the directories

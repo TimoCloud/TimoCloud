@@ -1,13 +1,14 @@
 package cloud.timo.TimoCloud.bukkit.sockets;
 
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import org.json.simple.JSONObject;
 
 public class BukkitSocketMessageManager {
 
     public void sendMessage(String type, String target, Object data) {
         try {
-            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, target, data));
+            TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(getJSON(type, target, data).toString());
         } catch (Exception e) {
             e.printStackTrace();
             TimoCloudBukkit.getInstance().onSocketDisconnect();
@@ -18,11 +19,11 @@ public class BukkitSocketMessageManager {
         sendMessage(type, TimoCloudBukkit.getInstance().getToken(), data);
     }
 
-    public String getJSON(String type, String target, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("target", target);
-        json.put("type", type);
-        json.put("data", data);
-        return json.toString();
+    public JSONObject getJSON(String type, String target, Object data) {
+        return JSONBuilder.create()
+                .setType(type)
+                .setTarget(target)
+                .setData(data)
+                .toJson();
     }
 }

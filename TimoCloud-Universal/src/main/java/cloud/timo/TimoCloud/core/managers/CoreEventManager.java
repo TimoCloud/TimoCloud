@@ -5,25 +5,24 @@ import cloud.timo.TimoCloud.api.events.*;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.implementations.PlayerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.Event;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import org.json.simple.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class CoreEventManager implements Listener {
 
     public void fireEvent(Event event) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("type", "EVENT_FIRED");
-        map.put("eventType", event.getType().name());
-        map.put("data", eventToJSON(event));
-        JSONObject json = new JSONObject(map);
+        JSONObject json = JSONBuilder.create()
+                .setType("EVENT_FIRED")
+                .set("eventType", event.getType().name())
+                .setData(eventToJSON(event))
+                .toJson();
         for (Communicatable communicatable : TimoCloudCore.getInstance().getServerManager().getAllCommunicatableInstances()) {
             communicatable.sendMessage(json);
         }
@@ -42,17 +41,26 @@ public class CoreEventManager implements Listener {
 
     @EventHandler
     public void onPlayerConnectEvent(PlayerConnectEvent event) {
-        Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(event.getPlayer().getProxy().getName());
-        if (proxy != null) proxy.onPlayerConnect(event.getPlayer());
-        Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(event.getPlayer().getServer().getName());
-        if (server != null) server.onPlayerConnect(event.getPlayer());
+        ProxyObject proxyObject = event.getPlayer().getProxy();
+        if (proxyObject != null) {
+            Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(proxyObject.getName());
+            if (proxy != null) proxy.onPlayerConnect(event.getPlayer());
+        }
+        ServerObject serverObject = event.getPlayer().getServer();
+        if (serverObject != null) {
+            Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(serverObject.getName());
+            if (server != null) server.onPlayerConnect(event.getPlayer());
+        }
     }
 
     @EventHandler
     public void onPlayerDisconnect(PlayerDisconnectEvent event) {
         ((PlayerObjectBasicImplementation) event.getPlayer()).setOnline(false);
-        Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(event.getPlayer().getProxy().getName());
-        if (proxy != null) proxy.onPlayerDisconnect(event.getPlayer());
+        ProxyObject proxyObject = event.getPlayer().getProxy();
+        if (proxyObject != null) {
+            Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(proxyObject.getName());
+            if (proxy != null) proxy.onPlayerDisconnect(event.getPlayer());
+        }
         ServerObject serverObject = event.getPlayer().getServer();
         if (serverObject != null) {
             Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(serverObject.getName());

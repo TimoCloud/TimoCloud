@@ -1,13 +1,13 @@
 package cloud.timo.TimoCloud.cord;
 
-import cloud.timo.TimoCloud.lib.modules.ModuleType;
-import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
 import cloud.timo.TimoCloud.cord.sockets.*;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;

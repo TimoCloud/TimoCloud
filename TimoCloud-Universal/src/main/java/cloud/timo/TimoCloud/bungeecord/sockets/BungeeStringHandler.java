@@ -13,7 +13,6 @@ import cloud.timo.TimoCloud.lib.utils.InetAddressUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class BungeeStringHandler extends BasicStringHandler {

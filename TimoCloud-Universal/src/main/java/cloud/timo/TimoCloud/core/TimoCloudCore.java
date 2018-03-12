@@ -1,7 +1,5 @@
 package cloud.timo.TimoCloud.core;
 
-import cloud.timo.TimoCloud.lib.modules.ModuleType;
-import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
@@ -11,6 +9,9 @@ import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
 import cloud.timo.TimoCloud.core.utils.completers.*;
+import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
+import cloud.timo.TimoCloud.lib.modules.ModuleType;
+import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import io.netty.channel.Channel;
 import org.jline.builtins.Completers;
@@ -22,6 +23,7 @@ import org.jline.terminal.TerminalBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -47,6 +49,7 @@ public class TimoCloudCore implements TimoCloudModule {
     private TemplateManager templateManager;
     private CommandManager commandManager;
     private CoreEventManager eventManager;
+    private CloudFlareManager cloudFlareManager;
     private CoreSocketMessageManager socketMessageManager;
     private boolean running;
     private boolean waitingForCommand = false;
@@ -87,6 +90,10 @@ public class TimoCloudCore implements TimoCloudModule {
         if (getLogger() != null) getLogger().severe(message);
     }
 
+    public void severe(Throwable throwable) {
+        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
+    }
+
     @Override
     public void load(OptionSet optionSet) {
         running = true;
@@ -107,6 +114,7 @@ public class TimoCloudCore implements TimoCloudModule {
     @Override
     public void unload() {
         getServerManager().saveGroups();
+        getCloudFlareManager().unload();
         channel.close();
     }
 
@@ -177,11 +185,13 @@ public class TimoCloudCore implements TimoCloudModule {
         this.templateManager = new TemplateManager();
         this.commandManager = new CommandManager();
         this.eventManager = new CoreEventManager();
+        this.cloudFlareManager = new CloudFlareManager();
         this.socketMessageManager = new CoreSocketMessageManager();
 
         TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICoreImplementation());
         TimoCloudAPI.setEventImplementation(new EventManager());
         TimoCloudAPI.getEventImplementation().registerListener(getEventManager());
+        TimoCloudAPI.getEventImplementation().registerListener(getCloudFlareManager());
     }
 
     private void createLogger() throws IOException {
@@ -262,6 +272,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public CoreEventManager getEventManager() {
         return eventManager;
+    }
+
+    public CloudFlareManager getCloudFlareManager() {
+        return cloudFlareManager;
     }
 
     public CoreSocketMessageManager getSocketMessageManager() {

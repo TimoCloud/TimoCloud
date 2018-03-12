@@ -31,6 +31,11 @@ public interface ProxyObject {
     int getOnlinePlayerCount();
 
     /**
+     * Returns the name of the base the proxy has been started by
+     */
+    String getBase();
+
+    /**
      * @return The cord's IP address and port players can connect to
      */
     InetSocketAddress getSocketAddress();

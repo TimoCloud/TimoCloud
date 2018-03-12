@@ -4,16 +4,16 @@ import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
+import lombok.NoArgsConstructor;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 
+@NoArgsConstructor
 public class ProxyObjectBukkitImplementation extends ProxyObjectBasicImplementation implements ProxyObject {
 
-    public ProxyObjectBukkitImplementation() { }
-
-    public ProxyObjectBukkitImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, InetSocketAddress inetSocketAddress) {
-        super(name, group, token, onlinePlayers, onlinePlayerCount, inetSocketAddress);
+    public ProxyObjectBukkitImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
+        super(name, group, token, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
     }
 
     @Override

@@ -8,11 +8,11 @@ import org.json.simple.JSONObject;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Base implements Communicatable {
     private String name;
     private InetAddress address;
+    private InetAddress publicAddress; // Used for connecting to public proxies
     private Channel channel;
     private int availableRam;
     private int maxRam;
@@ -22,25 +22,14 @@ public class Base implements Communicatable {
     private List<Server> servers;
     private List<Proxy> proxies;
 
-    public Base(String name, InetAddress address, Channel channel) {
+    public Base(String name, InetAddress address, InetAddress publicAddress, Channel channel) {
         this.name = name;
         this.address = address;
+        this.publicAddress = publicAddress;
         this.channel = channel;
         setReady(false);
         servers = new ArrayList<>();
         proxies = new ArrayList<>();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(InetAddress address) {
-        this.address = address;
     }
 
     @Override
@@ -48,6 +37,7 @@ public class Base implements Communicatable {
         setChannel(channel);
         setConnected(true);
         setReady(true);
+        TimoCloudCore.getInstance().getCloudFlareManager().onBaseRegisterEvent(this);
         TimoCloudCore.getInstance().info("Base " + getName() + " connected.");
     }
 
@@ -56,6 +46,7 @@ public class Base implements Communicatable {
         setChannel(null);
         setConnected(false);
         setReady(false);
+        TimoCloudCore.getInstance().getCloudFlareManager().onBaseUnregisterEvent(this);
         TimoCloudCore.getInstance().info("Base " + getName() + " disconnected.");
     }
 
@@ -87,6 +78,21 @@ public class Base implements Communicatable {
     @Override
     public void onHandshakeSuccess() {
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
+    }
+    public String getName() {
+        return name;
+    }
+
+    public InetAddress getAddress() {
+        return address;
+    }
+
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
+
+    public InetAddress getPublicAddress() {
+        return publicAddress;
     }
 
     public void setChannel(Channel channel) {

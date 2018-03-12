@@ -1,5 +1,9 @@
 package cloud.timo.TimoCloud.core.managers;
 
+import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
@@ -266,6 +270,14 @@ public class CoreServerManager {
         return null;
     }
 
+    public Server getServerByServerObject(ServerObject object) {
+        return getServerByToken(((ServerObjectBasicImplementation) object).getToken());
+    }
+
+    public Proxy getProxyByProxyObject(ProxyObject object) {
+        return getProxyByToken(((ProxyObjectBasicImplementation) object).getToken());
+    }
+
     public void checkEnoughOnline() {
         if (TimoCloudCore.getInstance().isShuttingDown()) return;
         List<GroupInstanceDemand> demands = new ArrayList<>();
@@ -430,10 +442,10 @@ public class CoreServerManager {
         return cord != null && cord.isConnected();
     }
 
-    public Base getOrCreateBase(String name, InetAddress address, Channel channel) {
+    public Base getOrCreateBase(String name, InetAddress address, InetAddress publicAddress, Channel channel) {
         Base base = bases.getOrDefault(name, null);
         if (base == null) {
-            base = new Base(name, address, channel);
+            base = new Base(name, address, publicAddress, channel);
             bases.put(name, base);
         } else {
             base.setChannel(channel);

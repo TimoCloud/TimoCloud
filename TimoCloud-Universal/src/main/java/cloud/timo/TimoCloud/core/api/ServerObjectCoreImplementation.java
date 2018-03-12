@@ -5,10 +5,12 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Server;
+import lombok.NoArgsConstructor;
 
 import java.net.InetSocketAddress;
 import java.util.List;
 
+@NoArgsConstructor
 public class ServerObjectCoreImplementation extends ServerObjectBasicImplementation implements ServerObject {
 
     public ServerObjectCoreImplementation(String name, String group, String token, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {

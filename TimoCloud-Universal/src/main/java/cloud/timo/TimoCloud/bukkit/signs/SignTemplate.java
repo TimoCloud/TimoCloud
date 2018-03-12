@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.bukkit.objects;
+package cloud.timo.TimoCloud.bukkit.signs;
 
 import java.util.List;
 import java.util.Map;

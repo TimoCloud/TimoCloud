@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.sockets;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import org.json.simple.JSONObject;
 
 public class BaseSocketMessageManager {
@@ -19,11 +20,11 @@ public class BaseSocketMessageManager {
     }
 
     public JSONObject getJSON(String type, String target, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("target", target);
-        json.put("type", type);
-        json.put("data", data);
-        json.put("base", TimoCloudBase.getInstance().getName());
-        return json;
+        return JSONBuilder.create()
+                .setType(type)
+                .setTarget(target)
+                .setData(data)
+                .set("base", TimoCloudBase.getInstance().getName())
+                .toJson();
     }
 }

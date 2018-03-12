@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import org.json.simple.JSONObject;
 
 public class CordSocketMessageManager {
@@ -18,12 +19,12 @@ public class CordSocketMessageManager {
         TimoCloudCord.getInstance().getSocketClientHandler().sendMessage(jsonObject.toString());
     }
 
-    public JSONObject getJSON(String type, String server, Object data) {
-        JSONObject json = new JSONObject();
-        json.put("target", server);
-        json.put("type", type);
-        json.put("data", data);
-        json.put("cord", TimoCloudCord.getInstance().getName());
-        return json;
+    public JSONObject getJSON(String type, String target, Object data) {
+        return JSONBuilder.create()
+                .setType(type)
+                .setTarget(target)
+                .setData(data)
+                .set("cord", TimoCloudCord.getInstance().getName())
+                .toJson();
     }
 }

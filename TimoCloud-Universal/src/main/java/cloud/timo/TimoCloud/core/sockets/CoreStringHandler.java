@@ -12,6 +12,7 @@ import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
@@ -26,7 +27,10 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 
 @ChannelHandler.Sharable
 public class CoreStringHandler extends BasicStringHandler {
@@ -54,7 +58,7 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (! address.equals(server.getBase().getAddress())) {
+                if (!address.equals(server.getBase().getAddress())) {
                     TimoCloudCore.getInstance().severe("Server connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
@@ -68,7 +72,7 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (! address.equals(proxy.getBase().getAddress())) {
+                if (!address.equals(proxy.getBase().getAddress())) {
                     TimoCloudCore.getInstance().severe("Proxy connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
@@ -78,7 +82,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 return;
             }
             case "BASE_HANDSHAKE": {
-                if (! ipAllowed(address)) {
+                if (!ipAllowed(address)) {
                     TimoCloudCore.getInstance().severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
                     closeChannel(channel);
                     return;
@@ -87,14 +91,20 @@ public class CoreStringHandler extends BasicStringHandler {
                     TimoCloudCore.getInstance().severe("Error while base handshake: A base with the name '" + baseName + "' is already conencted.");
                     return;
                 }
-                Base base = TimoCloudCore.getInstance().getServerManager().getOrCreateBase(baseName, address, channel);
+                InetAddress publicAddress = address;
+                try {
+                    publicAddress = InetAddress.getByName((String) json.get("publicAddress"));
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe("Unable to resolve public ip address '" + json.get("publicAddress") + "' for base " + baseName + ". Please make sure the base's hostname is configured correctly in your operating system.");
+                }
+                Base base = TimoCloudCore.getInstance().getServerManager().getOrCreateBase(baseName, address, publicAddress, channel);
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel);
                 base.onHandshakeSuccess();
                 return;
             }
             case "CORD_HANDSHAKE": {
-                if (! ipAllowed(address)) {
+                if (!ipAllowed(address)) {
                     TimoCloudCore.getInstance().severe("Unknown cord connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
                     closeChannel(channel);
                     return;
@@ -131,16 +141,14 @@ public class CoreStringHandler extends BasicStringHandler {
                         proxyGroups.add(objectMapper.writeValueAsString(proxyGroupObject));
                     for (CordObject cordObject : TimoCloudAPI.getUniversalInstance().getCords())
                         cords.add(objectMapper.writeValueAsString(cordObject));
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("serverGroups", serverGroups);
-                    map.put("proxyGroups", proxyGroups);
-                    map.put("cords", cords);
-                    JSONObject jsonObject = new JSONObject(map);
-                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", jsonObject);
+                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", JSONBuilder.create()
+                            .set("serverGroups", serverGroups)
+                            .set("proxyGroups", proxyGroups)
+                            .set("cords", cords)
+                            .toJson());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 break;
             }
             case "FIRE_EVENT": {
@@ -157,11 +165,11 @@ public class CoreStringHandler extends BasicStringHandler {
             }
             case "PARSE_COMMAND": {
                 TimoCloudCore.getInstance().getCommandManager().onCommand((str) -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("type", "SEND_MESSAGE_TO_SENDER");
-                    map.put("sender", json.get("sender"));
-                    map.put("data", str);
-                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, new JSONObject(map));
+                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, JSONBuilder.create()
+                            .setType("SEND_MESSAGE_TO_SENDER")
+                            .set("sender", json.get("sender"))
+                            .setData(str)
+                            .toJson());
                 }, false, (String) data);
                 break;
             }
@@ -195,12 +203,12 @@ public class CoreStringHandler extends BasicStringHandler {
                         TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, output);
                         String content = fileToString(output);
                         output.delete();
-                        Map<String, Object> msg = new HashMap<>();
-                        msg.put("type", "TRANSFER");
-                        msg.put("transferType", "SERVER_TEMPLATE");
-                        msg.put("template", template);
-                        msg.put("file", content);
-                        channel.writeAndFlush(new JSONObject(msg).toString());
+                        channel.writeAndFlush(JSONBuilder.create()
+                                .setType("TRANSFER")
+                                .set("transferType", "SERVER_TEMPLATE")
+                                .set("template", template)
+                                .set("file", content)
+                                .toString());
                         doAfterAmount.addOne();
                     }
                     if (mapDifferences != null) {
@@ -211,12 +219,12 @@ public class CoreStringHandler extends BasicStringHandler {
                         TimoCloudCore.getInstance().getTemplateManager().zipFiles(mapFiles, mapDirectory, output);
                         String content = fileToString(output);
                         output.delete();
-                        Map<String, Object> msg = new HashMap<>();
-                        msg.put("type", "TRANSFER");
-                        msg.put("transferType", "SERVER_TEMPLATE");
-                        msg.put("template", server.getGroup().getName() + "_" + map);
-                        msg.put("file", content);
-                        channel.writeAndFlush(new JSONObject(msg).toString());
+                        channel.writeAndFlush(JSONBuilder.create()
+                                .setType("TRANSFER")
+                                .set("transferType", "SERVER_TEMPLATE")
+                                .set("template", server.getGroup().getName() + "_" + map)
+                                .set("file", content)
+                                .toString());
                         doAfterAmount.addOne();
                     }
                     if (globalDifferences != null) {
@@ -228,11 +236,11 @@ public class CoreStringHandler extends BasicStringHandler {
                         TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, output);
                         String content = fileToString(output);
                         output.delete();
-                        Map<String, Object> msg = new HashMap<>();
-                        msg.put("type", "TRANSFER");
-                        msg.put("transferType", "SERVER_GLOBAL_TEMPLATE");
-                        msg.put("file", content);
-                        channel.writeAndFlush(new JSONObject(msg).toString());
+                        channel.writeAndFlush(JSONBuilder.create()
+                                .setType("TRANSFER")
+                                .set("transferType", "SERVER_GLOBAL_TEMPLATE")
+                                .set("file", content)
+                                .toString());
                         doAfterAmount.addOne();
                     }
                     doAfterAmount.setAmount(amount);
@@ -263,12 +271,12 @@ public class CoreStringHandler extends BasicStringHandler {
                         TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, output);
                         String content = fileToString(output);
                         output.delete();
-                        Map<String, Object> msg = new HashMap<>();
-                        msg.put("type", "TRANSFER");
-                        msg.put("transferType", "PROXY_TEMPLATE");
-                        msg.put("template", template);
-                        msg.put("file", JSONObject.escape(content));
-                        channel.writeAndFlush(new JSONObject(msg).toString());
+                        channel.writeAndFlush(JSONBuilder.create()
+                                .setType("TRANSFER")
+                                .set("transferType", "PROXY_TEMPLATE")
+                                .set("template", template)
+                                .set("file", content)
+                                .toString());
                         doAfterAmount.addOne();
                     }
                     if (globalDifferences != null) {
@@ -280,11 +288,11 @@ public class CoreStringHandler extends BasicStringHandler {
                         TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, output);
                         String content = fileToString(output);
                         output.delete();
-                        Map<String, Object> msg = new HashMap<>();
-                        msg.put("type", "TRANSFER");
-                        msg.put("transferType", "PROXY_GLOBAL_TEMPLATE");
-                        msg.put("file", content);
-                        channel.writeAndFlush(new JSONObject(msg).toString());
+                        channel.writeAndFlush(JSONBuilder.create()
+                                .setType("TRANSFER")
+                                .set("transferType", "PROXY_GLOBAL_TEMPLATE")
+                                .set("file", content)
+                                .toString());
                         doAfterAmount.addOne();
                     }
                 } catch (Exception e) {

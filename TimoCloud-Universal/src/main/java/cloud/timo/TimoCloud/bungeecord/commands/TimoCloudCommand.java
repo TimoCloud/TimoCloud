@@ -2,12 +2,12 @@ package cloud.timo.TimoCloud.bungeecord.commands;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeMessageManager;
+import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
-import org.json.simple.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,11 +57,12 @@ public class TimoCloudCommand extends Command {
             }
             String command = Arrays.stream(args).collect(Collectors.joining(" "));
             senders.put(sender.getName(), sender);
-            Map<String, Object> map = new HashMap<>();
-            map.put("type", "PARSE_COMMAND");
-            map.put("data", command);
-            map.put("sender", sender.getName());
-            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(new JSONObject(map).toString());
+
+            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(JSONBuilder.create()
+                    .setType("PARSE_COMMAND")
+                    .setData(command)
+                    .set("sender", sender.getName())
+                    .toString());
         } catch (Exception e) {
             sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', "&cAn error occured while exeuting command. Please see console for more details.")));
         }
@@ -78,7 +79,7 @@ public class TimoCloudCommand extends Command {
     }
 
     private CommandSender getSender(String name) {
-        if (! senders.containsKey(name)) return null;
+        if (!senders.containsKey(name)) return null;
         return senders.get(name);
     }
 
