@@ -13,7 +13,7 @@ import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.lib.objects.HttpRequestProperty;
 import cloud.timo.TimoCloud.lib.utils.ArrayUtil;
-import cloud.timo.TimoCloud.lib.utils.HttpRequestUtil;
+import cloud.timo.TimoCloud.lib.utils.network.HttpRequestUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

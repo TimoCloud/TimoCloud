@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core.sockets;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.lib.utils.network.NettyUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -12,14 +13,14 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 public class CoreSocketServer {
 
     public void init(String address, int port) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = NettyUtil.getEventLoopGroup();
+        EventLoopGroup workerGroup = NettyUtil.getEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b
                     .childHandler(new CorePipeline())
                     .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(NettyUtil.getServerSocketChannelClass())
                     .option(ChannelOption.SO_BACKLOG, 100)
                     .option(ChannelOption.SO_RCVBUF, 4096)
                     .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(4096));

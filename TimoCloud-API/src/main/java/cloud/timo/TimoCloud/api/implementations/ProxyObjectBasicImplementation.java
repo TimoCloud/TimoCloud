@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-public class ProxyObjectBasicImplementation implements ProxyObject {
+public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
 
     private String name;
     private String group;
@@ -85,5 +85,16 @@ public class ProxyObjectBasicImplementation implements ProxyObject {
     @Override
     public void stop() {
         executeCommand("end");
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (! (o instanceof ProxyObject)) return 1;
+        ProxyObject so = (ProxyObject) o;
+        try {
+            return Integer.parseInt(getName().split("-")[getName().split("-").length-1]) - Integer.parseInt(so.getName().split("-")[so.getName().split("-").length-1]);
+        } catch (Exception e) {
+            return getName().compareTo(so.getName());
+        }
     }
 }

@@ -9,7 +9,7 @@ import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementa
 import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
-import cloud.timo.TimoCloud.lib.utils.InetAddressUtil;
+import cloud.timo.TimoCloud.lib.utils.network.InetAddressUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
 

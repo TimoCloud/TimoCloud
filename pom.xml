@@ -8,7 +8,7 @@
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
 
-    <version>5.1.0</version>
+    <version>5.1.1</version>
 
     <modules>
         <module>TimoCloud-Universal</module>
@@ -42,6 +42,6 @@
             <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
         </snapshotRepository>
     </distributionManagement>
-
     -->
+
 </project>

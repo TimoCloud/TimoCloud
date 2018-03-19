@@ -289,7 +289,7 @@ public class SignManager {
 
     public void onSignClick(Player player, Location location) {
         SignInstance signInstance = getSignInstanceByLocation(location);
-        if (signInstance == null ||signInstance.getTarget() == null) return;
+        if (signInstance == null ||signInstance.getTarget() == null || signInstance.getTargetServer() == null) return;
         TimoCloudBukkit.getInstance().sendPlayerToServer(player, signInstance.getTargetServer().getName());
     }
 

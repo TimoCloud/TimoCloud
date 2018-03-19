@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.lib.utils;
+package cloud.timo.TimoCloud.lib.utils.network;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;

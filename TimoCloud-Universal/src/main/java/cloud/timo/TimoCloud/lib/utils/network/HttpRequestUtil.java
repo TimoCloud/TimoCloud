@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.lib.utils;
+package cloud.timo.TimoCloud.lib.utils.network;
 
 import cloud.timo.TimoCloud.lib.objects.HttpRequestProperty;
 import org.json.simple.JSONValue;

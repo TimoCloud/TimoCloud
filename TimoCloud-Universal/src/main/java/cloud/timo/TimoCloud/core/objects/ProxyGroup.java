@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
@@ -287,6 +288,7 @@ public class ProxyGroup implements Group {
                 getProxyChooseStrategy().name(),
                 getHostNames()
         );
+        Collections.sort((List<ProxyObjectBasicImplementation>) (List) groupObject.getProxies());
         groupObject.getProxies().sort(Comparator.comparing(ProxyObject::getName));
         return groupObject;
     }
