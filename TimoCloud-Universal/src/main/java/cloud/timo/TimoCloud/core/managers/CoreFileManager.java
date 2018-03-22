@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.yaml.snakeyaml.DumperOptions;
@@ -119,8 +120,16 @@ public class CoreFileManager {
     }
 
     public void saveJson(JSONArray jsonArray, File file) throws IOException {
+        saveJson(jsonArray.toJSONString(), file);
+    }
+
+    public void saveJson(JSONObject jsonObject, File file) throws IOException {
+        saveJson(jsonObject.toJSONString(), file);
+    }
+
+    public void saveJson(String json, File file) throws IOException {
         FileWriter fileWriter = new FileWriter(file, false);
-        fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(jsonArray.toJSONString()))); //Prettify JSON
+        fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(json))); //Prettify JSON
         fileWriter.close();
     }
 
