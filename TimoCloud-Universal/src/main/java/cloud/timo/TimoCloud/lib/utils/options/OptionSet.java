@@ -26,7 +26,6 @@ public class OptionSet {
     }
 
     public Option get(String option) {
-        String[] names = {};
         return options.get(option);
     }
 }

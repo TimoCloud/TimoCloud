@@ -92,7 +92,8 @@ public class Proxy implements Communicatable {
             getBase().setAvailableRam(getBase().getAvailableRam() - getGroup().getRam());
             TimoCloudCore.getInstance().info("Told base " + getBase().getName() + " to start proxy " + getName() + ".");
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while starting proxy " + getName() + ": TimoCloudBase " + getBase().getName() + " not connected.");
+            TimoCloudCore.getInstance().severe("Error while starting proxy " + getName() + ": ");
+            TimoCloudCore.getInstance().severe(e);
             return;
         }
         getBase().getProxies().add(this);

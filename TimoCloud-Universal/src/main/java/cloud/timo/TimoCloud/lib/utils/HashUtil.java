@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.zip.CRC32;
 
@@ -75,7 +76,8 @@ public class HashUtil {
 
     private static String getFileHash(File file) throws IOException {
         CRC32 crc = new CRC32();
-        crc.update(Files.readAllBytes(file.toPath()));
+        Path path = file.toPath();
+        crc.update(Files.readAllBytes(path));
         return crc.getValue() + "";
     }
 

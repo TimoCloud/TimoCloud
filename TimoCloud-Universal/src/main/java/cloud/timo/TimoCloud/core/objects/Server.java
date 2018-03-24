@@ -82,7 +82,8 @@ public class Server implements Communicatable {
             getBase().setAvailableRam(getBase().getAvailableRam() - getGroup().getRam());
             TimoCloudCore.getInstance().info("Told base " + getBase().getName() + " to start server " + getName() + ".");
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while starting server " + getName() + ": TimoCloudBase " + getBase().getName() + " not connected.");
+            TimoCloudCore.getInstance().severe("Error while starting server " + getName() + ": ");
+            TimoCloudCore.getInstance().severe(e);
             return;
         }
         getGroup().addStartingServer(this);

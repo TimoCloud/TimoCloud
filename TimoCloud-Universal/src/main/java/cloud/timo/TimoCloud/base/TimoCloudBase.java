@@ -104,10 +104,10 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     private long getServerManagerDelayMillis() {
-        long delay = 1000;
+        long delay = 50;
         String prop = System.getProperty("serverStartDelay");
         try {
-            //delay = Long.parseLong(prop);
+            delay = Long.parseLong(prop);
         } catch (Exception e) {
         }
         return delay;

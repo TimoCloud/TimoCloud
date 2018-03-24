@@ -8,6 +8,13 @@ public class TimoCloudAPI {
     private static TimoCloudEventAPI timoCloudEventAPI;
 
     /**
+     * @return Whether TimoCloud is present on the server
+     */
+    public static boolean isEnabled() {
+        return getUniversalInstance() != null;
+    }
+
+    /**
      * Do not use this method. This will be done by TimoCloud
      */
     public static void setUniversalImplementation(TimoCloudUniversalAPI timoCloudUniversalAPI) {

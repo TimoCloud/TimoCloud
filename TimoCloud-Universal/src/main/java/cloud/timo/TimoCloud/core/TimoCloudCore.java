@@ -113,7 +113,6 @@ public class TimoCloudCore implements TimoCloudModule {
 
     @Override
     public void unload() {
-        getServerManager().saveGroups();
         getCloudFlareManager().unload();
         channel.close();
     }
