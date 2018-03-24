@@ -9,6 +9,7 @@ import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
@@ -34,6 +35,8 @@ public class Proxy implements Communicatable {
     private DnsRecord dnsRecord;
     private List<Server> registeredServers;
 
+    private DoAfterAmount templateUpdate;
+
     public Proxy(String name, ProxyGroup group, Base base, String token) {
         this.name = name;
         this.group = group;
@@ -57,7 +60,7 @@ public class Proxy implements Communicatable {
         this.registered = false;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
         getGroup().removeProxy(this);
-        getBase().getProxies().remove(this);
+        getBase().removeProxy(this);
 
         TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "PROXY_STOPPED", getToken());
     }
@@ -96,7 +99,7 @@ public class Proxy implements Communicatable {
             TimoCloudCore.getInstance().severe(e);
             return;
         }
-        getBase().getProxies().add(this);
+        getBase().addProxy(this);
         getGroup().addStartingProxy(this);
     }
 
@@ -147,6 +150,9 @@ public class Proxy implements Communicatable {
                 break;
             case "SET_PLAYER_COUNT":
                 this.onlinePlayerCount = ((Number) data).intValue();
+                break;
+            case "TRANSFER_FINISHED":
+                getTemplateUpdate().addOne();
                 break;
             default:
                 sendMessage(message);
@@ -245,6 +251,15 @@ public class Proxy implements Communicatable {
 
     public List<Server> getRegisteredServers() {
         return registeredServers;
+    }
+
+
+    public DoAfterAmount getTemplateUpdate() {
+        return templateUpdate;
+    }
+
+    public void setTemplateUpdate(DoAfterAmount templateUpdate) {
+        this.templateUpdate = templateUpdate;
     }
 
     public ProxyObject toProxyObject() {

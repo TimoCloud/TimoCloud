@@ -151,4 +151,24 @@ public class Base implements Communicatable {
     public List<Proxy> getProxies() {
         return proxies;
     }
+
+    public void addServer(Server server) {
+        if (getServers().contains(server)) return;
+        getServers().add(server);
+    }
+
+    public void removeServer(Server server) {
+        if (! getServers().contains(server)) return;
+        getServers().remove(server);
+    }
+
+    public void addProxy(Proxy proxy) {
+        if (getProxies().contains(proxy)) return;
+        getProxies().add(proxy);
+    }
+
+    public void removeProxy(Proxy proxy) {
+        if (! getProxies().contains(proxy)) return;
+        getProxies().remove(proxy);
+    }
 }

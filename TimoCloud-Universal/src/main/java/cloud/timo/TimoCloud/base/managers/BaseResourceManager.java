@@ -11,9 +11,11 @@ import java.lang.management.ManagementFactory;
 public class BaseResourceManager {
 
     private OperatingSystemMXBean operatingSystemMXBean;
+    private double lastCpuLoad;
 
     public BaseResourceManager() {
         this.operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        this.lastCpuLoad = 0.0;
     }
 
     public long getFreeMemory() {
@@ -21,7 +23,9 @@ public class BaseResourceManager {
     }
 
     public double getCpuUsage() {
-        return getOperatingSystemMXBean().getSystemCpuLoad()*100; // Convert to 0-100 percentage
+        double cpuLoad = getOperatingSystemMXBean().getSystemCpuLoad()*100;
+        if (Double.isNaN(cpuLoad)) cpuLoad = lastCpuLoad;
+        return this.lastCpuLoad = cpuLoad;
     }
 
     private long getCache() {

@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 import org.json.simple.JSONObject;
@@ -36,6 +37,8 @@ public class Server implements Communicatable {
     private String map = "";
     private String token;
     private boolean starting;
+
+    private DoAfterAmount templateUpdate;
 
     public Server(String name, ServerGroup group, Base base, String map, String token) {
         this.name = name;
@@ -87,7 +90,7 @@ public class Server implements Communicatable {
             return;
         }
         getGroup().addStartingServer(this);
-        getBase().getServers().add(this);
+        getBase().addServer(this);
     }
 
     public void stop() {
@@ -126,7 +129,7 @@ public class Server implements Communicatable {
         if (!isRegistered()) return;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
         getGroup().removeServer(this);
-        getBase().getServers().remove(this);
+        getBase().removeServer(this);
         setState("OFFLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getServerManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
@@ -179,6 +182,9 @@ public class Server implements Communicatable {
                 break;
             case "REGISTER":
                 register();
+                break;
+            case "TRANSFER_FINISHED":
+                getTemplateUpdate().addOne();
                 break;
             default:
                 sendMessage(message);
@@ -294,6 +300,15 @@ public class Server implements Communicatable {
 
     public boolean isStarting() {
         return starting;
+    }
+
+
+    public DoAfterAmount getTemplateUpdate() {
+        return templateUpdate;
+    }
+
+    public void setTemplateUpdate(DoAfterAmount templateUpdate) {
+        this.templateUpdate = templateUpdate;
     }
 
     public void executeCommand(String command) {

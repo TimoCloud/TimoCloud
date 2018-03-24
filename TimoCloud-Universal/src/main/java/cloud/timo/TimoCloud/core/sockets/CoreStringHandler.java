@@ -19,6 +19,8 @@ import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -193,6 +195,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 if (mapDifferences != null) amount++;
                 if (globalDifferences != null) amount++;
                 DoAfterAmount doAfterAmount = new DoAfterAmount(amount, server::start);
+                server.setTemplateUpdate(doAfterAmount);
                 try {
                     if (templateDifferences != null) {
                         File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), template);
@@ -208,8 +211,8 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .set("transferType", "SERVER_TEMPLATE")
                                 .set("template", template)
                                 .set("file", content)
+                                .set("target", targetToken)
                                 .toString());
-                        doAfterAmount.addOne();
                     }
                     if (mapDifferences != null) {
                         File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup().getName() + "_" + map);
@@ -224,8 +227,8 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .set("transferType", "SERVER_TEMPLATE")
                                 .set("template", server.getGroup().getName() + "_" + map)
                                 .set("file", content)
+                                .set("target", targetToken)
                                 .toString());
-                        doAfterAmount.addOne();
                     }
                     if (globalDifferences != null) {
                         List<File> templateFiles = new ArrayList<>();
@@ -240,8 +243,8 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .setType("TRANSFER")
                                 .set("transferType", "SERVER_GLOBAL_TEMPLATE")
                                 .set("file", content)
+                                .set("target", targetToken)
                                 .toString());
-                        doAfterAmount.addOne();
                     }
                     doAfterAmount.setAmount(amount);
                 } catch (Exception e) {
@@ -261,6 +264,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 if (templateDifferences != null) amount++;
                 if (globalDifferences != null) amount++;
                 DoAfterAmount doAfterAmount = new DoAfterAmount(amount, proxy::start);
+                proxy.setTemplateUpdate(doAfterAmount);
                 try {
                     if (templateDifferences != null) {
                         File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), template);
@@ -276,8 +280,8 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .set("transferType", "PROXY_TEMPLATE")
                                 .set("template", template)
                                 .set("file", content)
+                                .set("target", targetToken)
                                 .toString());
-                        doAfterAmount.addOne();
                     }
                     if (globalDifferences != null) {
                         List<File> templateFiles = new ArrayList<>();
@@ -292,9 +296,10 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .setType("TRANSFER")
                                 .set("transferType", "PROXY_GLOBAL_TEMPLATE")
                                 .set("file", content)
+                                .set("target", targetToken)
                                 .toString());
-                        doAfterAmount.addOne();
                     }
+                    doAfterAmount.setAmount(amount);
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe("Error while sending template files: ");
                     e.printStackTrace();

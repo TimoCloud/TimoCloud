@@ -84,6 +84,7 @@ public class BaseStringHandler extends BasicStringHandler {
                             TimoCloudBase.getInstance().getTemplateManager().extractFilesAndDeleteZip(file, TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
                             break;
                     }
+                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("TRANSFER_FINISHED", (String) json.get("target"), null);
                     break;
                 } catch (Exception e) {
                     TimoCloudBase.severe("Error while unpacking transfered files: ");
