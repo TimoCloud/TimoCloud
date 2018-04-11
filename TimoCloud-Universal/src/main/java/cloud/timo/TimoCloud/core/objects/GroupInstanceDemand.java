@@ -29,4 +29,8 @@ public class GroupInstanceDemand {
     public void changeAmount(int change) {
         this.amount += change;
     }
+
+    public int getScore() {
+        return getAmount()*getGroup().getPriority();
+    }
 }
