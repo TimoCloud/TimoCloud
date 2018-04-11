@@ -318,20 +318,21 @@ public class CoreServerManager {
 
         while (!(staticDemands.isEmpty() || bases.isEmpty())) { // Start static servers first
             GroupInstanceDemand demand = getMostImportant(staticDemands);
+            staticDemands.remove(demand);
             Base base = null;
             for (Base b : bases) {
                 if (b.getName().equals(demand.getGroup().getBaseName())) base = b;
             }
             if (base == null) continue;
             if (base.getAvailableRam() < demand.getGroup().getRam()) continue;
-            demands.remove(demand);
             bases.remove(base);
-            demand.changeAmount(-1);
             start(demand.getGroup(), base);
         }
 
         while (!(demands.isEmpty() || bases.isEmpty())) { // Start non-static servers
             GroupInstanceDemand demand = getMostImportant(demands);
+            demand.changeAmount(-1);
+            if (demand.getAmount() <= 0) demands.remove(demand);
             int bestDiff = -1;
             Base bestBase = null;
             for (Base base : bases) {
@@ -346,22 +347,16 @@ public class CoreServerManager {
                 demands.remove(demand);
                 continue;
             }
-            demand.changeAmount(-1);
-            if (demand.getAmount() <= 0) demands.remove(demand);
             bases.remove(bestBase);
             start(demand.getGroup(), bestBase);
         }
-    }
-
-    public long getFreeMemory() {
-        return ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean()).getFreePhysicalMemorySize() / (1024 * 1024); // Convert to megabytes
     }
 
     private GroupInstanceDemand getMostImportant(Collection<GroupInstanceDemand> demands) {
         int best = -1;
         GroupInstanceDemand bestDemand = null;
         for (GroupInstanceDemand demand : demands) {
-            int score = demand.getAmount() * demand.getGroup().getPriority();
+            int score = demand.getScore();
             if (score > best) {
                 best = score;
                 bestDemand = demand;

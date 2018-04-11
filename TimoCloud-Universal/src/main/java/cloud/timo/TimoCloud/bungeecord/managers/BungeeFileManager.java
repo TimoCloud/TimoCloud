@@ -46,7 +46,7 @@ public class BungeeFileManager {
                 configNew.set(key, config.get(key));
             }
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(configNew, configFile);
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
+            config = configNew;
 
             //Load messagesFile
             messagesFile = new File(configsDirectory, "messages.yml");
@@ -61,7 +61,7 @@ public class BungeeFileManager {
                 messagesNew.set(key, messages.get(key));
             }
             ConfigurationProvider.getProvider(YamlConfiguration.class).save(messagesNew, messagesFile);
-            messages = ConfigurationProvider.getProvider(YamlConfiguration.class).load(messagesFile);
+            messages = messagesNew;
 
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
