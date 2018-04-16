@@ -29,3 +29,8 @@ TimoCloud is full of innovative features. Here is a list of the most important o
  
  ## Support
  You can contact us via [support@timo.cloud](mailto:support@timo.cloud) or join our [Discord](https://discord.gg/RTNn4SE)
+ 
+ ## Hosting
+Are you looking for **cheap servers** with **high performance** working **perfectly** with TimoCloud? **Fee-Hosting.com** offers everything you need and works perfectly with TimoCloud!
+
+ [![Fee-Hosting](https://fee-hosting.com/includes/img/logo.png)](https://fee-hosting.com/root-server/)
