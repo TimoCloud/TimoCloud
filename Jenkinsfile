@@ -2,22 +2,35 @@ pipeline {
 	agent any
 	stages {
 		stage ('Clean Workspace') {
-			deleteDir()
+			steps {
+				deleteDir()
+			}
 		}
 	    stage ('Clone') {
-	        checkout scm
+	    	steps {
+	    		checkout scm
+	    	}
+	        
 	    }
 	    stage('Build') {
-	        echo 'Building..'
-	        sh 'mvn clean install'
-	        archiveArtifacts artifacts: 'TimoCloud-Universal/target/TimoCloud.jar', fingerprint: true  
+	    	steps {
+	        	echo 'Building..'
+	        	sh 'mvn clean install'
+	        	archiveArtifacts artifacts: 'TimoCloud-Universal/target/TimoCloud.jar', fingerprint: true  
+	    	}
+
 	    }
 	    stage('Test') {
-	        echo 'Testing..'
-	        sh 'mvn clean test'
+	    	steps {
+	    		echo 'Testing..'
+	        	sh 'mvn clean test'
+	    	}
+	        
 	    }
 	    stage('Deploy') {
-	        echo 'Deploying....'
+	    	steps {
+	    		echo 'Deploying....'
+	    	}
 	    }
     }
 }
