@@ -44,7 +44,7 @@ public class LobbyManager {
     }
 
     public ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
-        ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
+        ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
         if (group == null) {
             TimoCloudBungee.getInstance().severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
             return null;
@@ -55,7 +55,7 @@ public class LobbyManager {
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
                 .collect(Collectors.toList());
         List<ServerObject> removeServers = new ArrayList<>();
-        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalInstance().getServer(notThis.getName());
+        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis.getName());
         if (notThisServer != null) removeServers.add(notThisServer);
         List<String> history = getVisitedLobbies(uuid);
 

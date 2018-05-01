@@ -13,29 +13,26 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class EventMonitor implements Listener {
 
-    private Map<UUID, Boolean> pending;
+    private Set<UUID> pending;
     private Map<UUID, String> previousServer;
 
     public EventMonitor() {
-        pending = new HashMap<>();
+        pending = new HashSet<>();
         previousServer = new HashMap<>();
     }
 
     private boolean isPending(UUID uuid) {
-        pending.putIfAbsent(uuid, false);
-        return pending.get(uuid);
+        return pending.contains(uuid);
     }
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
-        pending.put(event.getPlayer().getUniqueId(), true);
+        pending.add(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -43,6 +40,7 @@ public class EventMonitor implements Listener {
         PlayerObject playerObject = getPlayer(event.getPlayer());
         if (isPending(event.getPlayer().getUniqueId())) { // Join
             TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerConnectEvent(playerObject));
+            pending.remove(event.getPlayer().getUniqueId());
         } else { // Server change
             TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerServerChangeEvent(
                     playerObject,
@@ -60,7 +58,7 @@ public class EventMonitor implements Listener {
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {
-        PlayerObject player = TimoCloudAPI.getUniversalInstance().getPlayer(proxiedPlayer.getUniqueId());
+        PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(proxiedPlayer.getUniqueId());
         if (player != null) return player;
         return PlayerUtil.playerToObject(proxiedPlayer);
     }

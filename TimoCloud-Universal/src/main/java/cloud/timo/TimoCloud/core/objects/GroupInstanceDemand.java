@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-public class GroupInstanceDemand {
+public class GroupInstanceDemand implements Comparable<GroupInstanceDemand> {
 
     private Group group;
     private int amount;
@@ -32,5 +32,10 @@ public class GroupInstanceDemand {
 
     public int getScore() {
         return getAmount()*getGroup().getPriority();
+    }
+
+    @Override
+    public int compareTo(GroupInstanceDemand o) {
+        return o.getScore()-getScore();
     }
 }

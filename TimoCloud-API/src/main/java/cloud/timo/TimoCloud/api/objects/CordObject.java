@@ -1,5 +1,7 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
@@ -33,5 +35,12 @@ public interface CordObject {
      * Normally, a Cord is always connected if you are able to get its CordObject. However, when the Cord is currently disconnecting, this will return false
      */
     boolean isConnected();
+
+
+    /**
+     * Send a plugin message to the cord
+     * @param message The message which shall be sent
+     */
+    void sendPluginMessage(PluginMessage message);
 
 }

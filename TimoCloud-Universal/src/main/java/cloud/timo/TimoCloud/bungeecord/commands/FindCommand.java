@@ -19,7 +19,7 @@ public class FindCommand extends Command {
             sendMessage(sender, "Please specify the name of the player you want to find");
             return;
         }
-        PlayerObject playerObject = TimoCloudAPI.getUniversalInstance().getPlayer(args[0]);
+        PlayerObject playerObject = TimoCloudAPI.getUniversalAPI().getPlayer(args[0]);
         if (playerObject == null) {
             sendMessage(sender, "&cThe player '&e" + args[0] + "&c' is not online.");
             return;

@@ -85,9 +85,10 @@ public class BaseStringHandler extends BasicStringHandler {
                             break;
                     }
                     TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("TRANSFER_FINISHED", (String) json.get("target"), null);
+                    TimoCloudBase.getInstance().getServerManager().setDownloadingTemplate(false);
                     break;
                 } catch (Exception e) {
-                    TimoCloudBase.severe("Error while unpacking transfered files: ");
+                    TimoCloudBase.severe("Error while unpacking transferred files: ");
                     e.printStackTrace();
                 }
             default:

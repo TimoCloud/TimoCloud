@@ -8,7 +8,9 @@ import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionParser;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class ModuleLoader {
 
@@ -131,20 +133,23 @@ public class ModuleLoader {
                 break;
         }
         try {
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> module.unload()));
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    module.unload();
+                } catch (Exception e) {
+                    severe("Error while unloading module " + moduleType.name() + ": ");
+                    e.printStackTrace();
+                }
+            }));
             module.load(options);
         } catch (Exception e) {
-            severe("Error while loading module of type " + moduleType + ": ");
+            severe("Error while loading module " + moduleType.name() + ": ");
             e.printStackTrace();
         }
     }
 
     private static String getAvailableModules() {
-        String ret = "";
-        for (int i = 0; i<ModuleType.values().length; i++) {
-            ret += ModuleType.values()[i] + (i < ModuleType.values().length-1 ? ", " : "");
-        }
-        return ret;
+        return Arrays.stream(ModuleType.values()).map(ModuleType::name).collect(Collectors.joining(", "));
     }
 
     private static String getVersion() {

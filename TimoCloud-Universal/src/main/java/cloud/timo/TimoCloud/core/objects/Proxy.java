@@ -18,6 +18,8 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Proxy implements Communicatable {
 
@@ -57,12 +59,18 @@ public class Proxy implements Communicatable {
     }
 
     public void unregister() {
+        if (! isRegistered()) return;
         this.registered = false;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
         getGroup().removeProxy(this);
         getBase().removeProxy(this);
 
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "PROXY_STOPPED", getToken());
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "PROXY_STOPPED", getToken());
+            }
+        }, 60000);
     }
 
     public void start() {
@@ -104,8 +112,8 @@ public class Proxy implements Communicatable {
     }
 
     public void stop() {
-        if (channel == null) unregister();
-        else channel.close();
+        getChannel().close();
+        unregister();
     }
 
     public void registerServer(Server server) {

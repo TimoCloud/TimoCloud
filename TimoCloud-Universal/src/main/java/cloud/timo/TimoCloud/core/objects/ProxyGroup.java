@@ -228,6 +228,7 @@ public class ProxyGroup implements Group {
         this.motd = motd;
     }
 
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

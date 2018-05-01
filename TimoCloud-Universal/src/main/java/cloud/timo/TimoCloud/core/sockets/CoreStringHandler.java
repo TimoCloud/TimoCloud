@@ -2,6 +2,8 @@ package cloud.timo.TimoCloud.core.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventType;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
@@ -11,16 +13,14 @@ import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
+import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
 import org.apache.commons.io.FileUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -135,13 +135,13 @@ public class CoreStringHandler extends BasicStringHandler {
                 JSONArray serverGroups = new JSONArray();
                 JSONArray proxyGroups = new JSONArray();
                 JSONArray cords = new JSONArray();
-                ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper();
+                ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper();
                 try {
-                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalInstance().getServerGroups())
+                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalAPI().getServerGroups())
                         serverGroups.add(objectMapper.writeValueAsString(serverGroupObject));
-                    for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalInstance().getProxyGroups())
+                    for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalAPI().getProxyGroups())
                         proxyGroups.add(objectMapper.writeValueAsString(proxyGroupObject));
-                    for (CordObject cordObject : TimoCloudAPI.getUniversalInstance().getCords())
+                    for (CordObject cordObject : TimoCloudAPI.getUniversalAPI().getCords())
                         cords.add(objectMapper.writeValueAsString(cordObject));
                     TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "API_DATA", JSONBuilder.create()
                             .set("serverGroups", serverGroups)
@@ -156,7 +156,7 @@ public class CoreStringHandler extends BasicStringHandler {
             case "FIRE_EVENT": {
                 try {
                     TimoCloudCore.getInstance().getEventManager().fireEvent(
-                            ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper().readValue(
+                            ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue(
                                     (String) data, EventUtil.getClassByEventType(
                                             EnumUtil.valueOf(EventType.class, (String) json.get("eventType")))));
                 } catch (Exception e) {
@@ -179,6 +179,11 @@ public class CoreStringHandler extends BasicStringHandler {
                 if (target == null || target instanceof Base) {
                     TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "DELETE_DIRECTORY", data);
                 }
+                break;
+            }
+            case "PLUGIN_MESSAGE": {
+                AddressedPluginMessage addressedPluginMessage = PluginMessageSerializer.deserialize((String) data);
+                TimoCloudCore.getInstance().getPluginMessageManager().onMessage(addressedPluginMessage);
                 break;
             }
             case "SERVER_TEMPLATE_REQUEST": {

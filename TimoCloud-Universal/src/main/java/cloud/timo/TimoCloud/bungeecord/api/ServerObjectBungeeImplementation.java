@@ -27,15 +27,4 @@ public class ServerObjectBungeeImplementation extends ServerObjectBasicImplement
         this.extra = extra;
         TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getToken(), extra);
     }
-
-    @Override
-    public void executeCommand(String command) {
-        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
-    }
-
-    @Override
-    public void stop() {
-        TimoCloudBungee.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getToken(), "");
-    }
-
 }

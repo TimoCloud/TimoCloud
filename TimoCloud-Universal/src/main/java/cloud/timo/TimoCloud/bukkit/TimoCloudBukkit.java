@@ -2,7 +2,11 @@ package cloud.timo.TimoCloud.bukkit;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudBukkitAPIImplementation;
+import cloud.timo.TimoCloud.bukkit.api.TimoCloudInternalMessageAPIBukkitImplementation;
+import cloud.timo.TimoCloud.bukkit.api.TimoCloudMessageAPIBukkitImplementation;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.bukkit.commands.SignsCommand;
 import cloud.timo.TimoCloud.bukkit.commands.TimoCloudBukkitCommand;
@@ -14,7 +18,6 @@ import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -49,15 +52,21 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
-        makeInstances();
-        registerCommands();
-        registerListeners();
-        registerTasks();
-        registerChannel();
-        Executors.newSingleThreadExecutor().submit(this::connectToCore);
-        while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
-        info("&ahas been enabled!");
+        try {
+            info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+            makeInstances();
+            registerCommands();
+            registerListeners();
+            registerTasks();
+            registerChannel();
+            Executors.newSingleThreadExecutor().submit(this::connectToCore);
+            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData())
+                ; // Wait until we get the API data
+            info("&ahas been enabled!");
+        } catch (Exception e) {
+            severe("Error while enabling TimoCloudBukkit: ");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -71,7 +80,6 @@ public class TimoCloudBukkit extends JavaPlugin {
             new BukkitSocketClient().init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
             e.printStackTrace();
-            onSocketDisconnect();
         }
     }
 
@@ -97,7 +105,7 @@ public class TimoCloudBukkit extends JavaPlugin {
         Bukkit.shutdown();
     }
 
-    private void makeInstances() {
+    private void makeInstances() throws Exception {
         instance = this;
         fileManager = new BukkitFileManager();
         socketClientHandler = new BukkitSocketClientHandler();
@@ -106,14 +114,16 @@ public class TimoCloudBukkit extends JavaPlugin {
         signManager = new SignManager();
         stateByEventManager = new StateByEventManager();
 
-        TimoCloudAPI.setBukkitImplementation(new TimoCloudBukkitAPIImplementation());
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBukkitImplementation());
-        TimoCloudAPI.setEventImplementation(new EventManager());
+        APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBukkitImplementation());
+        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBukkitImplementation());
+        APIInstanceUtil.setBukkitInstance(new TimoCloudBukkitAPIImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
+        APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBukkitImplementation());
     }
 
     private void registerCommands() {
         getCommand("signs").setExecutor(new SignsCommand());
-        TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
+        final TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
         getCommand("timocloudbukkit").setExecutor(timoCloudBukkitCommand);
         getCommand("tcb").setExecutor(timoCloudBukkitCommand);
     }

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Server implements Communicatable {
 
@@ -94,8 +96,8 @@ public class Server implements Communicatable {
     }
 
     public void stop() {
-        if (channel == null) unregister();
-        else channel.close();
+        getChannel().close();
+        unregister();
     }
 
     @Override
@@ -126,7 +128,7 @@ public class Server implements Communicatable {
     }
 
     public void unregister() {
-        if (!isRegistered()) return;
+        if (! isRegistered()) return;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
         getGroup().removeServer(this);
         getBase().removeServer(this);
@@ -136,7 +138,12 @@ public class Server implements Communicatable {
             proxyGroup.unregisterServer(this);
         }
         this.registered = false;
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "SERVER_STOPPED", getToken());
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "SERVER_STOPPED", getToken());
+            }
+        }, 60000);
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {

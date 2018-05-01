@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.core.plugins;
+package cloud.timo.TimoCloud.api.plugins;
 
 import java.io.File;
 import java.util.List;
@@ -20,14 +20,6 @@ public class TimoCloudPluginDescription {
         this.depends = depends;
         this.softDepends = softDepends;
         this.file = file;
-    }
-
-    public void onEnable() {
-
-    }
-
-    public void onDisable() {
-
     }
 
     public String getName() {

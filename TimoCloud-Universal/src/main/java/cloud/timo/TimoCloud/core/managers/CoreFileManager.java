@@ -28,6 +28,8 @@ public class CoreFileManager {
     private File proxyGlobalDirectory;
     private File temporaryDirectory;
     private File logsDirectory;
+    private File debugDirectory;
+    private File pluginsDirectory;
 
     private File configFile;
     private File cloudFlareConfigFile;
@@ -64,6 +66,11 @@ public class CoreFileManager {
             temporaryDirectory.mkdirs();
             logsDirectory = new File(baseDirectory, "logs/");
             logsDirectory.mkdirs();
+            debugDirectory = new File(baseDirectory, "debug/");
+            debugDirectory.mkdirs();
+
+            pluginsDirectory = new File(baseDirectory, "plugins/");
+            pluginsDirectory.mkdirs();
 
             this.configFile = new File(configsDirectory, "config.yml");
             configFile.createNewFile();
@@ -169,6 +176,14 @@ public class CoreFileManager {
     public File getLogsDirectory() {
         if (logsDirectory == null) return new File(getBaseDirectory(), "logs/");
         return logsDirectory;
+    }
+
+    public File getDebugDirectory() {
+        return debugDirectory;
+    }
+
+    public File getPluginsDirectory() {
+        return pluginsDirectory;
     }
 
     public File getConfigFile() {

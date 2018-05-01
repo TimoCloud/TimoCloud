@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.api.events;
 
-import cloud.timo.TimoCloud.api.objects.Event;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 
 public class ProxyUnregisterEvent implements Event {

@@ -1,7 +1,9 @@
 package cloud.timo.TimoCloud.cord;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
+import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
+import cloud.timo.TimoCloud.cord.api.TimoCloudInternalMessageAPICordImplementation;
+import cloud.timo.TimoCloud.cord.api.TimoCloudMessageAPICordImplementation;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
@@ -23,17 +25,17 @@ import java.util.concurrent.TimeUnit;
 
 public class TimoCloudCord implements TimoCloudModule {
 
-    public static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_BLACK = "\u001B[30m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_WHITE = "\u001B[37m";
 
     private static TimoCloudCord instance;
     private OptionSet options;
@@ -68,7 +70,7 @@ public class TimoCloudCord implements TimoCloudModule {
     }
 
     @Override
-    public void load(OptionSet optionSet) {
+    public void load(OptionSet optionSet) throws Exception {
         this.options = optionSet;
         makeInstances();
         new Thread(this::initSocketServer).start();
@@ -81,7 +83,7 @@ public class TimoCloudCord implements TimoCloudModule {
 
     }
 
-    private void makeInstances() {
+    private void makeInstances() throws Exception {
         instance = this;
         fileManager = new CordFileManager();
         proxyManager = new ProxyManager();
@@ -94,8 +96,10 @@ public class TimoCloudCord implements TimoCloudModule {
         scheduler = Executors.newScheduledThreadPool(1);
         workerGroup = new NioEventLoopGroup();
 
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICordImplementation());
-        TimoCloudAPI.setEventImplementation(new EventManager());
+        APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPICordImplementation());
+        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICordImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
+        APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICordImplementation());
     }
 
     private void scheduleConnecting() {

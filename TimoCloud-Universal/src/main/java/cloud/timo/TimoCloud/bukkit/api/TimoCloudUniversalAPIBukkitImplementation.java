@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.bukkit.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 
 public class TimoCloudUniversalAPIBukkitImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 

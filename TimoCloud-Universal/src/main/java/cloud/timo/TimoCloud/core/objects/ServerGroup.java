@@ -2,7 +2,6 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
@@ -76,7 +75,7 @@ public class ServerGroup implements Group {
         setBaseName(baseName);
         setSortOutStates(sortOutStates);
         if (isStatic() && getBaseName() == null) {
-            TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to get the group started.");
+            TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to get a server started.");
         }
     }
 
@@ -142,6 +141,7 @@ public class ServerGroup implements Group {
         this.isStatic = isStatic;
     }
 
+    @Override
     public boolean isStatic() {
         return isStatic;
     }

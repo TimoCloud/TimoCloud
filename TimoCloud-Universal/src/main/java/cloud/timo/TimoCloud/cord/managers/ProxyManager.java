@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class ProxyManager {
 
     public ProxyGroupObject getProxyGroupByHostName(String hostName) {
-        for (ProxyGroupObject group : TimoCloudAPI.getUniversalInstance().getProxyGroups())
+        for (ProxyGroupObject group : TimoCloudAPI.getUniversalAPI().getProxyGroups())
             for (String hostName1 : group.getHostNames())
                 if (matches(hostName, hostName1)) return group;
         return null;

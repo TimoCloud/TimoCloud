@@ -27,15 +27,4 @@ public class ServerObjectCordImplementation extends ServerObjectBasicImplementat
         this.extra = extra;
         TimoCloudCord.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getToken(), extra);
     }
-
-    @Override
-    public void executeCommand(String command) {
-        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
-    }
-
-    @Override
-    public void stop() {
-        TimoCloudCord.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getToken(), "");
-    }
-
 }

@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.lib.objects;
 
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,12 +10,18 @@ public class JSONBuilder {
 
     private Map<String, Object> properties;
 
+    private JSONBuilder() {
+        properties = new LinkedHashMap<>();
+    }
+
     public static JSONBuilder create() {
         return new JSONBuilder();
     }
 
-    private JSONBuilder() {
-        properties = new LinkedHashMap<>();
+    public static JSONBuilder createFromJsonString(String json) {
+        JSONBuilder builder = new JSONBuilder();
+        builder.properties = (JSONObject) JSONValue.parse(json);
+        return builder;
     }
 
     public boolean hasKey(String key) {

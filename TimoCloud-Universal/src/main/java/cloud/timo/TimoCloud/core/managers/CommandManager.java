@@ -2,14 +2,20 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.lib.debugger.DataCollector;
 import cloud.timo.TimoCloud.lib.utils.ChatColorUtil;
+import org.json.simple.JSONObject;
 
+import java.io.File;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CommandManager {
+
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
 
     private void send(String message) {
         TimoCloudCore.getInstance().info(message);
@@ -151,7 +157,7 @@ public class CommandManager {
                 Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(target);
                 Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
 
-                if (server == null && proxyGroup == null && server == null && proxy == null) {
+                if (serverGroup == null && proxyGroup == null && server == null && proxy == null) {
                     sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
                     return;
                 }
@@ -165,9 +171,9 @@ public class CommandManager {
                 }
 
                 if (serverGroup != null) for (Server server1 : serverGroup.getServers()) server1.executeCommand(cmd);
-                if (proxyGroup != null) for (Proxy proxy1 : proxyGroup.getProxies()) proxy1.executeCommand(cmd);
-                if (server != null) server.executeCommand(cmd);
-                if (proxy != null) proxy.executeCommand(cmd);
+                else if (proxyGroup != null) for (Proxy proxy1 : proxyGroup.getProxies()) proxy1.executeCommand(cmd);
+                else if (server != null) server.executeCommand(cmd);
+                else if (proxy != null) proxy.executeCommand(cmd);
 
                 sendMessage.accept("&2The command has successfully been executed on the target.");
                 return;
@@ -317,6 +323,17 @@ public class CommandManager {
                 }
                 sendMessage.accept("&2Group &e" + group.getName() + " &2has successfully been edited. New data: ");
                 displayGroup(sendMessage, group);
+                return;
+            }
+            if (command.equalsIgnoreCase("debug")) {
+                try {
+                    JSONObject jsonObject = DataCollector.collectData(TimoCloudCore.getInstance());
+                    TimoCloudCore.getInstance().getFileManager().saveJson(jsonObject, new File(
+                            TimoCloudCore.getInstance().getFileManager().getDebugDirectory(), DATE_FORMAT.format(new Date()) + ".json"));
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe("An error occured while collecting debugging data: ");
+                    TimoCloudCore.getInstance().severe(e);
+                }
                 return;
             }
         } catch (Exception e) {

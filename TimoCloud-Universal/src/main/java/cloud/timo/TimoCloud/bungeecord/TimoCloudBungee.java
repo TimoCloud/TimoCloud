@@ -3,7 +3,11 @@ package cloud.timo.TimoCloud.bungeecord;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudBungeeAPIImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudInternalMessageAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudMessageAPIBungeeImplementation;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
@@ -18,7 +22,6 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -51,16 +54,21 @@ public class TimoCloudBungee extends Plugin {
 
     @Override
     public void onEnable() {
-        instance = this;
-        info("&eEnabling &bTimoCloudBungee &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
-        makeInstances();
-        registerCommands();
-        registerListeners();
-        registerTasks();
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
-        Executors.newSingleThreadExecutor().submit(this::connectToCore);
-        while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).gotAnyData()); // Wait until we get the API data
-        info("&aSuccessfully started TimoCloudBungee!");
+        try {
+            instance = this;
+            info("&eEnabling &bTimoCloudBungee &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+            makeInstances();
+            registerCommands();
+            registerListeners();
+            registerTasks();
+            Executors.newSingleThreadExecutor().submit(this::connectToCore);
+            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData())
+                ; // Wait until we get the API data
+            info("&aSuccessfully started TimoCloudBungee!");
+        } catch (Exception e) {
+            severe("Error while enabling TimoCloudBungee: ");
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -69,7 +77,7 @@ public class TimoCloudBungee extends Plugin {
         info("Successfully stopped TimoCloudBungee!");
     }
 
-    private void makeInstances() {
+    private void makeInstances() throws Exception {
         fileManager = new BungeeFileManager();
         lobbyManager = new LobbyManager();
         eventManager = new BungeeEventManager();
@@ -80,9 +88,11 @@ public class TimoCloudBungee extends Plugin {
         bungeeStringHandler = new BungeeStringHandler();
         timoCloudCommand = new TimoCloudCommand();
 
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPIBungeeImplementation());
-        TimoCloudAPI.setBungeeImplementation(new TimoCloudBungeeAPIImplementation());
-        TimoCloudAPI.setEventImplementation(new EventManager());
+        APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBungeeImplementation());
+        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBungeeImplementation());
+        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
+        APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBungeeImplementation());
     }
 
     private void registerCommands() {

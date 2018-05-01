@@ -9,20 +9,19 @@ import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class LobbyJoin implements Listener {
-    private Map<UUID, Boolean> pending;
+    private Set<UUID> pending;
 
     public LobbyJoin() {
-        pending = new HashMap<>();
+        pending = new HashSet<>();
     }
 
     private boolean isPending(UUID uuid) {
-        pending.putIfAbsent(uuid, false);
-        return pending.get(uuid);
+        return pending.contains(uuid);
     }
 
     @EventHandler
@@ -30,7 +29,7 @@ public class LobbyJoin implements Listener {
         if (! TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) {
             return;
         }
-        pending.put(event.getPlayer().getUniqueId(), true);
+        pending.add(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
@@ -45,7 +44,7 @@ public class LobbyJoin implements Listener {
             return;
         }
         event.setTarget(info);
-        pending.put(player.getUniqueId(), false);
+        pending.remove(player.getUniqueId());
     }
 
     @EventHandler

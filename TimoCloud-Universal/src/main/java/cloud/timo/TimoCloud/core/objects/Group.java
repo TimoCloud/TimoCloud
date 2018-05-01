@@ -5,5 +5,6 @@ public interface Group {
     GroupType getType();
     int getRam();
     int getPriority();
+    boolean isStatic();
     String getBaseName();
 }

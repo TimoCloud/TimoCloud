@@ -29,7 +29,7 @@ public class BasicStringHandler extends SimpleChannelInboundHandler<String> {
     public void read(Channel channel, String message) {
         for (String c : message.split("")) {
             getParsed(channel).append(c);
-            if (c.equals("\"") && (getParsed(channel).length() < 2 || !Character.toString(getParsed(channel).charAt(getParsed(channel).length() - 2)).equals("\\"))) setIsString(channel, !isString(channel));
+            if (c.equals("\"") && (getParsed(channel).length() < 2 || ! Character.toString(getParsed(channel).charAt(getParsed(channel).length() - 2)).equals("\\"))) setIsString(channel, !isString(channel));
             if (isString(channel)) continue;
             if (c.equals("{")) open.put(channel, getOpen(channel) + 1);
             if (c.equals("}")) {

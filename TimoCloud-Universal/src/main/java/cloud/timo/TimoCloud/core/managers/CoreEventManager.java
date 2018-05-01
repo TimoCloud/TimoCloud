@@ -4,14 +4,15 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.*;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.implementations.PlayerObjectBasicImplementation;
-import cloud.timo.TimoCloud.api.objects.Event;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import org.json.simple.JSONObject;
 
@@ -24,14 +25,15 @@ public class CoreEventManager implements Listener {
                 .setData(eventToJSON(event))
                 .toJson();
         for (Communicatable communicatable : TimoCloudCore.getInstance().getServerManager().getAllCommunicatableInstances()) {
+            if (communicatable instanceof Base) continue; // Bases don't support events
             communicatable.sendMessage(json);
         }
-        ((EventManager) TimoCloudAPI.getEventImplementation()).callEvent(event);
+        ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(event);
     }
 
     private static String eventToJSON(Event event) {
         try {
-            return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper().writeValueAsString(event);
+            return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().writeValueAsString(event);
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while converting Event to JSON: ");
             e.printStackTrace();

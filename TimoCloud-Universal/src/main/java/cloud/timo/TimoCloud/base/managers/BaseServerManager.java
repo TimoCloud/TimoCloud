@@ -35,6 +35,8 @@ public class BaseServerManager {
     private boolean startingServer = false;
     private boolean startingProxy = false;
 
+    private boolean downloadingTemplate = false;
+
     public BaseServerManager(long millis) {
         serverQueue = new LinkedList<>();
         proxyQueue = new LinkedList<>();
@@ -73,6 +75,7 @@ public class BaseServerManager {
     }
 
     public void startNext() {
+        if (isDownloadingTemplate()) return;
         startNextServer();
         startNextProxy();
         updateResources();
@@ -165,6 +168,7 @@ public class BaseServerManager {
                                         .setIfCondition("mapDifferences", mapDifferences, mapDifferences.size() > 0)
                                         .setIfCondition("globalDifferences", globalDifferences, globalDifferences.size() > 0).toJson())
                         .toJson());
+                setDownloadingTemplate(true);
                 return;
             }
 
@@ -296,6 +300,7 @@ public class BaseServerManager {
                                         .setIfCondition("globalDifferences", gloalDifferences, gloalDifferences.size() > 0))
                                 .toJson()
                 );
+                setDownloadingTemplate(true);
                 return;
             }
 
@@ -497,5 +502,13 @@ public class BaseServerManager {
         }
         */
         deleteDirectory(directory);
+    }
+
+    public boolean isDownloadingTemplate() {
+        return downloadingTemplate;
+    }
+
+    public void setDownloadingTemplate(boolean downloadingTemplate) {
+        this.downloadingTemplate = downloadingTemplate;
     }
 }

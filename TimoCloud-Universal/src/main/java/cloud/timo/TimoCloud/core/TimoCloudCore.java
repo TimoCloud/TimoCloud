@@ -2,8 +2,12 @@ package cloud.timo.TimoCloud.core;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
+import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
+import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
+import cloud.timo.TimoCloud.core.api.TimoCloudMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
 import cloud.timo.TimoCloud.core.managers.*;
+import cloud.timo.TimoCloud.core.plugins.PluginManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketMessageManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
@@ -51,12 +55,14 @@ public class TimoCloudCore implements TimoCloudModule {
     private CoreEventManager eventManager;
     private CloudFlareManager cloudFlareManager;
     private CoreSocketMessageManager socketMessageManager;
+    private PluginManager pluginManager;
+    private PluginMessageManager pluginMessageManager;
     private boolean running;
     private boolean waitingForCommand = false;
     private LineReader reader;
 
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
 
     static {
         System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
@@ -95,7 +101,7 @@ public class TimoCloudCore implements TimoCloudModule {
     }
 
     @Override
-    public void load(OptionSet optionSet) {
+    public void load(OptionSet optionSet) throws Exception{
         running = true;
         shuttingDown = false;
         this.options = optionSet;
@@ -103,10 +109,11 @@ public class TimoCloudCore implements TimoCloudModule {
         getServerManager().init();
         new Thread(this::initSocketServer).start();
         registerTasks();
+        getPluginManager().loadPlugins();
         try {
             waitForCommands();
         } catch (IOException e) {
-            severe("Error while initializing terminal: ");
+            severe("Error while reading commands: ");
             e.printStackTrace();
         }
     }
@@ -114,6 +121,9 @@ public class TimoCloudCore implements TimoCloudModule {
     @Override
     public void unload() {
         getCloudFlareManager().unload();
+        for (TimoCloudPlugin plugin : getPluginManager().getPlugins()) {
+            plugin.onUnload();
+        }
         channel.close();
     }
 
@@ -166,7 +176,7 @@ public class TimoCloudCore implements TimoCloudModule {
         }
     }
 
-    private void makeInstances() {
+    private void makeInstances() throws Exception {
         instance = this;
         this.fileManager = new CoreFileManager();
         try {
@@ -186,11 +196,14 @@ public class TimoCloudCore implements TimoCloudModule {
         this.eventManager = new CoreEventManager();
         this.cloudFlareManager = new CloudFlareManager();
         this.socketMessageManager = new CoreSocketMessageManager();
+        this.pluginManager = new PluginManager();
+        this.pluginMessageManager = new PluginMessageManager();
 
-        TimoCloudAPI.setUniversalImplementation(new TimoCloudUniversalAPICoreImplementation());
-        TimoCloudAPI.setEventImplementation(new EventManager());
-        TimoCloudAPI.getEventImplementation().registerListener(getEventManager());
-        TimoCloudAPI.getEventImplementation().registerListener(getCloudFlareManager());
+        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICoreImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
+        APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
+        TimoCloudAPI.getEventAPI().registerListener(getEventManager());
+        TimoCloudAPI.getEventAPI().registerListener(getCloudFlareManager());
     }
 
     private void createLogger() throws IOException {
@@ -279,6 +292,14 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public CoreSocketMessageManager getSocketMessageManager() {
         return socketMessageManager;
+    }
+
+    public PluginManager getPluginManager() {
+        return pluginManager;
+    }
+
+    public PluginMessageManager getPluginMessageManager() {
+        return pluginMessageManager;
     }
 
     public CoreSocketServer getSocketServer() {

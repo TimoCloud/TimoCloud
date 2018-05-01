@@ -13,7 +13,7 @@ public class StateByEventManager {
     private String lastStateSet;
 
     private void setState(String state) {
-        TimoCloudAPI.getBukkitInstance().getThisServer().setState(state);
+        TimoCloudAPI.getBukkitAPI().getThisServer().setState(state);
     }
 
     public void setStateByMotd(String motd) {
@@ -33,7 +33,7 @@ public class StateByEventManager {
 
     public void setStateByPlayerCount() {
         int cur = TimoCloudBukkit.getInstance().getOnlinePlayersAmount();
-        String currentState = TimoCloudAPI.getBukkitInstance().getThisServer().getState();
+        String currentState = TimoCloudAPI.getBukkitAPI().getThisServer().getState();
         if (!currentState.equals(lastStateSet)) stateBefore = currentState;
         if (!TimoCloudBukkit.getInstance().getFileManager().getConfig().getStringList("PlayersToState.enabledWhileStates").contains(stateBefore))
             return;

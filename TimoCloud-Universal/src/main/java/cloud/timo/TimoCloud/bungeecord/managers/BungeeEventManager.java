@@ -1,9 +1,9 @@
 package cloud.timo.TimoCloud.bungeecord.managers;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.objects.Event;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import cloud.timo.TimoCloud.lib.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,6 +26,6 @@ public class BungeeEventManager {
     }
 
     private ObjectMapper getObjectMapper() {
-        return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalInstance()).getObjectMapper();
+        return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper();
     }
 }

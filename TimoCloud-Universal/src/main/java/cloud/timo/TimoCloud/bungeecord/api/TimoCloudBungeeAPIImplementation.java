@@ -8,6 +8,6 @@ import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 public class TimoCloudBungeeAPIImplementation implements TimoCloudBungeeAPI {
     @Override
     public ProxyObject getThisProxy() {
-        return TimoCloudAPI.getUniversalInstance().getProxy(TimoCloudBungee.getInstance().getProxyName());
+        return TimoCloudAPI.getUniversalAPI().getProxy(TimoCloudBungee.getInstance().getProxyName());
     }
 }

@@ -142,7 +142,7 @@ public class SignManager {
     }
 
     public void updateSigns() {
-        if (TimoCloudAPI.getUniversalInstance().getServerGroups() == null) return;
+        if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         List<SignInstance> dynamicInstances = new ArrayList<>();
         for (SignInstance signInstance : signInstances) {
             if (signInstance.isDynamic()) {
@@ -158,7 +158,7 @@ public class SignManager {
     private void processDynamicSigns(List<SignInstance> signInstances) {
         Map<ServerGroupObject, List<SignInstance>> groups = new HashMap<>();
         for (SignInstance signInstance : signInstances) {
-            ServerGroupObject group = TimoCloudAPI.getUniversalInstance().getServerGroup(signInstance.getTarget());
+            ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(signInstance.getTarget());
             groups.computeIfAbsent(group, k -> new ArrayList<>());
             groups.get(group).add(signInstance);
         }
@@ -228,7 +228,7 @@ public class SignManager {
             TimoCloudBukkit.getInstance().severe("Fatal error: Wanted to process dynamic sign as static sign. This should never happen - please report this!");
             return;
         }
-        writeSign(TimoCloudAPI.getUniversalInstance().getServer(signInstance.getTarget()), signInstance.getTemplate(), signInstance);
+        writeSign(TimoCloudAPI.getUniversalAPI().getServer(signInstance.getTarget()), signInstance.getTemplate(), signInstance);
     }
 
     private void writeSign(ServerObject server, SignTemplate signTemplate, SignInstance signInstance) {
@@ -303,8 +303,8 @@ public class SignManager {
             return;
         }
         boolean dynamic;
-        if (TimoCloudAPI.getUniversalInstance().getServerGroup(target) != null) dynamic = true;
-        else if (TimoCloudAPI.getUniversalInstance().getServer(target) != null) dynamic = false;
+        if (TimoCloudAPI.getUniversalAPI().getServerGroup(target) != null) dynamic = true;
+        else if (TimoCloudAPI.getUniversalAPI().getServer(target) != null) dynamic = false;
         else {
             BukkitMessageManager.sendMessage(player, "&cError while creating sign: Could not find group or server called &e" + target + "&c.");
             return;

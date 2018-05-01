@@ -18,7 +18,7 @@ public class TimoCloudBukkitCommand implements CommandExecutor {
             return false;
         }
         if (args[0].equalsIgnoreCase("setstate")) {
-            TimoCloudAPI.getBukkitInstance().getThisServer().setState(args[1]);
+            TimoCloudAPI.getBukkitAPI().getThisServer().setState(args[1]);
             BukkitMessageManager.sendMessage(sender, "&aState has successfully been set to &e" + args[1]);
         }
         return false;

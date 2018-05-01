@@ -1,5 +1,7 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -98,4 +100,10 @@ public interface ServerObject {
      * Stops the server
      */
     void stop();
+
+    /**
+     * Send a plugin message to the server
+     * @param message The message which shall be sent
+     */
+    void sendPluginMessage(PluginMessage message);
 }

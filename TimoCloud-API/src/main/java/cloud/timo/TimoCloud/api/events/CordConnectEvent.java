@@ -1,7 +1,6 @@
 package cloud.timo.TimoCloud.api.events;
 
 import cloud.timo.TimoCloud.api.objects.CordObject;
-import cloud.timo.TimoCloud.api.objects.Event;
 
 public class CordConnectEvent implements Event {
 

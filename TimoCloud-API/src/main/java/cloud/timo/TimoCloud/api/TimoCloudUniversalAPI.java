@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Use {@link TimoCloudAPI#getUniversalInstance()} to get an instance of this class
+ * Use {@link TimoCloudAPI#getUniversalAPI()} to get an instance of this class
  */
 public interface TimoCloudUniversalAPI {
 

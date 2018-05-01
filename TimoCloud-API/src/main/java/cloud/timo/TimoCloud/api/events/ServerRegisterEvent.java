@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.api.events;
 
-import cloud.timo.TimoCloud.api.objects.Event;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 
 public class ServerRegisterEvent implements Event {

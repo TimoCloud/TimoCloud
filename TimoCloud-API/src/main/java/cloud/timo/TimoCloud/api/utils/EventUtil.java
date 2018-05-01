@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.api.utils;
 
 import cloud.timo.TimoCloud.api.events.*;
-import cloud.timo.TimoCloud.api.objects.Event;
+import cloud.timo.TimoCloud.api.events.Event;
 
 public class EventUtil {
 

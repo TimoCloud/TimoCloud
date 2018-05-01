@@ -9,6 +9,6 @@ public class TimoCloudBukkitAPIImplementation implements TimoCloudBukkitAPI {
 
     @Override
     public ServerObject getThisServer() {
-        return TimoCloudAPI.getUniversalInstance().getServer(TimoCloudBukkit.getInstance().getServerName());
+        return TimoCloudAPI.getUniversalAPI().getServer(TimoCloudBukkit.getInstance().getServerName());
     }
 }

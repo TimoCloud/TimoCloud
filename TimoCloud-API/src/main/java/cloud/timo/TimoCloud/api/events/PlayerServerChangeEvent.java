@@ -1,7 +1,6 @@
 package cloud.timo.TimoCloud.api.events;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.objects.Event;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 
@@ -25,11 +24,11 @@ public class PlayerServerChangeEvent implements Event {
     }
 
     public ServerObject getServerFrom() {
-        return TimoCloudAPI.getUniversalInstance().getServer(serverFrom);
+        return TimoCloudAPI.getUniversalAPI().getServer(serverFrom);
     }
 
     public ServerObject getServerTo() {
-        return TimoCloudAPI.getUniversalInstance().getServer(serverTo);
+        return TimoCloudAPI.getUniversalAPI().getServer(serverTo);
     }
 
     @Override

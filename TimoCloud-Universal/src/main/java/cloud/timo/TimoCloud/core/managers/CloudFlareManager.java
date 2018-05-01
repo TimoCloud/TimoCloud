@@ -122,6 +122,7 @@ public class CloudFlareManager implements Listener {
         try {
             return DnsRecord.fromJson((JSONObject) request(CLOUDFLARE_API_URL + "zones/" + record.getZone().getId() + "/dns_records", "POST", record.toJson().toString()));
         } catch (Exception e) {
+            if (e.getMessage().contains("The record already exists.")) return null; // This happens when a base connects while we are deleting old records
             TimoCloudCore.getInstance().severe(e);
             return null;
         }

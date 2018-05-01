@@ -13,7 +13,7 @@ public class ProxyPing implements Listener {
 
     @EventHandler
     public void onProxyPingEvent(ProxyPingEvent event) {
-        ProxyObject proxyObject = TimoCloudAPI.getBungeeInstance().getThisProxy();
+        ProxyObject proxyObject = TimoCloudAPI.getBungeeAPI().getThisProxy();
 
         ServerPing serverPing = event.getResponse();
         serverPing.setPlayers(new ServerPing.Players(

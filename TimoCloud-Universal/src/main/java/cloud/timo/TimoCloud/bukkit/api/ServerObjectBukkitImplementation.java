@@ -27,14 +27,4 @@ public class ServerObjectBukkitImplementation extends ServerObjectBasicImplement
         this.extra = extra;
         TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("SET_EXTRA", getToken(), extra);
     }
-
-    @Override
-    public void executeCommand(String command) {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("EXECUTE_COMMAND", getToken(), command);
-    }
-
-    @Override
-    public void stop() {
-        TimoCloudBukkit.getInstance().getSocketMessageManager().sendMessage("STOP_SERVER", getToken(), "");
-    }
 }
