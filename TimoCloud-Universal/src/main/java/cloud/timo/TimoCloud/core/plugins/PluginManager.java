@@ -41,10 +41,10 @@ public class PluginManager {
             }
         }
         Set<TimoCloudPluginDescription> used = new HashSet<>();
-        List<TimoCloudPluginDescription> order = new LinkedList<>();
+        Queue<TimoCloudPluginDescription> order = new LinkedList<>();
         for (TimoCloudPluginDescription plugin : pluginDescriptions.values()) {
             try {
-                load(plugin, order, used, order.size());
+                load(plugin, order, used);
             } catch (PluginLoadException e) {
                 TimoCloudCore.getInstance().severe(e);
             }
@@ -73,7 +73,7 @@ public class PluginManager {
         }
     }
 
-    public void load(TimoCloudPluginDescription plugin, List<TimoCloudPluginDescription> order, Set<TimoCloudPluginDescription> used, int index) throws PluginLoadException {
+    public void load(TimoCloudPluginDescription plugin, Queue<TimoCloudPluginDescription> order, Set<TimoCloudPluginDescription> used) throws PluginLoadException {
         if (used.contains(plugin)) return;
         used.add(plugin);
         for (String depend : plugin.getDepends()) {
@@ -84,7 +84,7 @@ public class PluginManager {
             if (used.contains(dependPlugin)) {
                 throw new PluginLoadException("Error while loading plugin '" + plugin.getName() + "': Dependency cycle between pluginDescriptions: '" + plugin.getName() + "' depends on '" + dependPlugin.getName() + "' which directly or indirectly depends on '" + plugin.getName() + "' again.");
             }
-            load(dependPlugin, order, used, index);
+            load(dependPlugin, order, used);
         }
         for (String depend : plugin.getSoftDepends()) {
             TimoCloudPluginDescription dependPlugin = getPluginDescription(depend);
@@ -95,9 +95,9 @@ public class PluginManager {
                 TimoCloudCore.getInstance().info("Warning while loading plugin '" + plugin.getName() + "': Dependency cycle between pluginDescriptions: '" + plugin.getName() + "' soft-depends on '" + dependPlugin.getName() + "' which directly or indirectly depends on '" + plugin.getName() + "' again.");
                 continue;
             }
-            load(dependPlugin, order, used, index);
+            load(dependPlugin, order, used);
         }
-        order.add(index, plugin);
+        order.add(plugin);
     }
 
     public TimoCloudPluginDescription loadPlugin(File file) throws IOException, PluginLoadException {
