@@ -142,9 +142,9 @@ public class CommandManager {
                 }
 
                 if (serverGroup != null) serverGroup.stopAllServers();
-                if (proxyGroup != null) proxyGroup.stopAllProxies();
-                if (server != null) server.stop();
-                if (proxy != null) proxy.stop();
+                else if (proxyGroup != null) proxyGroup.stopAllProxies();
+                else if (server != null) server.stop();
+                else if (proxy != null) proxy.stop();
 
                 sendMessage.accept("&2The group/server/proxy has successfully been stopped/restarted.");
                 return;
