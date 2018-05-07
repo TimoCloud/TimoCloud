@@ -44,7 +44,7 @@ public class EventMonitor implements Listener {
         } else { // Server change
             TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerServerChangeEvent(
                     playerObject,
-                    previousServer.get(playerObject),
+                    previousServer.get(playerObject.getUuid()),
                     event.getPlayer().getServer().getInfo().getName()
             ));
         }
