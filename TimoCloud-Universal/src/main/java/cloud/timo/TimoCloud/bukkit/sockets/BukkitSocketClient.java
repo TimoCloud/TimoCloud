@@ -19,10 +19,12 @@ public class BukkitSocketClient {
         try {
             f = b.connect(host, port).sync();
         } catch (Exception e) {
-            TimoCloudBukkit.getInstance().onSocketDisconnect();
+            TimoCloudBukkit.getInstance().onSocketDisconnect(true);
+            group.shutdownGracefully();
+            return;
         }
         f.channel().closeFuture().addListener(future -> {
-            TimoCloudBukkit.getInstance().onSocketDisconnect();
+            TimoCloudBukkit.getInstance().onSocketDisconnect(false);
             group.shutdownGracefully();
         });
     }

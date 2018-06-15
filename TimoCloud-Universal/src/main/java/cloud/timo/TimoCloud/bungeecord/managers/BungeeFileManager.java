@@ -2,14 +2,13 @@ package cloud.timo.TimoCloud.bungeecord.managers;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -70,20 +69,21 @@ public class BungeeFileManager {
         }
     }
 
-    public JSONArray loadJson(File file) {
+    public JsonArray loadJson(File file) {
         try {
             String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8.name());
-            return (JSONArray) new JSONParser().parse(fileContent == null || fileContent.trim().isEmpty() ? "[]" : fileContent);
+            if (fileContent == null || fileContent.trim().isEmpty()) fileContent = "[]";
+            return new JsonParser().parse(fileContent).getAsJsonArray();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void saveJson(JSONArray jsonArray, File file) {
+    public void saveJson(JsonArray jsonArray, File file) {
         try {
             FileWriter fileWriter = new FileWriter(file, false);
-            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(jsonArray.toJSONString()))); //Prettify JSON
+            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
             e.printStackTrace();

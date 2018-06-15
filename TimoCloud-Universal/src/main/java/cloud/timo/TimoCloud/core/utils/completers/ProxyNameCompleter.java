@@ -8,12 +8,13 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProxyNameCompleter implements Completer {
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
-        list.addAll(TimoCloudCore.getInstance().getServerManager().getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(List::stream).map(Proxy::getName).map(Candidate::new).collect(Collectors.toList()));
+        list.addAll(TimoCloudCore.getInstance().getInstanceManager().getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream).map(Proxy::getName).map(Candidate::new).collect(Collectors.toList()));
     }
 }

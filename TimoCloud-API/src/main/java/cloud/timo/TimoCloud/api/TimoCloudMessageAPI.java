@@ -51,6 +51,13 @@ public interface TimoCloudMessageAPI {
     void registerMessageListener(MessageListener listener, String ... supportedMessageTypes);
 
     /**
+     * Unregisters a message listener so that it no longer gets notified of incoming messages.
+     * This might be useful when your plugin gets reloaded, so that your old listener's instance does not receive messages anymore
+     * @param listener The listener which shall be unregistered
+     */
+    void unregisterMessageListener(MessageListener listener);
+
+    /**
      * Returns the message client address of the TimoCloud application you are on.
      * You usually don't need this, as the sender's address will be set automatically by TimoCloud
      * @return The message client address to which messages you shall receive can be sent

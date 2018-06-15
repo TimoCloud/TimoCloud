@@ -1,8 +1,6 @@
 package cloud.timo.TimoCloud.lib.debugger;
 
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import cloud.timo.TimoCloud.lib.messages.Message;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -11,14 +9,14 @@ import java.util.stream.Collectors;
 
 public class DataCollector {
 
-    private static final List<String> HIDDEN_KEYS = Arrays.asList("api-key");
+    private static final Set<String> HIDDEN_KEYS = new HashSet<>(Arrays.asList("api-key"));
 
-    public static JSONObject collectData(Object root) throws IllegalAccessException {
+    public static Message collectData(Object root) throws IllegalAccessException {
         return collectData(root, new HashMap<>(), root.getClass().getName());
     }
 
-    public static JSONObject collectData(Object root, Map<Object, String> used, String rootId) throws RuntimeException {
-        Map json = new LinkedHashMap();
+    public static Message collectData(Object root, Map<Object, String> used, String rootId) throws RuntimeException {
+        Message json = Message.create();
         for (Field field : root.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             if (Modifier.isStatic(field.getModifiers())) continue;
@@ -32,9 +30,8 @@ public class DataCollector {
                     ? "null"
                     : System.identityHashCode(object) + "";
             if (used.containsKey(id)) {
-                return JSONBuilder.create()
-                        .set("link", used.get(id))
-                        .toJson();
+                return Message.create()
+                        .set("link", used.get(id));
             }
             used.put(id, id);
             Object data = null;
@@ -43,14 +40,14 @@ public class DataCollector {
                 if (getPackageName(object.getClass()).startsWith("cloud.timo")) {
                     data = collectData(object, used, newId);
                 } else if (object instanceof Collection) {
-                    JSONArray array = new JSONArray();
+                    List array = new ArrayList();
                     for (Object o : (Collection) object) {
                         array.add(collectData(o, used, newId + "." + o == null ? "null" : o.toString()));
                     }
                     data = array;
                 } else if (object instanceof Map) {
                     final Map map = (Map) object;
-                    data = map.keySet().stream().map(key -> JSONBuilder.create()
+                    data = map.keySet().stream().map(key -> Message.create()
                             .set("key", key.toString())
                             .setIfCondition("value", collectData(map.get(key), used, newId + "." + key), ! HIDDEN_KEYS.contains(key))
                             .setIfCondition("hidden", true, HIDDEN_KEYS.contains(key))
@@ -64,7 +61,7 @@ public class DataCollector {
             DataField dataField = new DataField(id, field.getType(), data);
             json.put(field.getName(), dataField.toJson());
         }
-        return new JSONObject(json);
+        return json;
     }
 
     private static String getPackageName(Class clazz) {

@@ -7,11 +7,10 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -53,12 +52,12 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
     }
 
-    public void setData(JSONObject json) {
+    public void setData(Map<String, Object> json) {
         ArrayList serverGroups = new ArrayList<>();
         ArrayList proxyGroups = new ArrayList();
         ArrayList cords = new ArrayList();
         try {
-            for (Object object : (JSONArray) json.get("serverGroups")) {
+            for (Object object : (List) json.get("serverGroups")) {
                 ServerGroupObject groupObject = getObjectMapper().readValue((String) object, serverGroupObjectImplementation);
                 List<ServerObject> serverObjects = new ArrayList<>();
                 for (ServerObject serverObject : groupObject.getServers())
@@ -68,7 +67,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
                 serverGroups.add(groupObject);
             }
             this.serverGroups = serverGroups;
-            for (Object object : (JSONArray) json.get("proxyGroups")) {
+            for (Object object : (List) json.get("proxyGroups")) {
                 ProxyGroupObject groupObject = getObjectMapper().readValue((String) object, proxyGroupObjectImplementation);
                 List<ProxyObject> proxyObjects = new ArrayList<>();
                 for (ProxyObject proxyObject : groupObject.getProxies())
@@ -78,7 +77,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
                 proxyGroups.add(groupObject);
             }
             this.proxyGroups = proxyGroups;
-            for (Object object : (JSONArray) json.get("cords")) {
+            for (Object object : (List) json.get("cords")) {
                 CordObject cord = getObjectMapper().readValue((String) object, cordObjectImplementation);
                 cords.add(cord);
             }

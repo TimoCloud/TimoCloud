@@ -22,6 +22,7 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -62,8 +63,11 @@ public class TimoCloudBungee extends Plugin {
             registerListeners();
             registerTasks();
             Executors.newSingleThreadExecutor().submit(this::connectToCore);
-            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData())
-                ; // Wait until we get the API data
+            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
+                try {
+                    Thread.sleep(50); // Wait until we get the API data
+                } catch (Exception e) {}
+            }
             info("&aSuccessfully started TimoCloudBungee!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBungee: ");
@@ -130,7 +134,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage("PROXY_HANDSHAKE", getToken());
+        getSocketMessageManager().sendMessage(Message.create().setType("PROXY_HANDSHAKE").setTarget(getProxyId()));
     }
 
     public void onSocketDisconnect() {
@@ -152,7 +156,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage("GET_API_DATA", "");
+        getSocketMessageManager().sendMessage(Message.create().setType("GET_API_DATA"));
     }
 
     private void sendEverything() {
@@ -160,7 +164,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void sendPlayerCount() {
-        getSocketMessageManager().sendMessage("SET_PLAYER_COUNT", getProxy().getOnlineCount());
+        getSocketMessageManager().sendMessage(Message.create().setType("SET_PLAYER_COUNT").setData(getProxy().getOnlineCount()));
     }
 
     private void registerListeners() {
@@ -175,8 +179,8 @@ public class TimoCloudBungee extends Plugin {
         return System.getProperty("timocloud-proxyname");
     }
 
-    public String getToken() {
-        return System.getProperty("timocloud-token");
+    public String getProxyId() {
+        return System.getProperty("timocloud-proxyid");
     }
 
     public static TimoCloudBungee getInstance() {

@@ -2,14 +2,16 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
-import org.json.simple.JSONObject;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class Base implements Communicatable {
+
     private String name;
     private InetAddress address;
     private InetAddress publicAddress; // Used for connecting to public proxies
@@ -19,8 +21,8 @@ public class Base implements Communicatable {
     private double cpu;
     private boolean connected;
     private boolean ready;
-    private List<Server> servers;
-    private List<Proxy> proxies;
+    private Set<Server> servers;
+    private Set<Proxy> proxies;
 
     public Base(String name, InetAddress address, InetAddress publicAddress, Channel channel) {
         this.name = name;
@@ -28,8 +30,8 @@ public class Base implements Communicatable {
         this.publicAddress = publicAddress;
         this.channel = channel;
         setReady(false);
-        servers = new ArrayList<>();
-        proxies = new ArrayList<>();
+        servers = new HashSet<>();
+        proxies = new HashSet<>();
     }
 
     @Override
@@ -51,12 +53,12 @@ public class Base implements Communicatable {
     }
 
     @Override
-    public void onMessage(JSONObject message) {
+    public void onMessage(Message message) {
         String type = (String) message.get("type");
         Object data = message.get("data");
         switch (type) {
             case "RESOURCES":
-                JSONObject map = (JSONObject) data;
+                Map map = (Map) data;
                 setReady((boolean) map.get("ready"));
                 int maxRam = ((Number) map.get("maxRam")).intValue();
                 int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
@@ -71,13 +73,13 @@ public class Base implements Communicatable {
     }
 
     @Override
-    public void sendMessage(JSONObject message) {
-        if (getChannel() != null) getChannel().writeAndFlush(message.toString());
+    public void sendMessage(Message message) {
+        if (getChannel() != null) getChannel().writeAndFlush(message.toJson());
     }
 
     @Override
     public void onHandshakeSuccess() {
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
+        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
     }
     public String getName() {
         return name;
@@ -144,11 +146,11 @@ public class Base implements Communicatable {
         this.ready = ready;
     }
 
-    public List<Server> getServers() {
+    public Set<Server> getServers() {
         return servers;
     }
 
-    public List<Proxy> getProxies() {
+    public Set<Proxy> getProxies() {
         return proxies;
     }
 

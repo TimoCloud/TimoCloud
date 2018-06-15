@@ -2,7 +2,7 @@ package cloud.timo.TimoCloud.bungeecord.commands;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeMessageManager;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -58,7 +58,7 @@ public class TimoCloudCommand extends Command {
             String command = Arrays.stream(args).collect(Collectors.joining(" "));
             senders.put(sender.getName(), sender);
 
-            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(JSONBuilder.create()
+            TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(Message.create()
                     .setType("PARSE_COMMAND")
                     .setData(command)
                     .set("sender", sender.getName())

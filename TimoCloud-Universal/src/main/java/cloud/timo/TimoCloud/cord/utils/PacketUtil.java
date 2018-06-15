@@ -4,7 +4,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
 import cloud.timo.TimoCloud.cord.sockets.ProxyDownstreamHandler;
 import cloud.timo.TimoCloud.cord.sockets.ProxyUpstreamHandler;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.AttributeKey;
@@ -18,16 +18,16 @@ public class PacketUtil {
     public static ByteBuf createStatusPacket(ProxyGroupObject proxyGroupObject, int protocolVersion) {
         ByteBuf buf = Unpooled.buffer();
         writeVarInt(0, buf);
-        writeString(JSONBuilder.create()
-                .set("version", JSONBuilder.create()
+        writeString(Message.create()
+                .set("version", Message.create()
                         .set("name", "TimoCloudCord")
                         .set("protocol", protocolVersion)
                         .toJson())
-                .set("players", JSONBuilder.create()
+                .set("players", Message.create()
                         .set("max", proxyGroupObject.getMaxPlayerCount())
                         .set("online", proxyGroupObject.getOnlinePlayerCount())
                         .toJson())
-                .set("description", JSONBuilder.create()
+                .set("description", Message.create()
                         .set("text", proxyGroupObject.getMotd())
                         .toJson())
                 .toString(), buf);

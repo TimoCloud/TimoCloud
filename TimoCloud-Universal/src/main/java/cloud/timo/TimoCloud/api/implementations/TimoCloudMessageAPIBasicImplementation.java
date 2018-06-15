@@ -4,8 +4,11 @@ import cloud.timo.TimoCloud.api.TimoCloudMessageAPI;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.messages.internal.TypeSpecificMessageListener;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
-import cloud.timo.TimoCloud.api.messages.objects.*;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
+import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
 
     @Override
     public void sendMessage(AddressedPluginMessage message) {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(JSONBuilder.create()
+        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType("PLUGIN_MESSAGE")
                 .setData(PluginMessageSerializer.serialize(message))
                 .toString());
@@ -51,6 +54,11 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
     @Override
     public void registerMessageListener(MessageListener listener, String... supportedMessageTypes) {
         listeners.add(new TypeSpecificMessageListener(listener, supportedMessageTypes));
+    }
+
+    @Override
+    public void unregisterMessageListener(MessageListener listener) {
+        listeners.remove(listener);
     }
 
     public List<TypeSpecificMessageListener> getListeners() {

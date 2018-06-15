@@ -13,6 +13,6 @@ import java.util.stream.Collectors;
 public class BaseNameCompleter implements Completer {
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
-        list.addAll(TimoCloudCore.getInstance().getServerManager().getBases().stream().map(Base::getName).map(Candidate::new).collect(Collectors.toList()));
+        list.addAll(TimoCloudCore.getInstance().getInstanceManager().getBases().stream().map(Base::getName).map(Candidate::new).collect(Collectors.toList()));
     }
 }

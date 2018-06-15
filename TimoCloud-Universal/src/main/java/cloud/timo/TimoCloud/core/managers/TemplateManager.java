@@ -2,20 +2,19 @@ package cloud.timo.TimoCloud.core.managers;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class TemplateManager {
 
-    public void zipFiles(Collection<File> files, File base, File output) throws IOException {
-        FileOutputStream fos = new FileOutputStream(output);
-        ZipOutputStream zos = new ZipOutputStream(fos);
+    public void zipFiles(Collection<File> files, File base, OutputStream output) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(output);
         for (File file : files) addFile(file, base, zos);
         zos.close();
-        fos.close();
+        output.flush();
     }
 
     private static void addFile(File file, File base, ZipOutputStream zos) throws IOException {

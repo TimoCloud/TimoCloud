@@ -1,25 +1,25 @@
 package cloud.timo.TimoCloud.base.objects;
 
-import org.json.simple.JSONObject;
+import java.util.Map;
 
 public class BaseServerObject {
     private String name;
+    private String id;
     private String group;
     private int ram;
     private boolean isStatic;
     private String map;
-    private String token;
-    private JSONObject templateHash;
-    private JSONObject mapHash;
-    private JSONObject globalHash;
+    private Map<String, Object> templateHash;
+    private Map<String, Object> mapHash;
+    private Map<String, Object> globalHash;
 
-    public BaseServerObject(String name, String group, int ram, boolean isStatic, String map, String token, JSONObject templateHash, JSONObject mapHash, JSONObject globalHash) {
+    public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash) {
         this.name = name;
+        this.id = id;
         this.group = group;
         this.ram = ram;
         this.isStatic = isStatic;
         this.map = map;
-        this.token = token;
         this.templateHash = templateHash;
         this.mapHash = mapHash;
         this.globalHash = globalHash;
@@ -27,6 +27,10 @@ public class BaseServerObject {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getGroup() {
@@ -45,19 +49,15 @@ public class BaseServerObject {
         return map;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public JSONObject getTemplateHash() {
+    public Map<String, Object> getTemplateHash() {
         return templateHash;
     }
 
-    public JSONObject getMapHash() {
+    public Map<String, Object> getMapHash() {
         return mapHash;
     }
 
-    public JSONObject getGlobalHash() {
+    public Map<String, Object> getGlobalHash() {
         return globalHash;
     }
 }

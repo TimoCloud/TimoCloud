@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ServerObjectCoreImplementation extends ServerObjectBasicImplementation implements ServerObject {
 
-    public ServerObjectCoreImplementation(String name, String group, String token, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
-        super(name, group, token, state, extra, map, motd, onlinePlayers, onlinePlayerCount, maxPlayerCount, base, socketAddress);
+    public ServerObjectCoreImplementation(String name, String id, String group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
+        super(name, id, group, state, extra, map, motd, onlinePlayers, onlinePlayerCount, maxPlayerCount, base, socketAddress);
     }
 
     private Server getServer() {
-        return TimoCloudCore.getInstance().getServerManager().getServerByToken(getToken());
+        return TimoCloudCore.getInstance().getInstanceManager().getServerById(getId());
     }
 
     @Override

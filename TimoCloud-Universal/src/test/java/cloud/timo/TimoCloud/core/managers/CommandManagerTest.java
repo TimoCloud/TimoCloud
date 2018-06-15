@@ -13,14 +13,14 @@ import java.util.function.Consumer;
 
 import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class) // We needed that for every test, in order to mock static methods
+@RunWith(PowerMockRunner.class) // We need that for every test in order to mock static methods
 @PrepareForTest(TimoCloudCore.class) // We want to mock TimoCloudCore statically
 public class CommandManagerTest {
 
     @Mock
     private TimoCloudCore timoCloudCore; // Our TimoCloudCore mock
     @Mock
-    private CoreServerManager serverManager; // Our ServerManager mock
+    private CoreInstanceManager serverManager; // Our ServerManager mock
 
     private CommandManager commandManager; // Our CommandManager instance we want to test
 
@@ -29,7 +29,7 @@ public class CommandManagerTest {
         commandManager = new CommandManager(); // Create instance
         PowerMockito.mockStatic(TimoCloudCore.class); // Mock TimoCloudCore statically
         when(TimoCloudCore.getInstance()).thenReturn(timoCloudCore); // Return our mocked instance
-        when(timoCloudCore.getServerManager()).thenReturn(serverManager); // Return mocked ServerManager
+        when(timoCloudCore.getInstanceManager()).thenReturn(serverManager); // Return mocked ServerManager
     }
 
     @Test

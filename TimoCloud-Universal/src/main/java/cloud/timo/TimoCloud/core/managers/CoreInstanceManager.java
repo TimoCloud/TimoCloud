@@ -1,14 +1,15 @@
 package cloud.timo.TimoCloud.core.managers;
 
-import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
-import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import io.netty.channel.Channel;
-import org.json.simple.JSONArray;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CoreServerManager {
+public class CoreInstanceManager {
 
     private Map<String, ServerGroup> serverGroups;
     private Map<String, ProxyGroup> proxyGroups;
@@ -52,10 +53,9 @@ public class CoreServerManager {
     public void loadServerGroups() {
         Map<String, ServerGroup> serverGroups = new HashMap<>();
         try {
-            List serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
-            if (serverGroupsList == null) serverGroupsList = new ArrayList();
-            for (Object object : serverGroupsList) {
-                Map<String, Object> properties = (Map<String, Object>) object;
+            JsonArray serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
+            for (JsonElement jsonElement : serverGroupsList) {
+                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType());
                 String name = (String) properties.get("name");
                 ServerGroup serverGroup = getServerGroupByName(name);
                 if (serverGroup != null) serverGroup.construct(properties);
@@ -75,10 +75,9 @@ public class CoreServerManager {
     public void loadProxyGroups() {
         try {
             Map<String, ProxyGroup> proxyGroups = new HashMap<>();
-            List proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJson(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
-            if (proxyGroupsList == null) proxyGroupsList = new ArrayList();
-            for (Object object : proxyGroupsList) {
-                Map<String, Object> properties = (Map<String, Object>) object;
+            JsonArray proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
+            for (JsonElement jsonElement : proxyGroupsList) {
+                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType());
                 String name = (String) properties.get("name");
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
                 if (proxyGroup != null) proxyGroup.construct(properties);
@@ -104,10 +103,10 @@ public class CoreServerManager {
      * Saves server group configurations to config file
      */
     public void saveServerGroups() {
-        JSONArray serverGroups = new JSONArray();
-        serverGroups.addAll(getServerGroups().stream().map(ServerGroup::getProperties).collect(Collectors.toList()));
+        JsonArray serverGroups = new JsonArray();
+        getServerGroups().stream().map(ServerGroup::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(serverGroups::add);
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(serverGroups, TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(serverGroups), TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving server groups: ");
             e.printStackTrace();
@@ -118,10 +117,10 @@ public class CoreServerManager {
      * Saves proxy group configurations to config file
      */
     public void saveProxyGroups() {
-        JSONArray proxyGroups = new JSONArray();
-        proxyGroups.addAll(getProxyGroups().stream().map(ProxyGroup::getProperties).collect(Collectors.toList()));
+        JsonArray proxyGroups = new JsonArray();
+        getProxyGroups().stream().map(ProxyGroup::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(proxyGroups::add);
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(proxyGroups, TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
             e.printStackTrace();
@@ -218,7 +217,7 @@ public class CoreServerManager {
      * @param group The server group which shall be deleted
      */
     public void removeServerGroup(ServerGroup group) {
-        if (getServerGroups().contains(group)) getServerGroups().remove(group);
+        getServerGroups().remove(group);
         group.stopAllServers();
         saveServerGroups();
     }
@@ -229,7 +228,7 @@ public class CoreServerManager {
      * @param group The proxy group which shall be deleted
      */
     public void removeProxyGroup(ProxyGroup group) {
-        if (getProxyGroups().contains(group)) getProxyGroups().remove(group);
+        getProxyGroups().remove(group);
         group.stopAllProxies();
         saveProxyGroups();
     }
@@ -263,10 +262,13 @@ public class CoreServerManager {
      *
      * @param group The group of which an instance shall be started
      * @param base  The base an the server shall be started on
+     *
+     * @return The started server
      */
-    public void startServer(ServerGroup group, Base base) {
+    public Server startServer(ServerGroup group, Base base) {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
+        String id = name + "_" + token;
 
         List<String> maps = getAvailableMaps(group);
         String map = null;
@@ -289,8 +291,9 @@ public class CoreServerManager {
             map = best;
         }
 
-        Server server = new Server(name, group, base, map, token);
+        Server server = new Server(name, id, base, map, group);
         server.start();
+        return server;
     }
 
     /**
@@ -323,12 +326,17 @@ public class CoreServerManager {
      *
      * @param group The group of which an instance shall be started
      * @param base  The base an the proxy shall be started on
+     *
+     * @return The started proxy
      */
-    public void startProxy(ProxyGroup group, Base base) {
+    public Proxy startProxy(ProxyGroup group, Base base) {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
-        Proxy proxy = new Proxy(name, group, base, token);
+        String id = name + "_" + token;
+
+        Proxy proxy = new Proxy(name, id, base, group);
         proxy.start();
+        return proxy;
     }
 
     /**
@@ -361,8 +369,8 @@ public class CoreServerManager {
     public List<Communicatable> getAllCommunicatableInstances() {
         return Stream.concat(
                 Stream.concat(
-                        getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(List::stream),
-                        getServerGroups().stream().map(ServerGroup::getServers).flatMap(List::stream)),
+                        getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream),
+                        getServerGroups().stream().map(ServerGroup::getServers).flatMap(Collection::stream)),
                 Stream.concat(
                         getCords().stream(),
                         getBases().stream()
@@ -372,6 +380,7 @@ public class CoreServerManager {
     /**
      * Searches for a server by name (case-insensitive)
      *
+     * @deprecated Use {@link CoreInstanceManager#getServerById(String)} instead
      * @param name The server's name (case-insensitive)
      * @return A server object
      */
@@ -384,22 +393,24 @@ public class CoreServerManager {
     }
 
     /**
-     * Searches for a server by token
+     * Searches for a server by id
      *
-     * @param token The server's token
+     * @param id The server's id
      * @return A server object
      */
-    public Server getServerByToken(String token) {
-        for (ServerGroup group : getServerGroups())
-            for (Server server : group.getServers())
-                if (server != null && server.getToken().equals(token))
-                    return server;
+    public Server getServerById(String id) {
+        for (ServerGroup group : getServerGroups()) {
+            Server server = group.getServerById(id);
+            if (server == null) continue;
+            return server;
+        }
         return null;
     }
 
     /**
      * Searches for a proxy by name (case-insensitive)
      *
+     * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
      * @param name The proxy's name (case-insensitive)
      * @return A proxy object
      */
@@ -412,16 +423,17 @@ public class CoreServerManager {
     }
 
     /**
-     * Searches for a proxy by token
+     * Searches for a proxy by id
      *
-     * @param token The proxy's token
+     * @param id The proxy's id
      * @return A proxy object
      */
-    public Proxy getProxyByToken(String token) {
-        for (ProxyGroup group : getProxyGroups())
-            for (Proxy proxy : group.getProxies())
-                if (proxy != null && proxy.getToken().equals(token))
-                    return proxy;
+    public Proxy getProxyById(String id) {
+        for (ProxyGroup group : getProxyGroups()) {
+            Proxy proxy = group.getProxyById(id);
+            if (proxy == null) continue;
+            return proxy;
+        }
         return null;
     }
 
@@ -432,7 +444,7 @@ public class CoreServerManager {
      * @return An internal server object
      */
     public Server getServerByServerObject(ServerObject object) {
-        return getServerByToken(((ServerObjectBasicImplementation) object).getToken());
+        return getServerById(object.getId());
     }
 
     /**
@@ -442,7 +454,7 @@ public class CoreServerManager {
      * @return An internal proxy object
      */
     public Proxy getProxyByProxyObject(ProxyObject object) {
-        return getProxyByToken(((ProxyObjectBasicImplementation) object).getToken());
+        return getProxyById(object.getId());
     }
 
     /**
@@ -506,6 +518,7 @@ public class CoreServerManager {
                     if (server.getOnlinePlayerCount() == 0 && !isStateActive(server.getState(), server.getGroup())) {
                         TimoCloudCore.getInstance().info("Stopping server " + server.getName() + " because no players are online and it is no longer needed.");
                         server.stop();
+                        break;
                     }
                 }
             }
@@ -524,6 +537,7 @@ public class CoreServerManager {
                     if (proxy.getOnlinePlayerCount() == 0) {
                         TimoCloudCore.getInstance().info("Stopping proxy " + proxy.getName() + " because no players are online and it is no longer needed.");
                         proxy.stop();
+                        break;
                     }
                 }
             }

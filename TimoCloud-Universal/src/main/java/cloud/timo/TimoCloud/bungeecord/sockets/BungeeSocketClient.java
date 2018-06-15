@@ -20,6 +20,8 @@ public class BungeeSocketClient {
             f = b.connect(host, port).sync();
         } catch (Exception e) {
             TimoCloudBungee.getInstance().onSocketDisconnect();
+            group.shutdownGracefully();
+            return;
         }
         f.channel().closeFuture().addListener(future -> {
             TimoCloudBungee.getInstance().onSocketDisconnect();

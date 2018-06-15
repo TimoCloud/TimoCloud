@@ -14,8 +14,9 @@ import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.lib.objects.HttpRequestProperty;
 import cloud.timo.TimoCloud.lib.utils.ArrayUtil;
 import cloud.timo.TimoCloud.lib.utils.network.HttpRequestUtil;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class CloudFlareManager implements Listener {
 
@@ -47,7 +49,7 @@ public class CloudFlareManager implements Listener {
     public void onProxyRegisterEvent(ProxyRegisterEvent event) {
         if (!enabled()) return;
         executorService.submit(() -> {
-            Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByProxyObject(event.getProxy());
+            Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
             for (String hostName : getActiveHostnames()) {
                 for (String hostName1 : proxy.getGroup().getHostNames()) {
                     if (!nameMatches(hostName, hostName1)) continue;
@@ -72,9 +74,9 @@ public class CloudFlareManager implements Listener {
     @EventHandler
     public void onProxyUnregisterEvent(ProxyUnregisterEvent event) {
         if (!enabled()) return;
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
+        if (proxy.getDnsRecord() == null) return;
         executorService.submit(() -> {
-            Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByProxyObject(event.getProxy());
-            if (proxy.getDnsRecord() == null) return;
             deleteRecord(proxy.getDnsRecord());
         });
     }
@@ -120,7 +122,7 @@ public class CloudFlareManager implements Listener {
 
     private DnsRecord addRecord(DnsRecord record) {
         try {
-            return DnsRecord.fromJson((JSONObject) request(CLOUDFLARE_API_URL + "zones/" + record.getZone().getId() + "/dns_records", "POST", record.toJson().toString()));
+            return DnsRecord.fromJson(request(CLOUDFLARE_API_URL + "zones/" + record.getZone().getId() + "/dns_records", "POST", record.toJson().toString()).getAsJsonObject());
         } catch (Exception e) {
             if (e.getMessage().contains("The record already exists.")) return null; // This happens when a base connects while we are deleting old records
             TimoCloudCore.getInstance().severe(e);
@@ -156,12 +158,12 @@ public class CloudFlareManager implements Listener {
 
     private List<DnsZone> getZones() {
         try {
-            JSONArray jsons = (JSONArray) request(CLOUDFLARE_API_URL + "zones?per_page=100", "GET");
-            return (List<DnsZone>) jsons.stream()
-                    .map(object -> DnsZone.fromJson((JSONObject) object))
+            JsonArray jsonArray = request(CLOUDFLARE_API_URL + "zones?per_page=100", "GET").getAsJsonArray();
+            return StreamSupport.stream(jsonArray.spliterator(), false)
+                    .map(object -> DnsZone.fromJson(object.getAsJsonObject()))
                     .filter(object -> {
                         for (String hostName : getActiveHostnames())
-                            if (hostName.toLowerCase().contains(((DnsZone) object).getName().trim().toLowerCase()))
+                            if (hostName.toLowerCase().contains(object.getName().trim().toLowerCase()))
                                 return true;
                         return false;
                     })
@@ -175,8 +177,8 @@ public class CloudFlareManager implements Listener {
 
     private List<DnsRecord> getRecords(DnsZone zone) {
         try {
-            JSONArray jsons = (JSONArray) request(CLOUDFLARE_API_URL + "zones/" + zone.getId() + "/dns_records?per_page=100", "GET");
-            return (List<DnsRecord>) jsons.stream().map(object -> DnsRecord.fromJson((JSONObject) object)).collect(Collectors.toList());
+            JsonArray jsons = request(CLOUDFLARE_API_URL + "zones/" + zone.getId() + "/dns_records?per_page=100", "GET").getAsJsonArray();
+            return StreamSupport.stream(jsons.spliterator(), false).map(object -> DnsRecord.fromJson(object.getAsJsonObject())).collect(Collectors.toList());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while getting DNS records via API. Probably your API access data is invalid.");
             e.printStackTrace();
@@ -188,13 +190,14 @@ public class CloudFlareManager implements Listener {
         return (Boolean) TimoCloudCore.getInstance().getFileManager().getCloudFlareConfig().get("enabled");
     }
 
-    private Object request(String url, String method, String data, HttpRequestProperty... additionalProperties) throws CloudFlareException {
+    private JsonElement request(String url, String method, String data, HttpRequestProperty... additionalProperties) throws CloudFlareException {
         try {
-            JSONObject response = (JSONObject) HttpRequestUtil.requestJson(url, method, data, ArrayUtil.concatArrays(getRequestProperties(), additionalProperties));
-            if (!(Boolean) response.get("success")) {
-                throw new CloudFlareException("CloudFlare API returned an error: " + response.get("errors"));
+            JsonElement response = HttpRequestUtil.requestJson(url, method, data, ArrayUtil.concatArrays(getRequestProperties(), additionalProperties));
+            JsonObject jsonObject = response.getAsJsonObject();
+            if (! jsonObject.get("success").getAsBoolean()) {
+                throw new CloudFlareException("CloudFlare API returned an error: " + jsonObject.get("errors").getAsJsonArray().get(0).toString());
             }
-            return response.getOrDefault("result", null);
+            return jsonObject.get("result");
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while executing request '" + url + "': ");
             TimoCloudCore.getInstance().severe(e);
@@ -202,7 +205,7 @@ public class CloudFlareManager implements Listener {
         }
     }
 
-    private Object request(String url, String method, HttpRequestProperty... additionalProperties) throws CloudFlareException {
+    private JsonElement request(String url, String method, HttpRequestProperty... additionalProperties) throws CloudFlareException {
         return request(url, method, (String) null, additionalProperties);
     }
 

@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 
 import java.net.InetAddress;
@@ -12,6 +13,11 @@ public interface ServerObject {
      * @return The server's name
      */
     String getName();
+
+    /**
+     * @return The server's unique id
+     */
+    String getId();
 
     /**
      * @return The group the server is part of
@@ -89,6 +95,10 @@ public interface ServerObject {
      */
     boolean isSortedOut();
 
+    /**
+     * @return The address plugin messages to this server shall be addressed to
+     */
+    MessageClientAddress getMessageAddress();
 
     /**
      * Executes the given command as ConsoleSender on the server

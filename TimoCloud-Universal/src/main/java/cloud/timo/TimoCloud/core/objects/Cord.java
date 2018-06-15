@@ -6,8 +6,8 @@ import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
-import org.json.simple.JSONObject;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -48,7 +48,7 @@ public class Cord implements Communicatable {
     }
 
     @Override
-    public void onMessage(JSONObject message) {
+    public void onMessage(Message message) {
         String type = (String) message.get("type");
         Object data = message.get("data");
         switch (type) {
@@ -59,13 +59,13 @@ public class Cord implements Communicatable {
     }
 
     @Override
-    public void sendMessage(JSONObject message) {
-        getChannel().writeAndFlush(message.toString());
+    public void sendMessage(Message message) {
+        if (getChannel() != null) getChannel().writeAndFlush(message.toJson());
     }
 
     @Override
     public void onHandshakeSuccess() {
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
+        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
     }
 
     public String getName() {

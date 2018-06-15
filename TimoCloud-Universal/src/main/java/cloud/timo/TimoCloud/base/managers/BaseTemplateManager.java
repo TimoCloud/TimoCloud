@@ -7,18 +7,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 public class BaseTemplateManager {
 
-    public void extractFiles(File zip, File destination) throws IOException {
+    private static final int BUFFER = 1024;
+
+    public void extractFiles(InputStream inputStream, File destination) throws IOException {
         destination.mkdirs();
-        ZipFile zipFile = new ZipFile(zip);
-        Enumeration<?> enu = zipFile.entries();
-        while (enu.hasMoreElements()) {
-            ZipEntry zipEntry = (ZipEntry) enu.nextElement();
+        ZipInputStream zipInputStream = new ZipInputStream(inputStream);
+        ZipEntry zipEntry;
+        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             File file = new File(destination, zipEntry.getName());
             if (zipEntry.getName().endsWith("/")) {
                 file.mkdirs();
@@ -30,20 +30,19 @@ public class BaseTemplateManager {
             }
             file.getParentFile().mkdirs();
             file.createNewFile();
-            InputStream is = zipFile.getInputStream(zipEntry);
             FileOutputStream fos = new FileOutputStream(file);
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = is.read(bytes)) >= 0) fos.write(bytes, 0, length);
-            is.close();
+            while (zipInputStream.available() > 0) {
+                byte[] bytes = new byte[BUFFER];
+                int readCount = zipInputStream.read(bytes, 0, BUFFER);
+                if (readCount <= 0) continue;
+                fos.write(bytes, 0, readCount);
+            }
+
             fos.close();
             file.setLastModified(zipEntry.getTime());
+            zipInputStream.closeEntry();
         }
-        zipFile.close();
+        zipInputStream.close();
     }
 
-    public void extractFilesAndDeleteZip(File zip, File destination) throws IOException {
-        extractFiles(zip, destination);
-        zip.delete();
-    }
 }

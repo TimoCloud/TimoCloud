@@ -2,7 +2,10 @@ package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
@@ -21,10 +24,7 @@ public class CordSocketServer {
                         }
                     })
                     .group(bossGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 128)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true);
-
+                    .channel(NioServerSocketChannel.class);
             // Start the server.
             ChannelFuture f = b.bind(address, port).sync();
             TimoCloudCord.getInstance().setChannel(f.channel());

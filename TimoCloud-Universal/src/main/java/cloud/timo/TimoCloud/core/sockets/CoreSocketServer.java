@@ -6,7 +6,6 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.FixedRecvByteBufAllocator;
 
 public class CoreSocketServer {
 
@@ -19,9 +18,10 @@ public class CoreSocketServer {
                     .childHandler(new CorePipeline())
                     .group(bossGroup, workerGroup)
                     .channel(NettyUtil.getServerSocketChannelClass())
-                    .option(ChannelOption.SO_BACKLOG, 100)
-                    .option(ChannelOption.SO_RCVBUF, 4096)
-                    .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(4096));
+                    .option(ChannelOption.SO_BACKLOG, 128)
+                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+            ;
+
 
             // Start the server.
             ChannelFuture f = b.bind(address, port).sync();

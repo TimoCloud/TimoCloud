@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
 import cloud.timo.TimoCloud.cord.sockets.*;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
@@ -122,7 +123,7 @@ public class TimoCloudCord implements TimoCloudModule {
     private void everySecond() {
         try {
             connectToSocket();
-            getSocketMessageManager().sendMessage("GET_API_DATA", null);
+            getSocketMessageManager().sendMessage(Message.create().setType("GET_API_DATA"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,7 +143,7 @@ public class TimoCloudCord implements TimoCloudModule {
 
     public void onSocketConnect() {
         setConnected(true);
-        getSocketMessageManager().sendMessage("CORD_HANDSHAKE", null);
+        getSocketMessageManager().sendMessage(Message.create().setType("CORD_HANDSHAKE"));
         info("Successfully connected to Core socket!");
     }
 

@@ -1,9 +1,8 @@
 package cloud.timo.TimoCloud.lib.debugger;
 
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.json.simple.JSONObject;
 
 @AllArgsConstructor
 public class DataField {
@@ -14,12 +13,11 @@ public class DataField {
     @Getter
     private Object fieldData;
 
-    public JSONObject toJson() {
-        return JSONBuilder.create()
+    public Message toJson() {
+        return Message.create()
                 .set("id", getId())
                 .set("class", getClassName(getFieldClass()))
-                .set("data", getFieldData())
-                .toJson();
+                .set("data", getFieldData());
     }
 
     private static String getClassName(Class clazz) {

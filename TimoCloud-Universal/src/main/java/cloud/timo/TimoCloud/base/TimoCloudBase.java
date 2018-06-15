@@ -1,16 +1,16 @@
 package cloud.timo.TimoCloud.base;
 
 import cloud.timo.TimoCloud.base.managers.BaseFileManager;
+import cloud.timo.TimoCloud.base.managers.BaseInstanceManager;
 import cloud.timo.TimoCloud.base.managers.BaseResourceManager;
-import cloud.timo.TimoCloud.base.managers.BaseServerManager;
 import cloud.timo.TimoCloud.base.managers.BaseTemplateManager;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import org.apache.commons.io.FileDeleteStrategy;
 
@@ -46,7 +46,7 @@ public class TimoCloudBase implements TimoCloudModule {
     private OptionSet options;
     private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
-    private BaseServerManager serverManager;
+    private BaseInstanceManager instanceManager;
     private BaseTemplateManager templateManager;
     private BaseSocketClient socketClient;
     private BaseSocketClientHandler socketClientHandler;
@@ -88,7 +88,7 @@ public class TimoCloudBase implements TimoCloudModule {
     private void makeInstances() {
         instance = this;
         fileManager = new BaseFileManager();
-        serverManager = new BaseServerManager(getServerManagerDelayMillis());
+        instanceManager = new BaseInstanceManager(getServerManagerDelayMillis());
         templateManager = new BaseTemplateManager();
         socketClient = new BaseSocketClient();
         socketClientHandler = new BaseSocketClientHandler();
@@ -136,9 +136,10 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public void onSocketConnect() {
+        if (isConnected()) return;
         setConnected(true);
 
-        getSocketMessageManager().sendMessage(JSONBuilder.create().setType("BASE_HANDSHAKE").set("base", getName()).set("publicAddress", getPublicIpAddress()).toJson());
+        getSocketMessageManager().sendMessage(Message.create().setType("BASE_HANDSHAKE").set("base", getName()).set("publicAddress", getPublicIpAddress()));
         info("Successfully connected to Core socket!");
     }
 
@@ -154,7 +155,8 @@ public class TimoCloudBase implements TimoCloudModule {
     private String getPublicIpAddress() {
         try {
             return new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (Exception e) {
@@ -166,12 +168,13 @@ public class TimoCloudBase implements TimoCloudModule {
 
     private void deleteOldDirectories() { // Some servers/proxies might be running, so we have to check if we can delete the directories
         for (File dir : Stream.concat(Arrays.stream(getFileManager().getServerTemporaryDirectory().listFiles()), Arrays.stream(getFileManager().getProxyTemporaryDirectory().listFiles())).collect(Collectors.toList())) {
-            if (! dir.isDirectory()) {
+            if (!dir.isDirectory()) {
                 dir.delete();
                 continue;
             }
-            if (! dir.getName().contains("_") || dir.getName().split("_").length != 2) FileDeleteStrategy.FORCE.deleteQuietly(dir);
-            getSocketMessageManager().sendMessage("CHECK_IF_DELETABLE", dir.getName().split("_")[1], dir.getAbsolutePath());
+            if (!dir.getName().contains("_") || dir.getName().split("_").length != 2)
+                FileDeleteStrategy.FORCE.deleteQuietly(dir);
+            getSocketMessageManager().sendMessage(Message.create().setType("CHECK_IF_DELETABLE").setTarget(dir.getName()).setData(dir.getAbsolutePath()));
         }
     }
 
@@ -199,8 +202,8 @@ public class TimoCloudBase implements TimoCloudModule {
         return fileManager;
     }
 
-    public BaseServerManager getServerManager() {
-        return serverManager;
+    public BaseInstanceManager getInstanceManager() {
+        return instanceManager;
     }
 
     public BaseTemplateManager getTemplateManager() {

@@ -1,11 +1,10 @@
 package cloud.timo.TimoCloud.core.sockets;
 
-import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,16 +18,8 @@ public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
         communicatables = new HashMap<>();
     }
 
-    public void sendMessage(Channel channel, String type, Object data) {
-        sendMessage(channel, TimoCloudCore.getInstance().getSocketMessageManager().getMessage(type, data));
-    }
-
-    public void sendMessage(Channel channel, String target, String type, Object data) {
-        sendMessage(channel, TimoCloudCore.getInstance().getSocketMessageManager().getJSON(type, target, data));
-    }
-
-    public void sendMessage(Channel channel, JSONObject json) {
-        if (channel != null && channel.isActive()) channel.writeAndFlush(json.toString());
+    public void sendMessage(Channel channel, Message json) {
+        if (channel != null && channel.isActive()) channel.writeAndFlush(json.toJson());
     }
 
     @Override

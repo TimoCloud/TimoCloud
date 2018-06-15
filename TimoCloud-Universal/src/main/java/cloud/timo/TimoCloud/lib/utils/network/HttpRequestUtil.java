@@ -1,7 +1,8 @@
 package cloud.timo.TimoCloud.lib.utils.network;
 
 import cloud.timo.TimoCloud.lib.objects.HttpRequestProperty;
-import org.json.simple.JSONValue;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -12,11 +13,12 @@ import java.net.URL;
 
 public class HttpRequestUtil {
 
-    public static String request(String urlString, String requestMethod, String data, HttpRequestProperty ... properties) throws Exception {
+    public static String request(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
-        for (HttpRequestProperty property : properties) connection.setRequestProperty(property.getKey(), property.getValue());
+        for (HttpRequestProperty property : properties)
+            connection.setRequestProperty(property.getKey(), property.getValue());
         connection.setUseCaches(false);
         connection.setDoOutput(true);
         connection.connect();
@@ -36,11 +38,11 @@ public class HttpRequestUtil {
         return stringBuilder.toString();
     }
 
-    public static Object requestJson(String urlString, String requestMethod, String data, HttpRequestProperty ... properties) throws Exception {
-        return JSONValue.parse(request(urlString, requestMethod, data, properties));
+    public static JsonElement requestJson(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
+        return new JsonParser().parse(request(urlString, requestMethod, data, properties));
     }
 
-    public static Object requestJson(String urlString, String requestMethod, HttpRequestProperty ... properties) throws Exception {
+    public static Object requestJson(String urlString, String requestMethod, HttpRequestProperty... properties) throws Exception {
         return requestJson(urlString, requestMethod, null, properties);
     }
 

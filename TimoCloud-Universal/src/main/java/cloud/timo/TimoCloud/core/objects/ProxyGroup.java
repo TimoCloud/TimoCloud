@@ -26,9 +26,9 @@ public class ProxyGroup implements Group {
     private Collection<ServerGroup> serverGroups;
     private boolean allServerGroups;
     private String baseName;
-    private List<String> hostNames;
+    private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
-    private List<Proxy> proxies = new ArrayList<>();
+    private Map<String, Proxy> proxies = new HashMap<>();
 
     public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostNames) {
         construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
@@ -82,7 +82,7 @@ public class ProxyGroup implements Group {
                 this.serverGroups = new ArrayList<>();
                 break;
             }
-            ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(groupName);
+            ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(groupName);
             if (serverGroup != null) this.serverGroups.add(serverGroup);
         }
 
@@ -93,7 +93,7 @@ public class ProxyGroup implements Group {
         this.proxyChooseStrategy = EnumUtil.valueOf(ProxyChooseStrategy.class, proxyChooseStrategy);
         if (this.proxyChooseStrategy == null) this.proxyChooseStrategy = ProxyChooseStrategy.BALANCE;
 
-        this.hostNames = hostnames.stream().map(String::trim).collect(Collectors.toList());
+        this.hostNames = hostnames.stream().map(String::trim).collect(Collectors.toSet());
 
         reload();
     }
@@ -116,15 +116,17 @@ public class ProxyGroup implements Group {
         return properties;
     }
 
-    public void addStartingProxy(Proxy proxy) {
-        if (proxy == null)
+    public void addProxy(Proxy proxy) {
+        if (proxy == null) {
             TimoCloudCore.getInstance().severe("Fatal error: Tried to add proxy which is null. Please report this.");
-        if (proxies.contains(proxy)) return;
-        proxies.add(proxy);
+            return;
+        }
+        if (proxies.containsKey(proxy.getId())) return;
+        proxies.put(proxy.getId(), proxy);
     }
 
     public void removeProxy(Proxy proxy) {
-        if (getProxies().contains(proxy)) getProxies().remove(proxy);
+        proxies.remove(proxy.getId());
     }
 
     public void onProxyConnect(Proxy proxy) {
@@ -140,13 +142,14 @@ public class ProxyGroup implements Group {
     }
 
     public void stopAllProxies() {
-        List<Proxy> proxies = (ArrayList<Proxy>) ((ArrayList<Proxy>) getProxies()).clone();
-        for (Proxy proxy : proxies) proxy.stop();
-        this.proxies.removeAll(proxies);
+        for (Proxy proxy : getProxies()) {
+            proxy.stop();
+            removeProxy(proxy);
+        }
     }
 
-    public List<Server> getRegisteredServers() {
-        return getServerGroups().stream().map(ServerGroup::getServers).flatMap(List::stream).filter(Server::isRegistered).collect(Collectors.toList());
+    public Set<Server> getRegisteredServers() {
+        return getServerGroups().stream().map(ServerGroup::getServers).flatMap(Collection::stream).filter(Server::isRegistered).collect(Collectors.toSet());
     }
 
     public void reload() {
@@ -247,7 +250,7 @@ public class ProxyGroup implements Group {
     }
 
     public Collection<ServerGroup> getServerGroups() {
-        if (allServerGroups) return TimoCloudCore.getInstance().getServerManager().getServerGroups();
+        if (allServerGroups) return TimoCloudCore.getInstance().getInstanceManager().getServerGroups();
         return serverGroups;
     }
 
@@ -264,12 +267,16 @@ public class ProxyGroup implements Group {
         return proxyChooseStrategy;
     }
 
-    public List<String> getHostNames() {
+    public Set<String> getHostNames() {
         return hostNames;
     }
 
-    public List<Proxy> getProxies() {
-        return proxies;
+    public Collection<Proxy> getProxies() {
+        return new HashSet<>(proxies.values());
+    }
+
+    public Proxy getProxyById(String id) {
+        return proxies.get(id);
     }
 
     public ProxyGroupObject toGroupObject() {
@@ -287,7 +294,7 @@ public class ProxyGroup implements Group {
                 getServerGroups().stream().map(ServerGroup::getName).collect(Collectors.toList()),
                 getBaseName(),
                 getProxyChooseStrategy().name(),
-                getHostNames()
+                new ArrayList<>(getHostNames())
         );
         Collections.sort((List<ProxyObjectBasicImplementation>) (List) groupObject.getProxies());
         groupObject.getProxies().sort(Comparator.comparing(ProxyObject::getName));
@@ -301,41 +308,12 @@ public class ProxyGroup implements Group {
 
         ProxyGroup that = (ProxyGroup) o;
 
-        if (maxPlayerCountPerProxy != that.maxPlayerCountPerProxy) return false;
-        if (maxPlayerCount != that.maxPlayerCount) return false;
-        if (keepFreeSlots != that.keepFreeSlots) return false;
-        if (minAmount != that.minAmount) return false;
-        if (maxAmount != that.maxAmount) return false;
-        if (ram != that.ram) return false;
-        if (isStatic != that.isStatic) return false;
-        if (priority != that.priority) return false;
-        if (allServerGroups != that.allServerGroups) return false;
-        if (!name.equals(that.name)) return false;
-        if (motd != null ? !motd.equals(that.motd) : that.motd != null) return false;
-        if (serverGroups != null ? !serverGroups.equals(that.serverGroups) : that.serverGroups != null) return false;
-        if (baseName != null ? !baseName.equals(that.baseName) : that.baseName != null) return false;
-        if (hostNames != null ? !hostNames.equals(that.hostNames) : that.hostNames != null) return false;
-        return proxyChooseStrategy == that.proxyChooseStrategy;
+        return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + maxPlayerCountPerProxy;
-        result = 31 * result + maxPlayerCount;
-        result = 31 * result + keepFreeSlots;
-        result = 31 * result + minAmount;
-        result = 31 * result + maxAmount;
-        result = 31 * result + ram;
-        result = 31 * result + (motd != null ? motd.hashCode() : 0);
-        result = 31 * result + (isStatic ? 1 : 0);
-        result = 31 * result + priority;
-        result = 31 * result + (serverGroups != null ? serverGroups.hashCode() : 0);
-        result = 31 * result + (allServerGroups ? 1 : 0);
-        result = 31 * result + (baseName != null ? baseName.hashCode() : 0);
-        result = 31 * result + (hostNames != null ? hostNames.hashCode() : 0);
-        result = 31 * result + (proxyChooseStrategy != null ? proxyChooseStrategy.hashCode() : 0);
-        return result;
+        return name.hashCode();
     }
 
     @Override

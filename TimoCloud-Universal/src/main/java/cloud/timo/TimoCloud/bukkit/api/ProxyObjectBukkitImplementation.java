@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProxyObjectBukkitImplementation extends ProxyObjectBasicImplementation implements ProxyObject {
 
-    public ProxyObjectBukkitImplementation(String name, String group, String token, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
-        super(name, group, token, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
+    public ProxyObjectBukkitImplementation(String name, String id, String group, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
+        super(name, id, group, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
     }
 }

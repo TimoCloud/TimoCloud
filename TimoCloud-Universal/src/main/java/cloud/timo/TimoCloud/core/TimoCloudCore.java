@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.core.api.TimoCloudMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
 import cloud.timo.TimoCloud.core.managers.*;
 import cloud.timo.TimoCloud.core.plugins.PluginManager;
-import cloud.timo.TimoCloud.core.sockets.CoreSocketMessageManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
@@ -48,13 +47,12 @@ public class TimoCloudCore implements TimoCloudModule {
     private CoreSocketServer socketServer;
     private CoreSocketServerHandler socketServerHandler;
     private CoreStringHandler stringHandler;
-    private CoreServerManager serverManager;
+    private CoreInstanceManager instanceManager;
     private Channel channel;
     private TemplateManager templateManager;
     private CommandManager commandManager;
     private CoreEventManager eventManager;
     private CloudFlareManager cloudFlareManager;
-    private CoreSocketMessageManager socketMessageManager;
     private PluginManager pluginManager;
     private PluginMessageManager pluginMessageManager;
     private boolean running;
@@ -106,7 +104,7 @@ public class TimoCloudCore implements TimoCloudModule {
         shuttingDown = false;
         this.options = optionSet;
         makeInstances();
-        getServerManager().init();
+        getInstanceManager().init();
         new Thread(this::initSocketServer).start();
         registerTasks();
         getPluginManager().loadPlugins();
@@ -190,12 +188,11 @@ public class TimoCloudCore implements TimoCloudModule {
         this.socketServerHandler = new CoreSocketServerHandler();
         this.socketServer = new CoreSocketServer();
         this.stringHandler = new CoreStringHandler();
-        this.serverManager = new CoreServerManager();
+        this.instanceManager = new CoreInstanceManager();
         this.templateManager = new TemplateManager();
         this.commandManager = new CommandManager();
         this.eventManager = new CoreEventManager();
         this.cloudFlareManager = new CloudFlareManager();
-        this.socketMessageManager = new CoreSocketMessageManager();
         this.pluginManager = new PluginManager();
         this.pluginMessageManager = new PluginMessageManager();
 
@@ -224,7 +221,7 @@ public class TimoCloudCore implements TimoCloudModule {
 
     private void everySecond() {
         try {
-            getServerManager().everySecond();
+            getInstanceManager().everySecond();
         } catch (Exception e) {
             severe("Unknown error while executing every-second task:");
             e.printStackTrace();
@@ -270,8 +267,8 @@ public class TimoCloudCore implements TimoCloudModule {
         return logger;
     }
 
-    public CoreServerManager getServerManager() {
-        return serverManager;
+    public CoreInstanceManager getInstanceManager() {
+        return instanceManager;
     }
 
     public TemplateManager getTemplateManager() {
@@ -289,11 +286,7 @@ public class TimoCloudCore implements TimoCloudModule {
     public CloudFlareManager getCloudFlareManager() {
         return cloudFlareManager;
     }
-
-    public CoreSocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
-    }
-
+    
     public PluginManager getPluginManager() {
         return pluginManager;
     }

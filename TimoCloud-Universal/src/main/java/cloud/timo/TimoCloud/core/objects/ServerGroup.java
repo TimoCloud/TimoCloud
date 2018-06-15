@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class ServerGroup implements Group {
 
     private String name;
-    private List<Server> servers = new ArrayList<>();
+
     private int onlineAmount;
     private int maxAmount;
     private int ram;
@@ -20,8 +20,9 @@ public class ServerGroup implements Group {
     private String baseName;
     private List<String> sortOutStates;
 
-    public ServerGroup() {
-    }
+    private Map<String, Server> servers = new HashMap<>();
+
+    public ServerGroup() {}
 
     public ServerGroup(Map<String, Object> properties) {
         construct(properties);
@@ -93,9 +94,10 @@ public class ServerGroup implements Group {
     }
 
     public void stopAllServers() {
-        List<Server> servers = (ArrayList<Server>) ((ArrayList<Server>) getServers()).clone();
-        for (Server server : servers) server.stop();
-        this.servers.removeAll(servers);
+        for (Server server : getServers()) {
+            server.stop();
+            removeServer(server);
+        }
     }
 
     public void onServerConnect(Server server) {
@@ -103,17 +105,23 @@ public class ServerGroup implements Group {
     }
 
     public void addStartingServer(Server server) {
-        if (server == null) TimoCloudCore.getInstance().severe("Fatal error: Tried to add server which is null. Please report this.");
-        if (servers.contains(server)) return;
-        servers.add(server);
+        if (server == null) {
+            TimoCloudCore.getInstance().severe("Fatal error: Tried to add server which is null. Please report this.");
+            return;
+        }
+        servers.put(server.getId(), server);
     }
 
     public void removeServer(Server server) {
-        if (servers.contains(server)) servers.remove(server);
+        servers.remove(server.getId());
     }
 
-    public List<Server> getServers() {
-        return servers;
+    public Collection<Server> getServers() {
+        return new HashSet<>(servers.values());
+    }
+
+    public Server getServerById(String id) {
+        return servers.get(id);
     }
 
     public void setOnlineAmount(int onlineAmount) {

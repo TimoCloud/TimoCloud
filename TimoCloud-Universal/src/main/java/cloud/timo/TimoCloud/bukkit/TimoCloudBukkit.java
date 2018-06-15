@@ -18,6 +18,7 @@ import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
@@ -60,8 +61,11 @@ public class TimoCloudBukkit extends JavaPlugin {
             registerTasks();
             registerChannel();
             Executors.newSingleThreadExecutor().submit(this::connectToCore);
-            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData())
-                ; // Wait until we get the API data
+            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
+                try {
+                    Thread.sleep(50); // Wait until we get the API data
+                } catch (Exception e) {}
+            }
             info("&ahas been enabled!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBukkit: ");
@@ -84,25 +88,32 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     private void registerAtBungeeCord() {
-        getSocketMessageManager().sendMessage("REGISTER", getToken());
+        getSocketMessageManager().sendMessage(Message.create().setType("REGISTER").setTarget(getServerId()));
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage("SERVER_HANDSHAKE", getToken());
+        getSocketMessageManager().sendMessage(Message.create().setType("SERVER_HANDSHAKE").setTarget(getServerId()));
     }
 
-    public void onSocketDisconnect() {
+    public void onSocketDisconnect(boolean connectionFailed) {
         info("Disconnected from TimoCloudCore. Stopping server.");
-        stop();
+        if (connectionFailed) {
+            System.exit(0);
+        } else {
+            stop();
+        }
     }
 
     public void onHandshakeSuccess() {
-        getSocketMessageManager().sendMessage("SET_MAP", getMapName());
+        getSocketMessageManager().sendMessage(Message.create().setType("SET_MAP").setData(getMapName()));
         doEverySecond();
     }
 
     private void stop() {
-        Bukkit.shutdown();
+        Bukkit.getScheduler().runTask(this, () -> {
+            Bukkit.shutdown();
+            System.exit(0);
+        });
     }
 
     private void makeInstances() throws Exception {
@@ -168,10 +179,6 @@ public class TimoCloudBukkit extends JavaPlugin {
         return Integer.parseInt(System.getProperty("timocloud-corehost").split(":")[1]);
     }
 
-    public String getToken() {
-        return System.getProperty("timocloud-token");
-    }
-
     public File getTemplateDirectory() {
         return new File(System.getProperty("timocloud-templatedirectory"));
     }
@@ -199,19 +206,19 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage("GET_API_DATA", "");
+        getSocketMessageManager().sendMessage(Message.create().setType("GET_API_DATA"));
     }
 
     private void sendMotds() {
         try {
             ServerListPingEvent event = new ServerListPingEvent(InetAddress.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
             Bukkit.getPluginManager().callEvent(event);
-            getSocketMessageManager().sendMessage("SET_MOTD", event.getMotd());
+            getSocketMessageManager().sendMessage(Message.create().setType("SET_MOTD").setData(event.getMotd()));
             getStateByEventManager().setStateByMotd(event.getMotd().trim());
         } catch (Exception e) {
             severe("Error while sending MOTD: ");
             e.printStackTrace();
-            getSocketMessageManager().sendMessage("SET_MOTD", Bukkit.getMotd());
+            getSocketMessageManager().sendMessage(Message.create().setType("SET_MOTD").setData(Bukkit.getMotd()));
         }
     }
 
@@ -240,7 +247,7 @@ public class TimoCloudBukkit extends JavaPlugin {
     }
 
     public void sendPlayers() {
-        getSocketMessageManager().sendMessage("SET_PLAYERS", getOnlinePlayersAmount() + "/" + getMaxPlayersAmount());
+        getSocketMessageManager().sendMessage(Message.create().setType("SET_PLAYERS").setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
     }
 
     public static TimoCloudBukkit getInstance() {
@@ -281,6 +288,10 @@ public class TimoCloudBukkit extends JavaPlugin {
 
     public String getServerName() {
         return System.getProperty("timocloud-servername");
+    }
+
+    public String getServerId() {
+        return System.getProperty("timocloud-serverid");
     }
 
     public String getMapName() {

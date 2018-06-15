@@ -93,14 +93,11 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
 
         PlayerObjectBasicImplementation that = (PlayerObjectBasicImplementation) o;
 
-        if (!name.equals(that.name)) return false;
         return uuid.equals(that.uuid);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + uuid.hashCode();
-        return result;
+        return uuid.hashCode();
     }
 }

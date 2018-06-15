@@ -1,12 +1,11 @@
 package cloud.timo.TimoCloud.core.managers;
 
+import cloud.timo.TimoCloud.lib.messages.Message;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -121,22 +120,19 @@ public class CoreFileManager {
         writer.close();
     }
 
-    public JSONArray loadJson(File file) throws IOException, ParseException {
+    public JsonArray loadJsonArray(File file) throws IOException {
         String fileContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8.name());
-        return (JSONArray) new JSONParser().parse(fileContent == null || fileContent.trim().isEmpty() ? "[]" : fileContent);
+        if (fileContent == null || fileContent.trim().isEmpty()) fileContent = "[]";
+        return new JsonParser().parse(fileContent).getAsJsonArray();
     }
 
-    public void saveJson(JSONArray jsonArray, File file) throws IOException {
-        saveJson(jsonArray.toJSONString(), file);
+    public void saveJson(Message message, File file) throws IOException {
+        saveJson(message.toJsonObject(), file);
     }
 
-    public void saveJson(JSONObject jsonObject, File file) throws IOException {
-        saveJson(jsonObject.toJSONString(), file);
-    }
-
-    public void saveJson(String json, File file) throws IOException {
+    public void saveJson(JsonElement json, File file) throws IOException {
         FileWriter fileWriter = new FileWriter(file, false);
-        fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(json))); //Prettify JSON
+        fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(json));
         fileWriter.close();
     }
 

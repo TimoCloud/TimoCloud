@@ -2,12 +2,11 @@ package cloud.timo.TimoCloud.bukkit.managers;
 
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -151,20 +150,21 @@ public class BukkitFileManager {
         return signTemplates;
     }
 
-    public JSONArray getSignInstances() {
+    public JsonArray getSignInstances() {
         try {
             String fileContent = FileUtils.readFileToString(signInstancesFile, StandardCharsets.UTF_8.name());
-            return (JSONArray) new JSONParser().parse(fileContent == null || fileContent.trim().isEmpty() ? "[]" : fileContent);
+            if (fileContent == null || fileContent.trim().isEmpty()) fileContent = "[]";
+            return new JsonParser().parse(fileContent).getAsJsonArray();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public void saveSignInstances(JSONArray jsonArray) {
+    public void saveSignInstances(JsonArray jsonArray) {
         try {
             FileWriter fileWriter = new FileWriter(signInstancesFile, false);
-            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(new JsonParser().parse(jsonArray.toJSONString()))); //Prettify JSON
+            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
             e.printStackTrace();

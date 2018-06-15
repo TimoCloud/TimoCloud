@@ -1,7 +1,6 @@
 package cloud.timo.TimoCloud.lib.utils;
 
 import org.apache.commons.io.FileDeleteStrategy;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +12,9 @@ import java.util.zip.CRC32;
 
 public class HashUtil {
 
-    private static final String HASH_ALGORITHM = "MD5";
+    private static final Set<String> IGNORE_NAMES = new HashSet<>(Arrays.asList(".DS_Store"));
 
-    private static final List<String> IGNORE_NAMES = Arrays.asList(".DS_Store");
-
-    public static List<String> getDifferentFiles(String prefix, JSONObject a, JSONObject b) {
+    public static List<String> getDifferentFiles(String prefix, Map<String, Object> a, Map<String, Object> b) {
         List<String> differences = new ArrayList<>();
         for (Object key : a.keySet()) {
             String name = (String) key;
@@ -30,12 +27,12 @@ public class HashUtil {
                 differences.add(newName);
                 continue;
             }
-            if (a.get(key) instanceof JSONObject != b.get(key) instanceof JSONObject) {
+            if (a.get(key) instanceof Map != b.get(key) instanceof Map) {
                 differences.add(newName);
                 continue;
             }
-            if (a.get(key) instanceof JSONObject)
-                differences.addAll(getDifferentFiles(newName, (JSONObject) a.get(key), (JSONObject) b.get(key)));
+            if (a.get(key) instanceof Map)
+                differences.addAll(getDifferentFiles(newName, (Map<String, Object>) a.get(key), (Map<String, Object>) b.get(key)));
             else if (!a.get(key).equals(b.get(key))) differences.add(newName);
         }
         for (Object key : b.keySet()) {
@@ -50,28 +47,28 @@ public class HashUtil {
         return differences;
     }
 
-    public static void deleteIfNotExisting(File base, String prefix, JSONObject a, JSONObject b) throws IOException {
+    public static void deleteIfNotExisting(File base, String prefix, Map<String, Object> a, Map<String, Object> b) throws IOException {
         for (Object key : a.keySet()) {
             if (!b.containsKey(key)) {
                 File file = new File(base, prefix + "/" + key);
-                if (a.get(key) instanceof JSONObject) FileDeleteStrategy.FORCE.deleteQuietly(file);
+                if (a.get(key) instanceof Map) FileDeleteStrategy.FORCE.deleteQuietly(file);
                 else Files.delete(file.toPath());
             } else {
-                if (a.get(key) instanceof JSONObject && b.get(key) instanceof JSONObject) {
-                    deleteIfNotExisting(base, prefix + "/" + key, (JSONObject) a.get(key), (JSONObject) b.get(key));
+                if (a.get(key) instanceof Map && b.get(key) instanceof Map) {
+                    deleteIfNotExisting(base, prefix + "/" + key, (Map<String, Object>) a.get(key), (Map<String, Object>) b.get(key));
                 }
             }
         }
     }
 
-    public static JSONObject getHashes(File file) throws IOException {
-        if (! file.exists()) return new JSONObject();
+    public static Map<String, Object> getHashes(File file) throws IOException {
+        if (! (file.exists() && file.isDirectory())) return new HashMap<>();
         Map<String, Object> layer = new HashMap<>();
         for (File file1 : file.listFiles()) {
             if (!file1.isDirectory() && IGNORE_NAMES.contains(file1.getName())) continue;
             layer.put(file1.getName() + (file1.isDirectory() ? "/" : ""), file1.isDirectory() ? getHashes(file1) : getFileHash(file1));
         }
-        return new JSONObject(layer);
+        return layer;
     }
 
     private static String getFileHash(File file) throws IOException {

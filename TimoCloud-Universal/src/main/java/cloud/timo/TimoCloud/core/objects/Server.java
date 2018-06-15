@@ -7,24 +7,20 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
-public class Server implements Communicatable {
+public class Server implements Instance, Communicatable {
 
-    private boolean registered = false;
     private String name;
+    private String id;
     private Integer port;
     private ServerGroup group;
     private Channel channel;
@@ -33,56 +29,58 @@ public class Server implements Communicatable {
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private List<PlayerObject> onlinePlayers;
+    private Set<PlayerObject> onlinePlayers;
     private int onlinePlayerCount = 0;
     private int maxPlayers = 0;
-    private String map = "";
-    private String token;
+    private String map;
     private boolean starting;
+    private boolean registered = false;
 
     private DoAfterAmount templateUpdate;
 
-    public Server(String name, ServerGroup group, Base base, String map, String token) {
+    public Server(String name, String id, Base base, String map, ServerGroup group) {
         this.name = name;
+        this.id = id;
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getAddress(), 0);
-        this.onlinePlayers = new ArrayList<>();
+        this.onlinePlayers = new HashSet<>();
         this.map = map;
-        this.token = token;
+        if (this.map == null) this.map = "";
     }
 
     public boolean isStatic() {
         return getGroup().isStatic();
     }
 
+    @Override
     public void start() {
         try {
             this.starting = true;
-            JSONBuilder json = JSONBuilder.create()
+            Message message = Message.create()
                     .setType("START_SERVER")
                     .set("name", getName())
+                    .set("id", getId())
                     .set("group", getGroup().getName())
                     .set("ram", getGroup().getRam())
                     .set("static", getGroup().isStatic())
                     .setIfNotNull("map", getMap())
-                    .set("token", getToken())
                     .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
                 File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
                 try {
                     templateDirectory.mkdirs();
-                    if (getMap() != null) mapDirectory.mkdirs();
-                    json.set("templateHash", HashUtil.getHashes(templateDirectory));
-                    if (getMap() != null) json.set("mapHash", HashUtil.getHashes(mapDirectory));
+                    if (hasMap()) mapDirectory.mkdirs();
+                    message.set("templateHash", HashUtil.getHashes(templateDirectory));
+                    if (hasMap()) message.set("mapHash", HashUtil.getHashes(mapDirectory));
                 } catch (IOException e) {
                     TimoCloudCore.getInstance().severe("Error while hashing files while starting server " + getName() + ": ");
                     e.printStackTrace();
                     return;
                 }
             }
-            getBase().sendMessage(json.toJson());
+            getBase().sendMessage(message);
             getBase().setReady(false);
             getBase().setAvailableRam(getBase().getAvailableRam() - getGroup().getRam());
             TimoCloudCore.getInstance().info("Told base " + getBase().getName() + " to start server " + getName() + ".");
@@ -95,8 +93,9 @@ public class Server implements Communicatable {
         getBase().addServer(this);
     }
 
+    @Override
     public void stop() {
-        getChannel().close();
+        if (getChannel() != null) getChannel().close();
         unregister();
     }
 
@@ -113,11 +112,12 @@ public class Server implements Communicatable {
         unregister();
     }
 
+    @Override
     public void register() {
         if (isRegistered()) return;
         getGroup().onServerConnect(this);
         setState("ONLINE");
-        for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getServerManager().getProxyGroups()) {
+        for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.registerServer(this);
         }
@@ -127,13 +127,14 @@ public class Server implements Communicatable {
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEvent(toServerObject()));
     }
 
+    @Override
     public void unregister() {
         if (! isRegistered()) return;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
         getGroup().removeServer(this);
         getBase().removeServer(this);
         setState("OFFLINE");
-        for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getServerManager().getProxyGroups()) {
+        for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.unregisterServer(this);
         }
@@ -141,9 +142,9 @@ public class Server implements Communicatable {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getBase().getChannel(), getName(), "SERVER_STOPPED", getToken());
+                getBase().sendMessage(Message.create().setType("SERVER_STOPPED").setData(getId()));
             }
-        }, 60000);
+        }, 300000);
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
@@ -155,7 +156,7 @@ public class Server implements Communicatable {
     }
 
     @Override
-    public void onMessage(JSONObject message) {
+    public void onMessage(Message message) {
         String type = (String) message.get("type");
         Object data = message.get("data");
         switch (type) {
@@ -199,27 +200,35 @@ public class Server implements Communicatable {
     }
 
     @Override
-    public void sendMessage(JSONObject message) {
-        if (getChannel() != null) getChannel().writeAndFlush(message.toString());
+    public void sendMessage(Message message) {
+        if (getChannel() != null) getChannel().writeAndFlush(message.toJson());
     }
 
     @Override
     public void onHandshakeSuccess() {
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(getChannel(), "HANDSHAKE_SUCCESS", null);
+        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
     }
 
+    @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     public boolean isRegistered() {
         return registered;
     }
 
+    @Override
     public ServerGroup getGroup() {
         return group;
     }
 
+    @Override
     public Channel getChannel() {
         return channel;
     }
@@ -264,7 +273,7 @@ public class Server implements Communicatable {
         this.motd = motd;
     }
 
-    public List<PlayerObject> getOnlinePlayers() {
+    public Set<PlayerObject> getOnlinePlayers() {
         return onlinePlayers;
     }
 
@@ -301,8 +310,8 @@ public class Server implements Communicatable {
         this.map = map;
     }
 
-    public String getToken() {
-        return token;
+    public boolean hasMap() {
+        return ! (getMap() == null || getMap().isEmpty());
     }
 
     public boolean isStarting() {
@@ -319,19 +328,19 @@ public class Server implements Communicatable {
     }
 
     public void executeCommand(String command) {
-        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, "EXECUTE_COMMAND", command);
+        sendMessage(Message.create().setType("EXECUTE_COMMAND").setData(command));
     }
 
     public ServerObject toServerObject() {
         return new ServerObjectCoreImplementation(
                 getName(),
+                getId(),
                 getGroup().getName(),
-                getToken(),
                 getState(),
                 getExtra(),
                 getMap(),
                 getMotd(),
-                getOnlinePlayers(),
+                new ArrayList<>(getOnlinePlayers()),
                 getOnlinePlayerCount(),
                 getMaxPlayers(),
                 getBase() == null ? null : getBase().getName(),
@@ -344,17 +353,14 @@ public class Server implements Communicatable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Server that = (Server) o;
+        Server server = (Server) o;
 
-        if (port != that.port) return false;
-        return name.equals(that.name);
+        return id.equals(server.id);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + port;
-        return result;
+        return id.hashCode();
     }
 
     @Override

@@ -1,11 +1,11 @@
 package cloud.timo.TimoCloud.core.cloudflare;
 
 
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.json.simple.JSONObject;
 
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -24,31 +24,30 @@ public class DnsRecord {
     @Getter
     private DnsZone zone;
 
-    public DnsRecord() {
-    }
+    public DnsRecord() {}
 
-    public JSONObject toJson() {
-        return JSONBuilder.create()
+    public JsonObject toJson() {
+        return JsonObjectBuilder.create()
                 .setIfNotNull("id", getId())
-                .setType(getType())
+                .set("type", getType())
                 .set("name", getName())
                 .set("content", getContent())
                 .set("ttl", getTtl())
                 .set("zone_id", getZone().getId())
                 .set("zone_name", getZone().getName())
-                .toJson();
+                .toJsonObject();
     }
 
-    public static DnsRecord fromJson(JSONObject jsonObject) {
+    public static DnsRecord fromJson(JsonObject jsonObject) {
         return new DnsRecord(
-                (String) jsonObject.get("id"),
-                (String) jsonObject.get("type"),
-                (String) jsonObject.get("name"),
-                (String) jsonObject.get("content"),
-                ((Number) jsonObject.get("ttl")).intValue(),
+                jsonObject.get("id").getAsString(),
+                jsonObject.get("type").getAsString(),
+                jsonObject.get("name").getAsString(),
+                jsonObject.get("content").getAsString(),
+                jsonObject.get("ttl").getAsInt(),
                 new DnsZone(
-                        (String) jsonObject.get("zone_id"),
-                        (String) jsonObject.get("zone_name")
+                        jsonObject.get("zone_id").getAsString(),
+                        jsonObject.get("zone_name").getAsString()
                 )
         );
     }

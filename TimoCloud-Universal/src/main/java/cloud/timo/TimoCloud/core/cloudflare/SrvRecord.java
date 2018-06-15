@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.core.cloudflare;
 
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
-import org.json.simple.JSONObject;
+import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import com.google.gson.JsonObject;
 
 public class SrvRecord extends DnsRecord {
 
@@ -35,16 +35,16 @@ public class SrvRecord extends DnsRecord {
     }
 
     @Override
-    public JSONObject toJson() {
-        return JSONBuilder.create()
+    public JsonObject toJson() {
+        return JsonObjectBuilder.create()
                 .setIfNotNull("id", getId())
-                .setType(getType())
+                .set("type", getType())
                 .set("name", getName())
                 .set("content", getContent())
                 .set("ttl", getTtl())
                 .set("zone_id", getZone().getId())
                 .set("zone_name", getZone().getName())
-                .setData(JSONBuilder.create()
+                .set("data", JsonObjectBuilder.create()
                         .set("priority", getPriority())
                         .set("weight", getWeight())
                         .set("port", getPort())
@@ -52,7 +52,7 @@ public class SrvRecord extends DnsRecord {
                         .set("service", "_minecraft")
                         .set("proto", "_tcp")
                         .set("name", getName())
-                        .toJson())
-                .toJson();
+                        .toJsonObject())
+                .toJsonObject();
     }
 }

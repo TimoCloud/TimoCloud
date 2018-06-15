@@ -82,7 +82,7 @@ public class PluginManager {
                 throw new PluginLoadException("Error while loading plugin '" + plugin.getName() + "': Dependency '" + depend + "' could not be found.");
             }
             if (used.contains(dependPlugin)) {
-                throw new PluginLoadException("Error while loading plugin '" + plugin.getName() + "': Dependency cycle between pluginDescriptions: '" + plugin.getName() + "' depends on '" + dependPlugin.getName() + "' which directly or indirectly depends on '" + plugin.getName() + "' again.");
+                continue;
             }
             load(dependPlugin, order, used);
         }
@@ -92,7 +92,6 @@ public class PluginManager {
                 continue;
             }
             if (used.contains(dependPlugin)) {
-                TimoCloudCore.getInstance().info("Warning while loading plugin '" + plugin.getName() + "': Dependency cycle between pluginDescriptions: '" + plugin.getName() + "' soft-depends on '" + dependPlugin.getName() + "' which directly or indirectly depends on '" + plugin.getName() + "' again.");
                 continue;
             }
             load(dependPlugin, order, used);

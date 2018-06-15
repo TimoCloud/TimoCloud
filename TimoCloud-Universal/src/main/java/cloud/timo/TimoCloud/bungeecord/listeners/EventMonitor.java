@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.PlayerConnectEvent;
 import cloud.timo.TimoCloud.api.events.PlayerDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.PlayerServerChangeEvent;
@@ -58,8 +57,6 @@ public class EventMonitor implements Listener {
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {
-        PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(proxiedPlayer.getUniqueId());
-        if (player != null) return player;
         return PlayerUtil.playerToObject(proxiedPlayer);
     }
 

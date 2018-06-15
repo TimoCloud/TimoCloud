@@ -2,21 +2,26 @@ package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.lib.objects.JSONBuilder;
+import cloud.timo.TimoCloud.lib.messages.Message;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+@JsonIgnoreProperties({"messageClientAddress"})
 public class ServerObjectBasicImplementation implements ServerObject, Comparable {
 
     private String name;
+    private String id;
     private String group;
-    private String token;
     protected String state;
     protected String extra;
     private String map;
@@ -26,13 +31,14 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     private int maxPlayerCount;
     private String base;
     private InetSocketAddress socketAddress;
+    private MessageClientAddress messageClientAddress;
 
     public ServerObjectBasicImplementation() {}
 
-    public ServerObjectBasicImplementation(String name, String group, String token, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
+    public ServerObjectBasicImplementation(String name, String id, String group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
         this.name = name;
+        this.id = id;
         this.group = group;
-        this.token = token;
         this.state = state;
         this.extra = extra;
         this.map = map;
@@ -50,6 +56,11 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public ServerGroupObject getGroup() {
         return TimoCloudAPI.getUniversalAPI().getServerGroup(group);
     }
@@ -60,10 +71,6 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     public void setGroup(String group) {
         this.group = group;
-    }
-
-    public String getToken() {
-        return token;
     }
 
     @Override
@@ -136,25 +143,31 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
         return getGroup().getSortOutStates().contains(getState());
     }
 
+    @Override
+    public MessageClientAddress getMessageAddress() {
+        if (messageClientAddress == null) messageClientAddress = new MessageClientAddress(getId(), MessageClientAddressType.SERVER);
+        return messageClientAddress;
+    }
+
     public void executeCommand(String command) {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(JSONBuilder.create()
+        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType("EXECUTE_COMMAND")
-                .setTarget(getToken())
+                .setTarget(getId())
                 .setData(command).toString()
         );
     }
 
     @Override
     public void stop() {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(JSONBuilder.create()
+        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType("STOP_SERVER")
-                .setTarget(getToken()).toString()
+                .setTarget(getId()).toString()
         );
     }
 
     @Override
     public void sendPluginMessage(PluginMessage message) {
-        TimoCloudAPI.getMessageAPI().sendMessageToServer(message, getName());
+        TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(getMessageAddress(), message));
     }
 
     @Override

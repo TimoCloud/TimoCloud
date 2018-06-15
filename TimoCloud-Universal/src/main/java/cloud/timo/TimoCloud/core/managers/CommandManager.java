@@ -3,8 +3,8 @@ package cloud.timo.TimoCloud.core.managers;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.lib.debugger.DataCollector;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.utils.ChatColorUtil;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -50,7 +50,7 @@ public class CommandManager {
         try {
             if (command.equalsIgnoreCase("reload")) {
                 TimoCloudCore.getInstance().getFileManager().load();
-                TimoCloudCore.getInstance().getServerManager().loadGroups();
+                TimoCloudCore.getInstance().getInstanceManager().loadGroups();
                 sendMessage.accept("&2Successfully reloaded from configuration!");
                 return;
             }
@@ -68,13 +68,13 @@ public class CommandManager {
             }
 
             if (command.equalsIgnoreCase("groupinfo")) {
-                Group group = TimoCloudCore.getInstance().getServerManager().getGroupByName(args[0]);
+                Group group = TimoCloudCore.getInstance().getInstanceManager().getGroupByName(args[0]);
                 displayGroup(sendMessage, group);
                 return;
             }
 
             if (command.equalsIgnoreCase("baseinfo")) {
-                Base base = TimoCloudCore.getInstance().getServerManager().getBase(args[0]);
+                Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(args[0]);
                 if (base == null) {
                     sendError(sendMessage, "Could not find base '" + args[0] + "'.");
                     return;
@@ -84,8 +84,8 @@ public class CommandManager {
             }
 
             if (command.equalsIgnoreCase("listgroups")) {
-                Collection<ServerGroup> serverGroups = TimoCloudCore.getInstance().getServerManager().getServerGroups();
-                Collection<ProxyGroup> proxyGroups = TimoCloudCore.getInstance().getServerManager().getProxyGroups();
+                Collection<ServerGroup> serverGroups = TimoCloudCore.getInstance().getInstanceManager().getServerGroups();
+                Collection<ProxyGroup> proxyGroups = TimoCloudCore.getInstance().getInstanceManager().getProxyGroups();
 
                 sendMessage.accept("&6ServerGroups (&3" + serverGroups.size() + "&6):");
                 for (ServerGroup group : serverGroups) {
@@ -99,7 +99,7 @@ public class CommandManager {
             }
 
             if (command.equalsIgnoreCase("listbases")) {
-                List<Base> bases = TimoCloudCore.getInstance().getServerManager().getBases().stream().filter(Base::isConnected).collect(Collectors.toList());
+                List<Base> bases = TimoCloudCore.getInstance().getInstanceManager().getBases().stream().filter(Base::isConnected).collect(Collectors.toList());
                 sendMessage.accept("&6Bases (&3" + bases.size() + "&6):");
                 for (Base base : bases) {
                     displayBase(sendMessage, base);
@@ -110,15 +110,15 @@ public class CommandManager {
             if (command.equalsIgnoreCase("removegroup") || command.equalsIgnoreCase("deletegroup")) {
                 String name = args[0];
                 try {
-                    ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(name);
-                    ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(name);
+                    ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(name);
+                    ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(name);
                     if (serverGroup == null && proxyGroup == null) {
                         sendError(sendMessage, local, "The group " + name + " does not exist. Type 'listgroups' for a list of all groups.");
                         return;
                     }
                     if (serverGroup != null)
-                        TimoCloudCore.getInstance().getServerManager().removeServerGroup(serverGroup);
-                    if (proxyGroup != null) TimoCloudCore.getInstance().getServerManager().removeProxyGroup(proxyGroup);
+                        TimoCloudCore.getInstance().getInstanceManager().removeServerGroup(serverGroup);
+                    if (proxyGroup != null) TimoCloudCore.getInstance().getInstanceManager().removeProxyGroup(proxyGroup);
 
                     sendMessage.accept("Successfully deleted group &e" + name);
                 } catch (Exception e) {
@@ -130,11 +130,11 @@ public class CommandManager {
 
             if (command.equalsIgnoreCase("restart") || command.equalsIgnoreCase("stop")) {
                 String target = args[0];
-                ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(target);
-                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(target);
+                ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(target);
+                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(target);
 
-                Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(target);
-                Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
+                Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByName(target);
+                Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(target);
 
                 if (serverGroup == null && proxyGroup == null && server == null && proxy == null) {
                     sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
@@ -151,11 +151,11 @@ public class CommandManager {
             }
             if (command.equalsIgnoreCase("sendcommand")) {
                 String target = args[0];
-                ServerGroup serverGroup = TimoCloudCore.getInstance().getServerManager().getServerGroupByName(target);
-                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getServerManager().getProxyGroupByName(target);
+                ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(target);
+                ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(target);
 
-                Server server = TimoCloudCore.getInstance().getServerManager().getServerByName(target);
-                Proxy proxy = TimoCloudCore.getInstance().getServerManager().getProxyByName(target);
+                Server server = TimoCloudCore.getInstance().getInstanceManager().getServerById(target);
+                Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyById(target);
 
                 if (serverGroup == null && proxyGroup == null && server == null && proxy == null) {
                     sendError(sendMessage, local, "Could not find any group, server or proxy with the name '" + target + "'");
@@ -182,7 +182,7 @@ public class CommandManager {
                 String type = args[0];
                 String name = args[1];
 
-                if (TimoCloudCore.getInstance().getServerManager().getGroupByName(name) != null) {
+                if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                     sendError(sendMessage, local, "This group already exists.");
                     return;
                 }
@@ -202,8 +202,8 @@ public class CommandManager {
                     }
 
                     ServerGroup serverGroup = new ServerGroup(properties);
-                    TimoCloudCore.getInstance().getServerManager().addGroup(serverGroup);
-                    TimoCloudCore.getInstance().getServerManager().saveServerGroups();
+                    TimoCloudCore.getInstance().getInstanceManager().addGroup(serverGroup);
+                    TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
                     group = serverGroup;
                 } else if (type.equalsIgnoreCase("proxy")) {
                     Map<String, Object> properties = new HashMap<>();
@@ -219,8 +219,8 @@ public class CommandManager {
                     }
 
                     ProxyGroup proxyGroup = new ProxyGroup(properties);
-                    TimoCloudCore.getInstance().getServerManager().addGroup(proxyGroup);
-                    TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
+                    TimoCloudCore.getInstance().getInstanceManager().addGroup(proxyGroup);
+                    TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                     group = proxyGroup;
                 } else {
                     sendError(sendMessage, local, "Unknown group type: '" + type + "'");
@@ -238,7 +238,7 @@ public class CommandManager {
             }
             if (command.equalsIgnoreCase("editgroup")) {
                 String groupName = args[0];
-                Group group = TimoCloudCore.getInstance().getServerManager().getGroupByName(groupName);
+                Group group = TimoCloudCore.getInstance().getInstanceManager().getGroupByName(groupName);
                 if (group == null) {
                     sendError(sendMessage, local, "Group " + groupName + " not found. Get a list of all groups with 'listgroups'");
                     return;
@@ -277,7 +277,7 @@ public class CommandManager {
                                     "editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
                             return;
                     }
-                    TimoCloudCore.getInstance().getServerManager().saveServerGroups();
+                    TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
                 } else if (group instanceof ProxyGroup) {
                     ProxyGroup proxyGroup = (ProxyGroup) group;
                     switch (key.toLowerCase()) {
@@ -319,7 +319,7 @@ public class CommandManager {
                                     "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
                             return;
                     }
-                    TimoCloudCore.getInstance().getServerManager().saveProxyGroups();
+                    TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                 }
                 sendMessage.accept("&2Group &e" + group.getName() + " &2has successfully been edited. New data: ");
                 displayGroup(sendMessage, group);
@@ -327,7 +327,7 @@ public class CommandManager {
             }
             if (command.equalsIgnoreCase("debug")) {
                 try {
-                    JSONObject jsonObject = DataCollector.collectData(TimoCloudCore.getInstance());
+                    Message jsonObject = DataCollector.collectData(TimoCloudCore.getInstance());
                     TimoCloudCore.getInstance().getFileManager().saveJson(jsonObject, new File(
                             TimoCloudCore.getInstance().getFileManager().getDebugDirectory(), DATE_FORMAT.format(new Date()) + ".json"));
                 } catch (Exception e) {

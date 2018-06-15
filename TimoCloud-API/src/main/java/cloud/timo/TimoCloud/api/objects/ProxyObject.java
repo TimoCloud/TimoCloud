@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 
 import java.net.InetAddress;
@@ -16,6 +17,11 @@ public interface ProxyObject {
      * @return The cord's name
      */
     String getName();
+
+    /**
+     * @return The proxy's unique id
+     */
+    String getId();
 
     /**
      * @return The group the cord is part of
@@ -51,6 +57,11 @@ public interface ProxyObject {
      * @return The server's port
      */
     int getPort();
+
+    /**
+     * @return The address plugin messages to this proxy shall be addressed to
+     */
+    MessageClientAddress getMessageAddress();
 
     /**
      * Executes the given command as ConsoleSender on the server

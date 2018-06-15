@@ -1,9 +1,9 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudEventAPI;
+import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
-import cloud.timo.TimoCloud.api.events.Event;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

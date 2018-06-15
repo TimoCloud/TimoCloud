@@ -9,6 +9,10 @@ import cloud.timo.TimoCloud.bukkit.signs.SignInstance;
 import cloud.timo.TimoCloud.bukkit.signs.SignLayout;
 import cloud.timo.TimoCloud.bukkit.signs.SignParseException;
 import cloud.timo.TimoCloud.bukkit.signs.SignTemplate;
+import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,16 +20,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SignManager {
 
-    private List<SignTemplate> signTemplates;
-    private List<SignInstance> signInstances;
+    private Set<SignTemplate> signTemplates;
+    private Map<Location, SignInstance> signInstances;
     private int updates = 0;
 
     public SignManager() {
@@ -40,7 +42,7 @@ public class SignManager {
     }
 
     private void loadSignTemplates() {
-        signTemplates = new ArrayList<>();
+        signTemplates = new HashSet<>();
         FileConfiguration config = TimoCloudBukkit.getInstance().getFileManager().getSignTemplates();
         for (String template : config.getKeys(false)) {
             Map<String, SignLayout> layouts = new HashMap<>();
@@ -83,19 +85,21 @@ public class SignManager {
     }
 
     private void loadSignInstances() {
-        signInstances = new ArrayList<>();
+        signInstances = new HashMap<>();
         try {
-            JSONArray jsonArray = TimoCloudBukkit.getInstance().getFileManager().getSignInstances();
-            for (Object object : jsonArray) {
-                JSONObject jsonObject = (JSONObject) object;
-                signInstances.add(new SignInstance(
-                        JsonHelper.locationFromJson((JSONObject) jsonObject.get("location")),
-                        (String) jsonObject.get("target"),
-                        (String) jsonObject.get("template"),
-                        getSignTemplate((String) jsonObject.get("template")),
-                        (boolean) jsonObject.get("dynamic"),
-                        ((Number) jsonObject.get("priority")).intValue()
-                ));
+            JsonArray jsonArray = TimoCloudBukkit.getInstance().getFileManager().getSignInstances();
+            for (JsonElement jsonElement : jsonArray) {
+                JsonObject jsonObject = jsonElement.getAsJsonObject();
+                Location location = JsonHelper.locationFromJson(jsonObject.get("location").getAsJsonObject());
+                signInstances.put(location,
+                        new SignInstance(
+                                location,
+                                jsonObject.get("target").getAsString(),
+                                jsonObject.get("template").getAsString(),
+                                getSignTemplate(jsonObject.get("template").getAsString()),
+                                jsonObject.get("dynamic").getAsBoolean(),
+                                jsonObject.get("priority").getAsInt()
+                        ));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,16 +108,15 @@ public class SignManager {
 
     private void saveSignInstances() {
         try {
-            JSONArray jsonArray = new JSONArray();
-
-            for (SignInstance signInstance : signInstances) {
-                Map<String, Object> properties = new LinkedHashMap<>();
-                properties.put("location", JsonHelper.locationToJson(signInstance.getLocation()));
-                properties.put("target", signInstance.getTarget());
-                properties.put("template", signInstance.getTemplateName());
-                properties.put("dynamic", signInstance.isDynamic());
-                properties.put("priority", signInstance.getPriority());
-                jsonArray.add(new JSONObject(properties));
+            JsonArray jsonArray = new JsonArray();
+            for (SignInstance signInstance : signInstances.values()) {
+                jsonArray.add(JsonObjectBuilder.create()
+                        .set("location", JsonHelper.locationToJson(signInstance.getLocation()))
+                        .set("target", signInstance.getTarget())
+                        .set("template", signInstance.getTemplateName())
+                        .set("dynamic", signInstance.isDynamic())
+                        .set("priority", signInstance.getPriority())
+                        .toJsonObject());
             }
             TimoCloudBukkit.getInstance().getFileManager().saveSignInstances(jsonArray);
         } catch (Exception e) {
@@ -144,7 +147,7 @@ public class SignManager {
     public void updateSigns() {
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         List<SignInstance> dynamicInstances = new ArrayList<>();
-        for (SignInstance signInstance : signInstances) {
+        for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);
             } else {
@@ -159,7 +162,7 @@ public class SignManager {
         Map<ServerGroupObject, List<SignInstance>> groups = new HashMap<>();
         for (SignInstance signInstance : signInstances) {
             ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(signInstance.getTarget());
-            groups.computeIfAbsent(group, k -> new ArrayList<>());
+            groups.putIfAbsent(group, new ArrayList<>());
             groups.get(group).add(signInstance);
         }
         for (ServerGroupObject group : groups.keySet()) processDynamicSignsPerGroup(group, groups.get(group));
@@ -175,8 +178,7 @@ public class SignManager {
 
         List<ServerObject> targets = new ArrayList<>();
         for (ServerObject serverObject : group.getServers())
-            if (!group.getSortOutStates().contains(serverObject.getState())) targets.add(serverObject);
-
+            if (! group.getSortOutStates().contains(serverObject.getState())) targets.add(serverObject);
         List<SignInstance> withPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() != 0).collect(Collectors.toList());
         List<SignInstance> withoutPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() == 0).collect(Collectors.toList());
         withPriority.sort(Comparator.comparing(SignInstance::getPriority));
@@ -256,11 +258,12 @@ public class SignManager {
         attachedTo.setType(material);
         try {
             Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     private Block getSignBlockAttached(Block signBlock) {
-        if (! signBlock.getType().equals(Material.WALL_SIGN)) return null;
+        if (!signBlock.getType().equals(Material.WALL_SIGN)) return null;
         return signBlock.getRelative(((org.bukkit.material.Sign) signBlock.getState().getData()).getAttachedFace());
     }
 
@@ -277,10 +280,8 @@ public class SignManager {
                 .replace("%map%", server.getMap()));
     }
 
-    private SignInstance getSignInstanceByLocation(Location location) {
-        for (SignInstance signInstance : signInstances)
-            if (signInstance.getLocation().equals(location)) return signInstance;
-        return null;
+    public SignInstance getSignInstanceByLocation(Location location) {
+        return signInstances.get(location);
     }
 
     public boolean signExists(Location location) {
@@ -289,7 +290,7 @@ public class SignManager {
 
     public void onSignClick(Player player, Location location) {
         SignInstance signInstance = getSignInstanceByLocation(location);
-        if (signInstance == null ||signInstance.getTarget() == null || signInstance.getTargetServer() == null) return;
+        if (signInstance == null || signInstance.getTarget() == null || signInstance.getTargetServer() == null) return;
         TimoCloudBukkit.getInstance().sendPlayerToServer(player, signInstance.getTargetServer().getName());
     }
 
@@ -309,7 +310,7 @@ public class SignManager {
             BukkitMessageManager.sendMessage(player, "&cError while creating sign: Could not find group or server called &e" + target + "&c.");
             return;
         }
-        signInstances.add(new SignInstance(location, target, template, signTemplate, dynamic, priority));
+        signInstances.put(location, new SignInstance(location, target, template, signTemplate, dynamic, priority));
         BukkitMessageManager.sendMessage(player, "&aSuccessfully added sign. Please check the parsed data is correct: " +
                 "\n  &eTarget&6: &3 " + target +
                 "\n  &eIsGroup&6: &3 " + dynamic +
@@ -317,6 +318,10 @@ public class SignManager {
                 "\n  &ePriority&6: &3 " + priority
         );
         saveSignInstances();
+    }
+
+    public void removeSign(SignInstance signInstance) {
+        signInstances.remove(signInstance);
     }
 
     public void lockSign(Location location) {

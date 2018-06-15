@@ -1,25 +1,26 @@
 package cloud.timo.TimoCloud.base.objects;
 
-import org.json.simple.JSONObject;
+import java.util.Map;
 
 public class BaseProxyObject {
+
     private String name;
+    private String id;
     private String group;
     private int ram;
     private boolean isStatic;
-    private String token;
     private String motd;
     private int maxPlayers;
     private int maxPlayersPerProxy;
-    private JSONObject templateHash;
-    private JSONObject globalHash;
+    private Map<String, Object> templateHash;
+    private Map<String, Object> globalHash;
 
-    public BaseProxyObject(String name, String group, int ram, boolean isStatic, String token, String motd, int maxPlayers, int maxPlayersPerProxy, JSONObject templateHash, JSONObject globalHash) {
+    public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash) {
         this.name = name;
+        this.id = id;
         this.group = group;
         this.ram = ram;
         this.isStatic = isStatic;
-        this.token = token;
         this.motd = motd;
         this.maxPlayers = maxPlayers;
         this.maxPlayersPerProxy = maxPlayersPerProxy;
@@ -29,6 +30,10 @@ public class BaseProxyObject {
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getGroup() {
@@ -43,10 +48,6 @@ public class BaseProxyObject {
         return isStatic;
     }
 
-    public String getToken() {
-        return token;
-    }
-
     public String getMotd() {
         return motd;
     }
@@ -59,11 +60,11 @@ public class BaseProxyObject {
         return maxPlayersPerProxy;
     }
 
-    public JSONObject getTemplateHash() {
+    public Map<String, Object> getTemplateHash() {
         return templateHash;
     }
 
-    public JSONObject getGlobalHash() {
+    public Map<String, Object> getGlobalHash() {
         return globalHash;
     }
 }

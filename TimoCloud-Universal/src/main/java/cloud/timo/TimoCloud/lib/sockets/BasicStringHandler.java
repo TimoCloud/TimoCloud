@@ -1,15 +1,14 @@
 package cloud.timo.TimoCloud.lib.sockets;
 
+import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class BasicStringHandler extends SimpleChannelInboundHandler<String> {
+public abstract class BasicStringHandler extends SimpleChannelInboundHandler<String> {
 
     private Map<Channel, Integer> open;
     private Map<Channel, StringBuilder> parsed;
@@ -36,7 +35,8 @@ public class BasicStringHandler extends SimpleChannelInboundHandler<String> {
                 open.put(channel, getOpen(channel) - 1);
                 if (getOpen(channel) == 0) {
                     try {
-                        handleJSON((JSONObject) JSONValue.parse(getParsed(channel).toString()), getParsed(channel).toString(), channel);
+                        String parsed = getParsed(channel).toString();
+                        handleMessage(Message.createFromJsonString(parsed), parsed, channel);
                     } catch (Exception e) {
                         System.err.println("Error while parsing JSON message: " + getParsed(channel));
                         e.printStackTrace();
@@ -47,7 +47,7 @@ public class BasicStringHandler extends SimpleChannelInboundHandler<String> {
         }
     }
 
-    public void handleJSON(JSONObject json, String message, Channel channel) {}
+    public abstract void handleMessage(Message message, String originalMessage, Channel channel);
 
     private int getOpen(Channel channel) {
         open.putIfAbsent(channel, 0);

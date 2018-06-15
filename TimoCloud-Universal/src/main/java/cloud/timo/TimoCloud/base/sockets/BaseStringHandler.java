@@ -3,62 +3,65 @@ package cloud.timo.TimoCloud.base.sockets;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
+import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.apache.commons.io.FileDeleteStrategy;
-import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.util.Base64;
-import java.util.Date;
+import java.util.Map;
 
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
 
     @Override
-    public void handleJSON(JSONObject json, String message, Channel channel) {
-        String type = (String) json.get("type");
-        Object data = json.get("data");
+    public void handleMessage(Message message, String originalMessage, Channel channel) {
+        String type = (String) message.get("type");
+        Object data = message.get("data");
         switch (type) {
             case "HANDSHAKE_SUCCESS":
                 TimoCloudBase.getInstance().onHandshakeSuccess();
                 break;
             case "START_SERVER": {
-                String serverName = (String) json.get("name");
-                String token = (String) json.get("token");
-                int ram = ((Number) json.get("ram")).intValue();
-                boolean isStatic = (Boolean) json.get("static");
-                String group = (String) json.get("group");
-                String map = (String) json.get("map");
-                JSONObject templateHash = (JSONObject) json.get("templateHash");
-                JSONObject mapHash = json.containsKey("mapHash") ? (JSONObject) json.get("mapHash") : null;
-                JSONObject globalHash = (JSONObject) json.get("globalHash");
-                TimoCloudBase.getInstance().getServerManager().addToServerQueue(new BaseServerObject(serverName, group, ram, isStatic, map, token, templateHash, mapHash, globalHash));
+                String serverName = (String) message.get("name");
+                String id = (String) message.get("id");
+                int ram = ((Number) message.get("ram")).intValue();
+                boolean isStatic = (Boolean) message.get("static");
+                String group = (String) message.get("group");
+                String map = (String) message.get("map");
+                Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
+                Map<String, Object> mapHash = message.containsKey("mapHash") ? (Map<String, Object>) message.get("mapHash") : null;
+                Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash));
                 TimoCloudBase.info("Added server " + serverName + " to queue.");
                 break;
             }
             case "START_PROXY": {
-                String token = (String) json.get("token");
-                String proxyName = (String) json.get("name");
-                int ram = ((Number) json.get("ram")).intValue();
-                boolean isStatic = (Boolean) json.get("static");
-                String group = (String) json.get("group");
-                String motd = (String) json.get("motd");
-                int maxPlayers = ((Number) json.get("maxplayers")).intValue();
-                int maxPlayersPerProxy = ((Number) json.get("maxplayersperproxy")).intValue();
-                JSONObject templateHash = (JSONObject) json.get("templateHash");
-                JSONObject globalHash = (JSONObject) json.get("globalHash");
-                TimoCloudBase.getInstance().getServerManager().addToProxyQueue(new BaseProxyObject(proxyName, group, ram, isStatic, token, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));
+                String proxyName = (String) message.get("name");
+                String id = (String) message.get("id");
+                int ram = ((Number) message.get("ram")).intValue();
+                boolean isStatic = (Boolean) message.get("static");
+                String group = (String) message.get("group");
+                String motd = (String) message.get("motd");
+                int maxPlayers = ((Number) message.get("maxplayers")).intValue();
+                int maxPlayersPerProxy = ((Number) message.get("maxplayersperproxy")).intValue();
+                Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
+                Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
+                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));
                 TimoCloudBase.info("Added proxy " + proxyName + " to queue.");
                 break;
             }
+            case "SERVER_STARTED":
+                break;
             case "SERVER_STOPPED":
-                TimoCloudBase.getInstance().getServerManager().onServerStopped((String) json.get("target"), (String) data);
+                TimoCloudBase.getInstance().getInstanceManager().onServerStopped((String) data);
                 break;
             case "PROXY_STOPPED":
-                TimoCloudBase.getInstance().getServerManager().onProxyStopped((String) json.get("target"), (String) data);
+                TimoCloudBase.getInstance().getInstanceManager().onProxyStopped((String) data);
                 break;
             case "DELETE_DIRECTORY":
                 File dir = new File((String) data);
@@ -66,36 +69,35 @@ public class BaseStringHandler extends BasicStringHandler {
                 break;
             case "TRANSFER":
                 try {
-                    File file = new File(TimoCloudBase.getInstance().getFileManager().getCacheDirectory(), new Date().getTime() + "");
-                    file.createNewFile();
-                    byte[] content = Base64.getDecoder().decode(((String) json.get("file")).replace("\\", ""));
-                    FileUtils.writeByteArrayToFile(file, content);
-                    switch ((String) json.get("transferType")) {
+                    InputStream inputStream = new ByteArrayInputStream(stringToByteArray((String) message.get("file")));
+                    switch ((String) message.get("transferType")) {
                         case "SERVER_TEMPLATE":
-                            TimoCloudBase.getInstance().getTemplateManager().extractFilesAndDeleteZip(file, new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), (String) json.get("template")));
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), (String) message.get("template")));
                             break;
                         case "SERVER_GLOBAL_TEMPLATE":
-                            TimoCloudBase.getInstance().getTemplateManager().extractFilesAndDeleteZip(file, TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory());
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory());
                             break;
                         case "PROXY_TEMPLATE":
-                            TimoCloudBase.getInstance().getTemplateManager().extractFilesAndDeleteZip(file, new File(TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory(), (String) json.get("template")));
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, new File(TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory(), (String) message.get("template")));
                             break;
                         case "PROXY_GLOBAL_TEMPLATE":
-                            TimoCloudBase.getInstance().getTemplateManager().extractFilesAndDeleteZip(file, TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
+                            TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
                             break;
                     }
-                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage("TRANSFER_FINISHED", (String) json.get("target"), null);
-                    TimoCloudBase.getInstance().getServerManager().setDownloadingTemplate(false);
+                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("TRANSFER_FINISHED").setTarget(message.getTarget()));
+                    TimoCloudBase.getInstance().getInstanceManager().setDownloadingTemplate(false);
                     break;
                 } catch (Exception e) {
                     TimoCloudBase.severe("Error while unpacking transferred files: ");
                     e.printStackTrace();
                 }
             default:
-                TimoCloudBase.severe("Could not categorize json message: " + message);
+                TimoCloudBase.severe("Could not categorize json message: " + originalMessage);
         }
     }
 
-
+    private byte[] stringToByteArray(String input) {
+        return Base64.getDecoder().decode(input.getBytes());
+    }
 
 }
