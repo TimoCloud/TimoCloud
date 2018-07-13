@@ -38,7 +38,7 @@ public class BukkitFileManager {
             loadSignConfigs();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -51,7 +51,7 @@ public class BukkitFileManager {
             addConfigDefaults();
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe("Error while loading config.yml: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -70,7 +70,7 @@ public class BukkitFileManager {
             addSignTemplatesDefaults();
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe("Error while load sign configs: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -86,7 +86,7 @@ public class BukkitFileManager {
         try {
             config.save(configFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -126,7 +126,7 @@ public class BukkitFileManager {
         try {
             signTemplates.save(signTemplatesFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -156,7 +156,7 @@ public class BukkitFileManager {
             if (fileContent == null || fileContent.trim().isEmpty()) fileContent = "[]";
             return new JsonParser().parse(fileContent).getAsJsonArray();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
             return null;
         }
     }
@@ -167,7 +167,7 @@ public class BukkitFileManager {
             fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 }

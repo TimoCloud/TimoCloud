@@ -41,7 +41,7 @@ public class BukkitStringHandler extends BasicStringHandler {
                     ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue((String) data, EventUtil.getClassByEventType(eventType)));
                 } catch (Exception e) {
                     System.err.println("Error while parsing event from json: ");
-                    e.printStackTrace();
+                    TimoCloudBukkit.getInstance().severe(e);
                 }
                 break;
             case "EXECUTE_COMMAND":

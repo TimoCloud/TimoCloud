@@ -37,7 +37,7 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> mapHash = message.containsKey("mapHash") ? (Map<String, Object>) message.get("mapHash") : null;
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
                 TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash));
-                TimoCloudBase.info("Added server " + serverName + " to queue.");
+                TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }
             case "START_PROXY": {
@@ -52,7 +52,7 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
                 TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));
-                TimoCloudBase.info("Added proxy " + proxyName + " to queue.");
+                TimoCloudBase.getInstance().info("Added proxy " + proxyName + " to queue.");
                 break;
             }
             case "SERVER_STARTED":
@@ -88,11 +88,11 @@ public class BaseStringHandler extends BasicStringHandler {
                     TimoCloudBase.getInstance().getInstanceManager().setDownloadingTemplate(false);
                     break;
                 } catch (Exception e) {
-                    TimoCloudBase.severe("Error while unpacking transferred files: ");
-                    e.printStackTrace();
+                    TimoCloudBase.getInstance().severe("Error while unpacking transferred files: ");
+                    TimoCloudBase.getInstance().severe(e);
                 }
             default:
-                TimoCloudBase.severe("Could not categorize json message: " + originalMessage);
+                TimoCloudBase.getInstance().severe("Could not categorize json message: " + originalMessage);
         }
     }
 

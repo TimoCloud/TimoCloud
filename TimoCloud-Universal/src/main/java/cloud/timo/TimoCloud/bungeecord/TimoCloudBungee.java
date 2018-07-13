@@ -22,10 +22,12 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
+import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -49,8 +51,16 @@ public class TimoCloudBungee extends Plugin {
         getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
     }
 
+    public void warning(String message) {
+        getLogger().warning(ChatColor.translateAlternateColorCodes('&', " " + message));
+    }
+
     public void severe(String message) {
         getLogger().severe(ChatColor.translateAlternateColorCodes('&', " &c" + message));
+    }
+
+    public void severe(Throwable throwable) {
+        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override
@@ -71,7 +81,7 @@ public class TimoCloudBungee extends Plugin {
             info("&aSuccessfully started TimoCloudBungee!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBungee: ");
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
         }
     }
 
@@ -116,7 +126,7 @@ public class TimoCloudBungee extends Plugin {
             socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
             severe("Error while connecting to Core:");
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
             onSocketDisconnect();
         }
     }

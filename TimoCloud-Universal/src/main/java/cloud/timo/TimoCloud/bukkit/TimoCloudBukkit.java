@@ -18,6 +18,7 @@ import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
+import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -28,6 +29,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,8 +49,16 @@ public class TimoCloudBukkit extends JavaPlugin {
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
     }
 
+    public void warning(String message) {
+        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
+    }
+
     public void severe(String message) {
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + "&c" + message));
+    }
+
+    public void severe(Throwable throwable) {
+        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override
@@ -69,7 +79,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             info("&ahas been enabled!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBukkit: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -83,7 +93,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             info("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
             new BukkitSocketClient().init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -158,7 +168,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             out.writeUTF(server);
         } catch (Exception e) {
             severe("Error while sending player &e" +  player + " &c to server &e" + server + "&c. Please report this: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
@@ -217,7 +227,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             getStateByEventManager().setStateByMotd(event.getMotd().trim());
         } catch (Exception e) {
             severe("Error while sending MOTD: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
             getSocketMessageManager().sendMessage(Message.create().setType("SET_MOTD").setData(Bukkit.getMotd()));
         }
     }
@@ -229,7 +239,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             return event.getNumPlayers();
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
             return Bukkit.getOnlinePlayers().size();
         }
     }
@@ -241,7 +251,7 @@ public class TimoCloudBukkit extends JavaPlugin {
             return event.getMaxPlayers();
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
             return Bukkit.getMaxPlayers();
         }
     }

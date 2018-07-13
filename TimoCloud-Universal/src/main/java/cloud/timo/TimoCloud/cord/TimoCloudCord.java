@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
 import cloud.timo.TimoCloud.cord.sockets.*;
+import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
@@ -17,6 +18,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,8 +68,16 @@ public class TimoCloudCord implements TimoCloudModule {
         System.out.println(formatLog(message, ANSI_RESET));
     }
 
+    public void warning(String message) {
+        System.err.println(formatLog(message, ANSI_YELLOW));
+    }
+
     public void severe(String message) {
         System.err.println(formatLog(message, ANSI_RED));
+    }
+
+    public void severe(Throwable throwable) {
+        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override
@@ -125,7 +135,7 @@ public class TimoCloudCord implements TimoCloudModule {
             connectToSocket();
             getSocketMessageManager().sendMessage(Message.create().setType("GET_API_DATA"));
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudCord.getInstance().severe(e);
         }
     }
 
@@ -139,11 +149,9 @@ public class TimoCloudCord implements TimoCloudModule {
         }).start();
     }
 
-
-
     public void onSocketConnect() {
         setConnected(true);
-        getSocketMessageManager().sendMessage(Message.create().setType("CORD_HANDSHAKE"));
+        getSocketMessageManager().sendMessage(Message.create().setType("CORD_HANDSHAKE").set("cord", getName()));
         info("Successfully connected to Core socket!");
     }
 
@@ -161,7 +169,7 @@ public class TimoCloudCord implements TimoCloudModule {
             socketServer.init("0.0.0.0", getProxyPort());
         } catch (Exception e) {
             severe("Error while initializing socket server:");
-            e.printStackTrace();
+            TimoCloudCord.getInstance().severe(e);
             System.exit(1);
         }
     }

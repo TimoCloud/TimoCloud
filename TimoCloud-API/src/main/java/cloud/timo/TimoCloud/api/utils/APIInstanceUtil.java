@@ -26,6 +26,12 @@ public class APIInstanceUtil {
         field.set(null, instance);
     }
 
+    public static void setCoreInstance(TimoCloudCoreAPI instance) throws NoSuchFieldException, IllegalAccessException{
+        Field field = TimoCloudAPI.class.getDeclaredField("coreAPI");
+        field.setAccessible(true);
+        field.set(null, instance);
+    }
+
     public static void setEventInstance(TimoCloudEventAPI instance) throws NoSuchFieldException, IllegalAccessException{
         Field field = TimoCloudAPI.class.getDeclaredField("eventAPI");
         field.setAccessible(true);

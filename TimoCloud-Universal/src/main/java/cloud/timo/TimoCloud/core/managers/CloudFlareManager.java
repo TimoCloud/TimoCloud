@@ -169,7 +169,7 @@ public class CloudFlareManager implements Listener {
                     })
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while getting DNS zones via API. Probably your API access data is invalid.");
+            TimoCloudCore.getInstance().severe("Error while getting DNS zones via API. Check your API access data or internet connection.");
             e.printStackTrace();
             return new ArrayList<>();
         }
@@ -180,7 +180,7 @@ public class CloudFlareManager implements Listener {
             JsonArray jsons = request(CLOUDFLARE_API_URL + "zones/" + zone.getId() + "/dns_records?per_page=100", "GET").getAsJsonArray();
             return StreamSupport.stream(jsons.spliterator(), false).map(object -> DnsRecord.fromJson(object.getAsJsonObject())).collect(Collectors.toList());
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while getting DNS records via API. Probably your API access data is invalid.");
+            TimoCloudCore.getInstance().severe("Error while getting DNS records via API. Check your API access data or internet connection.");
             e.printStackTrace();
             return new ArrayList<>();
         }

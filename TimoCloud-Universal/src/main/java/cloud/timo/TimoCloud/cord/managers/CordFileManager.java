@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.cord.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -38,7 +39,7 @@ public class CordFileManager {
             }
             saveConfig();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudCord.getInstance().severe(e);
         }
     }
 
@@ -49,8 +50,8 @@ public class CordFileManager {
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             new Yaml(dumperOptions).dump(config, writer);
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while saving config: ");
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe("Error while saving config: ");
+            TimoCloudCord.getInstance().severe(e);
         }
     }
 

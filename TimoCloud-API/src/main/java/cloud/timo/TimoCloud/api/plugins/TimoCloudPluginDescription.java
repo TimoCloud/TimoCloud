@@ -12,6 +12,9 @@ public class TimoCloudPluginDescription {
     private List<String> softDepends;
     private File file;
 
+    // Store main class of the plugin
+    private TimoCloudPlugin plugin;
+
     public TimoCloudPluginDescription(String name, String author, String version, String mainClass, List<String> depends, List<String> softDepends, File file) {
         this.name = name;
         this.author = author;
@@ -48,5 +51,13 @@ public class TimoCloudPluginDescription {
 
     public File getFile() {
         return file;
+    }
+
+    public TimoCloudPlugin getPlugin() {
+        return plugin;
+    }
+
+    public void setPlugin(TimoCloudPlugin plugin) {
+        this.plugin = plugin;
     }
 }

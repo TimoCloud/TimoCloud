@@ -69,7 +69,7 @@ public class BaseFileManager {
             logsDirectory = new File(baseDirectory, "logs/");
             logsDirectory.mkdirs();
             if (new File("plugins/").exists()) {
-                TimoCloudBase.severe("The global 'plugins' directory is outdated and will no longer be used. Please move global plugins to 'templates/Global/plugins/' and delete the 'plugins/' directory to hide this warning.");
+                TimoCloudBase.getInstance().severe("The global 'plugins' directory is outdated and will no longer be used. Please move global plugins to 'templates/Global/plugins/' and delete the 'plugins/' directory to hide this warning.");
             }
             this.configFile = new File(getConfigsDirectory(), "config.yml");
             configFile.createNewFile();
@@ -82,7 +82,7 @@ public class BaseFileManager {
             }
             saveConfig();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe(e);
         }
     }
 
@@ -93,8 +93,8 @@ public class BaseFileManager {
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             new Yaml(dumperOptions).dump(config, writer);
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while saving config: ");
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe("Error while saving config: ");
+            TimoCloudBase.getInstance().severe(e);
         }
     }
 

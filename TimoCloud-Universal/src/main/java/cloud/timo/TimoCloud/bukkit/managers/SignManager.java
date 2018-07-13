@@ -79,7 +79,7 @@ public class SignManager {
                 signTemplates.add(new SignTemplate(template, layouts));
             } catch (Exception e) {
                 TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c.");
-                e.printStackTrace();
+                TimoCloudBukkit.getInstance().severe(e);
             }
         }
     }
@@ -102,7 +102,7 @@ public class SignManager {
                         ));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -120,7 +120,7 @@ public class SignManager {
             }
             TimoCloudBukkit.getInstance().getFileManager().saveSignInstances(jsonArray);
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
@@ -214,7 +214,7 @@ public class SignManager {
                         return 0;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                TimoCloudBukkit.getInstance().severe(e);
                 return 0;
             }
         });

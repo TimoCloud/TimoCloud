@@ -70,7 +70,7 @@ public class BaseInstanceManager {
             countDownPorts();
             startNext();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe(e);
         }
     }
 
@@ -131,7 +131,7 @@ public class BaseInstanceManager {
     }
 
     private void startServer(BaseServerObject server) {
-        TimoCloudBase.info("Starting server " + server.getName() + "...");
+        TimoCloudBase.getInstance().info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
         try {
             File templateDirectory = new File((server.isStatic() ? TimoCloudBase.getInstance().getFileManager().getServerStaticDirectory() : TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory()), server.getGroup());
@@ -158,7 +158,7 @@ public class BaseInstanceManager {
             List<String> globalDifferences = HashUtil.getDifferentFiles("", server.getGlobalHash(), globalHashes);
 
             if (templateDifferences.size() > 0 || mapDifferences.size() > 0 || globalDifferences.size() > 0) {
-                TimoCloudBase.info("New server template updates found! Stopping and downloading updates...");
+                TimoCloudBase.getInstance().info("New server template updates found! Stopping and downloading updates...");
                 TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
                         .setType("SERVER_TEMPLATE_REQUEST")
                         .setTarget(server.getId())
@@ -194,7 +194,7 @@ public class BaseInstanceManager {
 
             File spigotJar = new File(temporaryDirectory, "spigot.jar");
             if (!spigotJar.exists()) {
-                TimoCloudBase.severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
+                TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
                 throw new ServerStartException("spigot.jar does not exist");
             }
 
@@ -206,14 +206,14 @@ public class BaseInstanceManager {
             try {
                 Files.copy(new File(TimoCloudBase.class.getProtectionDomain().getCodeSource().getLocation().getPath()).toPath(), plugin.toPath());
             } catch (Exception e) {
-                TimoCloudBase.severe("Error while copying plugin into template:");
-                e.printStackTrace();
+                TimoCloudBase.getInstance().severe("Error while copying plugin into template:");
+                TimoCloudBase.getInstance().severe(e);
                 throw new ServerStartException("Could not copy TimoCloud.jar into template");
             }
 
             Integer port = getFreePort(41000);
             if (port == null) {
-                TimoCloudBase.severe("Error while starting server " + server.getName() + ": No free port found. Please report this!");
+                TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": No free port found. Please report this!");
                 throw new ServerStartException("No free port found");
             }
             blockPort(port);
@@ -223,7 +223,7 @@ public class BaseInstanceManager {
             setProperty(serverProperties, "server-name", server.getName());
 
             double millisNow = System.currentTimeMillis();
-            TimoCloudBase.info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
+            TimoCloudBase.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
 
 
             ProcessBuilder pb = new ProcessBuilder(
@@ -250,10 +250,10 @@ public class BaseInstanceManager {
                 while ((line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
-                TimoCloudBase.info("Successfully started screen session " + server.getName() + ".");
+                TimoCloudBase.getInstance().info("Successfully started screen session " + server.getName() + ".");
             } catch (Exception e) {
-                TimoCloudBase.severe("Error while starting server " + server.getName() + ":");
-                e.printStackTrace();
+                TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ":");
+                TimoCloudBase.getInstance().severe(e);
                 throw new ServerStartException("Could not start process");
             }
 
@@ -263,14 +263,14 @@ public class BaseInstanceManager {
                     .set("port", port));
 
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while starting server " + server.getName() + ": " + e.getMessage());
+            TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("SERVER_NOT_STARTED").setTarget(server.getId()));
         }
     }
 
 
     private void startProxy(BaseProxyObject proxy) {
-        TimoCloudBase.info("Starting proxy " + proxy.getName() + "...");
+        TimoCloudBase.getInstance().info("Starting proxy " + proxy.getName() + "...");
         double millisBefore = System.currentTimeMillis();
         try {
             File templateDirectory = new File((proxy.isStatic() ? TimoCloudBase.getInstance().getFileManager().getProxyStaticDirectory() : TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory()), proxy.getGroup());
@@ -290,7 +290,7 @@ public class BaseInstanceManager {
             List<String> gloalDifferences = HashUtil.getDifferentFiles("", proxy.getGlobalHash(), globalHashes);
 
             if (templateDifferences.size() > 0 || gloalDifferences.size() > 0) {
-                TimoCloudBase.info("New proxy template updates found! Stopping and downloading updates...");
+                TimoCloudBase.getInstance().info("New proxy template updates found! Stopping and downloading updates...");
                 TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(
                         Message.create()
                                 .setType("PROXY_TEMPLATE_REQUEST")
@@ -317,7 +317,7 @@ public class BaseInstanceManager {
 
             File bungeeJar = new File(temporaryDirectory, "BungeeCord.jar");
             if (!bungeeJar.exists()) {
-                TimoCloudBase.severe("Could not start proxy " + proxy.getName() + " because BungeeCord.jar does not exist. Please make sure a the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
+                TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because BungeeCord.jar does not exist. Please make sure a the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
                 throw new ProxyStartException("BungeeCord.jar does not exist");
             }
 
@@ -329,14 +329,14 @@ public class BaseInstanceManager {
             try {
                 Files.copy(new File(TimoCloudBase.class.getProtectionDomain().getCodeSource().getLocation().getPath()).toPath(), plugin.toPath());
             } catch (Exception e) {
-                TimoCloudBase.severe("Error while copying plugin into template:");
-                e.printStackTrace();
+                TimoCloudBase.getInstance().severe("Error while copying plugin into template:");
+                TimoCloudBase.getInstance().severe(e);
                 throw new ProxyStartException("Could not copy TimoCloud.jar into template");
             }
 
             Integer port = getFreePort(40000);
             if (port == null) {
-                TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ": No free port found. Please report this!");
+                TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": No free port found. Please report this!");
                 throw new ProxyStartException("No free port found");
             }
             blockPort(port);
@@ -365,7 +365,7 @@ public class BaseInstanceManager {
             new Yaml(dumperOptions).dump(config, writer);
 
             double millisNow = System.currentTimeMillis();
-            TimoCloudBase.info("Successfully prepared starting proxy " + proxy.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
+            TimoCloudBase.getInstance().info("Successfully prepared starting proxy " + proxy.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
 
 
             ProcessBuilder pb = new ProcessBuilder(
@@ -386,10 +386,10 @@ public class BaseInstanceManager {
             ).directory(temporaryDirectory);
             try {
                 pb.start();
-                TimoCloudBase.info("Successfully started screen session " + proxy.getName() + ".");
+                TimoCloudBase.getInstance().info("Successfully started screen session " + proxy.getName() + ".");
             } catch (Exception e) {
-                TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ":");
-                e.printStackTrace();
+                TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ":");
+                TimoCloudBase.getInstance().severe(e);
                 throw new ProxyStartException("Error while starting process");
             }
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
@@ -398,7 +398,7 @@ public class BaseInstanceManager {
                     .set("port", port));
 
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
+            TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("PROXY_NOT_STARTED").setTarget(proxy.getId()));
         }
     }
@@ -426,7 +426,7 @@ public class BaseInstanceManager {
             try {
                 if (serverSocket != null) serverSocket.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                TimoCloudBase.getInstance().severe(e);
             }
         }
     }
@@ -454,8 +454,8 @@ public class BaseInstanceManager {
             props.store(out, null);
             out.close();
         } catch (Exception e) {
-            TimoCloudBase.severe("Error while setting property '" + property + "' to value '" + value + "' in file " + file.getAbsolutePath() + ":");
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe("Error while setting property '" + property + "' to value '" + value + "' in file " + file.getAbsolutePath() + ":");
+            TimoCloudBase.getInstance().severe(e);
         }
     }
 
@@ -471,10 +471,10 @@ public class BaseInstanceManager {
                     dir.mkdirs();
                     Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    TimoCloudBase.getInstance().severe(e);
                 }
             } else {
-                TimoCloudBase.severe("No log from server " + name + " exists.");
+                TimoCloudBase.getInstance().severe("No log from server " + name + " exists.");
             }
         }
         */
@@ -492,10 +492,10 @@ public class BaseInstanceManager {
                     dir.mkdirs();
                     Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    TimoCloudBase.getInstance().severe(e);
                 }
             } else {
-                TimoCloudBase.severe("No log from proxy " + name + " exists.");
+                TimoCloudBase.getInstance().severe("No log from proxy " + name + " exists.");
             }
         }
         */

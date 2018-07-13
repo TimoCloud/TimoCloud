@@ -21,7 +21,7 @@ public class BungeeEventManager {
                     .toString());
         } catch (Exception e) {
             TimoCloudBungee.getInstance().severe("Error while sending event: ");
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
         }
     }
 

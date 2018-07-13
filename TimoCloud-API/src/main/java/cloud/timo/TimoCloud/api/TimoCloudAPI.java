@@ -5,6 +5,7 @@ public class TimoCloudAPI {
     private static TimoCloudUniversalAPI universalAPI;
     private static TimoCloudBukkitAPI bukkitAPI;
     private static TimoCloudBungeeAPI bungeeAPI;
+    private static TimoCloudCoreAPI coreAPI;
     private static TimoCloudEventAPI eventAPI;
     private static TimoCloudMessageAPI messageAPI;
 
@@ -85,6 +86,15 @@ public class TimoCloudAPI {
      */
     public static TimoCloudBungeeAPI getBungeeAPI() {
         return bungeeAPI;
+    }
+
+    /**
+     * This API is for Core plugins
+     *
+     * @return Core API instance
+     */
+    public static TimoCloudCoreAPI getCoreAPI() {
+        return coreAPI;
     }
 
     /**

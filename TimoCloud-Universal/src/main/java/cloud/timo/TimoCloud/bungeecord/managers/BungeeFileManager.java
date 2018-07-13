@@ -65,7 +65,7 @@ public class BungeeFileManager {
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
             TimoCloudBungee.getInstance().severe("Exception while initializing files:");
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
         }
     }
 
@@ -75,7 +75,7 @@ public class BungeeFileManager {
             if (fileContent == null || fileContent.trim().isEmpty()) fileContent = "[]";
             return new JsonParser().parse(fileContent).getAsJsonArray();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
             return null;
         }
     }
@@ -86,7 +86,7 @@ public class BungeeFileManager {
             fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
         }
     }
 

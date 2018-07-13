@@ -39,7 +39,7 @@ public class CordStringHandler extends BasicStringHandler {
                     ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue((String) data, EventUtil.getClassByEventType(eventType)));
                 } catch (Exception e) {
                     System.err.println("Error while parsing event from json: ");
-                    e.printStackTrace();
+                    TimoCloudCord.getInstance().severe(e);
                 }
                 break;
             case "PLUGIN_MESSAGE": {

@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 
+import cloud.timo.TimoCloud.base.TimoCloudBase;
 import com.sun.management.OperatingSystemMXBean;
 
 import java.io.BufferedReader;
@@ -40,7 +41,7 @@ public class BaseResourceManager {
             reader.close();
             return Long.parseLong(line.replace("Cached:", "").replace("kB", "").trim()) / 1024;
         } catch (Exception e) {
-            e.printStackTrace();
+            TimoCloudBase.getInstance().severe(e);
             return 0;
         }
     }

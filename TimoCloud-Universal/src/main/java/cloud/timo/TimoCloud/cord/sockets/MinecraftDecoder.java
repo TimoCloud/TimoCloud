@@ -34,7 +34,7 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                 buf.retain();
                 connectClient(ctx.channel(), hostName, buf);
             } else {
-                //TimoCloudCord.getInstance().severe("FATAL ERROR: Received non-status packet: " + packetID);
+                //TimoCloudCord.getInstance().severe("Received non-status packet: " + packetID);
             }
         } catch (Exception e) {
             buf.resetReaderIndex(); // Wait until we receive the full packet
@@ -45,7 +45,7 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         TimoCloudCord.getInstance().severe("Exception in MinecraftDecoder");
-        cause.printStackTrace();
+        TimoCloudCord.getInstance().severe(cause);
     }
 
     public static void connectClient(Channel channel, String hostName, ByteBuf loginPacket) {

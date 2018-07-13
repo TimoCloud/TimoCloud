@@ -43,7 +43,7 @@ public class BungeeStringHandler extends BasicStringHandler {
                     ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue((String) data, EventUtil.getClassByEventType(eventType)));
                 } catch (Exception e) {
                     System.err.println("Error while parsing event from json: ");
-                    e.printStackTrace();
+                    TimoCloudBungee.getInstance().severe(e);
                 }
                 break;
             case "SEND_MESSAGE_TO_SENDER": {
@@ -65,7 +65,7 @@ public class BungeeStringHandler extends BasicStringHandler {
                             InetAddressUtil.getSocketAddressByName((String) message.get("CLIENT_ADDRESS")));
                 } catch (Exception e) {
                     TimoCloudBungee.getInstance().severe("Error while parsing IP addresses (" + message.get("CHANNEL_ADDRESS") + ", " + message.get("CLIENT_ADDRESS") + "): ");
-                    e.printStackTrace();
+                    TimoCloudBungee.getInstance().severe(e);
                 }
                 break;
             case "PLUGIN_MESSAGE": {

@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
+import cloud.timo.TimoCloud.core.api.TimoCloudCoreAPIImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
 import cloud.timo.TimoCloud.core.managers.*;
@@ -78,6 +79,20 @@ public class TimoCloudCore implements TimoCloudModule {
         getReader().getTerminal().writer().flush();
 
         if (getLogger() != null) getLogger().info(message);
+    }
+
+    public void warning(String message) {
+        if (getReader() == null) {
+            System.out.println(message);
+            return;
+        }
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.WARNING, message)));
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+        getReader().getTerminal().writer().flush();
+
+        if (getLogger() != null) getLogger().warning(message);
     }
 
     public void severe(String message) {
@@ -197,6 +212,7 @@ public class TimoCloudCore implements TimoCloudModule {
         this.pluginMessageManager = new PluginMessageManager();
 
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICoreImplementation());
+        APIInstanceUtil.setCoreInstance(new TimoCloudCoreAPIImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
         TimoCloudAPI.getEventAPI().registerListener(getEventManager());

@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
+import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
@@ -17,6 +18,7 @@ import org.apache.commons.io.FileDeleteStrategy;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -64,12 +66,20 @@ public class TimoCloudBase implements TimoCloudModule {
         return (getTime() + getInstance().getPrefix() + color + message + ANSI_RESET);
     }
 
-    public static void info(String message) {
+    public void info(String message) {
         System.out.println(formatLog(message, ANSI_RESET));
     }
 
-    public static void severe(String message) {
+    public void warning(String message) {
+        System.err.println(formatLog(message, ANSI_YELLOW));
+    }
+
+    public void severe(String message) {
         System.err.println(formatLog(message, ANSI_RED));
+    }
+
+    public void severe(Throwable throwable) {
+        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override
@@ -161,7 +171,7 @@ public class TimoCloudBase implements TimoCloudModule {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (Exception e) {
             severe("Error while retrieving own IP address: ");
-            e.printStackTrace();
+            severe(e);
         }
         return "127.0.0.1";
     }

@@ -1,22 +1,18 @@
 package cloud.timo.TimoCloud.communication;
 
-import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.TimoCloudTest;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
-import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
-import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
-import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.sockets.CordSocketClientHandler;
 import cloud.timo.TimoCloud.cord.sockets.CordSocketMessageManager;
 import cloud.timo.TimoCloud.cord.sockets.CordStringHandler;
-import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
@@ -26,11 +22,10 @@ import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -40,28 +35,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class) // We need that for every test in order to mock static methods
 @PrepareForTest({
-        TimoCloudCore.class,
-        TimoCloudBase.class,
-        TimoCloudBukkit.class,
-        TimoCloudBungee.class,
-        TimoCloudCord.class
-})
-public class CommunicationTest {
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private TimoCloudCore core;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private TimoCloudBase base;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private TimoCloudBukkit bukkit;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private TimoCloudBungee bungee;
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private TimoCloudCord cord;
+})
+@Ignore
+public class CommunicationTest extends TimoCloudTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Server server;
@@ -109,30 +89,16 @@ public class CommunicationTest {
 
     @Before
     public void setupCommunication() {
-        MockitoAnnotations.initMocks(this);
+        when(getBukkit().getSocketMessageManager()).thenReturn(bukkitMessageManager);
+        when(getBungee().getSocketMessageManager()).thenReturn(bungeeMessageManager);
+        when(getBase().getSocketMessageManager()).thenReturn(baseMessageManager);
+        when(getCord().getSocketMessageManager()).thenReturn(cordMessageManager);
 
-        mockStatic(TimoCloudCore.class);
-        mockStatic(TimoCloudBase.class);
-        mockStatic(TimoCloudBukkit.class);
-        mockStatic(TimoCloudBungee.class);
-        mockStatic(TimoCloudCord.class);
-
-        when(TimoCloudCore.getInstance()).thenReturn(core);
-        when(TimoCloudBase.getInstance()).thenReturn(base);
-        when(TimoCloudBukkit.getInstance()).thenReturn(bukkit);
-        when(TimoCloudBungee.getInstance()).thenReturn(bungee);
-        when(TimoCloudCord.getInstance()).thenReturn(cord);
-
-        when(bukkit.getSocketMessageManager()).thenReturn(bukkitMessageManager);
-        when(bungee.getSocketMessageManager()).thenReturn(bungeeMessageManager);
-        when(base.getSocketMessageManager()).thenReturn(baseMessageManager);
-        when(cord.getSocketMessageManager()).thenReturn(cordMessageManager);
-
-        when(core.getSocketServerHandler()).thenReturn(coreSocketHandler);
-        when(base.getSocketClientHandler()).thenReturn(baseSocketHandler);
-        when(bukkit.getSocketClientHandler()).thenReturn(bukkitSocketHandler);
-        when(bungee.getSocketClientHandler()).thenReturn(bungeeSocketHandler);
-        when(cord.getSocketClientHandler()).thenReturn(cordSocketHandler);
+        when(getCore().getSocketServerHandler()).thenReturn(coreSocketHandler);
+        when(getBase().getSocketClientHandler()).thenReturn(baseSocketHandler);
+        when(getBukkit().getSocketClientHandler()).thenReturn(bukkitSocketHandler);
+        when(getBungee().getSocketClientHandler()).thenReturn(bungeeSocketHandler);
+        when(getCord().getSocketClientHandler()).thenReturn(cordSocketHandler);
 
         when(server.getChannel()).thenReturn(serverChannel);
         when(proxy.getChannel()).thenReturn(proxyChannel);
@@ -233,11 +199,6 @@ public class CommunicationTest {
         }).when(cordSocketHandler).sendMessage(anyString());
     }
 
-    @Test
-    public void emptyTest() {
-
-    }
-
     private Message anyMessage() {
         return Message.create()
                 .setType("TEST_TYPE")
@@ -247,26 +208,6 @@ public class CommunicationTest {
                         .set("name", "Timo")
                         .set("age", 100)
                         .set("balance", 12345678.9));
-    }
-
-    public TimoCloudCore getCore() {
-        return core;
-    }
-
-    public TimoCloudBase getBase() {
-        return base;
-    }
-
-    public TimoCloudBukkit getBukkit() {
-        return bukkit;
-    }
-
-    public TimoCloudBungee getBungee() {
-        return bungee;
-    }
-
-    public TimoCloudCord getCord() {
-        return cord;
     }
 
     public Server getServer() {

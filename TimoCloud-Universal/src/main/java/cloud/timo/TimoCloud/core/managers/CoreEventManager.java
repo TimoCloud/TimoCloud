@@ -33,7 +33,7 @@ public class CoreEventManager implements Listener {
             return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().writeValueAsString(event);
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while converting Event to JSON: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
             return null;
         }
     }

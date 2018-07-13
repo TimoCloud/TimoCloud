@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
@@ -108,8 +109,8 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (TimoCloudCore.getInstance().getInstanceManager().isCordConnected(baseName)) {
-                    TimoCloudCore.getInstance().severe("Error while cord handshake: A cord with the name '" + baseName + "' is already conencted.");
+                if (TimoCloudCore.getInstance().getInstanceManager().isCordConnected(cordName)) {
+                    TimoCloudCore.getInstance().severe("Error while cord handshake: A cord with the name '" + cordName + "' is already conencted.");
                     return;
                 }
                 Cord cord = TimoCloudCore.getInstance().getInstanceManager().getOrCreateCord(cordName, address, channel);
@@ -165,12 +166,20 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case "PARSE_COMMAND": {
-                TimoCloudCore.getInstance().getCommandManager().onCommand((str) -> {
-                    TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, Message.create()
-                            .setType("SEND_MESSAGE_TO_SENDER")
-                            .set("sender", message.get("sender"))
-                            .setData(str));
-                }, false, (String) data);
+                TimoCloudCore.getInstance().getCommandManager().onCommand((String) data, new CommandSender() {
+                    @Override
+                    public void sendMessage(String msg) {
+                        TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, Message.create()
+                                .setType("SEND_MESSAGE_TO_SENDER")
+                                .set("sender", message.get("sender"))
+                                .setData(msg));
+                    }
+
+                    @Override
+                    public void sendError(String message) {
+                        sendMessage("&c" + message);
+                    }
+                });
                 break;
             }
             case "CHECK_IF_DELETABLE": {

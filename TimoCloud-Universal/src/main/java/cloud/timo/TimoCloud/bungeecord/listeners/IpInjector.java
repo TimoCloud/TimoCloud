@@ -38,7 +38,7 @@ public class IpInjector implements Listener {
             addressField.set(wrapper, TimoCloudBungee.getInstance().getIpManager().getAddressByChannel(connection.getAddress()));
         } catch (Exception e) {
             TimoCloudBungee.getInstance().severe("Error while injecting ip address: ");
-            e.printStackTrace();
+            TimoCloudBungee.getInstance().severe(e);
         }
     }
 
