@@ -7,7 +7,7 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.TimoCloud</groupId>
-        <version>5.3.1</version>
+        <version>5.3.2</version>
     </parent>
 
     <artifactId>TimoCloud-API</artifactId>

@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.core.commands;
 import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.Server;
@@ -18,9 +19,11 @@ public class RestartCommandHandler implements CommandHandler {
 
         Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByName(instance);
         Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(instance);
-
-        if (serverGroup == null && proxyGroup == null && server == null && proxy == null) {
-            sender.sendError("Could not find any group, server or proxy with the name '" + instance + "'");
+        
+        Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(instance);
+        
+        if (serverGroup == null && proxyGroup == null && server == null && proxy == null && base == null) {
+            sender.sendError("Could not find any group, server, base or proxy with the name '" + instance + "'");
             return;
         }
 
@@ -28,8 +31,11 @@ public class RestartCommandHandler implements CommandHandler {
         else if (proxyGroup != null) proxyGroup.stopAllProxies();
         else if (server != null) server.stop();
         else if (proxy != null) proxy.stop();
-
-        sender.sendMessage("&2The group/server/proxy has successfully been stopped/restarted.");
+        else if (base != null) {
+        	for(Server serverOnBase : base.getServers()) serverOnBase.stop();
+        	for(Proxy proxyOnBase : base.getProxies()) proxyOnBase.stop();
+        }
+        sender.sendMessage("&2The group/server/proxy/base has successfully been stopped/restarted.");
     }
     
 }

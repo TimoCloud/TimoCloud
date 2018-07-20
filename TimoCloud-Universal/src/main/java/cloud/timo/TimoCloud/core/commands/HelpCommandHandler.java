@@ -16,7 +16,7 @@ public class HelpCommandHandler implements CommandHandler {
         sender.sendMessage("  &6removegroup &7<&2groupName&7> - &7deletes a group");
         sender.sendMessage("  &6editgroup &7<&2name&7> <&2onlineAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7) | &2base &7(&9String&7)> <&2value&7> - &7edits the give setting of a server group");
         sender.sendMessage("  &6editgroup &7<&2name&7> <&2playersPerProxy &7(&9int&7) | &2maxPlayers &7(&9int&7) | &2keepFreeSlots &7(&9int&7) | &2minAmount &7(&9int&7) | &2maxAmount &7(&9int&7) | &2ram &7(&9int&7) | &2static &7(&9boolean&7) | &2priority &7(&9int&7) | &2base &7(&9String&7)> <&2value&7> - &7edits the give setting of a proxy group");
-        sender.sendMessage("  &6restart &7<&2groupName&7 | &2serverName&7 | &2proxyName&7> - &7restarts the given group, server or proxy");
+        sender.sendMessage("  &6restart &7<&2groupName&7 | &2baseName&7 | &2serverName&7 | &2proxyName&7> - &7restarts the given group, base, server, or proxy (If a base, stops/restarts every server and proxy on the base)");
         sender.sendMessage("  &6groupinfo &7<&2groupName&7> - displays group info");
         sender.sendMessage("  &6listgroups &7- &7lists all groups and started servers");
         sender.sendMessage("  &6baseinfo &7<&2baseName&7> - displays base info");
