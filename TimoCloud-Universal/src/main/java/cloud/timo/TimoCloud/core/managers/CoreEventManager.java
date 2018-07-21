@@ -73,6 +73,8 @@ public class CoreEventManager implements Listener {
         if (serverFrom != null) serverFrom.onPlayerDisconnect(event.getPlayer());
         Server serverTo = TimoCloudCore.getInstance().getInstanceManager().getServerByServerObject(event.getServerTo());
         if (serverTo != null) serverTo.onPlayerConnect(event.getPlayer());
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getPlayer().getProxy());
+        proxy.update(event.getPlayer());
     }
 
 }
