@@ -140,6 +140,11 @@ public class Proxy implements Instance, Communicatable {
         getOnlinePlayers().remove(playerObject);
     }
 
+    public void update(PlayerObject playerObject) {
+        onPlayerDisconnect(playerObject);
+        onPlayerConnect(playerObject);
+    }
+
     @Override
     public void onMessage(Message message) {
         String type = (String) message.get("type");
