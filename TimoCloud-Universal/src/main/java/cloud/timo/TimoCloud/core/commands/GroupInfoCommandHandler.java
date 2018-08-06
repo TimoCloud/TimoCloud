@@ -10,6 +10,10 @@ public class GroupInfoCommandHandler extends CommandFormatUtil implements Comman
 
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
+        if (args.length == 0) {
+            notEnoughArgs(sender, "groupinfo <groupName>");
+            return;
+        }
         Group group = TimoCloudCore.getInstance().getInstanceManager().getGroupByName(args[0]);
         if (group == null) {
             sender.sendError("Could not find group '" + args[0] + "'.");

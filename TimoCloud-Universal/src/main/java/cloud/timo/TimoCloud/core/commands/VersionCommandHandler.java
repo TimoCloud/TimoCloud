@@ -9,7 +9,6 @@ public class VersionCommandHandler implements CommandHandler {
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
         sender.sendMessage("&bTimo&fCloud &6version &e" + TimoCloudCore.class.getPackage().getImplementationVersion() + " &6by &cTimoCrafter.");
-
     }
 
 }
