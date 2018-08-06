@@ -18,8 +18,7 @@ public class PlayerUtil {
                 player.getServer() == null ? null : player.getServer().getInfo().getName(),
                 TimoCloudBungee.getInstance().getProxyName(),
                 player.getAddress().getAddress(),
-                online,
-                online ? 0 : -1);
+                online);
     }
 
 }

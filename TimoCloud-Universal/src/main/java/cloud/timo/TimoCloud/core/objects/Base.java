@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.core.api.BaseObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
@@ -9,6 +11,7 @@ import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Base implements Communicatable {
 
@@ -18,7 +21,7 @@ public class Base implements Communicatable {
     private Channel channel;
     private int availableRam;
     private int maxRam;
-    private double cpu;
+    private double cpuLoad;
     private boolean connected;
     private boolean ready;
     private Set<Server> servers;
@@ -48,6 +51,8 @@ public class Base implements Communicatable {
         setChannel(null);
         setConnected(false);
         setReady(false);
+        setCpuLoad(0);
+        setAvailableRam(0);
         TimoCloudCore.getInstance().getCloudFlareManager().onBaseUnregisterEvent(this);
         TimoCloudCore.getInstance().info("Base " + getName() + " disconnected.");
     }
@@ -64,7 +69,7 @@ public class Base implements Communicatable {
                 int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
                 int availableRam = ((Number) map.get("availableRam")).intValue();
                 setAvailableRam(Math.max(0, Math.min(availableRam, maxRam-usedRam)));
-                setCpu(((Double) map.get("cpu")));
+                setCpuLoad(((Double) map.get("cpuLoad")));
                 setMaxRam(maxRam);
                 break;
             default:
@@ -122,12 +127,12 @@ public class Base implements Communicatable {
         this.maxRam = maxRam;
     }
 
-    public double getCpu() {
-        return cpu;
+    public double getCpuLoad() {
+        return cpuLoad;
     }
 
-    public void setCpu(double cpu) {
-        this.cpu = cpu;
+    public void setCpuLoad(double cpuLoad) {
+        this.cpuLoad = cpuLoad;
     }
 
     public boolean isConnected() {
@@ -172,5 +177,34 @@ public class Base implements Communicatable {
     public void removeProxy(Proxy proxy) {
         if (! getProxies().contains(proxy)) return;
         getProxies().remove(proxy);
+    }
+
+    public BaseObject toBaseObject() {
+        return new BaseObjectCoreImplementation(
+                getName(),
+                getPublicAddress(),
+                getCpuLoad(),
+                getAvailableRam(),
+                getMaxRam(),
+                isConnected(),
+                isReady(),
+                getServers().stream().map(Server::getId).collect(Collectors.toSet()),
+                getProxies().stream().map(Proxy::getId).collect(Collectors.toSet())
+        );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Base base = (Base) o;
+
+        return name != null ? name.equals(base.name) : base.name == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
     }
 }

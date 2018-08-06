@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.api.objects;
 
-import java.util.List;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+
+import java.util.Collection;
 
 public interface ServerGroupObject {
 
@@ -12,7 +14,7 @@ public interface ServerGroupObject {
     /**
      * @return A list of {@link ServerObject} which contains all starting or running servers
      */
-    List<ServerObject> getServers();
+    Collection<ServerObject> getServers();
 
     /**
      * The OnlineAmount or Keep-Online-Amount is the amount of servers TimoCloud wants to always be online. Called 'onlineAmount' in the groups.yml
@@ -21,14 +23,32 @@ public interface ServerGroupObject {
     int getOnlineAmount();
 
     /**
+     * Changes the group's maximum player count
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setOnlineAmount(int value);
+
+    /**
      * The MaxAmount specifies the maximal amount of servers TimoCloud keeps online at the same time - no matter what onlineAmount says
      */
     int getMaxAmount();
 
     /**
-     * Maximum of ram a server of this group may use
+     * Changes the group's maximum server amount
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMaxAmount(int value);
+
+    /**
+     * Maximum of ram a server of this group may use in megabytes
      */
     int getRam();
+
+    /**
+     * Changes the group's ram
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setRam(int value);
 
     /**
      * If a group is static, servers will not be reset after restart. A static group can only start 1 server.
@@ -36,14 +56,35 @@ public interface ServerGroupObject {
     boolean isStatic();
 
     /**
+     * Changes whether the group is static or not.
+     * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setStatic(boolean value);
+
+    /**
      * If a base is assigned to the group, this will return its name. If the dynamic automatic-base-selection system is used, this will return null.
      * @return A String if the base has been set statically, else null
      */
-    String getBase();
+    BaseObject getBase();
 
     /**
-     * If a state of a server is included in the list of sortOut states, TimoCloud does not count the server as online server. This could mean that the server is starting, ingame, restarting, offline, ...
+     * Changes the base servers of this group shall be started by
+     * @param value If null, a base will be selected dynamically whenever a new server gets started
+     * @return A future being completed when the value was changed
      */
-    List<String> getSortOutStates();
+    APIRequestFuture setBase(BaseObject value);
 
+    /**
+     * If a state of a server is included in the list of sortOut states, TimoCloud does not consider the server as active.
+     * This influences the server starting behavior: When the online amount is 3, for example, TimoCloud will count the group's <b>active</b> servers. If there is just 1 <b>active</b> server, 2 new ones will be started
+     * Examples for such states would be STARTING, INGAME, RESTARTING, OFFLINE, ...
+     */
+    Collection<String> getSortOutStates();
+
+    /**
+     * Changes the sort-out states
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setSortOutStates(Collection<String> value);
 }

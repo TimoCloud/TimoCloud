@@ -148,11 +148,11 @@ public class Server implements Instance, Communicatable {
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
-        if (!getOnlinePlayers().contains(playerObject)) getOnlinePlayers().add(playerObject);
+        getOnlinePlayers().add(playerObject);
     }
 
     public void onPlayerDisconnect(PlayerObject playerObject) {
-        if (getOnlinePlayers().contains(playerObject)) getOnlinePlayers().remove(playerObject);
+        getOnlinePlayers().remove(playerObject);
     }
 
     @Override

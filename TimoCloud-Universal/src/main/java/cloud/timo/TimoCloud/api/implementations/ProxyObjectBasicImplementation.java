@@ -1,20 +1,24 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+import cloud.timo.TimoCloud.api.async.APIRequest;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.lib.messages.Message;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
+
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_EXECUTE_COMMAND;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_STOP;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
@@ -70,8 +74,8 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
     }
 
     @Override
-    public String getBase() {
-        return base;
+    public BaseObject getBase() {
+        return TimoCloudAPI.getUniversalAPI().getBase(base);
     }
 
     @Override
@@ -96,20 +100,14 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
     }
 
     @Override
-    public void executeCommand(String command) {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
-                .setType("EXECUTE_COMMAND")
-                .setTarget(getId())
-                .setData(command).toString()
-        );
+    public APIRequestFuture executeCommand(String command) {
+        return new APIRequest(P_EXECUTE_COMMAND, getName(), command).submit();
+
     }
 
     @Override
-    public void stop() {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
-                .setType("STOP_PROXY")
-                .setTarget(getId()).toString()
-        );
+    public APIRequestFuture stop() {
+        return new APIRequest(P_STOP, getName(), null).submit();
     }
 
     @Override

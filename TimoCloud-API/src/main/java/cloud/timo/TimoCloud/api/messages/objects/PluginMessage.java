@@ -41,6 +41,16 @@ public class PluginMessage {
         return getData().keySet();
     }
 
+    public boolean containsProperty(String key) {
+        return getData().containsKey(key);
+    }
+
+    public Boolean getBoolean(String key) {
+        Object object = getObject(key);
+        if (object == null) return null;
+        return (Boolean) object;
+    }
+
     public Integer getInteger(String key) {
         Object object = getObject(key);
         if (object == null) return null;
@@ -83,5 +93,18 @@ public class PluginMessage {
     public PluginMessage set(String key, Object value) {
         getData().put(key, value);
         return this;
+    }
+
+    public PluginMessage setIfCondition(String key, Object value, boolean condition) {
+        if (! condition) return this;
+        return set(key, value);
+    }
+
+    public PluginMessage setIfNotNull(String key, Object value) {
+        return setIfCondition(key, value, value != null);
+    }
+
+    public PluginMessage setIfAbsent(String key, Object value) {
+        return setIfCondition(key, value, ! containsProperty(key));
     }
 }

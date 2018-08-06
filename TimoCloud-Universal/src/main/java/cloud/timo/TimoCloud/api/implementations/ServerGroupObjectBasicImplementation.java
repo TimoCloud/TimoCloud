@@ -1,30 +1,38 @@
 package cloud.timo.TimoCloud.api.implementations;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.async.APIRequest;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Set;
+
+import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
-    private List<ServerObject> servers;
+    private Set<ServerObject> servers;
     private String name;
     private int startupAmount;
     private int maxAmount;
     private int ram;
     private boolean isStatic;
     private String base;
-    private List<String> sortOutStates;
+    private Set<String> sortOutStates;
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation() {}
+    public ServerGroupObjectBasicImplementation() {
+    }
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String name, List<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, List<String> sortOutStates) {
+    public ServerGroupObjectBasicImplementation(String name, Set<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, Set<String> sortOutStates) {
         this.name = name;
         this.servers = servers;
         this.startupAmount = startupAmount;
@@ -36,7 +44,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public List<ServerObject> getServers() {
+    public Collection<ServerObject> getServers() {
         return servers;
     }
 
@@ -51,8 +59,18 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
+    public APIRequestFuture setOnlineAmount(int value) {
+        return new APIRequest(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
+    }
+
+    @Override
     public int getMaxAmount() {
         return maxAmount;
+    }
+
+    @Override
+    public APIRequestFuture setMaxAmount(int value) {
+        return new APIRequest(SG_SET_MAX_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -61,18 +79,38 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
+    public APIRequestFuture setRam(int value) {
+        return new APIRequest(SG_SET_RAM, getName(), value).submit();
+    }
+
+    @Override
     public boolean isStatic() {
         return isStatic;
     }
 
     @Override
-    public String getBase() {
-        return base;
+    public APIRequestFuture setStatic(boolean value) {
+        return new APIRequest(SG_SET_STATIC, getName(), value).submit();
     }
 
     @Override
-    public List<String> getSortOutStates() {
+    public BaseObject getBase() {
+        return TimoCloudAPI.getUniversalAPI().getBase(base);
+    }
+
+    @Override
+    public APIRequestFuture setBase(BaseObject value) {
+        return new APIRequest(SG_SET_BASE, getName(), value).submit();
+    }
+
+    @Override
+    public Collection<String> getSortOutStates() {
         return sortOutStates;
+    }
+
+    @Override
+    public APIRequestFuture setSortOutStates(Collection<String> value) {
+        return new APIRequest(SG_SET_SORT_OUT_STATES, getName(), value).submit();
     }
 
 }

@@ -18,7 +18,7 @@ public class ServerGroup implements Group {
     private boolean isStatic;
     private int priority;
     private String baseName;
-    private List<String> sortOutStates;
+    private Set<String> sortOutStates;
 
     private Map<String, Server> servers = new HashMap<>();
 
@@ -28,7 +28,7 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
+    public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
         construct(name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
     }
 
@@ -42,7 +42,7 @@ public class ServerGroup implements Group {
                     (Boolean) properties.getOrDefault("static", false),
                     ((Number) properties.getOrDefault("priority", 1)).intValue(),
                     (String) properties.getOrDefault("base", null),
-                    (List<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING")));
+                    (Collection<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING")));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -62,7 +62,7 @@ public class ServerGroup implements Group {
         return properties;
     }
 
-    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, List<String> sortOutStates) {
+    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
         if (isStatic() && startupAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             startupAmount = 1;
@@ -70,7 +70,6 @@ public class ServerGroup implements Group {
         this.name = name;
         setOnlineAmount(startupAmount);
         setMaxAmount(maxAmount);
-        if (ram <128) ram*=1024;
         setRam(ram);
         setStatic(isStatic);
         setBaseName(baseName);
@@ -137,11 +136,13 @@ public class ServerGroup implements Group {
     }
 
     public int getRam() {
+        if (ram < 128) {
+            ram *= 1024;
+        }
         return ram;
     }
 
     public void setRam(int ram) {
-        if (ram < 128) TimoCloudCore.getInstance().severe("Attention: ServerGroup " + name + " has less than 128MB Ram. (This won't work)");
         this.ram = ram;
     }
 
@@ -170,18 +171,18 @@ public class ServerGroup implements Group {
         return baseName;
     }
 
-    public List<String> getSortOutStates() {
+    public Set<String> getSortOutStates() {
         return sortOutStates;
     }
 
-    public void setSortOutStates(List<String> sortOutStates) {
-        this.sortOutStates = sortOutStates;
+    public void setSortOutStates(Collection<String> sortOutStates) {
+        this.sortOutStates = new HashSet<>(sortOutStates);
     }
 
     public ServerGroupObject toGroupObject() {
         ServerGroupObjectCoreImplementation groupObject = new ServerGroupObjectCoreImplementation(
                 getName(),
-                getServers().stream().map(Server::toServerObject).collect(Collectors.toList()),
+                getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
                 getOnlineAmount(),
                 getMaxAmount(),
                 getRam(),

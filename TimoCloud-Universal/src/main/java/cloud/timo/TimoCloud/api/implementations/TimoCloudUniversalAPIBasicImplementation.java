@@ -8,35 +8,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
-    private ArrayList<ServerGroupObject> serverGroups = new ArrayList<>();
-    private ArrayList<ProxyGroupObject> proxyGroups = new ArrayList<>();
-    private ArrayList<CordObject> cords = new ArrayList<>();
+    private Set<ServerGroupObject> serverGroups = new HashSet<>();
+    private Set<ProxyGroupObject> proxyGroups = new HashSet<>();
+    private Set<BaseObject> bases = new HashSet<>();
+    private Set<CordObject> cords = new HashSet<>();
+
 
     private final Class<? extends ServerObject> serverObjectImplementation;
     private final Class<? extends ProxyObject> proxyObjectImplementation;
     private final Class<? extends ServerGroupObject> serverGroupObjectImplementation;
     private final Class<? extends ProxyGroupObject> proxyGroupObjectImplementation;
     private final Class<? extends PlayerObject> playerObjectImplementation;
+    private final Class<? extends BaseObject> baseObjectImplementation;
     private final Class<? extends CordObject> cordObjectImplementation;
 
     private boolean gotAnyData = false;
 
     private ObjectMapper objectMapper;
 
-    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation, Class<? extends CordObject> cordObjectImplementation) {
+    public TimoCloudUniversalAPIBasicImplementation(Class<? extends ServerObject> serverObjectImplementation, Class<? extends ProxyObject> proxyObjectImplementation, Class<? extends ServerGroupObject> serverGroupObjectImplementation, Class<? extends ProxyGroupObject> proxyGroupObjectImplementation, Class<? extends PlayerObject> playerObjectImplementation, Class<? extends BaseObject> baseObjectImplementation, Class<? extends CordObject> cordObjectImplementation) {
         this.serverObjectImplementation = serverObjectImplementation;
         this.proxyObjectImplementation = proxyObjectImplementation;
         this.serverGroupObjectImplementation = serverGroupObjectImplementation;
         this.proxyGroupObjectImplementation = proxyGroupObjectImplementation;
         this.playerObjectImplementation = playerObjectImplementation;
+        this.baseObjectImplementation = baseObjectImplementation;
         this.cordObjectImplementation = cordObjectImplementation;
 
         objectMapper = new ObjectMapper();
@@ -45,6 +46,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         resolver.addMapping(ServerObject.class, serverObjectImplementation);
         resolver.addMapping(ProxyObject.class, proxyObjectImplementation);
         resolver.addMapping(PlayerObject.class, playerObjectImplementation);
+        resolver.addMapping(BaseObject.class, baseObjectImplementation);
         resolver.addMapping(CordObject.class, cordObjectImplementation);
         module.setAbstractTypes(resolver);
         objectMapper.registerModule(module);
@@ -53,35 +55,31 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     public void setData(Map<String, Object> json) {
-        ArrayList serverGroups = new ArrayList<>();
-        ArrayList proxyGroups = new ArrayList();
-        ArrayList cords = new ArrayList();
+        Set<ServerGroupObject> serverGroups = new HashSet<>();
+        Set<ProxyGroupObject> proxyGroups = new HashSet<>();
+        Set<CordObject> cords = new HashSet<>();
+        Set<BaseObject> bases = new HashSet<>();
         try {
             for (Object object : (List) json.get("serverGroups")) {
                 ServerGroupObject groupObject = getObjectMapper().readValue((String) object, serverGroupObjectImplementation);
-                List<ServerObject> serverObjects = new ArrayList<>();
-                for (ServerObject serverObject : groupObject.getServers())
-                    serverObjects.add(serverObject);
-                groupObject.getServers().clear();
-                groupObject.getServers().addAll(serverObjects);
                 serverGroups.add(groupObject);
             }
             this.serverGroups = serverGroups;
             for (Object object : (List) json.get("proxyGroups")) {
                 ProxyGroupObject groupObject = getObjectMapper().readValue((String) object, proxyGroupObjectImplementation);
-                List<ProxyObject> proxyObjects = new ArrayList<>();
-                for (ProxyObject proxyObject : groupObject.getProxies())
-                    proxyObjects.add(proxyObject);
-                groupObject.getProxies().clear();
-                groupObject.getProxies().addAll(proxyObjects);
                 proxyGroups.add(groupObject);
             }
             this.proxyGroups = proxyGroups;
             for (Object object : (List) json.get("cords")) {
-                CordObject cord = getObjectMapper().readValue((String) object, cordObjectImplementation);
-                cords.add(cord);
+                CordObject cordObject = getObjectMapper().readValue((String) object, cordObjectImplementation);
+                cords.add(cordObject);
             }
             this.cords = cords;
+            for (Object object : (List) json.get("bases")) {
+                BaseObject baseObject = getObjectMapper().readValue((String) object, baseObjectImplementation);
+                bases.add(baseObject);
+            }
+            this.bases = bases;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,13 +87,13 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public List<ServerGroupObject> getServerGroups() {
-        return serverGroups == null ? new ArrayList<>() : (ArrayList) serverGroups.clone();
+    public Set<ServerGroupObject> getServerGroups() {
+        return Collections.unmodifiableSet(serverGroups == null ? Collections.emptySet() : serverGroups);
     }
 
     @Override
     public ServerGroupObject getServerGroup(String groupName) {
-        List<ServerGroupObject> groups = getServerGroups();
+        Set<ServerGroupObject> groups = getServerGroups();
         if (groups == null) return null;
         for (ServerGroupObject group : groups) if (group.getName().equals(groupName)) return group;
         for (ServerGroupObject group : groups) if (group.getName().equalsIgnoreCase(groupName)) return group;
@@ -106,7 +104,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     public ServerObject getServer(String serverName) {
         for (ServerGroupObject group : serverGroups)
             for (ServerObject server : group.getServers())
-                if (server.getName().equals(serverName)) return server;
+                if (server.getName().equals(serverName) || server.getId().equals(serverName)) return server;
         for (ServerGroupObject group : serverGroups)
             for (ServerObject server : group.getServers())
                 if (server.getName().equalsIgnoreCase(serverName)) return server;
@@ -114,8 +112,8 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public List<ProxyGroupObject> getProxyGroups() {
-        return proxyGroups == null ? new ArrayList<>() : (ArrayList) proxyGroups.clone();
+    public Set<ProxyGroupObject> getProxyGroups() {
+        return Collections.unmodifiableSet(proxyGroups == null ? Collections.emptySet() : proxyGroups);
     }
 
     @Override
@@ -129,7 +127,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     public ProxyObject getProxy(String proxyName) {
         for (ProxyGroupObject group : proxyGroups)
             for (ProxyObject proxy : group.getProxies())
-                if (proxy.getName().equals(proxyName)) return proxy;
+                if (proxy.getName().equals(proxyName) || proxy.getId().equals(proxyName)) return proxy;
         for (ProxyGroupObject group : proxyGroups)
             for (ProxyObject proxy : group.getProxies())
                 if (proxy.getName().equalsIgnoreCase(proxyName)) return proxy;
@@ -138,7 +136,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     @Override
     public PlayerObject getPlayer(UUID uuid) {
-        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(List::stream).collect(Collectors.toList()))
+        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(Collection::stream).collect(Collectors.toList()))
             for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
                 if (playerObject.getUuid().equals(uuid)) return playerObject;
         return null;
@@ -146,15 +144,29 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     @Override
     public PlayerObject getPlayer(String name) {
-        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(List::stream).collect(Collectors.toList()))
+        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(Collection::stream).collect(Collectors.toList()))
             for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
                 if (playerObject.getName().equals(name)) return playerObject;
         return null;
     }
 
     @Override
-    public List<CordObject> getCords() {
-        return cords == null ? new ArrayList<>() : (ArrayList) cords.clone();
+    public Set<BaseObject> getBases() {
+        return Collections.unmodifiableSet(bases == null ? Collections.emptySet() : bases);
+    }
+
+    @Override
+    public BaseObject getBase(String name) {
+        for (BaseObject baseObject : getBases())
+            if (baseObject.getName().equals(name)) return baseObject;
+        for (BaseObject baseObject : getBases())
+            if (baseObject.getName().equalsIgnoreCase(name)) return baseObject;
+        return new BaseObjectOfflineImplementation(name);
+    }
+
+    @Override
+    public Set<CordObject> getCords() {
+        return Collections.unmodifiableSet(cords == null ? Collections.emptySet() : cords);
     }
 
     @Override

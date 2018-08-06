@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 
@@ -39,9 +40,9 @@ public interface ProxyObject {
     int getOnlinePlayerCount();
 
     /**
-     * Returns the name of the base the proxy has been started by
+     * @return The base the proxy has been started by
      */
-    String getBase();
+    BaseObject getBase();
 
     /**
      * @return The cord's IP address and port players can connect to
@@ -66,13 +67,15 @@ public interface ProxyObject {
     /**
      * Executes the given command as ConsoleSender on the server
      * @param command Without leading '/'
+     * @return A future being completed when the command was executed
      */
-    void executeCommand(String command);
+    APIRequestFuture executeCommand(String command);
 
     /**
      * Stops the server
+     * @return A future being completed when the server was stopped
      */
-    void stop();
+    APIRequestFuture stop();
 
     /**
      * Send a plugin message to the proxy

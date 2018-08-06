@@ -1,11 +1,12 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.Collection;
 
 public interface ServerObject {
 
@@ -32,8 +33,9 @@ public interface ServerObject {
     /**
      * Sets the server's state and sends it to TimoCloud BungeeCord
      * @param state The state, e.g. 'INGAME' or 'FULL'
+     * @return A future being completed when the state was changed
      */
-    void setState(String state);
+    APIRequestFuture setState(String state);
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
@@ -42,8 +44,9 @@ public interface ServerObject {
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
+     * @return A future being completed when the extra was changed
      */
-    void setExtra(String extra);
+    APIRequestFuture setExtra(String extra);
 
     /**
      * If a server's map is assigned randomly, the map name will be the part of the map directory's name after the '_'. E.g. 'BedWars_VILLAGE' becomes 'VILLAGE'. If no random maps exists, the 'defaultMapName' property from config.yml will be used.
@@ -56,9 +59,9 @@ public interface ServerObject {
     String getMotd();
 
     /**
-     * @return A list with all online players
+     * @return A collection of all online players
      */
-    List<PlayerObject> getOnlinePlayers();
+    Collection<PlayerObject> getOnlinePlayers();
 
     /**
      * The server's current online player count
@@ -71,9 +74,9 @@ public interface ServerObject {
     int getMaxPlayerCount();
 
     /**
-     * Returns the name of the base the server has been started by
+     * Returns the base the server has been started by
      */
-    String getBase();
+    BaseObject getBase();
 
     /**
      * @return The server's IP address and port players can connect to
@@ -102,14 +105,16 @@ public interface ServerObject {
 
     /**
      * Executes the given command as ConsoleSender on the server
-     * @param command *Without leading /*
+     * @param command <b>Without leading /</b>
+     * @return A future being completed when the command was executed
      */
-    void executeCommand(String command);
+    APIRequestFuture executeCommand(String command);
 
     /**
      * Stops the server
+     * @return A future being completed when the server was stopped
      */
-    void stop();
+    APIRequestFuture stop();
 
     /**
      * Send a plugin message to the server

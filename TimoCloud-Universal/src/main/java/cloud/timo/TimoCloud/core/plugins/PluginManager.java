@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core.plugins;
 
 import cloud.timo.TimoCloud.api.plugins.PluginLoadException;
+import cloud.timo.TimoCloud.api.plugins.PluginUnloadException;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPluginDescription;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -130,6 +131,38 @@ public class PluginManager {
         InputStream inputStream = jar.getInputStream(entry);
         Map<String, Object> properties = (Map<String, Object>) new Yaml().load(inputStream);
         return construct(properties, file);
+    }
+
+    private TimoCloudPluginDescription getPluginDescriptionByName(String name) {
+        for (TimoCloudPluginDescription description : plugins.keySet()) {
+            if (description.getName().equalsIgnoreCase(name)) {
+                return description;
+            }
+        }
+        return null;
+    }
+
+    public void unloadPlugins() {
+        Collection<TimoCloudPluginDescription> descriptions = Collections.unmodifiableSet(this.plugins.keySet());
+        descriptions.forEach(description -> {
+            try {
+                unloadPlugin(description);
+            } catch (Exception e) {
+                TimoCloudCore.getInstance().severe(String.format("Error while unloading plugin '%s'", description.getName()));
+                TimoCloudCore.getInstance().severe(e);
+            }
+        });
+    }
+
+    public void unloadPlugin(TimoCloudPluginDescription description) throws PluginUnloadException {
+        TimoCloudPlugin plugin = plugins.get(description);
+        if (plugin == null) {
+            throw new PluginUnloadException(String.format("Plugin with name '%s' not found", description.getName()));
+        }
+        plugin.onUnload();
+        plugins.remove(description);
+
+        TimoCloudCore.getInstance().info(String.format("Successfully unloaded plugin '%s'", description.getName()));
     }
 
     private TimoCloudPluginDescription construct(Map<String, Object> properties, File file) throws PluginLoadException {

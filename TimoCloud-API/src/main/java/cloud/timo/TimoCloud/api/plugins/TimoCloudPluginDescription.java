@@ -60,4 +60,34 @@ public class TimoCloudPluginDescription {
     public void setPlugin(TimoCloudPlugin plugin) {
         this.plugin = plugin;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TimoCloudPluginDescription that = (TimoCloudPluginDescription) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (author != null ? !author.equals(that.author) : that.author != null) return false;
+        if (version != null ? !version.equals(that.version) : that.version != null) return false;
+        if (mainClass != null ? !mainClass.equals(that.mainClass) : that.mainClass != null) return false;
+        if (depends != null ? !depends.equals(that.depends) : that.depends != null) return false;
+        if (softDepends != null ? !softDepends.equals(that.softDepends) : that.softDepends != null) return false;
+        if (file != null ? !file.equals(that.file) : that.file != null) return false;
+        return plugin != null ? plugin.equals(that.plugin) : that.plugin == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        result = 31 * result + (mainClass != null ? mainClass.hashCode() : 0);
+        result = 31 * result + (depends != null ? depends.hashCode() : 0);
+        result = 31 * result + (softDepends != null ? softDepends.hashCode() : 0);
+        result = 31 * result + (file != null ? file.hashCode() : 0);
+        result = 31 * result + (plugin != null ? plugin.hashCode() : 0);
+        return result;
+    }
 }

@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
@@ -16,18 +17,16 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
     private String proxy;
     private InetAddress ipAddress;
     private boolean online;
-    private long lastOnline;
 
     public PlayerObjectBasicImplementation() {}
 
-    public PlayerObjectBasicImplementation(String name, UUID uuid, String server, String proxy, InetAddress ipAddress, boolean online, long lastOnline) {
+    public PlayerObjectBasicImplementation(String name, UUID uuid, String server, String proxy, InetAddress ipAddress, boolean online) {
         this.name = name;
         this.uuid = uuid;
         this.server = server;
         this.proxy = proxy;
         this.ipAddress = ipAddress;
         this.online = online;
-        this.lastOnline = lastOnline;
     }
 
     public String getName() {
@@ -74,16 +73,13 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
         return online;
     }
 
+    @Override
+    public APIRequestFuture sendToServer(ServerObject serverObject) {
+        return getProxy().executeCommand(String.format("send %s %s", getName(), getProxy().getName()));
+    }
+
     public void setOnline(boolean online) {
         this.online = online;
-    }
-
-    public long getLastOnline() {
-        return lastOnline;
-    }
-
-    public void setLastOnline(long lastOnline) {
-        this.lastOnline = lastOnline;
     }
 
     @Override

@@ -1,40 +1,47 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
-import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.async.APIRequest;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.objects.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
 
     private String name;
-    private List<ProxyObject> proxies;
+    private Collection<ProxyObject> proxies;
     private int onlinePlayerCount;
     private int maxPlayerCount;
     private int maxPlayerCountPerProxy;
     private int keepFreeSlots;
+    private int minAmount;
+    private int maxAmount;
     private int ram;
     private String motd;
     private boolean isStatic;
     private int priority;
-    private List<String> serverGroups;
+    private Collection<String> serverGroups;
     private String base;
     private ProxyChooseStrategy proxyChooseStrategy;
-    private List<String> hostNames;
+    private Collection<String> hostNames;
 
-    public ProxyGroupObjectBasicImplementation() {}
+    public ProxyGroupObjectBasicImplementation() {
+    }
 
-    public ProxyGroupObjectBasicImplementation(String name, List<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String base, String proxyChooseStrategy, List<String> hostNames) {
+    public ProxyGroupObjectBasicImplementation(String name, Collection<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String base, String proxyChooseStrategy, Collection<String> hostNames) {
         this.name = name;
         this.proxies = proxies;
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
-        this.keepFreeSlots= keepFreeSlots;
+        this.keepFreeSlots = keepFreeSlots;
+        this.minAmount = minAmount;
+        this.maxAmount = maxAmount;
         this.ram = ram;
         this.motd = motd;
         this.isStatic = isStatic;
@@ -51,7 +58,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public List<ProxyObject> getProxies() {
+    public Collection<ProxyObject> getProxies() {
         return proxies;
     }
 
@@ -66,8 +73,18 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
+    public APIRequestFuture setMaxPlayerCount(int value) {
+        return new APIRequest(PG_SET_MAX_PLAYER_COUNT, getName(), value).submit();
+    }
+
+    @Override
     public int getMaxPlayerCountPerProxy() {
         return maxPlayerCountPerProxy;
+    }
+
+    @Override
+    public APIRequestFuture setMaxPlayerCountPerProxy(int value) {
+        return new APIRequest(PG_SET_MAX_PLAYER_CONT_PER_PROXY, getName(), value).submit();
     }
 
     @Override
@@ -76,8 +93,38 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
+    public APIRequestFuture setKeepFreeSlots(int value) {
+        return new APIRequest(PG_SET_KEEP_FREE_SLOTS, getName(), value).submit();
+    }
+
+    @Override
+    public int getMinAmount() {
+        return minAmount;
+    }
+
+    @Override
+    public APIRequestFuture setMinAmount(int value) {
+        return new APIRequest(PG_SET_MIN_AMOUNT, getName(), value).submit();
+    }
+
+    @Override
+    public int getMaxAmount() {
+        return maxAmount;
+    }
+
+    @Override
+    public APIRequestFuture setMaxAmount(int value) {
+        return new APIRequest(PG_SET_MAX_AMOUNT, getName(), value).submit();
+    }
+
+    @Override
     public int getRam() {
         return ram;
+    }
+
+    @Override
+    public APIRequestFuture setRam(int value) {
+        return new APIRequest(PG_SET_RAM, getName(), value).submit();
     }
 
     @Override
@@ -86,8 +133,18 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
+    public APIRequestFuture setMotd(String value) {
+        return new APIRequest(PG_SET_MOTD, getName(), value).submit();
+    }
+
+    @Override
     public boolean isStatic() {
         return isStatic;
+    }
+
+    @Override
+    public APIRequestFuture setStatic(boolean value) {
+        return new APIRequest(PG_SET_STATIC, getName(), value).submit();
     }
 
     @Override
@@ -96,13 +153,23 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
+    public APIRequestFuture setPriority(int value) {
+        return new APIRequest(PG_SET_PRIORITY, getName(), value).submit();
+    }
+
+    @Override
     public List<ServerGroupObject> getServerGroups() {
         return serverGroups.stream().map(serverGroup -> TimoCloudAPI.getUniversalAPI().getServerGroup(serverGroup)).collect(Collectors.toList());
     }
 
     @Override
-    public String getBase() {
-        return base;
+    public BaseObject getBase() {
+        return TimoCloudAPI.getUniversalAPI().getBase(base);
+    }
+
+    @Override
+    public APIRequestFuture setBase(BaseObject value) {
+        return new APIRequest(PG_SET_BASE, getName(), value).submit();
     }
 
     @Override
@@ -111,7 +178,17 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public List<String> getHostNames() {
+    public APIRequestFuture setProxyChooseStrategy(ProxyChooseStrategy value) {
+        return new APIRequest(PG_SET_PROXY_CHOOSE_STRATEGY, getName(), value).submit();
+    }
+
+    @Override
+    public Collection<String> getHostNames() {
         return hostNames;
+    }
+
+    @Override
+    public APIRequestFuture setHostNames(Collection<String> value) {
+        return new APIRequest(PG_SET_HOST_NAMES, getName(), value).submit();
     }
 }

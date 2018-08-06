@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.bukkit;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
@@ -140,6 +141,7 @@ public class TimoCloudBukkit extends JavaPlugin {
         APIInstanceUtil.setBukkitInstance(new TimoCloudBukkitAPIImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBukkitImplementation());
+        TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");
     }
 
     private void registerCommands() {

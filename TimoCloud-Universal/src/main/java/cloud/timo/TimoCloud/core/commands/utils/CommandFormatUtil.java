@@ -47,7 +47,7 @@ public class CommandFormatUtil {
         sender.sendMessage("  &e" + base.getName() +
                 " &7(&6Free RAM&7: &2" + base.getAvailableRam() + "MB" +
                 "&7, &6Max RAM&7: &2" + base.getMaxRam() + "MB" +
-                "&7, &6CPU load&7: &2" + (int) base.getCpu() + "%" +
+                "&7, &6CPU load&7: &2" + (int) base.getCpuLoad() + "%" +
                 "&7, &6IP Address&7: &2" + formatIp(base.getAddress()) +
                 "&7, &6Ready&7: &2" + formatBoolean(base.isReady()) +
                 "&7, &6Connected&7: &2" + formatBoolean(base.isConnected()) +

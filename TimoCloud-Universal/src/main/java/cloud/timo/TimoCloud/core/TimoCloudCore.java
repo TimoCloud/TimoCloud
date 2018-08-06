@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
@@ -56,6 +57,8 @@ public class TimoCloudCore implements TimoCloudModule {
     private CloudFlareManager cloudFlareManager;
     private PluginManager pluginManager;
     private PluginMessageManager pluginMessageManager;
+    private APIRequestManager apiRequestManager;
+
     private boolean running;
     private boolean waitingForCommand = false;
     private LineReader reader;
@@ -210,6 +213,7 @@ public class TimoCloudCore implements TimoCloudModule {
         this.cloudFlareManager = new CloudFlareManager();
         this.pluginManager = new PluginManager();
         this.pluginMessageManager = new PluginMessageManager();
+        this.apiRequestManager = new APIRequestManager();
 
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICoreImplementation());
         APIInstanceUtil.setCoreInstance(new TimoCloudCoreAPIImplementation());
@@ -217,6 +221,8 @@ public class TimoCloudCore implements TimoCloudModule {
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
         TimoCloudAPI.getEventAPI().registerListener(getEventManager());
         TimoCloudAPI.getEventAPI().registerListener(getCloudFlareManager());
+        TimoCloudAPI.getMessageAPI().registerMessageListener(getApiRequestManager(), "TIMOCLOUD_API_REQUEST");
+        TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");
     }
 
     private void createLogger() throws IOException {
@@ -309,6 +315,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public PluginMessageManager getPluginMessageManager() {
         return pluginMessageManager;
+    }
+
+    public APIRequestManager getApiRequestManager() {
+        return apiRequestManager;
     }
 
     public CoreSocketServer getSocketServer() {

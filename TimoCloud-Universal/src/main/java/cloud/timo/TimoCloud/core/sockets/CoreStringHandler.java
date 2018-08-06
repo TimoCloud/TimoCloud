@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
@@ -27,10 +28,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ChannelHandler.Sharable
 public class CoreStringHandler extends BasicStringHandler {
@@ -130,24 +128,32 @@ public class CoreStringHandler extends BasicStringHandler {
 
         switch (type) {
             case "GET_API_DATA": {
-                List serverGroups = new ArrayList();
-                List proxyGroups = new ArrayList();
-                List cords = new ArrayList();
+                Set serverGroups = new HashSet<>();
+                Set proxyGroups = new HashSet();
+                Set cords = new HashSet();
+                Set bases = new HashSet();
                 ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper();
                 try {
-                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalAPI().getServerGroups())
+                    for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalAPI().getServerGroups()) {
                         serverGroups.add(objectMapper.writeValueAsString(serverGroupObject));
-                    for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalAPI().getProxyGroups())
+                    }
+                    for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalAPI().getProxyGroups()) {
                         proxyGroups.add(objectMapper.writeValueAsString(proxyGroupObject));
-                    for (CordObject cordObject : TimoCloudAPI.getUniversalAPI().getCords())
+                    }
+                    for (CordObject cordObject : TimoCloudAPI.getUniversalAPI().getCords()) {
                         cords.add(objectMapper.writeValueAsString(cordObject));
+                    }
+                    for (BaseObject baseObject : TimoCloudAPI.getUniversalAPI().getBases()) {
+                        bases.add(objectMapper.writeValueAsString(baseObject));
+                    }
                     TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, Message.create()
                             .setType("API_DATA")
                             .setData(
                                     Message.create()
                                             .set("serverGroups", serverGroups)
                                             .set("proxyGroups", proxyGroups)
-                                            .set("cords", cords)));
+                                            .set("cords", cords))
+                                            .set("bases", bases));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -1,9 +1,7 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
@@ -23,14 +21,14 @@ public class ProxyGroup implements Group {
     private String motd;
     private boolean isStatic;
     private int priority;
-    private Collection<ServerGroup> serverGroups;
+    private Collection<String> serverGroups;
     private boolean allServerGroups;
     private String baseName;
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Map<String, Proxy> proxies = new HashMap<>();
 
-    public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostNames) {
+    public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames) {
         construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
     }
 
@@ -47,21 +45,21 @@ public class ProxyGroup implements Group {
                     ((Number) properties.getOrDefault("keep-free-slots", 100)).intValue(),
                     ((Number) properties.getOrDefault("min-amount", 0)).intValue(),
                     ((Number) properties.getOrDefault("max-amount", 3)).intValue(),
-                    ((Number) properties.getOrDefault("ram", 1)).intValue(),
+                    ((Number) properties.getOrDefault("ram", 1024)).intValue(),
                     (String) properties.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
                     (Boolean) properties.getOrDefault("static", false),
                     ((Number) properties.getOrDefault("priority", 1)).intValue(),
-                    (List<String>) properties.getOrDefault("serverGroups", Collections.singletonList("*")),
+                    (Collection<String>) properties.getOrDefault("serverGroups", Collections.singletonList("*")),
                     (String) properties.getOrDefault("base", null),
                     (String) properties.getOrDefault("proxy-choose-strategy", "BALANCE"),
-                    (List<String>) properties.getOrDefault("hostNames", Collections.singletonList("*")));
+                    (Collection<String>) properties.getOrDefault("hostNames", Collections.singletonList("*")));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
         }
     }
 
-    public void construct(String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, List<String> serverGroups, String baseName, String proxyChooseStrategy, List<String> hostnames) {
+    public void construct(String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostnames) {
         this.name = name;
         this.maxPlayerCountPerProxy = playersPerProxy;
         this.maxPlayerCount = maxPlayers;
@@ -72,19 +70,8 @@ public class ProxyGroup implements Group {
         this.motd = motd;
         this.isStatic = isStatic;
         this.priority = priority;
-        this.serverGroups = new ArrayList<>();
-        this.allServerGroups = false;
 
-        for (String groupName : serverGroups) {
-            groupName = groupName.trim();
-            if (groupName.equals("*")) {
-                this.allServerGroups = true;
-                this.serverGroups = new ArrayList<>();
-                break;
-            }
-            ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(groupName);
-            if (serverGroup != null) this.serverGroups.add(serverGroup);
-        }
+        setServerGroups(serverGroups);
 
         this.baseName = baseName;
         if (isStatic() && getBaseName() == null) {
@@ -216,6 +203,9 @@ public class ProxyGroup implements Group {
 
     @Override
     public int getRam() {
+        if (ram < 128) {
+            ram *= 1024;
+        }
         return ram;
     }
 
@@ -251,7 +241,24 @@ public class ProxyGroup implements Group {
 
     public Collection<ServerGroup> getServerGroups() {
         if (allServerGroups) return TimoCloudCore.getInstance().getInstanceManager().getServerGroups();
-        return serverGroups;
+        return serverGroups
+                .stream()
+                .map(name -> TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(name))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
+    public void setServerGroups(Collection<String> serverGroups) {
+        this.serverGroups = new HashSet<>();
+        this.allServerGroups = false;
+        for (String groupName : serverGroups) {
+            groupName = groupName.trim();
+            if (groupName.equals("*")) {
+                this.allServerGroups = true;
+                continue;
+            }
+            this.serverGroups.add(groupName);
+        }
     }
 
     @Override
@@ -267,8 +274,16 @@ public class ProxyGroup implements Group {
         return proxyChooseStrategy;
     }
 
+    public void setProxyChooseStrategy(ProxyChooseStrategy proxyChooseStrategy) {
+        this.proxyChooseStrategy = proxyChooseStrategy;
+    }
+
     public Set<String> getHostNames() {
         return hostNames;
+    }
+
+    public void setHostNames(Set<String> hostNames) {
+        this.hostNames = hostNames;
     }
 
     public Collection<Proxy> getProxies() {
@@ -280,25 +295,24 @@ public class ProxyGroup implements Group {
     }
 
     public ProxyGroupObject toGroupObject() {
-        ProxyGroupObjectCoreImplementation groupObject = new ProxyGroupObjectCoreImplementation(
+        return new ProxyGroupObjectCoreImplementation(
                 getName(),
-                getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toList()),
+                getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
                 getMaxPlayerCount(),
                 getMaxPlayerCountPerProxy(),
                 getKeepFreeSlots(),
+                getMinAmount(),
+                getMaxAmount(),
                 getRam(),
                 getMotd(),
                 isStatic(),
                 getPriority(),
-                getServerGroups().stream().map(ServerGroup::getName).collect(Collectors.toList()),
+                getServerGroups().stream().map(ServerGroup::getName).collect(Collectors.toSet()),
                 getBaseName(),
                 getProxyChooseStrategy().name(),
-                new ArrayList<>(getHostNames())
+                Collections.unmodifiableSet(getHostNames())
         );
-        Collections.sort((List<ProxyObjectBasicImplementation>) (List) groupObject.getProxies());
-        groupObject.getProxies().sort(Comparator.comparing(ProxyObject::getName));
-        return groupObject;
     }
 
     @Override

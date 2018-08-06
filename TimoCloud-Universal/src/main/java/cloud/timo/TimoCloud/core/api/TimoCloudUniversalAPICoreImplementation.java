@@ -1,28 +1,21 @@
 package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
-import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.Proxy;
-import cloud.timo.TimoCloud.core.objects.ProxyGroup;
-import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.core.objects.ServerGroup;
+import cloud.timo.TimoCloud.core.objects.*;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
-
-    public TimoCloudUniversalAPICoreImplementation() {
-        super(ServerObjectCoreImplementation.class, ProxyObjectCoreImplementation.class, ServerGroupObjectCoreImplementation.class, ProxyGroupObjectCoreImplementation.class, PlayerObjectCoreImplementation.class, CordObjectCoreImplementation.class);
-    }
+public class TimoCloudUniversalAPICoreImplementation implements TimoCloudUniversalAPI {
 
     @Override
-    public List<ServerGroupObject> getServerGroups() {
-        return TimoCloudCore.getInstance().getInstanceManager().getServerGroups().stream().map(ServerGroup::toGroupObject).collect(Collectors.toList());
+    public Set<ServerGroupObject> getServerGroups() {
+        return TimoCloudCore.getInstance().getInstanceManager().getServerGroups().stream().map(ServerGroup::toGroupObject).collect(Collectors.toSet());
     }
 
     @Override
@@ -38,8 +31,8 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
-    public List<ProxyGroupObject> getProxyGroups() {
-        return TimoCloudCore.getInstance().getInstanceManager().getProxyGroups().stream().map(ProxyGroup::toGroupObject).collect(Collectors.toList());
+    public Set<ProxyGroupObject> getProxyGroups() {
+        return TimoCloudCore.getInstance().getInstanceManager().getProxyGroups().stream().map(ProxyGroup::toGroupObject).collect(Collectors.toSet());
     }
 
     @Override
@@ -52,6 +45,30 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     public ProxyObject getProxy(String proxyName) {
         Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(proxyName);
         return proxy == null ? null : proxy.toProxyObject();
+    }
+
+    @Override
+    public Collection<BaseObject> getBases() {
+        return null;
+    }
+
+    @Override
+    public BaseObject getBase(String name) {
+        Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(name);
+        if (base == null) {
+            return new BaseObjectOfflineImplementation(name);
+        }
+        return base.toBaseObject();
+    }
+
+    @Override
+    public Collection<CordObject> getCords() {
+        return null;
+    }
+
+    @Override
+    public CordObject getCord(String name) {
+        return null;
     }
 
     @Override

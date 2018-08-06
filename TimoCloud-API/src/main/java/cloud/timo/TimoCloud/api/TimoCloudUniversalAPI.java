@@ -2,7 +2,7 @@ package cloud.timo.TimoCloud.api;
 
 import cloud.timo.TimoCloud.api.objects.*;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -11,51 +11,62 @@ import java.util.UUID;
 public interface TimoCloudUniversalAPI {
 
     /**
-     * @return A list of {@link ServerGroupObject} which contains all server groups
+     * @return A collection of {@link ServerGroupObject} which contains all server groups
      */
-    List<ServerGroupObject> getServerGroups();
+    Collection<ServerGroupObject> getServerGroups();
 
     /**
      * Use this to get a server group by name
-     * @param groupName The groups name, case-insensitive
-     * @return A {@link ServerGroupObject} which matches the given name
+     * @param groupName The group's name, case-insensitive
+     * @return A {@link ServerGroupObject} corresponding to the given name
      */
     ServerGroupObject getServerGroup(String groupName);
 
     /**
      * Use this to get a server by name
-     * @param serverName The server's name, case-insensitive
-     * @return A {@link ServerObject} which matches the given name
+     * @param identifier The server's name or id, case-insensitive
+     * @return A {@link ServerObject} corresponding to the given name or id
      */
-    ServerObject getServer(String serverName);
+    ServerObject getServer(String identifier);
 
     /**
-     * @return A list of {@link ProxyGroupObject} which contains all proxy groups
+     * @return A collection of {@link ProxyGroupObject} containing all proxy groups
      */
-    List<ProxyGroupObject> getProxyGroups();
+    Collection<ProxyGroupObject> getProxyGroups();
 
     /**
      * Use this to get a proxy group by name
-     * @param groupName The groups name, case-insensitive
-     * @return A {@link ServerGroupObject} which matches the given name
+     * @param groupName The group's name, case-insensitive
+     * @return A {@link ServerGroupObject} corresponding to the given name
      */
     ProxyGroupObject getProxyGroup(String groupName);
 
     /**
      * Use this to get a proxy by name
-     * @param proxyName The proxy's name, case-insensitive
-     * @return A {@link ServerObject} which matches the given name
+     * @param identifier The proxy's name or id
+     * @return A {@link ServerObject} corresponding to the given name or id
      */
-    ProxyObject getProxy(String proxyName);
+    ProxyObject getProxy(String identifier);
 
     /**
-     * @return Returns a list of all connected {@link CordObject}s
+     * @return A collection of all bases
      */
-    List<CordObject> getCords();
+    Collection<BaseObject> getBases();
+
+    /**
+     * @param name The base's name, case-insensitive
+     * @return A {@link BaseObject} corresponding to the given name
+     */
+    BaseObject getBase(String name);
+
+    /**
+     * @return A collection of all connected {@link CordObject}s
+     */
+    Collection<CordObject> getCords();
 
     /**
      * @param name The cord's name, case-insensitive
-     * @return A {@link CordObject} which matches the given name
+     * @return A {@link CordObject} corresponding to the given name
      */
     CordObject getCord(String name);
 

@@ -387,7 +387,7 @@ public class CoreInstanceManager {
     public Server getServerByName(String name) {
         for (ServerGroup group : getServerGroups())
             for (Server server : group.getServers())
-                if (server != null && server.getName().equals(name))
+                if (server != null && server.getName().equalsIgnoreCase(name))
                     return server;
         return null;
     }
@@ -408,6 +408,18 @@ public class CoreInstanceManager {
     }
 
     /**
+     * Searches for a server by id first, if not found, by name
+     *
+     * @param identifier The server's id or name
+     * @return A server object
+     */
+    public Server getServerByIdentifier(String identifier) {
+        Server server = getServerById(identifier);
+        if (server != null) return server;
+        return getServerByName(identifier);
+    }
+
+    /**
      * Searches for a proxy by name (case-insensitive)
      *
      * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
@@ -417,7 +429,7 @@ public class CoreInstanceManager {
     public Proxy getProxyByName(String name) {
         for (ProxyGroup group : getProxyGroups())
             for (Proxy proxy : group.getProxies())
-                if (proxy != null && proxy.getName().equals(name))
+                if (proxy != null && proxy.getName().equalsIgnoreCase(name))
                     return proxy;
         return null;
     }
@@ -435,6 +447,18 @@ public class CoreInstanceManager {
             return proxy;
         }
         return null;
+    }
+
+    /**
+     * Searches for a proxy by id first, if not found, by name
+     *
+     * @param identifier The proxy's id or name
+     * @return A proxy object
+     */
+    public Proxy getProxyByIdentifier(String identifier) {
+        Proxy proxy = getProxyById(identifier);
+        if (proxy != null) return proxy;
+        return getProxyByName(identifier);
     }
 
     /**

@@ -38,19 +38,17 @@ public class Message extends LinkedHashMap<String, Object> {
         return this;
     }
 
-    public Message setIfNotNull(String key, Object value) {
-        if (value == null) return this;
-        return set(key, value);
-    }
-
-    public Message setIfAbsent(String key, Object value) {
-        if (containsKey(key)) return this;
-        return set(key, value);
-    }
-
     public Message setIfCondition(String key, Object value, boolean condition) {
         if (!condition) return this;
         return set(key, value);
+    }
+
+    public Message setIfNotNull(String key, Object value) {
+        return setIfCondition(key, value, value != null);
+    }
+
+    public Message setIfAbsent(String key, Object value) {
+        return setIfCondition(key, value, ! containsKey(key));
     }
 
     public Message setType(String type) {

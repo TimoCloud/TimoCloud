@@ -6,7 +6,7 @@ import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplem
 public class TimoCloudUniversalAPICordImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
     public TimoCloudUniversalAPICordImplementation() {
-        super(ServerObjectCordImplementation.class, ProxyObjectCordImplementation.class, ServerGroupObjectCordImplementation.class, ProxyGroupObjectCordImplementation.class, PlayerObjectCordImplementation.class, CordObjectCordImplementation.class);
+        super(ServerObjectCordImplementation.class, ProxyObjectCordImplementation.class, ServerGroupObjectCordImplementation.class, ProxyGroupObjectCordImplementation.class, PlayerObjectCordImplementation.class, BaseObjectCordImplementation.class, CordObjectCordImplementation.class);
     }
 
 }

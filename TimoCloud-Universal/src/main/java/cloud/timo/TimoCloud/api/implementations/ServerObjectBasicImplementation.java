@@ -1,20 +1,23 @@
 package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+import cloud.timo.TimoCloud.api.async.APIRequest;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.lib.messages.Message;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
+
+import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 public class ServerObjectBasicImplementation implements ServerObject, Comparable {
@@ -33,7 +36,8 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     private InetSocketAddress socketAddress;
     private MessageClientAddress messageClientAddress;
 
-    public ServerObjectBasicImplementation() {}
+    public ServerObjectBasicImplementation() {
+    }
 
     public ServerObjectBasicImplementation(String name, String id, String group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
         this.name = name;
@@ -79,8 +83,9 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public void setState(String state) {
+    public APIRequestFuture setState(String state) {
         this.state = state;
+        return new APIRequest(S_SET_STATE, getName(), state).submit();
     }
 
     @Override
@@ -89,8 +94,9 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public void setExtra(String extra) {
+    public APIRequestFuture setExtra(String extra) {
         this.extra = extra;
+        return new APIRequest(S_SET_EXTRA, getName(), extra).submit();
     }
 
     @Override
@@ -119,8 +125,8 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public String getBase() {
-        return base;
+    public BaseObject getBase() {
+        return TimoCloudAPI.getUniversalAPI().getBase(base);
     }
 
     @Override
@@ -145,24 +151,20 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public MessageClientAddress getMessageAddress() {
-        if (messageClientAddress == null) messageClientAddress = new MessageClientAddress(getId(), MessageClientAddressType.SERVER);
+        if (messageClientAddress == null)
+            messageClientAddress = new MessageClientAddress(getId(), MessageClientAddressType.SERVER);
         return messageClientAddress;
     }
 
-    public void executeCommand(String command) {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
-                .setType("EXECUTE_COMMAND")
-                .setTarget(getId())
-                .setData(command).toString()
-        );
+    @Override
+    public APIRequestFuture executeCommand(String command) {
+        return new APIRequest(S_EXECUTE_COMMAND, getName(), command).submit();
+
     }
 
     @Override
-    public void stop() {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
-                .setType("STOP_SERVER")
-                .setTarget(getId()).toString()
-        );
+    public APIRequestFuture stop() {
+        return new APIRequest(S_STOP, getName(), null).submit();
     }
 
     @Override
@@ -177,10 +179,10 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public int compareTo(Object o) {
-        if (! (o instanceof ServerObject)) return 1;
+        if (!(o instanceof ServerObject)) return 1;
         ServerObject so = (ServerObject) o;
         try {
-            return Integer.parseInt(getName().split("-")[getName().split("-").length-1]) - Integer.parseInt(so.getName().split("-")[so.getName().split("-").length-1]);
+            return Integer.parseInt(getName().split("-")[getName().split("-").length - 1]) - Integer.parseInt(so.getName().split("-")[so.getName().split("-").length - 1]);
         } catch (Exception e) {
             return getName().compareTo(so.getName());
         }

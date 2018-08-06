@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.api.objects;
 
-import java.util.List;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+
+import java.util.Collection;
 
 public interface ProxyGroupObject {
 
@@ -12,37 +14,90 @@ public interface ProxyGroupObject {
     /**
      * @return All starting/running proxies of the group
      */
-    List<ProxyObject> getProxies();
+    Collection<ProxyObject> getProxies();
 
     /**
-     * The total amount of players online on all proxies of this group
+     * @return The total amount of players online on all proxies of this group
      */
     int getOnlinePlayerCount();
 
     /**
-     * The total maximum amount of players who can be online on proxies of this group
+     * @return The total maximum amount of players who can be online on proxies of this group
      */
     int getMaxPlayerCount();
 
     /**
-     * The maximum player amount who can be online on one cord
+     * Changes the group's maximum player count
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMaxPlayerCount(int value);
+
+    /**
+     * @return The maximum player amount who can be online on one cord
      */
     int getMaxPlayerCountPerProxy();
 
     /**
-     * The amount of player slots TimoCloud will keep free. If there are not enough free slots, a new cord will be started.
+     * Changes the group's maximum player count per proxy
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMaxPlayerCountPerProxy(int value);
+
+    /**
+     * @return The amount of player slots TimoCloud will keep free. If there are not enough free slots, a new proxy will be started.
      */
     int getKeepFreeSlots();
 
     /**
-     * Maximum of ram a server of this group may use
+     * Changes the group's amount of slots which should be kept free
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setKeepFreeSlots(int value);
+
+    /**
+     * @return The minimum amount of proxies of this group that will be online
+     */
+    int getMinAmount();
+
+    /**
+     * Changes the group's minimum instance amount
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMinAmount(int value);
+
+    /**
+     * @return The maximum amount of proxies of this group that may be online
+     */
+    int getMaxAmount();
+
+    /**
+     * Changes the group's maximum instance amount
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMaxAmount(int value);
+
+    /**
+     * @return Maximum of ram a proxy of this group may use in megabytes
      */
     int getRam();
 
     /**
-     * @return The cord's motd
+     * Changes the group's ram
+     * @param value The maximum amount of ram a proxy of this group may use
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setRam(int value);
+
+    /**
+     * @return The proxies' motd
      */
     String getMotd();
+
+    /**
+     * Changes the group's motd
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setMotd(String value);
 
     /**
      * If a group is static, servers will not be reset after restart. A static group can only start 1 server.
@@ -50,19 +105,39 @@ public interface ProxyGroupObject {
     boolean isStatic();
 
     /**
-     * The group's priority. Groups with higher priorities will be started sooner than groups with lower priorities.
+     * Changes whether the group is static or not.
+     * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setStatic(boolean value);
+
+    /**
+     * @return The group's priority. Groups with higher priorities will be started sooner than groups with lower priorities.
      */
     int getPriority();
 
     /**
-     * @return  The server groups which are proxied by this BungeeCord instance.
+     * Changes the group's priority
+     * @return A future being completed when the value was changed
      */
-    List<ServerGroupObject> getServerGroups();
+    APIRequestFuture setPriority(int value);
 
     /**
-     * If two groups are started by the same base, you can assume that they are running on the same machine.
+     * @return The server groups connections to which are proxied by this BungeeCord instance.
      */
-    String getBase();
+    Collection<ServerGroupObject> getServerGroups();
+
+    /**
+     * @return The base proxies of this group will be started by. <b>If you let TimoCloud choose a base dynamically, this will return null!</b>
+     */
+    BaseObject getBase();
+
+    /**
+     * Changes the base proxies of this group shall be started by
+     * @param value If null, a base will be selected dynamically whenever a new proxy gets started
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setBase(BaseObject value);
 
     /**
      * The ProxyChooseStrategy tells TimoCloudCord what proxy it should choose when a player wants to join a proxy group
@@ -71,8 +146,19 @@ public interface ProxyGroupObject {
     ProxyChooseStrategy getProxyChooseStrategy();
 
     /**
+     * Changes the group's proxy choose strategy
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setProxyChooseStrategy(ProxyChooseStrategy value);
+
+    /**
      * If using multiple proxies and TimoCloudCord, the hostnames specify which hostnames belong to this proxy group
      */
-    List<String> getHostNames();
+    Collection<String> getHostNames();
 
+    /**
+     * Changes the group's hostnames
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture setHostNames(Collection<String> value);
 }

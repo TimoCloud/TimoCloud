@@ -1,5 +1,7 @@
 package cloud.timo.TimoCloud.api.objects;
 
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+
 import java.net.InetAddress;
 import java.util.UUID;
 
@@ -36,8 +38,9 @@ public interface PlayerObject {
     boolean isOnline();
 
     /**
-     * @return The last time the player was online, in form of a timestamp (milliseconds). If the player is currently online, this will return 0. If the last online time can't be found in the database, this will return -1
+     * @param serverObject The server the player shall be sent to
+     * @return A future being completed when the player is sent to the server
      */
-    long getLastOnline();
+    APIRequestFuture sendToServer(ServerObject serverObject);
 
 }

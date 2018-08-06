@@ -14,4 +14,5 @@ public class ProxyObjectCordImplementation extends ProxyObjectBasicImplementatio
     public ProxyObjectCordImplementation(String name, String id, String group, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
         super(name, id, group, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
     }
+
 }
