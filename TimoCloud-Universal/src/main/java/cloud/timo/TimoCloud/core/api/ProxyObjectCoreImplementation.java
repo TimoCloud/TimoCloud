@@ -21,13 +21,4 @@ public class ProxyObjectCoreImplementation extends ProxyObjectBasicImplementatio
         return TimoCloudCore.getInstance().getInstanceManager().getProxyById(getId());
     }
 
-    @Override
-    public void executeCommand(String command) {
-        getProxy().executeCommand(command);
-    }
-
-    @Override
-    public void stop() {
-        getProxy().stop();
-    }
 }

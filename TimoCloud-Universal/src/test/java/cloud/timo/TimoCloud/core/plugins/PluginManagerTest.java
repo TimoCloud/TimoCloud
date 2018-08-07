@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core.plugins;
 
 import cloud.timo.TimoCloud.TimoCloudTest;
+import cloud.timo.TimoCloud.api.plugins.PluginLoadException;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPluginDescription;
 import org.junit.Before;
@@ -68,29 +69,25 @@ public class PluginManagerTest extends TimoCloudTest {
         inOrder.verify(pluginClassLoader).loadClass(eq(plugin1.getMainClass()));
     }
 
-    @Test
-    public void testDependencyFail1() {
+    @Test (expected = PluginLoadException.class)
+    public void testDependencyFail1() throws Exception {
         TimoCloudPluginDescription plugin1 = generatePluginDescriptionWithDepends("Plugin1", "Plugin2");
         TimoCloudPluginDescription plugin2 = generatePluginDescriptionWithDepends("Plugin2", "Plugin1");
 
         pluginManager.loadPlugins(Arrays.asList(plugin1, plugin2));
-
-        expectCoreExeption();
     }
 
-    @Test
-    public void testDependencyFail2() {
+    @Test (expected = PluginLoadException.class)
+    public void testDependencyFail2() throws Exception {
         TimoCloudPluginDescription plugin1 = generatePluginDescriptionWithDepends("Plugin1", "Plugin2");
         TimoCloudPluginDescription plugin2 = generatePluginDescriptionWithDepends("Plugin2", "Plugin3");
         TimoCloudPluginDescription plugin3 = generatePluginDescriptionWithDepends("Plugin3", "Plugin1");
 
         pluginManager.loadPlugins(Arrays.asList(plugin1, plugin2, plugin3));
-
-        expectCoreExeption();
     }
 
     @Test
-    public void testSoftDependency1() {
+    public void testSoftDependency1() throws Exception {
         TimoCloudPluginDescription plugin1 = generatePluginDescriptionWithSoftDepends("Plugin1", "Plugin2", "Plugin3");
         TimoCloudPluginDescription plugin2 = generatePluginDescriptionWithSoftDepends("Plugin2", "Plugin3");
         // Plugin3 does not exist, this should not matter

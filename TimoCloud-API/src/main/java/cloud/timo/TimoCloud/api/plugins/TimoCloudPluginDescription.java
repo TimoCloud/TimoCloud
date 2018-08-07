@@ -74,8 +74,7 @@ public class TimoCloudPluginDescription {
         if (mainClass != null ? !mainClass.equals(that.mainClass) : that.mainClass != null) return false;
         if (depends != null ? !depends.equals(that.depends) : that.depends != null) return false;
         if (softDepends != null ? !softDepends.equals(that.softDepends) : that.softDepends != null) return false;
-        if (file != null ? !file.equals(that.file) : that.file != null) return false;
-        return plugin != null ? plugin.equals(that.plugin) : that.plugin == null;
+        return file != null ? file.equals(that.file) : that.file == null;
     }
 
     @Override
@@ -87,7 +86,6 @@ public class TimoCloudPluginDescription {
         result = 31 * result + (depends != null ? depends.hashCode() : 0);
         result = 31 * result + (softDepends != null ? softDepends.hashCode() : 0);
         result = 31 * result + (file != null ? file.hashCode() : 0);
-        result = 31 * result + (plugin != null ? plugin.hashCode() : 0);
         return result;
     }
 }

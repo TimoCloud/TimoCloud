@@ -127,7 +127,7 @@ public class APIRequestManager implements MessageListener {
                     break;
                 }
                 case PROXY_GROUP: {
-                    String proxyGroupName = data.getString("target");
+                    String proxyGroupName = request.getTarget();
                     validateNotNull(proxyGroupName, "ProxyGroupName");
                     ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(proxyGroupName);
                     if (proxyGroup == null) {
@@ -222,7 +222,7 @@ public class APIRequestManager implements MessageListener {
                     break;
                 }
                 case SERVER_GROUP: {
-                    String serverGroupName = data.getString("target");
+                    String serverGroupName = request.getTarget();
                     validateNotNull(serverGroupName, "ServerGroupName");
                     ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(serverGroupName);
                     if (serverGroup == null) {
@@ -281,7 +281,7 @@ public class APIRequestManager implements MessageListener {
                     break;
                 }
                 case SERVER: {
-                    String serverIdentifier = data.getString("target");
+                    String serverIdentifier = request.getTarget();
                     validateNotNull(serverIdentifier, "ServerIdentifier");
                     Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(serverIdentifier);
                     if (server == null) {
@@ -314,7 +314,7 @@ public class APIRequestManager implements MessageListener {
                     break;
                 }
                 case PROXY: {
-                    String proxyIdentifier = data.getString("target");
+                    String proxyIdentifier = request.getTarget();
                     validateNotNull(proxyIdentifier, "ProxyIdentifier");
                     Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(proxyIdentifier);
                     if (proxy == null) {

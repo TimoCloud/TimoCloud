@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
@@ -180,7 +179,7 @@ public class ServerGroup implements Group {
     }
 
     public ServerGroupObject toGroupObject() {
-        ServerGroupObjectCoreImplementation groupObject = new ServerGroupObjectCoreImplementation(
+        return new ServerGroupObjectCoreImplementation(
                 getName(),
                 getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
                 getOnlineAmount(),
@@ -190,8 +189,6 @@ public class ServerGroup implements Group {
                 getBaseName(),
                 getSortOutStates()
         );
-        Collections.sort((List<ServerObjectBasicImplementation>) (List) groupObject.getServers());
-        return groupObject;
     }
 
     @Override

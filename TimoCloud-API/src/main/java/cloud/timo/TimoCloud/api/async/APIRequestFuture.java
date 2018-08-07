@@ -7,6 +7,7 @@ public class APIRequestFuture {
 
     private APIRequest request;
     private Collection<APIRequestFutureListener> listeners = new LinkedHashSet<>();
+    private APIResponse response;
 
     public APIRequestFuture(APIRequest request) {
         this.request = request;
@@ -14,6 +15,9 @@ public class APIRequestFuture {
 
     public APIRequestFuture addListener(APIRequestFutureListener listener) {
         listeners.add(listener);
+        if (response != null) {
+            listener.requestComplete(response);
+        }
         return this;
     }
 
@@ -37,6 +41,7 @@ public class APIRequestFuture {
     }
 
     protected void requestComplete(APIResponse response) {
+        this.response = response;
         for (APIRequestFutureListener listener : getListeners()) {
             listener.requestComplete(response);
         }
@@ -44,6 +49,13 @@ public class APIRequestFuture {
 
     public APIRequest getRequest() {
         return request;
+    }
+
+    /**
+     * This will be null until we received a response
+     */
+    public APIResponse getResponse() {
+        return response;
     }
 
     public Collection<APIRequestFutureListener> getListeners() {

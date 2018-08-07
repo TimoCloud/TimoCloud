@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ListBasesCommand extends CommandFormatUtil implements CommandHandler {
-    
+
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
         List<Base> bases = TimoCloudCore.getInstance().getInstanceManager().getBases().stream().filter(Base::isConnected).collect(Collectors.toList());
@@ -19,5 +19,5 @@ public class ListBasesCommand extends CommandFormatUtil implements CommandHandle
             displayBase(base, sender);
         }
     }
-    
+
 }

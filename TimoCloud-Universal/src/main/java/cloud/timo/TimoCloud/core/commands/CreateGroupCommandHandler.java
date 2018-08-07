@@ -12,12 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateGroupCommandHandler extends CommandFormatUtil implements CommandHandler {
-    
+
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
+        if (args.length < 5) {
+            notEnoughArgs(sender, "addgroup <groupType (String)> <groupName (String)> <onlineAmount (int)> <ram (int)> <static (boolean)> <base (String), only needed if static=true>");
+            return;
+        }
         String type = args[0];
         String name = args[1];
-
         if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
             sender.sendError("This group already exists.");
             return;
@@ -33,7 +36,7 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
             properties.put("static", isStatic);
             if (isStatic && args.length > 5) properties.put("base", args[5]);
 
-            if (isStatic && ! properties.containsKey("base")) {
+            if (isStatic && !properties.containsKey("base")) {
                 sender.sendError("If you create a static group, you have to specify a base!");
                 return;
             }
@@ -55,7 +58,7 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
             properties.put("static", isStatic);
             if (isStatic && args.length > 4) properties.put("base", args[4]);
 
-            if (isStatic && ! properties.containsKey("base")) {
+            if (isStatic && !properties.containsKey("base")) {
                 sender.sendError("If you create a static group, you have to specify a base!");
                 return;
             }
@@ -77,5 +80,5 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
             e.printStackTrace();
         }
     }
-    
+
 }

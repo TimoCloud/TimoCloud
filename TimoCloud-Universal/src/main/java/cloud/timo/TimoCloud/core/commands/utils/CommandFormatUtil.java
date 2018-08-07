@@ -59,6 +59,14 @@ public class CommandFormatUtil {
         else if (group instanceof ProxyGroup) displayGroup((ProxyGroup) group, sender);
     }
 
+    public void notEnoughArgs(CommandSender commandSender, String usage){
+        commandSender.sendError("Not enough arguments. Please use: " + usage);
+    }
+
+    public void invalidArgs(CommandSender commandSender, String usage){
+        commandSender.sendError("Invalid arguments. Please use: " + usage);
+    }
+
     public static String formatBoolean(boolean b) {
         return b ? "&2true" : "&cfalse";
     }

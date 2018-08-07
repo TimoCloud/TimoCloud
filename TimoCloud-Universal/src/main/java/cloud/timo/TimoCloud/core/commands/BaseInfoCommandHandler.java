@@ -10,6 +10,10 @@ public class BaseInfoCommandHandler extends CommandFormatUtil implements Command
 
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
+        if (args.length == 0) {
+            notEnoughArgs(sender, "baseinfo <baseName>");
+            return;
+        }
         Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(args[0]);
         if (base == null) {
             sender.sendError("Could not find base '" + args[0] + "'.");

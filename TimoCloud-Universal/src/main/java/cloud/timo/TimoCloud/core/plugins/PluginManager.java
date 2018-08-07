@@ -26,25 +26,20 @@ public class PluginManager {
 
     }
 
-    public void loadPlugins() {
-        Collection<TimoCloudPluginDescription> pluginDescriptions = new HashSet<>();
+    public void loadPlugins() throws IOException, PluginLoadException {
+        Collection<TimoCloudPluginDescription> pluginDescriptions = new LinkedHashSet<>();
         for (File file : TimoCloudCore.getInstance().getFileManager().getPluginsDirectory().listFiles()) {
             if (file.isDirectory()) continue;
             if (!file.getName().endsWith(".jar")) continue;
-            try {
-                TimoCloudPluginDescription plugin = loadPlugin(file);
-                pluginDescriptions.add(plugin);
-            } catch (Exception e) {
-                TimoCloudCore.getInstance().severe("Error while loading plugin '" + file.getName() + "': ");
-                TimoCloudCore.getInstance().severe(e);
-            }
+            TimoCloudPluginDescription plugin = loadPlugin(file);
+            pluginDescriptions.add(plugin);
         }
 
         loadPlugins(pluginDescriptions);
     }
 
-    public void loadPlugins(Collection<TimoCloudPluginDescription> pluginDescriptions) {
-        plugins = new LinkedHashMap<>();
+    public void loadPlugins(Collection<TimoCloudPluginDescription> pluginDescriptions) throws PluginLoadException {
+        plugins = new HashMap<>();
         Map<String, TimoCloudPluginDescription> descriptionsByName = new HashMap<>();
         for (TimoCloudPluginDescription description : pluginDescriptions) {
             descriptionsByName.put(description.getName(), description);
@@ -53,17 +48,13 @@ public class PluginManager {
         Collection<TimoCloudPluginDescription> order = new LinkedHashSet<>();
         for (TimoCloudPluginDescription plugin : pluginDescriptions) {
             Stack<TimoCloudPluginDescription> dependStack = new Stack<>();
-            try {
-                load(plugin, order, dependStack, descriptionsByName);
-            } catch (PluginLoadException e) {
-                TimoCloudCore.getInstance().severe(e);
-            }
+            load(plugin, order, dependStack, descriptionsByName);
         }
         for (TimoCloudPluginDescription plugin : order) {
             try {
-                URLClassLoader classLoader = new PluginClassLoader(new URL[] {plugin.getFile().toURI().toURL()});
+                URLClassLoader classLoader = new PluginClassLoader(new URL[]{plugin.getFile().toURI().toURL()});
                 Class<?> main = classLoader.loadClass(plugin.getMainClass());
-                if (! TimoCloudPlugin.class.isAssignableFrom(main)) {
+                if (!TimoCloudPlugin.class.isAssignableFrom(main)) {
                     throw new PluginLoadException("Main class does not extend TimoCloudPlugin");
                 }
                 TimoCloudPlugin mainInstance = (TimoCloudPlugin) main.getDeclaredConstructor().newInstance();
@@ -73,12 +64,12 @@ public class PluginManager {
                     plugins.put(plugin, mainInstance);
                     plugin.setPlugin(mainInstance);
                 } catch (Exception e) {
-                    TimoCloudCore.getInstance().severe("Error while enabling plugin " + plugin.getName() + " version " + plugin.getVersion() + " by " + plugin.getAuthor() + ": ");
                     TimoCloudCore.getInstance().severe(e);
+                    throw new PluginLoadException("Error while enabling plugin " + plugin.getName() + " version " + plugin.getVersion() + " by " + plugin.getAuthor() + ": " + e.getMessage());
                 }
             } catch (Exception e) {
-                TimoCloudCore.getInstance().severe("Error while class-loading plugin '" + plugin.getName() + "': ");
                 TimoCloudCore.getInstance().severe(e);
+                throw new PluginLoadException("Error while class-loading plugin '" + plugin.getName() + "': ");
             }
         }
     }
@@ -142,16 +133,11 @@ public class PluginManager {
         return null;
     }
 
-    public void unloadPlugins() {
-        Collection<TimoCloudPluginDescription> descriptions = Collections.unmodifiableSet(this.plugins.keySet());
-        descriptions.forEach(description -> {
-            try {
-                unloadPlugin(description);
-            } catch (Exception e) {
-                TimoCloudCore.getInstance().severe(String.format("Error while unloading plugin '%s'", description.getName()));
-                TimoCloudCore.getInstance().severe(e);
-            }
-        });
+    public void unloadPlugins() throws PluginUnloadException {
+        Collection<TimoCloudPluginDescription> descriptions = new ArrayList<>(this.plugins.keySet());
+        for (TimoCloudPluginDescription description : descriptions) {
+            unloadPlugin(description);
+        }
     }
 
     public void unloadPlugin(TimoCloudPluginDescription description) throws PluginUnloadException {

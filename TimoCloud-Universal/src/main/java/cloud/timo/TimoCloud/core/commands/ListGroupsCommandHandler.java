@@ -10,7 +10,7 @@ import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import java.util.Collection;
 
 public class ListGroupsCommandHandler extends CommandFormatUtil implements CommandHandler {
-    
+
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
         Collection<ServerGroup> serverGroups = TimoCloudCore.getInstance().getInstanceManager().getServerGroups();
@@ -25,5 +25,5 @@ public class ListGroupsCommandHandler extends CommandFormatUtil implements Comma
             displayGroup(group, sender);
         }
     }
-    
+
 }

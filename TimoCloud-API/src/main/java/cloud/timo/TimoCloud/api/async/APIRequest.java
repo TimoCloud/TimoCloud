@@ -44,10 +44,10 @@ public class APIRequest {
     }
 
     public APIRequestFuture submit() {
-        TimoCloudInternalAPI.getApiRequestStorage().addRequest(this);
-        TimoCloudAPI.getMessageAPI().sendMessageToCore(generatePluginMessage(data));
-
         APIRequestFuture future = new APIRequestFuture(this);
+
+        TimoCloudInternalAPI.getApiRequestStorage().addFuture(getId(), future);
+        TimoCloudAPI.getMessageAPI().sendMessageToCore(generatePluginMessage(getData()));
         return future;
     }
 
@@ -59,6 +59,7 @@ public class APIRequest {
         return new PluginMessage("TIMOCLOUD_API_REQUEST")
                 .set("type", getType().name())
                 .set("id", getId())
+                .set("target", getTarget())
                 .set("data", data);
     }
 

@@ -48,6 +48,7 @@ public class CommandManager {
         registerCommand(new ListBasesCommand(), "listbases", "bases", "showbases");
         registerCommand(new ListGroupsCommandHandler(), "listgroups", "groups", "showgroups");
         registerCommand(new ReloadCommandHandler(), "reload");
+        registerCommand(new ReloadPluginsCommandHandler(), "reloadPlugins");
         registerCommand(new RestartCommandHandler(), "restart", "restartgroup");
         registerCommand(new SendCommandCommandHandler(), "sendcommand", "executecommand", "send");
         registerCommand(new StopCommandHandler(), "stop", "end", "quit", "exit");
