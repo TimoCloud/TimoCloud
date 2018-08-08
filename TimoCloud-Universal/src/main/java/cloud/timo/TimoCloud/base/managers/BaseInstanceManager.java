@@ -54,7 +54,7 @@ public class BaseInstanceManager {
                                 .set("ready", ready)
                                 .set("availableRam", freeRam)
                                 .set("maxRam", TimoCloudBase.getInstance().getFileManager().getConfig().get("ram"))
-                                .set("cpu", cpu)));
+                                .set("cpuLoad", cpu)));
     }
 
     public void addToServerQueue(BaseServerObject server) {

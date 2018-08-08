@@ -151,7 +151,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public Set<BaseObject> getBases() {
+    public Collection<BaseObject> getBases() {
         return Collections.unmodifiableSet(bases == null ? Collections.emptySet() : bases);
     }
 
@@ -165,7 +165,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public Set<CordObject> getCords() {
+    public Collection<CordObject> getCords() {
         return Collections.unmodifiableSet(cords == null ? Collections.emptySet() : cords);
     }
 

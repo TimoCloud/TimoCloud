@@ -152,8 +152,8 @@ public class CoreStringHandler extends BasicStringHandler {
                                     Message.create()
                                             .set("serverGroups", serverGroups)
                                             .set("proxyGroups", proxyGroups)
-                                            .set("cords", cords))
-                                            .set("bases", bases));
+                                            .set("cords", cords)
+                                            .set("bases", bases)));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

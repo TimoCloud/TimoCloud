@@ -7,6 +7,5 @@ public class TimoCloudInternalMessageAPIBukkitImplementation implements TimoClou
     @Override
     public void sendMessageToCore(String message) {
         TimoCloudBukkit.getInstance().getSocketClientHandler().sendMessage(message);
-
     }
 }

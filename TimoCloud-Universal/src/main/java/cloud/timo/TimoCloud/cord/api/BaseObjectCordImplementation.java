@@ -2,10 +2,12 @@ package cloud.timo.TimoCloud.cord.api;
 
 import cloud.timo.TimoCloud.api.implementations.BaseObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.util.Set;
 
+@NoArgsConstructor
 public class BaseObjectCordImplementation extends BaseObjectBasicImplementation implements BaseObject {
 
     public BaseObjectCordImplementation(String name, InetAddress ipAddress, Double cpuLoad, int freeRam, int maxRam, Boolean connected, Boolean ready, Set<String> servers, Set<String> proxies) {

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.implementations.BaseObjectOfflineImplementation;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
@@ -11,7 +12,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class TimoCloudUniversalAPICoreImplementation implements TimoCloudUniversalAPI {
+public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
+
+    public TimoCloudUniversalAPICoreImplementation() {
+        super(ServerObjectCoreImplementation.class, ProxyObjectCoreImplementation.class, ServerGroupObjectCoreImplementation.class, ProxyGroupObjectCoreImplementation.class, PlayerObjectCoreImplementation.class, BaseObjectCoreImplementation.class, CordObjectCoreImplementation.class);
+    }
 
     @Override
     public Set<ServerGroupObject> getServerGroups() {
@@ -49,7 +54,7 @@ public class TimoCloudUniversalAPICoreImplementation implements TimoCloudUnivers
 
     @Override
     public Collection<BaseObject> getBases() {
-        return null;
+        return TimoCloudCore.getInstance().getInstanceManager().getBases().stream().map(Base::toBaseObject).collect(Collectors.toSet());
     }
 
     @Override
@@ -63,7 +68,7 @@ public class TimoCloudUniversalAPICoreImplementation implements TimoCloudUnivers
 
     @Override
     public Collection<CordObject> getCords() {
-        return null;
+        return TimoCloudCore.getInstance().getInstanceManager().getCords().stream().map(Cord::toCordObject).collect(Collectors.toSet());
     }
 
     @Override
