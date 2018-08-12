@@ -18,11 +18,15 @@ public class PluginMessageManager {
                 return;
             case SERVER:
                 communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerById(message.getRecipient().getName());
-                if (communicatable == null) communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerByName(message.getRecipient().getName());
+                if (communicatable == null) {
+                    communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerByName(message.getRecipient().getName());
+                }
                 break;
             case PROXY:
                 communicatable = TimoCloudCore.getInstance().getInstanceManager().getProxyById(message.getRecipient().getName());
-                if (communicatable == null) TimoCloudCore.getInstance().getInstanceManager().getProxyByName(message.getRecipient().getName());
+                if (communicatable == null) {
+                    communicatable = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(message.getRecipient().getName());
+                }
                 break;
             case CORD:
                 communicatable = TimoCloudCore.getInstance().getInstanceManager().getCord(message.getRecipient().getName());
