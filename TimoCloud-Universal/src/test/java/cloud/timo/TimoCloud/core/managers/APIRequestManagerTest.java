@@ -56,7 +56,6 @@ public class APIRequestManagerTest extends TimoCloudTest {
         apiRequestManager.processRequest(new APIRequestImplementation<>(
                 APIRequestType.G_CREATE_SERVER_GROUP, null, new TypeMap()
                 .put("name", name)
-                .put("")
-        ))
+        ));
     }
 }
