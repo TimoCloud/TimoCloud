@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.api.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
+import cloud.timo.TimoCloud.api.implementations.objects.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

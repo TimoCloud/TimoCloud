@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;

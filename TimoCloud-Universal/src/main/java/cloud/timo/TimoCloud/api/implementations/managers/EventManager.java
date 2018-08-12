@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.managers;
 
 import cloud.timo.TimoCloud.api.TimoCloudEventAPI;
 import cloud.timo.TimoCloud.api.events.Event;

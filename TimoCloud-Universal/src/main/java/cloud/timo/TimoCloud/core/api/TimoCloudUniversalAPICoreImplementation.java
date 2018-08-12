@@ -1,8 +1,8 @@
 package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
-import cloud.timo.TimoCloud.api.implementations.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;

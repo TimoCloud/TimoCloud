@@ -1,8 +1,8 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -101,13 +101,13 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
 
     @Override
     public APIRequestFuture executeCommand(String command) {
-        return new APIRequest(P_EXECUTE_COMMAND, getName(), command).submit();
+        return new APIRequestImplementation(P_EXECUTE_COMMAND, getName(), command).submit();
 
     }
 
     @Override
     public APIRequestFuture stop() {
-        return new APIRequest(P_STOP, getName(), null).submit();
+        return new APIRequestImplementation(P_STOP, getName(), null).submit();
     }
 
     @Override

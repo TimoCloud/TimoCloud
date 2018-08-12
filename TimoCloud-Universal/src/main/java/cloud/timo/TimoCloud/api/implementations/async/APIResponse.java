@@ -1,16 +1,15 @@
-package cloud.timo.TimoCloud.api.async;
+package cloud.timo.TimoCloud.api.implementations.async;
 
+import cloud.timo.TimoCloud.api.async.APIRequest;
+import cloud.timo.TimoCloud.api.async.APIRequestError;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class APIResponse {
+public class APIResponse<T> {
 
     private String id;
     private boolean success;
     private APIRequestError error;
-    private Map data;
+    private T data;
 
     private APIResponse(PluginMessage pluginMessage) {
         this.id = pluginMessage.getString("id");
@@ -18,23 +17,23 @@ public class APIResponse {
         this.error = pluginMessage.containsProperty("error") ? (APIRequestError) pluginMessage.getObject("error") : null;
     }
 
-    private APIResponse(APIRequest request, boolean success, APIRequestError error, Map data) {
+    private APIResponse(APIRequest request, boolean success, APIRequestError error, T data) {
         this.id = request.getId();
         this.success = success;
         this.error = error;
         this.data = data;
     }
 
-    public APIResponse(APIRequest request, APIRequestError error, Map data) {
+    public APIResponse(APIRequest request, APIRequestError error, T data) {
         this(request, false, error, data);
     }
 
     public APIResponse(APIRequest request, APIRequestError error) {
-        this(request, error, new HashMap());
+        this(request, error, null);
     }
 
     public APIResponse(APIRequest request) {
-        this(request, true, null, new HashMap());
+        this(request, true, null, null);
     }
 
     public String getId() {
@@ -49,11 +48,11 @@ public class APIResponse {
         return error;
     }
 
-    public Map getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Map data) {
+    public void setData(T data) {
         this.data = data;
     }
 

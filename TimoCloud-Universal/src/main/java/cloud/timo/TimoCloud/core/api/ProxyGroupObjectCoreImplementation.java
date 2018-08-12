@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.api;
 
-import cloud.timo.TimoCloud.api.implementations.ProxyGroupObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.ProxyGroupObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import lombok.NoArgsConstructor;

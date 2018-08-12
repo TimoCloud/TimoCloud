@@ -26,7 +26,7 @@ public interface ServerGroupObject {
      * Changes the group's maximum player count
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setOnlineAmount(int value);
+    APIRequestFuture<Void> setOnlineAmount(int value);
 
     /**
      * The MaxAmount specifies the maximal amount of servers TimoCloud keeps online at the same time - no matter what onlineAmount says
@@ -37,7 +37,7 @@ public interface ServerGroupObject {
      * Changes the group's maximum server amount
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMaxAmount(int value);
+    APIRequestFuture<Void> setMaxAmount(int value);
 
     /**
      * Maximum of ram a server of this group may use in megabytes
@@ -48,7 +48,7 @@ public interface ServerGroupObject {
      * Changes the group's ram
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setRam(int value);
+    APIRequestFuture<Void> setRam(int value);
 
     /**
      * If a group is static, servers will not be reset after restart. A static group can only start 1 server.
@@ -60,7 +60,7 @@ public interface ServerGroupObject {
      * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setStatic(boolean value);
+    APIRequestFuture<Void> setStatic(boolean value);
 
     /**
      * If a base is assigned to the group, this will return its name. If the dynamic automatic-base-selection system is used, this will return null.

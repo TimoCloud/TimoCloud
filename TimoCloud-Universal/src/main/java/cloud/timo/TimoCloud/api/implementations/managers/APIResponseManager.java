@@ -1,7 +1,7 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.managers;
 
-import cloud.timo.TimoCloud.api.async.APIResponse;
-import cloud.timo.TimoCloud.api.helpers.APIRequestFutureHelper;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestFutureImplementation;
+import cloud.timo.TimoCloud.api.implementations.async.APIResponse;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
@@ -18,7 +18,7 @@ public class APIResponseManager implements MessageListener {
 
         APIResponse apiResponse = APIResponse.fromPluginMessage(message);
 
-        APIRequestFutureHelper.callRequestComplete(TimoCloudInternalAPI.getApiRequestStorage().pollFuture(apiResponse.getId()), apiResponse);
+        ((APIRequestFutureImplementation) TimoCloudInternalAPI.getApiRequestStorage().pollFuture(apiResponse.getId())).requestComplete(apiResponse);
     }
 
 }

@@ -1,8 +1,8 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -85,7 +85,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     @Override
     public APIRequestFuture setState(String state) {
         this.state = state;
-        return new APIRequest(S_SET_STATE, getName(), state).submit();
+        return new APIRequestImplementation(S_SET_STATE, getName(), state).submit();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     @Override
     public APIRequestFuture setExtra(String extra) {
         this.extra = extra;
-        return new APIRequest(S_SET_EXTRA, getName(), extra).submit();
+        return new APIRequestImplementation(S_SET_EXTRA, getName(), extra).submit();
     }
 
     @Override
@@ -158,13 +158,13 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public APIRequestFuture executeCommand(String command) {
-        return new APIRequest(S_EXECUTE_COMMAND, getName(), command).submit();
+        return new APIRequestImplementation(S_EXECUTE_COMMAND, getName(), command).submit();
 
     }
 
     @Override
     public APIRequestFuture stop() {
-        return new APIRequest(S_STOP, getName(), null).submit();
+        return new APIRequestImplementation(S_STOP, getName(), null).submit();
     }
 
     @Override

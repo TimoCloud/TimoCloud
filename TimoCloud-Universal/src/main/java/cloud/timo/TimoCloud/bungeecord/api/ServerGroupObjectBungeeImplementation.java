@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.api;
 
-import cloud.timo.TimoCloud.api.implementations.ServerGroupObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.ServerGroupObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import lombok.NoArgsConstructor;

@@ -40,6 +40,7 @@ public class Message extends LinkedHashMap<String, Object> {
 
     public Message setIfCondition(String key, Object value, boolean condition) {
         if (!condition) return this;
+
         return set(key, value);
     }
 

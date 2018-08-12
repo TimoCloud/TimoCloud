@@ -2,9 +2,9 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.*;
-import cloud.timo.TimoCloud.api.implementations.EventManager;
-import cloud.timo.TimoCloud.api.implementations.PlayerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
+import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;

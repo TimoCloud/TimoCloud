@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.api;
 
-import cloud.timo.TimoCloud.api.implementations.ServerObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.ServerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import lombok.NoArgsConstructor;

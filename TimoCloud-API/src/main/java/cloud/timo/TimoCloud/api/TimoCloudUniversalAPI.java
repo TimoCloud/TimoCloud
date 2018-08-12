@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.api;
 
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -81,4 +83,10 @@ public interface TimoCloudUniversalAPI {
      * @return If the player is online, this will return a PlayerObject, else null
      */
     PlayerObject getPlayer(String name);
+
+    /**
+     * @param properties The group's properties
+     * @return An APIRequestFuture being completed once the group has been created
+     */
+    APIRequestFuture<ServerGroupObject> createServerGroup(ServerGroupProperties properties);
 }

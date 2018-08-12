@@ -1,8 +1,8 @@
 package cloud.timo.TimoCloud.core;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.implementations.APIResponseManager;
-import cloud.timo.TimoCloud.api.implementations.EventManager;
+import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
+import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
 import cloud.timo.TimoCloud.core.api.TimoCloudCoreAPIImplementation;

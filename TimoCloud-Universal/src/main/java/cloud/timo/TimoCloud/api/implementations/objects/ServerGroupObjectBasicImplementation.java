@@ -1,8 +1,8 @@
-package cloud.timo.TimoCloud.api.implementations;
+package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
@@ -60,7 +60,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setOnlineAmount(int value) {
-        return new APIRequest(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setMaxAmount(int value) {
-        return new APIRequest(SG_SET_MAX_AMOUNT, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_MAX_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setRam(int value) {
-        return new APIRequest(SG_SET_RAM, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_RAM, getName(), value).submit();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setStatic(boolean value) {
-        return new APIRequest(SG_SET_STATIC, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_STATIC, getName(), value).submit();
     }
 
     @Override
@@ -100,7 +100,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setBase(BaseObject value) {
-        return new APIRequest(SG_SET_BASE, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_BASE, getName(), value).submit();
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public APIRequestFuture setSortOutStates(Collection<String> value) {
-        return new APIRequest(SG_SET_SORT_OUT_STATES, getName(), value).submit();
+        return new APIRequestImplementation(SG_SET_SORT_OUT_STATES, getName(), value).submit();
     }
 
 }

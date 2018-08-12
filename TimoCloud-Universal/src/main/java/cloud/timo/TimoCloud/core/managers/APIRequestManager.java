@@ -3,7 +3,8 @@ package cloud.timo.TimoCloud.core.managers;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestError;
-import cloud.timo.TimoCloud.api.async.APIResponse;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
+import cloud.timo.TimoCloud.api.implementations.async.APIResponse;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
@@ -24,14 +25,14 @@ public class APIRequestManager implements MessageListener {
 
     @Override
     public void onPluginMessage(AddressedPluginMessage message) {
-        APIRequest request = APIRequest.fromMap(message.getMessage().getData());
+        APIRequest request = APIRequestImplementation.fromMap(message.getMessage().getData());
         APIResponse response = processRequest(request);
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(message.getSender(), response.toPluginMessage()));
     }
 
-    public APIResponse processRequest(APIRequest request) {
+    public <T> APIResponse<T> processRequest(APIRequest<T> request) {
         TypeMap data = new TypeMap(request.getData());
-        TypeMap responseData = new TypeMap();
+        T responseData = null;
         try {
             switch (request.getType().getTargetType()) {
                 case GENERAL: {
@@ -335,11 +336,11 @@ public class APIRequestManager implements MessageListener {
                 }
             }
         } catch (APIRequestError error) {
-            return new APIResponse(request, error, responseData);
+            return new APIResponse<T>(request, error, responseData);
         } catch (Exception e) {
-            return new APIResponse(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1), responseData);
+            return new APIResponse<T>(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1), responseData);
         }
-        return new APIResponse(request);
+        return new APIResponse<T>(request);
     }
 
     private static void validateNotNull(Object o) throws APIRequestError {

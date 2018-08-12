@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.api;
 
-import cloud.timo.TimoCloud.api.implementations.ProxyObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.ProxyObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;

@@ -2,9 +2,9 @@ package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventType;
-import cloud.timo.TimoCloud.api.implementations.EventManager;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudMessageAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
