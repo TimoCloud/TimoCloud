@@ -33,8 +33,12 @@ public class PluginMessage {
         return data;
     }
 
-    public Object getObject(String key) {
+    public Object get(String key) {
         return getData().get(key);
+    }
+
+    public Object getObject(String key) {
+        return get(key);
     }
 
     public Set<String> getKeys() {

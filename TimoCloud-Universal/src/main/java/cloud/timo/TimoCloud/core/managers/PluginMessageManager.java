@@ -6,7 +6,6 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
 
 public class PluginMessageManager {
 
@@ -17,12 +16,10 @@ public class PluginMessageManager {
                 ((TimoCloudMessageAPIBasicImplementation) TimoCloudAPI.getMessageAPI()).onMessage(message);
                 return;
             case SERVER:
-                communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerById(message.getRecipient().getName());
-                if (communicatable == null) communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerByName(message.getRecipient().getName());
+                communicatable = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(message.getRecipient().getName());
                 break;
             case PROXY:
-                communicatable = TimoCloudCore.getInstance().getInstanceManager().getProxyById(message.getRecipient().getName());
-                if (communicatable == null) TimoCloudCore.getInstance().getInstanceManager().getProxyByName(message.getRecipient().getName());
+                communicatable = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(message.getRecipient().getName());
                 break;
             case CORD:
                 communicatable = TimoCloudCore.getInstance().getInstanceManager().getCord(message.getRecipient().getName());
@@ -34,6 +31,6 @@ public class PluginMessageManager {
         }
         communicatable.sendMessage(Message.create()
                 .setType("PLUGIN_MESSAGE")
-                .setData(PluginMessageSerializer.serialize(message)));
+                .setData(message));
     }
 }

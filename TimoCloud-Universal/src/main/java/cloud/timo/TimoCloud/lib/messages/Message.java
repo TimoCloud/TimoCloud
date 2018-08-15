@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.lib.messages;
 
-import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -29,8 +29,9 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public static Message createFromJsonString(String json) {
-        Message builder = new Message(new Gson().fromJson(json, HASH_MAP_TYPE));
-        return builder;
+        return new GsonBuilder()
+                .create()
+                .fromJson(json, Message.class);
     }
 
     public Message set(String key, Object value) {
@@ -84,12 +85,15 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public JsonObject toJsonObject() {
-        return new Gson().toJsonTree(this).getAsJsonObject();
+        return new GsonBuilder()
+                .create()
+                .toJsonTree(this).getAsJsonObject();
     }
 
     public String toJson() {
-        String json = new Gson().toJson(this);
-        return json;
+        return new GsonBuilder()
+                .create()
+                .toJson(this);
     }
 
     @Override

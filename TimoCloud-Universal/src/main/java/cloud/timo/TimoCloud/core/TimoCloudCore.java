@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplementationAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
@@ -219,6 +220,7 @@ public class TimoCloudCore implements TimoCloudModule {
         APIInstanceUtil.setCoreInstance(new TimoCloudCoreAPIImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
+        APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getEventAPI().registerListener(getEventManager());
         TimoCloudAPI.getEventAPI().registerListener(getCloudFlareManager());
         TimoCloudAPI.getMessageAPI().registerMessageListener(getApiRequestManager(), "TIMOCLOUD_API_REQUEST");

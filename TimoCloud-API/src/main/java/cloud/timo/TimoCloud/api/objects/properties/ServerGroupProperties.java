@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.api.objects.properties;
 
-import java.util.Arrays;
+import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+
 import java.util.Collection;
 
 public class ServerGroupProperties {
@@ -14,15 +15,19 @@ public class ServerGroupProperties {
     private String baseName;
     private Collection<String> sortOutStates;
 
+    private ServerGroupProperties() {
+        this.onlineAmount = getDefaultPropertiesProvider().getOnlineAmount();
+        this.maxAmount = getDefaultPropertiesProvider().getMaxAmount();
+        this.ram = getDefaultPropertiesProvider().getRam();
+        this.isStatic = getDefaultPropertiesProvider().isStatic();
+        this.priority = getDefaultPropertiesProvider().getPriority();
+        this.baseName = getDefaultPropertiesProvider().getBaseName();
+        this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
+    }
+    
     public ServerGroupProperties(String name) {
+        this();
         this.name = name;
-        this.onlineAmount = 1;
-        this.maxAmount = -1;
-        this.ram = 1024;
-        this.isStatic = false;
-        this.priority = 1;
-        this.baseName = null;
-        this.sortOutStates = Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING");
     }
 
     public String getName() {
@@ -61,12 +66,12 @@ public class ServerGroupProperties {
         return this;
     }
 
-    public Boolean getStatic() {
+    public Boolean isStatic() {
         return isStatic;
     }
 
-    public ServerGroupProperties setStatic(Boolean aStatic) {
-        isStatic = aStatic;
+    public ServerGroupProperties setStatic(Boolean isStatic) {
+        this.isStatic = isStatic;
         return this;
     }
 
@@ -95,5 +100,27 @@ public class ServerGroupProperties {
     public ServerGroupProperties setSortOutStates(Collection<String> sortOutStates) {
         this.sortOutStates = sortOutStates;
         return this;
+    }
+
+    private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
+    }
+
+    public interface ServerGroupDefaultPropertiesProvider {
+
+        Integer getOnlineAmount();
+
+        Integer getMaxAmount();
+
+        Integer getRam();
+
+        Boolean isStatic();
+
+        Integer getPriority();
+
+        String getBaseName();
+
+        Collection<String> getSortOutStates();
+
     }
 }

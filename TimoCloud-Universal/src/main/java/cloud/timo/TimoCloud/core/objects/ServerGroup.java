@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
@@ -33,15 +34,17 @@ public class ServerGroup implements Group {
 
     public void construct(Map<String, Object> properties) {
         try {
+            String name = (String) properties.get("name");
+            ServerGroupProperties defaultProperties = new ServerGroupProperties(name);
             construct(
-                    (String) properties.get("name"),
-                    ((Number) properties.getOrDefault("online-amount", 1)).intValue(),
-                    ((Number) properties.getOrDefault("max-amount", 10)).intValue(),
-                    ((Number) properties.getOrDefault("ram", 1024)).intValue(),
-                    (Boolean) properties.getOrDefault("static", false),
-                    ((Number) properties.getOrDefault("priority", 1)).intValue(),
-                    (String) properties.getOrDefault("base", null),
-                    (Collection<String>) properties.getOrDefault("sort-out-states", Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING")));
+                    name,
+                    ((Number) properties.getOrDefault("online-amount", defaultProperties.getOnlineAmount())).intValue(),
+                    ((Number) properties.getOrDefault("max-amount", defaultProperties.getMaxAmount())).intValue(),
+                    ((Number) properties.getOrDefault("ram", defaultProperties.getRam())).intValue(),
+                    (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
+                    ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
+                    (String) properties.getOrDefault("base", defaultProperties.getBaseName()),
+                    (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();

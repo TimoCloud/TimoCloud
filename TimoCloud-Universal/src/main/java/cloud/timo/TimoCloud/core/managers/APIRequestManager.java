@@ -8,19 +8,19 @@ import cloud.timo.TimoCloud.api.implementations.async.APIResponse;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
+import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
+import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
+import cloud.timo.TimoCloud.lib.json.JsonConverter;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 
-// Next free error code: 10
+// Next free error code: 14
 public class APIRequestManager implements MessageListener {
 
     @Override
@@ -38,21 +38,31 @@ public class APIRequestManager implements MessageListener {
                 case GENERAL: {
                     switch (request.getType()) {
                         case G_CREATE_SERVER_GROUP: {
-                            String name = data.getString("name");
+                            ServerGroupProperties serverGroupProperties;
+                            try {
+                                serverGroupProperties = JsonConverter.convertMapToObject((Map) data.get("value"), ServerGroupProperties.class);
+                            } catch (Exception e) {
+                                throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Arrays.asList(data.get("value")));
+                            }
+                            String name = serverGroupProperties.getName();
                             validateNotNull(name, "Name");
-                            Integer onlineAmount = data.getInteger("onlineAmount");
+                            Integer onlineAmount = serverGroupProperties.getOnlineAmount();
                             validateMinimum(onlineAmount, 0, "OnlineAmount");
-                            Integer maxAmount = data.getInteger("maxAmount");
-                            validateMinimum(maxAmount, 0, "MaxAmount");
-                            Integer ram = data.getInteger("ram");
+                            Integer maxAmount = serverGroupProperties.getMaxAmount();
+                            validateMinimum(maxAmount, -1, "MaxAmount");
+                            Integer ram = serverGroupProperties.getRam();
                             validateMinimum(ram, 1, "Ram");
-                            Boolean isStatic = data.getBoolean("static");
+                            Boolean isStatic = serverGroupProperties.isStatic();
                             validateNotNull(isStatic, "Static");
-                            Integer priority = data.getInteger("priority");
+                            Integer priority = serverGroupProperties.getPriority();
                             validateNotNull(priority, "Priority");
-                            String baseName = data.getString("base");
-                            Collection<String> sortOutStates = (Collection<String>) data.get("sortOutStates");
+                            String baseName = serverGroupProperties.getBaseName();
+                            Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
+
+                            if (TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(name) != null) {
+                                throw new APIRequestError("A ServerGroup with this name already exists", 12, Arrays.asList(name));
+                            }
 
                             ServerGroup serverGroup = new ServerGroup(
                                     name,
@@ -67,42 +77,47 @@ public class APIRequestManager implements MessageListener {
 
                             TimoCloudCore.getInstance().getInstanceManager().addGroup(serverGroup);
                             TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
+                            break;
                         }
                         case G_CREATE_PROXY_GROUP: {
-                            String name = data.getString("name");
+                            ProxyGroupProperties proxyGroupProperties;
+                            try {
+                                proxyGroupProperties = JsonConverter.convertMapToObject((Map) data.get("value"), ProxyGroupProperties.class);
+                            } catch (Exception e) {
+                                throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Arrays.asList(data.get("value")));
+                            }
+                            String name = proxyGroupProperties.getName();
                             validateNotNull(name, "Name");
-                            Integer maxPlayerCountPerProxy = data.getInteger("maxPlayerCountPerProxy");
+                            Integer maxPlayerCountPerProxy = proxyGroupProperties.getMaxPlayerCountPerProxy();
                             validateMinimum(maxPlayerCountPerProxy, 0, "MaxPlayerCountPerProxy");
-                            Integer maxPlayerCount = data.getInteger("maxPlayerCount");
+                            Integer maxPlayerCount = proxyGroupProperties.getMaxPlayerCount();
                             validateMinimum(maxPlayerCount, 0, "MaxPlayerCount");
-                            Integer keepFreeSlots = data.getInteger("keepFreeSlots");
+                            Integer keepFreeSlots = proxyGroupProperties.getKeepFreeSlots();
                             validateMinimum(keepFreeSlots, 0, "KeepFreeSlots");
-                            Integer minAmount = data.getInteger("minAmount");
+                            Integer minAmount = proxyGroupProperties.getMinAmount();
                             validateMinimum(minAmount, 0, "MinAmount");
-                            Integer maxAmount = data.getInteger("maxAmount");
-                            validateMinimum(maxAmount, 0, "MaxAmount");
-                            Integer ram = data.getInteger("ram");
+                            Integer maxAmount = proxyGroupProperties.getMaxAmount();
+                            validateMinimum(maxAmount, -1, "MaxAmount");
+                            Integer ram = proxyGroupProperties.getRam();
                             validateMinimum(ram, 1, "Ram");
-                            String motd = data.getString("motd");
+                            String motd = proxyGroupProperties.getMotd();
                             validateNotNull(motd, "MOTD");
-                            Boolean isStatic = data.getBoolean("static");
+                            Boolean isStatic = proxyGroupProperties.isStatic();
                             validateNotNull(isStatic, "Static");
-                            Integer priority = data.getInteger("priority");
+                            Integer priority = proxyGroupProperties.getPriority();
                             validateNotNull(priority, "Priority");
-                            Collection<String> serverGroups = (Collection<String>) data.get("serverGroups");
+                            Collection<String> serverGroups = proxyGroupProperties.getServerGroups();
                             validateNotNull(serverGroups, "ServerGroups");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
-                            String baseName = data.getString("base");
-                            String proxyChooseStrategyName = data.getString("proxyChooseStrategy");
-                            validateNotNull(proxyChooseStrategyName, "ProxyChooseStrategy");
-                            try {
-                                ProxyChooseStrategy proxyChooseStrategy = ProxyChooseStrategy.valueOf(proxyChooseStrategyName.toUpperCase());
-                            } catch (IllegalArgumentException e) {
-                                throw new APIRequestError(String.format("Unknown ProxyChooseStrategy: %s", proxyChooseStrategyName));
-                            }
-                            Collection<String> hostNames = (Collection<String>) data.get("hostNames");
+                            String baseName = proxyGroupProperties.getBaseName();
+                            ProxyChooseStrategy proxyChooseStrategy = proxyGroupProperties.getProxyChooseStrategy();
+                            validateNotNull(proxyChooseStrategy, "ProxyChooseStrategy");
+                            Collection<String> hostNames = proxyGroupProperties.getHostNames();
                             validateNotNull(hostNames, "HostNames");
-                            if (hostNames.isEmpty()) hostNames = Collections.singleton("*");
+
+                            if (TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(name) != null) {
+                                throw new APIRequestError("A ProxyGroup with this name already exists", 13, Arrays.asList(name));
+                            }
 
                             ProxyGroup proxyGroup = new ProxyGroup(
                                     name,
@@ -117,12 +132,13 @@ public class APIRequestManager implements MessageListener {
                                     priority,
                                     serverGroups,
                                     baseName,
-                                    proxyChooseStrategyName,
+                                    proxyChooseStrategy.name(),
                                     hostNames
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().addGroup(proxyGroup);
                             TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
+                            break;
                         }
                     }
                     break;

@@ -1,8 +1,12 @@
 package cloud.timo.TimoCloud.api.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
+import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
+import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +15,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_PROXY_GROUP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_SERVER_GROUP;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
@@ -177,6 +184,16 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         for (CordObject cordObject : getCords())
             if (cordObject.getName().equalsIgnoreCase(name)) return cordObject;
         return null;
+    }
+
+    @Override
+    public APIRequestFuture<ServerGroupObject> createServerGroup(ServerGroupProperties properties) {
+        return new APIRequestImplementation<ServerGroupObject>(G_CREATE_SERVER_GROUP, null, properties).submit();
+    }
+
+    @Override
+    public APIRequestFuture<ProxyGroupObject> createProxyGroup(ProxyGroupProperties properties) {
+        return new APIRequestImplementation<ProxyGroupObject>(G_CREATE_PROXY_GROUP, null, properties).submit();
     }
 
     public ObjectMapper getObjectMapper() {

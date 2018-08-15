@@ -3,19 +3,19 @@ package cloud.timo.TimoCloud.api.implementations.async;
 import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestError;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.lib.json.JsonConverter;
+import com.google.gson.Gson;
+
+import java.util.Map;
 
 public class APIResponse<T> {
+
+    private static final Gson gson = new Gson();
 
     private String id;
     private boolean success;
     private APIRequestError error;
     private T data;
-
-    private APIResponse(PluginMessage pluginMessage) {
-        this.id = pluginMessage.getString("id");
-        this.success = pluginMessage.getBoolean("success");
-        this.error = pluginMessage.containsProperty("error") ? (APIRequestError) pluginMessage.getObject("error") : null;
-    }
 
     private APIResponse(APIRequest request, boolean success, APIRequestError error, T data) {
         this.id = request.getId();
@@ -58,13 +58,10 @@ public class APIResponse<T> {
 
     public PluginMessage toPluginMessage() {
         return new PluginMessage("TIMOCLOUD_API_RESPONSE")
-                .set("id", getId())
-                .set("success", isSuccess())
-                .setIfNotNull("error", getError())
-                .set("data", getData());
+                .set("data", this);
     }
 
     public static APIResponse fromPluginMessage(PluginMessage pluginMessage) {
-        return new APIResponse(pluginMessage);
+        return JsonConverter.convertMapToObject((Map) pluginMessage.get("data"), APIResponse.class);
     }
 }

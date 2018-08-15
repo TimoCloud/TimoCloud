@@ -1,5 +1,8 @@
 package cloud.timo.TimoCloud.api.objects.properties;
 
+import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
+
 import java.util.Collection;
 
 public class ProxyGroupProperties {
@@ -15,10 +18,23 @@ public class ProxyGroupProperties {
     private Integer priority;
     private Collection<String> serverGroups;
     private String baseName;
-    private String proxyChooseStrategyName;
+    private ProxyChooseStrategy proxyChooseStrategy;
+    private Collection<String> hostNames;
 
     public ProxyGroupProperties(String name) {
         this.name = name;
+        this.maxPlayerCountPerProxy = getDefaultPropertiesProvider().getMaxPlayerCountPerProxy();
+        this.maxPlayerCount = getDefaultPropertiesProvider().getMaxPlayerCount();
+        this.keepFreeSlots = getDefaultPropertiesProvider().getKeepFreeSlots();
+        this.minAmount = getDefaultPropertiesProvider().getMinAmount();
+        this.maxAmount = getDefaultPropertiesProvider().getMaxAmount();
+        this.ram = getDefaultPropertiesProvider().getRam();
+        this.motd = getDefaultPropertiesProvider().getMotd();
+        this.isStatic = getDefaultPropertiesProvider().isStatic();
+        this.priority = getDefaultPropertiesProvider().getPriority();
+        this.serverGroups = getDefaultPropertiesProvider().getServerGroups();
+        this.baseName = getDefaultPropertiesProvider().getBaseName();
+        this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
     }
 
     public String getName() {
@@ -93,12 +109,12 @@ public class ProxyGroupProperties {
         return this;
     }
 
-    public Boolean getStatic() {
+    public Boolean isStatic() {
         return isStatic;
     }
 
-    public ProxyGroupProperties setStatic(Boolean aStatic) {
-        isStatic = aStatic;
+    public ProxyGroupProperties setStatic(Boolean isStatic) {
+        this.isStatic = isStatic;
         return this;
     }
 
@@ -129,12 +145,53 @@ public class ProxyGroupProperties {
         return this;
     }
 
-    public String getProxyChooseStrategyName() {
-        return proxyChooseStrategyName;
+    public ProxyChooseStrategy getProxyChooseStrategy() {
+        return proxyChooseStrategy;
     }
 
-    public ProxyGroupProperties setProxyChooseStrategyName(String proxyChooseStrategyName) {
-        this.proxyChooseStrategyName = proxyChooseStrategyName;
+    public ProxyGroupProperties setProxyChooseStrategy(ProxyChooseStrategy proxyChooseStrategy) {
+        this.proxyChooseStrategy = proxyChooseStrategy;
         return this;
+    }
+
+    public Collection<String> getHostNames() {
+        return hostNames;
+    }
+
+    public ProxyGroupProperties setHostNames(Collection<String> hostNames) {
+        this.hostNames = hostNames;
+        return this;
+    }
+
+    private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
+    }
+
+    public interface ProxyGroupDefaultPropertiesProvider {
+
+        Integer getMaxPlayerCountPerProxy();
+
+        Integer getMaxPlayerCount();
+
+        Integer getKeepFreeSlots();
+
+        Integer getMinAmount();
+
+        Integer getMaxAmount();
+
+        Integer getRam();
+
+        String getMotd();
+
+        Boolean isStatic();
+
+        Integer getPriority();
+
+        Collection<String> getServerGroups();
+
+        String getBaseName();
+
+        ProxyChooseStrategy getProxyChooseStrategy();
+
     }
 }

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
@@ -38,21 +39,23 @@ public class ProxyGroup implements Group {
 
     public void construct(Map<String, Object> properties) {
         try {
+            String name = (String) properties.get("name");
+            ProxyGroupProperties defaultProperties = new ProxyGroupProperties(name);
             construct(
-                    (String) properties.get("name"),
-                    ((Number) properties.getOrDefault("players-per-proxy", 500)).intValue(),
-                    ((Number) properties.getOrDefault("max-players", 100)).intValue(),
-                    ((Number) properties.getOrDefault("keep-free-slots", 100)).intValue(),
-                    ((Number) properties.getOrDefault("min-amount", 0)).intValue(),
-                    ((Number) properties.getOrDefault("max-amount", 3)).intValue(),
-                    ((Number) properties.getOrDefault("ram", 1024)).intValue(),
-                    (String) properties.getOrDefault("motd", "&6This is a &bTimo&7Cloud &6Proxy\n&aChange this MOTD in your config or per command"),
-                    (Boolean) properties.getOrDefault("static", false),
-                    ((Number) properties.getOrDefault("priority", 1)).intValue(),
-                    (Collection<String>) properties.getOrDefault("serverGroups", Collections.singletonList("*")),
-                    (String) properties.getOrDefault("base", null),
-                    (String) properties.getOrDefault("proxy-choose-strategy", "BALANCE"),
-                    (Collection<String>) properties.getOrDefault("hostNames", Collections.singletonList("*")));
+                    name,
+                    ((Number) properties.getOrDefault("players-per-proxy", defaultProperties.getMaxPlayerCountPerProxy())).intValue(),
+                    ((Number) properties.getOrDefault("max-players", defaultProperties.getMaxPlayerCount())).intValue(),
+                    ((Number) properties.getOrDefault("keep-free-slots", defaultProperties.getKeepFreeSlots())).intValue(),
+                    ((Number) properties.getOrDefault("min-amount", defaultProperties.getMinAmount())).intValue(),
+                    ((Number) properties.getOrDefault("max-amount", defaultProperties.getMaxAmount())).intValue(),
+                    ((Number) properties.getOrDefault("ram", defaultProperties.getRam())).intValue(),
+                    (String) properties.getOrDefault("motd", defaultProperties.getMotd()),
+                    (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
+                    ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
+                    (Collection<String>) properties.getOrDefault("serverGroups", defaultProperties.getServerGroups()),
+                    (String) properties.getOrDefault("base", defaultProperties.getBaseName()),
+                    (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
+                    (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();

@@ -33,4 +33,5 @@ public class AddressedPluginMessage {
     public PluginMessage getMessage() {
         return message;
     }
+
 }

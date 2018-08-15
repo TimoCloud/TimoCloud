@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api;
 
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 
 import java.util.Collection;
@@ -89,4 +90,10 @@ public interface TimoCloudUniversalAPI {
      * @return An APIRequestFuture being completed once the group has been created
      */
     APIRequestFuture<ServerGroupObject> createServerGroup(ServerGroupProperties properties);
+
+    /**
+     * @param properties The group's properties
+     * @return An APIRequestFuture being completed once the group has been created
+     */
+    APIRequestFuture<ProxyGroupObject> createProxyGroup(ProxyGroupProperties properties);
 }

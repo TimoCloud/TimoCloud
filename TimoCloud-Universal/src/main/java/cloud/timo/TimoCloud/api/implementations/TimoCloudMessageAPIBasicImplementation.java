@@ -9,7 +9,6 @@ import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
     public void sendMessage(AddressedPluginMessage message) {
         TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType("PLUGIN_MESSAGE")
-                .setData(PluginMessageSerializer.serialize(message))
+                .setData(message)
                 .toString());
     }
 

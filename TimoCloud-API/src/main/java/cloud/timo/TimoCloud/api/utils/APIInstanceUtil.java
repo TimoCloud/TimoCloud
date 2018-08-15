@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api.utils;
 
 import cloud.timo.TimoCloud.api.*;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
+import cloud.timo.TimoCloud.api.internal.TimoCloudInternalImplementationAPI;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalMessageAPI;
 
 import java.lang.reflect.Field;
@@ -46,6 +47,12 @@ public class APIInstanceUtil {
 
     public static void setInternalMessageInstance(TimoCloudInternalMessageAPI instance) throws NoSuchFieldException, IllegalAccessException{
         Field field = TimoCloudInternalAPI.class.getDeclaredField("internalMessageAPI");
+        field.setAccessible(true);
+        field.set(null, instance);
+    }
+
+    public static void setInternalImplementationAPIInstance(TimoCloudInternalImplementationAPI instance) throws NoSuchFieldException, IllegalAccessException {
+        Field field = TimoCloudInternalAPI.class.getDeclaredField("internalImplementationAPI");
         field.setAccessible(true);
         field.set(null, instance);
     }
