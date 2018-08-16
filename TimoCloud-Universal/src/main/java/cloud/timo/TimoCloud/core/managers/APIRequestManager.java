@@ -18,7 +18,10 @@ import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 
 // Next free error code: 14
 public class APIRequestManager implements MessageListener {
@@ -40,7 +43,7 @@ public class APIRequestManager implements MessageListener {
                         case G_CREATE_SERVER_GROUP: {
                             ServerGroupProperties serverGroupProperties;
                             try {
-                                serverGroupProperties = JsonConverter.convertMapToObject((Map) data.get("value"), ServerGroupProperties.class);
+                                serverGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ServerGroupProperties.class);
                             } catch (Exception e) {
                                 throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Arrays.asList(data.get("value")));
                             }
@@ -60,8 +63,8 @@ public class APIRequestManager implements MessageListener {
                             Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
 
-                            if (TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(name) != null) {
-                                throw new APIRequestError("A ServerGroup with this name already exists", 12, Arrays.asList(name));
+                            if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
+                                throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
                             }
 
                             ServerGroup serverGroup = new ServerGroup(
@@ -82,7 +85,7 @@ public class APIRequestManager implements MessageListener {
                         case G_CREATE_PROXY_GROUP: {
                             ProxyGroupProperties proxyGroupProperties;
                             try {
-                                proxyGroupProperties = JsonConverter.convertMapToObject((Map) data.get("value"), ProxyGroupProperties.class);
+                                proxyGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ProxyGroupProperties.class);
                             } catch (Exception e) {
                                 throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Arrays.asList(data.get("value")));
                             }
@@ -115,8 +118,8 @@ public class APIRequestManager implements MessageListener {
                             Collection<String> hostNames = proxyGroupProperties.getHostNames();
                             validateNotNull(hostNames, "HostNames");
 
-                            if (TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(name) != null) {
-                                throw new APIRequestError("A ProxyGroup with this name already exists", 13, Arrays.asList(name));
+                            if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
+                                throw new APIRequestError("A group with this name already exists", 13, Arrays.asList(name));
                             }
 
                             ProxyGroup proxyGroup = new ProxyGroup(

@@ -6,8 +6,6 @@ import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 import com.google.gson.Gson;
 
-import java.util.Map;
-
 public class APIResponse<T> {
 
     private static final Gson gson = new Gson();
@@ -62,6 +60,6 @@ public class APIResponse<T> {
     }
 
     public static APIResponse fromPluginMessage(PluginMessage pluginMessage) {
-        return JsonConverter.convertMapToObject((Map) pluginMessage.get("data"), APIResponse.class);
+        return JsonConverter.convertMapIfNecessary(pluginMessage.get("data"), APIResponse.class);
     }
 }

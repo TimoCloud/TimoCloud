@@ -74,6 +74,7 @@ public class ServerGroup implements Group {
         setMaxAmount(maxAmount);
         setRam(ram);
         setStatic(isStatic);
+        setPriority(priority);
         setBaseName(baseName);
         setSortOutStates(sortOutStates);
         if (isStatic() && getBaseName() == null) {

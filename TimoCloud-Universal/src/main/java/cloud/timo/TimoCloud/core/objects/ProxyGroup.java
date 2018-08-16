@@ -242,9 +242,19 @@ public class ProxyGroup implements Group {
         this.priority = priority;
     }
 
+    /**
+     * @return Returns the names of the server-groups enabled for this proxy group, "*" if all server groups are enabled
+     */
+    public Collection<String> getServerGroupNames() {
+        return serverGroups;
+    }
+
+    /**
+     * @return Returns the server-groups enabled for this proxy group
+     */
     public Collection<ServerGroup> getServerGroups() {
         if (allServerGroups) return TimoCloudCore.getInstance().getInstanceManager().getServerGroups();
-        return serverGroups
+        return getServerGroupNames()
                 .stream()
                 .map(name -> TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(name))
                 .filter(Objects::nonNull)

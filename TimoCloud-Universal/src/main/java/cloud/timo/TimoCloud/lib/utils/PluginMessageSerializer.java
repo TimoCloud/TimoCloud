@@ -8,7 +8,7 @@ import java.util.Map;
 public class PluginMessageSerializer {
 
     public static AddressedPluginMessage deserialize(Map map) {
-        return JsonConverter.convertMapToObject(map, AddressedPluginMessage.class);
+        return JsonConverter.convertMapIfNecessary(map, AddressedPluginMessage.class);
     }
 
 }
