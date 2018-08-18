@@ -16,7 +16,7 @@ public enum APIRequestType {
     G_CREATE_PROXY_GROUP                (GENERAL),
 
     PG_SET_MAX_PLAYER_COUNT             (PROXY_GROUP),
-    PG_SET_MAX_PLAYER_CONT_PER_PROXY    (PROXY_GROUP),
+    PG_SET_MAX_PLAYER_COUNT_PER_PROXY   (PROXY_GROUP),
     PG_SET_KEEP_FREE_SLOTS              (PROXY_GROUP),
     PG_SET_MIN_AMOUNT                   (PROXY_GROUP),
     PG_SET_MAX_AMOUNT                   (PROXY_GROUP),

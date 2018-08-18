@@ -107,7 +107,7 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
 
     @Override
     public APIRequestFuture stop() {
-        return new APIRequestImplementation(P_STOP, getName(), null).submit();
+        return new APIRequestImplementation(P_STOP, getName()).submit();
     }
 
     @Override

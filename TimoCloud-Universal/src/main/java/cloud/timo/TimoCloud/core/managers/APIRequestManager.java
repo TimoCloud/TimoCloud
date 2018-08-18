@@ -160,7 +160,7 @@ public class APIRequestManager implements MessageListener {
                             proxyGroup.setMaxPlayerCount(amount);
                             break;
                         }
-                        case PG_SET_MAX_PLAYER_CONT_PER_PROXY: {
+                        case PG_SET_MAX_PLAYER_COUNT_PER_PROXY: {
                             Integer amount = data.getInteger("value");
                             validateMinimum(amount, 0, "MaxPlayerCountPerProxy");
                             proxyGroup.setMaxPlayerCountPerProxy(amount);
@@ -181,7 +181,7 @@ public class APIRequestManager implements MessageListener {
                         case PG_SET_MAX_AMOUNT: {
                             Integer amount = data.getInteger("value");
                             validateMinimum(amount, 0, "MaxPlayerCount");
-                            proxyGroup.setMaxPlayerCount(amount);
+                            proxyGroup.setMaxAmount(amount);
                             break;
                         }
                         case PG_SET_RAM: {

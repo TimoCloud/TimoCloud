@@ -164,7 +164,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public APIRequestFuture stop() {
-        return new APIRequestImplementation(S_STOP, getName(), null).submit();
+        return new APIRequestImplementation(S_STOP, getName()).submit();
     }
 
     @Override

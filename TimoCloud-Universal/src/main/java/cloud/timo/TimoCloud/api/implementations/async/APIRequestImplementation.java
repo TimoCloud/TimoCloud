@@ -6,6 +6,7 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.async.APIRequestType;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,21 +18,28 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
     private String target;
     private Map data;
 
-    public APIRequestImplementation(APIRequestType type, String target, Map data) {
+    public APIRequestImplementation(APIRequestType type) {
         this.type = type;
-        this.target = target;
         id = generateId();
+    }
+
+    public APIRequestImplementation(APIRequestType type, String target, Map data) {
+        this(type);
+        this.target = target;
 
         this.data = data;
     }
 
     public APIRequestImplementation(APIRequestType type, String target, Object value) {
-        this.type = type;
+        this(type);
         this.target = target;
-        id = generateId();
 
         this.data = new HashMap();
         this.data.put("value", value);
+    }
+
+    public APIRequestImplementation(APIRequestType type, String target) {
+        this(type, target, new HashMap());
     }
 
     public APIRequestImplementation(APIRequestType type, Map data) {
@@ -39,15 +47,13 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
     }
 
     public APIRequestImplementation(APIRequestType type, Object value) {
-        this.type = type;
-        id = generateId();
+        this(type, new TypeMap().put("value", value));
         this.data = new HashMap();
-        this.data.put("value", value);
     }
 
     @Override
     public APIRequestFuture<T> submit() {
-        APIRequestFuture future = new APIRequestFutureImplementation(this);
+        APIRequestFuture<T> future = new APIRequestFutureImplementation<>(this);
 
         TimoCloudInternalAPI.getApiRequestStorage().addFuture(getId(), future);
         TimoCloudAPI.getMessageAPI().sendMessageToCore(generatePluginMessage(getData()));

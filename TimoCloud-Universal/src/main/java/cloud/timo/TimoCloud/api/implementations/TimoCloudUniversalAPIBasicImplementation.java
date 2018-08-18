@@ -188,12 +188,12 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     @Override
     public APIRequestFuture<ServerGroupObject> createServerGroup(ServerGroupProperties properties) {
-        return new APIRequestImplementation<ServerGroupObject>(G_CREATE_SERVER_GROUP, null, properties).submit();
+        return new APIRequestImplementation<ServerGroupObject>(G_CREATE_SERVER_GROUP, properties).submit();
     }
 
     @Override
     public APIRequestFuture<ProxyGroupObject> createProxyGroup(ProxyGroupProperties properties) {
-        return new APIRequestImplementation<ProxyGroupObject>(G_CREATE_PROXY_GROUP, null, properties).submit();
+        return new APIRequestImplementation<ProxyGroupObject>(G_CREATE_PROXY_GROUP, properties).submit();
     }
 
     public ObjectMapper getObjectMapper() {

@@ -84,7 +84,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
 
     @Override
     public APIRequestFuture setMaxPlayerCountPerProxy(int value) {
-        return new APIRequestImplementation(PG_SET_MAX_PLAYER_CONT_PER_PROXY, getName(), value).submit();
+        return new APIRequestImplementation(PG_SET_MAX_PLAYER_COUNT_PER_PROXY, getName(), value).submit();
     }
 
     @Override
