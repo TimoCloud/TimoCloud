@@ -30,7 +30,7 @@ public interface ProxyGroupObject {
      * Changes the group's maximum player count
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMaxPlayerCount(int value);
+    APIRequestFuture<Void> setMaxPlayerCount(int value);
 
     /**
      * @return The maximum player amount who can be online on one cord
@@ -41,7 +41,7 @@ public interface ProxyGroupObject {
      * Changes the group's maximum player count per proxy
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMaxPlayerCountPerProxy(int value);
+    APIRequestFuture<Void> setMaxPlayerCountPerProxy(int value);
 
     /**
      * @return The amount of player slots TimoCloud will keep free. If there are not enough free slots, a new proxy will be started.
@@ -52,7 +52,7 @@ public interface ProxyGroupObject {
      * Changes the group's amount of slots which should be kept free
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setKeepFreeSlots(int value);
+    APIRequestFuture<Void> setKeepFreeSlots(int value);
 
     /**
      * @return The minimum amount of proxies of this group that will be online
@@ -63,7 +63,7 @@ public interface ProxyGroupObject {
      * Changes the group's minimum instance amount
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMinAmount(int value);
+    APIRequestFuture<Void> setMinAmount(int value);
 
     /**
      * @return The maximum amount of proxies of this group that may be online
@@ -74,7 +74,7 @@ public interface ProxyGroupObject {
      * Changes the group's maximum instance amount
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMaxAmount(int value);
+    APIRequestFuture<Void> setMaxAmount(int value);
 
     /**
      * @return Maximum of ram a proxy of this group may use in megabytes
@@ -86,7 +86,7 @@ public interface ProxyGroupObject {
      * @param value The maximum amount of ram a proxy of this group may use
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setRam(int value);
+    APIRequestFuture<Void> setRam(int value);
 
     /**
      * @return The proxies' motd
@@ -97,7 +97,7 @@ public interface ProxyGroupObject {
      * Changes the group's motd
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setMotd(String value);
+    APIRequestFuture<Void> setMotd(String value);
 
     /**
      * If a group is static, servers will not be reset after restart. A static group can only start 1 server.
@@ -109,7 +109,7 @@ public interface ProxyGroupObject {
      * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setStatic(boolean value);
+    APIRequestFuture<Void> setStatic(boolean value);
 
     /**
      * @return The group's priority. Groups with higher priorities will be started sooner than groups with lower priorities.
@@ -120,7 +120,7 @@ public interface ProxyGroupObject {
      * Changes the group's priority
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setPriority(int value);
+    APIRequestFuture<Void> setPriority(int value);
 
     /**
      * @return The server groups connections to which are proxied by this BungeeCord instance.
@@ -137,7 +137,7 @@ public interface ProxyGroupObject {
      * @param value If null, a base will be selected dynamically whenever a new proxy gets started
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setBase(BaseObject value);
+    APIRequestFuture<Void> setBase(BaseObject value);
 
     /**
      * The ProxyChooseStrategy tells TimoCloudCord what proxy it should choose when a player wants to join a proxy group
@@ -149,7 +149,7 @@ public interface ProxyGroupObject {
      * Changes the group's proxy choose strategy
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setProxyChooseStrategy(ProxyChooseStrategy value);
+    APIRequestFuture<Void> setProxyChooseStrategy(ProxyChooseStrategy value);
 
     /**
      * If using multiple proxies and TimoCloudCord, the hostnames specify which hostnames belong to this proxy group
@@ -160,5 +160,5 @@ public interface ProxyGroupObject {
      * Changes the group's hostnames
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setHostNames(Collection<String> value);
+    APIRequestFuture<Void> setHostNames(Collection<String> value);
 }

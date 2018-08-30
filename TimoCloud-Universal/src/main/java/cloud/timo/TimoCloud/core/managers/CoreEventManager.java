@@ -13,12 +13,13 @@ import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 
 public class CoreEventManager implements Listener {
 
     public void fireEvent(Event event) {
         Message message = Message.create()
-                .setType("EVENT_FIRED")
+                .setType(MessageType.EVENT_FIRED)
                 .set("eventType", event.getType().name())
                 .setData(eventToJSON(event));
         for (Communicatable communicatable : TimoCloudCore.getInstance().getInstanceManager().getAllCommunicatableInstances()) {

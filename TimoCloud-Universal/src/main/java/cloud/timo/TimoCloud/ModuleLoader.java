@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
+import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionParser;
@@ -141,6 +142,7 @@ public class ModuleLoader {
                     e.printStackTrace();
                 }
             }));
+            TimoCloudLogger.setLogger(module);
             module.load(options);
         } catch (Exception e) {
             severe("Error while loading module " + moduleType.name() + ": ");

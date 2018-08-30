@@ -8,7 +8,11 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.json.JsonConverter;
+import cloud.timo.TimoCloud.lib.log.LogEntry;
+import cloud.timo.TimoCloud.lib.log.LogStorage;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
@@ -32,6 +36,7 @@ public class Proxy implements Instance, Communicatable {
     private boolean registered;
     private DnsRecord dnsRecord;
     private Set<Server> registeredServers;
+    private LogStorage logStorage;
 
     private DoAfterAmount templateUpdate;
 
@@ -43,6 +48,7 @@ public class Proxy implements Instance, Communicatable {
         this.address = new InetSocketAddress(base.getAddress(), 0);
         this.onlinePlayers = new HashSet<>();
         this.registeredServers = new HashSet<>();
+        this.logStorage = new LogStorage();
     }
 
     @Override
@@ -66,9 +72,9 @@ public class Proxy implements Instance, Communicatable {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                getBase().sendMessage(Message.create().setType("PROXY_STOPPED").setData(getId()));
+                getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
             }
-        }, 300000);
+        }, 5*60*1000);
     }
 
     @Override
@@ -76,7 +82,7 @@ public class Proxy implements Instance, Communicatable {
         try {
             starting = true;
             Message message = Message.create()
-                    .setType("START_PROXY")
+                    .setType(MessageType.BASE_START_PROXY)
                     .set("name", getName())
                     .set("id", getId())
                     .set("group", getGroup().getName())
@@ -118,7 +124,7 @@ public class Proxy implements Instance, Communicatable {
 
     public void registerServer(Server server) {
         sendMessage(Message.create()
-                .setType("ADD_SERVER")
+                .setType(MessageType.PROXY_ADD_SERVER)
                 .set("name", server.getName())
                 .set("address", server.getAddress().getAddress().getHostAddress())
                 .set("port", server.getPort()));
@@ -127,7 +133,7 @@ public class Proxy implements Instance, Communicatable {
 
     public void unregisterServer(Server server) {
         sendMessage(Message.create()
-                .setType("REMOVE_SERVER")
+                .setType(MessageType.PROXY_REMOVE_SERVER)
                 .setData(server.getName()));
         registeredServers.remove(server);
     }
@@ -147,26 +153,29 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void onMessage(Message message) {
-        String type = (String) message.get("type");
+        MessageType type = message.getType();
         Object data = message.get("data");
         switch (type) {
-            case "STOP_PROXY":
+            case PROXY_STOP:
                 stop();
                 break;
-            case "PROXY_STARTED":
+            case BASE_PROXY_STARTED:
                 setPort(((Number) message.get("port")).intValue());
                 break;
-            case "PROXY_NOT_STARTED":
+            case BASE_PROXY_NOT_STARTED:
                 //unregister();
                 break;
-            case "EXECUTE_COMMAND":
+            case PROXY_EXECUTE_COMMAND:
                 executeCommand((String) data);
                 break;
-            case "SET_PLAYER_COUNT":
+            case PROXY_SET_PLAYER_COUNT:
                 this.onlinePlayerCount = ((Number) data).intValue();
                 break;
-            case "TRANSFER_FINISHED":
+            case PROXY_TRANSFER_FINISHED:
                 getTemplateUpdate().addOne();
+                break;
+            case PROXY_LOG_ENTRY:
+                logStorage.addEntry(JsonConverter.convertMapIfNecessary(data, LogEntry.class));
                 break;
             default:
                 sendMessage(message);
@@ -195,12 +204,12 @@ public class Proxy implements Instance, Communicatable {
     @Override
     public void onHandshakeSuccess() {
         sendMessage(Message.create()
-                .setType("HANDSHAKE_SUCCESS"));
+                .setType(MessageType.PROXY_HANDSHAKE_SUCCESS));
     }
 
     public void executeCommand(String command) {
         sendMessage(Message.create()
-                .setType("EXECUTE_COMMAND")
+                .setType(MessageType.PROXY_EXECUTE_COMMAND)
                 .setData(command));
     }
 
@@ -271,6 +280,10 @@ public class Proxy implements Instance, Communicatable {
 
     public Set<Server> getRegisteredServers() {
         return registeredServers;
+    }
+
+    public LogStorage getLogStorage() {
+        return logStorage;
     }
 
     public DoAfterAmount getTemplateUpdate() {

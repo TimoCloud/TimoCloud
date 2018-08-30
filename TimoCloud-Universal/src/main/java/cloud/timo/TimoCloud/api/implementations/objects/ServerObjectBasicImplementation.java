@@ -11,7 +11,10 @@ import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
+import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -20,6 +23,7 @@ import java.util.List;
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @JsonIgnoreProperties({"messageClientAddress"})
+@NoArgsConstructor
 public class ServerObjectBasicImplementation implements ServerObject, Comparable {
 
     private String name;
@@ -35,9 +39,6 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     private String base;
     private InetSocketAddress socketAddress;
     private MessageClientAddress messageClientAddress;
-
-    public ServerObjectBasicImplementation() {
-    }
 
     public ServerObjectBasicImplementation(String name, String id, String group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
         this.name = name;
@@ -83,9 +84,9 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public APIRequestFuture setState(String state) {
+    public APIRequestFuture<Void> setState(String state) {
         this.state = state;
-        return new APIRequestImplementation(S_SET_STATE, getName(), state).submit();
+        return new APIRequestImplementation<Void>(S_SET_STATE, getId(), state).submit();
     }
 
     @Override
@@ -94,9 +95,9 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public APIRequestFuture setExtra(String extra) {
+    public APIRequestFuture<Void> setExtra(String extra) {
         this.extra = extra;
-        return new APIRequestImplementation(S_SET_EXTRA, getName(), extra).submit();
+        return new APIRequestImplementation<Void>(S_SET_EXTRA, getId(), extra).submit();
     }
 
     @Override
@@ -157,19 +158,39 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
-    public APIRequestFuture executeCommand(String command) {
-        return new APIRequestImplementation(S_EXECUTE_COMMAND, getName(), command).submit();
-
+    public APIRequestFuture<Void> executeCommand(String command) {
+        return new APIRequestImplementation<Void>(S_EXECUTE_COMMAND, getId(), command).submit();
     }
 
     @Override
-    public APIRequestFuture stop() {
-        return new APIRequestImplementation(S_STOP, getName()).submit();
+    public APIRequestFuture<Void> stop() {
+        return new APIRequestImplementation<Void>(S_STOP, getId()).submit();
     }
 
     @Override
     public void sendPluginMessage(PluginMessage message) {
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(getMessageAddress(), message));
+    }
+
+    @Override
+    public APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime) {
+        return new APIRequestImplementation<LogFractionObject>(
+                S_GET_LOG_FRACTION,
+                getId(),
+                new TypeMap()
+                        .put("startTime", startTime)
+                        .put("endTime", endTime))
+                .submit();
+    }
+
+    @Override
+    public APIRequestFuture<LogFractionObject> getLogFraction(long startTime) {
+        return new APIRequestImplementation<LogFractionObject>(
+                S_GET_LOG_FRACTION,
+                getId(),
+                new TypeMap()
+                        .put("startTime", startTime))
+                .submit();
     }
 
     @Override

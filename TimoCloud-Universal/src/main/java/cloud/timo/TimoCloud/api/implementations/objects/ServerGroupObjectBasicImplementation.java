@@ -6,12 +6,14 @@ import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Set;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
+@NoArgsConstructor
 public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     private Set<ServerObject> servers;
@@ -22,12 +24,6 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     private boolean isStatic;
     private String base;
     private Set<String> sortOutStates;
-
-    /**
-     * Do not use this - this will be done by TimoCloud
-     */
-    public ServerGroupObjectBasicImplementation() {
-    }
 
     /**
      * Do not use this - this will be done by TimoCloud
@@ -59,8 +55,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setOnlineAmount(int value) {
-        return new APIRequestImplementation(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
+    public APIRequestFuture<Void> setOnlineAmount(int value) {
+        return new APIRequestImplementation<Void>(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -69,8 +65,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMaxAmount(int value) {
-        return new APIRequestImplementation(SG_SET_MAX_AMOUNT, getName(), value).submit();
+    public APIRequestFuture<Void> setMaxAmount(int value) {
+        return new APIRequestImplementation<Void>(SG_SET_MAX_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -79,8 +75,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setRam(int value) {
-        return new APIRequestImplementation(SG_SET_RAM, getName(), value).submit();
+    public APIRequestFuture<Void> setRam(int value) {
+        return new APIRequestImplementation<Void>(SG_SET_RAM, getName(), value).submit();
     }
 
     @Override
@@ -89,8 +85,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setStatic(boolean value) {
-        return new APIRequestImplementation(SG_SET_STATIC, getName(), value).submit();
+    public APIRequestFuture<Void> setStatic(boolean value) {
+        return new APIRequestImplementation<Void>(SG_SET_STATIC, getName(), value).submit();
     }
 
     @Override
@@ -99,8 +95,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setBase(BaseObject value) {
-        return new APIRequestImplementation(SG_SET_BASE, getName(), value).submit();
+    public APIRequestFuture<Void> setBase(BaseObject value) {
+        return new APIRequestImplementation<Void>(SG_SET_BASE, getName(), value).submit();
     }
 
     @Override
@@ -109,8 +105,8 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     }
 
     @Override
-    public APIRequestFuture setSortOutStates(Collection<String> value) {
-        return new APIRequestImplementation(SG_SET_SORT_OUT_STATES, getName(), value).submit();
+    public APIRequestFuture<Void> setSortOutStates(Collection<String> value) {
+        return new APIRequestImplementation<Void>(SG_SET_SORT_OUT_STATES, getName(), value).submit();
     }
 
 }

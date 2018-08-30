@@ -24,17 +24,18 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
-import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
+import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.lib.log.utils.LogInjectionUtil;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TimoCloudBungee extends Plugin {
+public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     private static TimoCloudBungee instance;
     private BungeeFileManager fileManager;
@@ -49,20 +50,19 @@ public class TimoCloudBungee extends Plugin {
     private String prefix;
     private boolean shuttingDown = false;
 
+    @Override
     public void info(String message) {
         getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
     }
 
+    @Override
     public void warning(String message) {
         getLogger().warning(ChatColor.translateAlternateColorCodes('&', " " + message));
     }
 
+    @Override
     public void severe(String message) {
         getLogger().severe(ChatColor.translateAlternateColorCodes('&', " &c" + message));
-    }
-
-    public void severe(Throwable throwable) {
-        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override
@@ -78,7 +78,8 @@ public class TimoCloudBungee extends Plugin {
             while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                 try {
                     Thread.sleep(50); // Wait until we get the API data
-                } catch (Exception e) {}
+                } catch (Exception e) {
+                }
             }
             info("&aSuccessfully started TimoCloudBungee!");
         } catch (Exception e) {
@@ -94,6 +95,8 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void makeInstances() throws Exception {
+        TimoCloudLogger.setLogger(this);
+
         fileManager = new BungeeFileManager();
         lobbyManager = new LobbyManager();
         eventManager = new BungeeEventManager();
@@ -148,7 +151,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void onSocketConnect() {
-        getSocketMessageManager().sendMessage(Message.create().setType("PROXY_HANDSHAKE").setTarget(getProxyId()));
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAE).setTarget(getProxyId()));
     }
 
     public void onSocketDisconnect() {
@@ -157,6 +160,11 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void onHandshakeSuccess() {
+        LogInjectionUtil.injectSystemOutAndErr(logEntry ->
+                getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.PROXY_LOG_ENTRY)
+                        .setData(logEntry))
+        );
         everySecond();
     }
 
@@ -170,7 +178,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage(Message.create().setType("GET_API_DATA"));
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
     private void sendEverything() {
@@ -178,7 +186,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     public void sendPlayerCount() {
-        getSocketMessageManager().sendMessage(Message.create().setType("SET_PLAYER_COUNT").setData(getProxy().getOnlineCount()));
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_SET_PLAYER_COUNT).setData(getProxy().getOnlineCount()));
     }
 
     private void registerListeners() {

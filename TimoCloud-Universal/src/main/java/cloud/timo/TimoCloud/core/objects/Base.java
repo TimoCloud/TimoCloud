@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.BaseObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;
@@ -59,10 +60,10 @@ public class Base implements Communicatable {
 
     @Override
     public void onMessage(Message message) {
-        String type = (String) message.get("type");
+        MessageType type = message.getType();
         Object data = message.get("data");
         switch (type) {
-            case "RESOURCES":
+            case BASE_RESOURCES:
                 Map map = (Map) data;
                 setReady((boolean) map.get("ready"));
                 int maxRam = ((Number) map.get("maxRam")).intValue();
@@ -84,7 +85,7 @@ public class Base implements Communicatable {
 
     @Override
     public void onHandshakeSuccess() {
-        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
+        sendMessage(Message.create().setType(MessageType.BASE_HANDSHAKE_SUCCESS));
     }
     public String getName() {
         return name;

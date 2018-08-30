@@ -73,7 +73,7 @@ public interface ServerGroupObject {
      * @param value If null, a base will be selected dynamically whenever a new server gets started
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setBase(BaseObject value);
+    APIRequestFuture<Void> setBase(BaseObject value);
 
     /**
      * If a state of a server is included in the list of sortOut states, TimoCloud does not consider the server as active.
@@ -86,5 +86,5 @@ public interface ServerGroupObject {
      * Changes the sort-out states
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture setSortOutStates(Collection<String> value);
+    APIRequestFuture<Void> setSortOutStates(Collection<String> value);
 }

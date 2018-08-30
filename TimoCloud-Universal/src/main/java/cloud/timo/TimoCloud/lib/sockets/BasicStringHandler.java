@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.lib.sockets;
 
+import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -38,7 +39,7 @@ public abstract class BasicStringHandler extends SimpleChannelInboundHandler<Str
                         String parsed = getParsed(channel).toString();
                         handleMessage(Message.createFromJsonString(parsed), parsed, channel);
                     } catch (Exception e) {
-                        System.err.println("Error while parsing JSON message: " + getParsed(channel));
+                        TimoCloudLogger.getLogger().severe("Error while parsing JSON message: " + getParsed(channel));
                         e.printStackTrace();
                     }
                     parsed.put(channel, new StringBuilder());

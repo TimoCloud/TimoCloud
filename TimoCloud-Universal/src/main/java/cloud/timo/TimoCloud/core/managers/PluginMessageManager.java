@@ -6,6 +6,7 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 
 public class PluginMessageManager {
 
@@ -30,7 +31,7 @@ public class PluginMessageManager {
             return;
         }
         communicatable.sendMessage(Message.create()
-                .setType("PLUGIN_MESSAGE")
+                .setType(MessageType.ON_PLUGIN_MESSAGE)
                 .setData(message));
     }
 }

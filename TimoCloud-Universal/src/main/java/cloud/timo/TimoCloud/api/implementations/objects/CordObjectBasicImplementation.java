@@ -3,17 +3,17 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.api.objects.CordObject;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
+@NoArgsConstructor
 public class CordObjectBasicImplementation implements CordObject {
 
     private String name;
     private InetSocketAddress address;
     private boolean connected;
-
-    public CordObjectBasicImplementation() {}
 
     public CordObjectBasicImplementation(String name, InetSocketAddress address, boolean connected) {
         this.name = name;

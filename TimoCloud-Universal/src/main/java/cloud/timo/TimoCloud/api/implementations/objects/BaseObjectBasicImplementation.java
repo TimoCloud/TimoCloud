@@ -4,11 +4,13 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 public class BaseObjectBasicImplementation implements BaseObject {
 
     private String name;
@@ -20,8 +22,6 @@ public class BaseObjectBasicImplementation implements BaseObject {
     private boolean ready;
     private Set<String> servers;
     private Set<String> proxies;
-
-    public BaseObjectBasicImplementation() {}
 
     public BaseObjectBasicImplementation(String name, InetAddress ipAddress, Double cpuLoad, int freeRam, int maxRam, Boolean connected, Boolean ready, Set<String> servers, Set<String> proxies) {
         this.name = name;

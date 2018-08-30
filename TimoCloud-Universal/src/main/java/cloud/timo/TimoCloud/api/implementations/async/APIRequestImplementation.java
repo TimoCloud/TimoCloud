@@ -66,7 +66,7 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
 
     private PluginMessage generatePluginMessage(Map data) {
         return new PluginMessage("TIMOCLOUD_API_REQUEST")
-                .set("type", getType().name())
+                .setType(getType().name())
                 .set("id", getId())
                 .set("target", getTarget())
                 .set("data", data);

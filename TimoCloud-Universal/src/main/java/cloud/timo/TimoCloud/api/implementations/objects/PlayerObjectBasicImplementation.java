@@ -5,10 +5,12 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.util.UUID;
 
+@NoArgsConstructor
 public class PlayerObjectBasicImplementation implements PlayerObject {
 
     private String name;
@@ -17,8 +19,6 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
     private String proxy;
     private InetAddress ipAddress;
     private boolean online;
-
-    public PlayerObjectBasicImplementation() {}
 
     public PlayerObjectBasicImplementation(String name, UUID uuid, String server, String proxy, InetAddress ipAddress, boolean online) {
         this.name = name;

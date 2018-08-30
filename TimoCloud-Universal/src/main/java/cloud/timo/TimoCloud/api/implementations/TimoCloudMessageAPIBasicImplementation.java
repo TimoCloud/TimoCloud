@@ -8,7 +8,9 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
     @Override
     public void sendMessage(AddressedPluginMessage message) {
         TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
-                .setType("PLUGIN_MESSAGE")
+                .setType(MessageType.SEND_PLUGIN_MESSAGE)
                 .setData(message)
                 .toString());
     }
@@ -73,7 +75,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
             try {
                 listener.getListener().onPluginMessage(message);
             } catch (Exception e) {
-                System.err.println("Uncaught exception while calling method onPluginMessage: ");
+                TimoCloudLogger.getLogger().severe("Uncaught exception while calling method onPluginMessage: ");
                 e.printStackTrace();
             }
         }

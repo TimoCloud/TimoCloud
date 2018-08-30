@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.objects;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -35,7 +36,7 @@ public interface ServerObject {
      * @param state The state, e.g. 'INGAME' or 'FULL'
      * @return A future being completed when the state was changed
      */
-    APIRequestFuture setState(String state);
+    APIRequestFuture<Void> setState(String state);
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
@@ -46,7 +47,7 @@ public interface ServerObject {
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
      * @return A future being completed when the extra was changed
      */
-    APIRequestFuture setExtra(String extra);
+    APIRequestFuture<Void> setExtra(String extra);
 
     /**
      * If a server's map is assigned randomly, the map name will be the part of the map directory's name after the '_'. E.g. 'BedWars_VILLAGE' becomes 'VILLAGE'. If no random maps exists, the 'defaultMapName' property from config.yml will be used.
@@ -108,17 +109,30 @@ public interface ServerObject {
      * @param command <b>Without leading /</b>
      * @return A future being completed when the command was executed
      */
-    APIRequestFuture executeCommand(String command);
+    APIRequestFuture<Void> executeCommand(String command);
 
     /**
      * Stops the server
      * @return A future being completed when the server was stopped
      */
-    APIRequestFuture stop();
+    APIRequestFuture<Void> stop();
 
     /**
      * Send a plugin message to the server
      * @param message The message which shall be sent
      */
     void sendPluginMessage(PluginMessage message);
+
+    /**
+     * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the server's start)
+     * @param endTime The timestamp at which the record of the log should end
+     * @return A LogFractionObject containing all log entries within the given slot of time
+     */
+    APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime);
+
+    /**
+     * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the server's start)
+     * @return A LogFractionObject containing all log entries after the given start time
+     */
+    APIRequestFuture<LogFractionObject> getLogFraction(long startTime);
 }

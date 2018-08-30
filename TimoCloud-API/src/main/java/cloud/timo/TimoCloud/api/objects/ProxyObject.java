@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.objects;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -50,12 +51,12 @@ public interface ProxyObject {
     InetSocketAddress getSocketAddress();
 
     /**
-     * @return The server's IP address
+     * @return The proxy's IP address
      */
     InetAddress getIpAddress();
 
     /**
-     * @return The server's port
+     * @return The proxy's port
      */
     int getPort();
 
@@ -65,21 +66,34 @@ public interface ProxyObject {
     MessageClientAddress getMessageAddress();
 
     /**
-     * Executes the given command as ConsoleSender on the server
+     * Executes the given command as ConsoleSender on the proxy
      * @param command Without leading '/'
      * @return A future being completed when the command was executed
      */
-    APIRequestFuture executeCommand(String command);
+    APIRequestFuture<Void> executeCommand(String command);
 
     /**
-     * Stops the server
-     * @return A future being completed when the server was stopped
+     * Stops the proxy
+     * @return A future being completed when the proxy was stopped
      */
-    APIRequestFuture stop();
+    APIRequestFuture<Void> stop();
 
     /**
      * Send a plugin message to the proxy
      * @param message The message which shall be sent
      */
     void sendPluginMessage(PluginMessage message);
+
+    /**
+     * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the proxy's start)
+     * @param endTime The timestamp at which the record of the log should end
+     * @return A LogFractionObject containing all log entries within the given slot of time
+     */
+    APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime);
+
+    /**
+     * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the proxy's start)
+     * @return A LogFractionObject containing all log entries after the given start time
+     */
+    APIRequestFuture<LogFractionObject> getLogFraction(long startTime);
 }

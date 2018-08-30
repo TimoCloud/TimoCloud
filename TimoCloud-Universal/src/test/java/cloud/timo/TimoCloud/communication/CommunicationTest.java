@@ -20,6 +20,7 @@ import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import io.netty.channel.Channel;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -201,7 +202,7 @@ public class CommunicationTest extends TimoCloudTest {
 
     private Message anyMessage() {
         return Message.create()
-                .setType("TEST_TYPE")
+                .setType(MessageType.API_DATA)
                 .setTarget(UUID.randomUUID().toString())
                 .set("test", "TEST")
                 .setData(Message.create()

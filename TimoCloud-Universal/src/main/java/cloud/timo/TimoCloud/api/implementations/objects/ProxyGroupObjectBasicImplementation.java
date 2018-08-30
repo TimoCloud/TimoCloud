@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
+import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
+@NoArgsConstructor
 public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
 
     private String name;
@@ -29,9 +31,6 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     private String base;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
-
-    public ProxyGroupObjectBasicImplementation() {
-    }
 
     public ProxyGroupObjectBasicImplementation(String name, Collection<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String base, String proxyChooseStrategy, Collection<String> hostNames) {
         this.name = name;
@@ -73,8 +72,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMaxPlayerCount(int value) {
-        return new APIRequestImplementation(PG_SET_MAX_PLAYER_COUNT, getName(), value).submit();
+    public APIRequestFuture<Void> setMaxPlayerCount(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_MAX_PLAYER_COUNT, getName(), value).submit();
     }
 
     @Override
@@ -83,8 +82,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMaxPlayerCountPerProxy(int value) {
-        return new APIRequestImplementation(PG_SET_MAX_PLAYER_COUNT_PER_PROXY, getName(), value).submit();
+    public APIRequestFuture<Void> setMaxPlayerCountPerProxy(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_MAX_PLAYER_COUNT_PER_PROXY, getName(), value).submit();
     }
 
     @Override
@@ -93,8 +92,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setKeepFreeSlots(int value) {
-        return new APIRequestImplementation(PG_SET_KEEP_FREE_SLOTS, getName(), value).submit();
+    public APIRequestFuture<Void> setKeepFreeSlots(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_KEEP_FREE_SLOTS, getName(), value).submit();
     }
 
     @Override
@@ -103,8 +102,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMinAmount(int value) {
-        return new APIRequestImplementation(PG_SET_MIN_AMOUNT, getName(), value).submit();
+    public APIRequestFuture<Void> setMinAmount(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_MIN_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -113,8 +112,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMaxAmount(int value) {
-        return new APIRequestImplementation(PG_SET_MAX_AMOUNT, getName(), value).submit();
+    public APIRequestFuture<Void> setMaxAmount(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_MAX_AMOUNT, getName(), value).submit();
     }
 
     @Override
@@ -123,8 +122,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setRam(int value) {
-        return new APIRequestImplementation(PG_SET_RAM, getName(), value).submit();
+    public APIRequestFuture<Void> setRam(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_RAM, getName(), value).submit();
     }
 
     @Override
@@ -133,8 +132,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setMotd(String value) {
-        return new APIRequestImplementation(PG_SET_MOTD, getName(), value).submit();
+    public APIRequestFuture<Void> setMotd(String value) {
+        return new APIRequestImplementation<Void>(PG_SET_MOTD, getName(), value).submit();
     }
 
     @Override
@@ -143,8 +142,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setStatic(boolean value) {
-        return new APIRequestImplementation(PG_SET_STATIC, getName(), value).submit();
+    public APIRequestFuture<Void> setStatic(boolean value) {
+        return new APIRequestImplementation<Void>(PG_SET_STATIC, getName(), value).submit();
     }
 
     @Override
@@ -153,8 +152,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setPriority(int value) {
-        return new APIRequestImplementation(PG_SET_PRIORITY, getName(), value).submit();
+    public APIRequestFuture<Void> setPriority(int value) {
+        return new APIRequestImplementation<Void>(PG_SET_PRIORITY, getName(), value).submit();
     }
 
     @Override
@@ -168,8 +167,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setBase(BaseObject value) {
-        return new APIRequestImplementation(PG_SET_BASE, getName(), value).submit();
+    public APIRequestFuture<Void> setBase(BaseObject value) {
+        return new APIRequestImplementation<Void>(PG_SET_BASE, getName(), value).submit();
     }
 
     @Override
@@ -178,8 +177,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setProxyChooseStrategy(ProxyChooseStrategy value) {
-        return new APIRequestImplementation(PG_SET_PROXY_CHOOSE_STRATEGY, getName(), value).submit();
+    public APIRequestFuture<Void> setProxyChooseStrategy(ProxyChooseStrategy value) {
+        return new APIRequestImplementation<Void>(PG_SET_PROXY_CHOOSE_STRATEGY, getName(), value).submit();
     }
 
     @Override
@@ -188,7 +187,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     }
 
     @Override
-    public APIRequestFuture setHostNames(Collection<String> value) {
-        return new APIRequestImplementation(PG_SET_HOST_NAMES, getName(), value).submit();
+    public APIRequestFuture<Void> setHostNames(Collection<String> value) {
+        return new APIRequestImplementation<Void>(PG_SET_HOST_NAMES, getName(), value).submit();
     }
 }

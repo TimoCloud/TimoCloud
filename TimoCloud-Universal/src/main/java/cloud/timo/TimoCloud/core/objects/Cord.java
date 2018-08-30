@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;
@@ -49,7 +50,7 @@ public class Cord implements Communicatable {
 
     @Override
     public void onMessage(Message message) {
-        String type = (String) message.get("type");
+        MessageType type = message.getType();
         Object data = message.get("data");
         switch (type) {
             default:
@@ -65,7 +66,7 @@ public class Cord implements Communicatable {
 
     @Override
     public void onHandshakeSuccess() {
-        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
+        sendMessage(Message.create().setType(MessageType.CORD_HANDSHAKE_SUCCESS));
     }
 
     public String getName() {

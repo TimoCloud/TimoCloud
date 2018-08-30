@@ -8,8 +8,9 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
-import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
+import cloud.timo.TimoCloud.lib.log.LoggingPrintStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
@@ -79,7 +80,7 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public void severe(Throwable throwable) {
-        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
+        throwable.printStackTrace(new PrintStream(new LoggingPrintStream(this::severe)));
     }
 
     @Override
@@ -149,7 +150,7 @@ public class TimoCloudBase implements TimoCloudModule {
         if (isConnected()) return;
         setConnected(true);
 
-        getSocketMessageManager().sendMessage(Message.create().setType("BASE_HANDSHAKE").set("base", getName()).set("publicAddress", getPublicIpAddress()));
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_HANDSHAKE).set("base", getName()).set("publicAddress", getPublicIpAddress()));
         info("Successfully connected to Core socket!");
     }
 
@@ -184,7 +185,7 @@ public class TimoCloudBase implements TimoCloudModule {
             }
             if (!dir.getName().contains("_") || dir.getName().split("_").length != 2)
                 FileDeleteStrategy.FORCE.deleteQuietly(dir);
-            getSocketMessageManager().sendMessage(Message.create().setType("CHECK_IF_DELETABLE").setTarget(dir.getName()).setData(dir.getAbsolutePath()));
+            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_CHECK_IF_DELETABLE).setTarget(dir.getName()).setData(dir.getAbsolutePath()));
         }
     }
 

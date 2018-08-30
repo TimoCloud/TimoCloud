@@ -53,8 +53,8 @@ public class Message extends LinkedHashMap<String, Object> {
         return setIfCondition(key, value, ! containsKey(key));
     }
 
-    public Message setType(String type) {
-        set("type", type);
+    public Message setType(MessageType type) {
+        set("type", type.getId());
         return this;
     }
 
@@ -72,8 +72,8 @@ public class Message extends LinkedHashMap<String, Object> {
         return (T) get(key);
     }
 
-    public String getType() {
-        return (String) get("type");
+    public MessageType getType() {
+        return MessageType.fromId((Integer) get("type"));
     }
 
     public String getTarget() {

@@ -17,6 +17,7 @@ import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
+import cloud.timo.TimoCloud.lib.log.LogEntry;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -330,6 +331,12 @@ public class APIRequestManager implements MessageListener {
                             server.setExtra(value);
                             break;
                         }
+                        case S_GET_LOG_FRACTION: {
+                            Long startTime = data.getLong("startTime");
+                            Long endTime = data.getLong("endTime");
+                            Collection<LogEntry> entries = server.getLogStorage().queryEntries(startTime, endTime);
+
+                        }
                     }
                     break;
                 }
@@ -355,11 +362,11 @@ public class APIRequestManager implements MessageListener {
                 }
             }
         } catch (APIRequestError error) {
-            return new APIResponse<T>(request, error, responseData);
+            return new APIResponse<T>(request, error);
         } catch (Exception e) {
-            return new APIResponse<T>(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1), responseData);
+            return new APIResponse<T>(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1));
         }
-        return new APIResponse<T>(request);
+        return new APIResponse<>(request, responseData);
     }
 
     private static void validateNotNull(Object o) throws APIRequestError {

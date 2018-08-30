@@ -7,7 +7,11 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.json.JsonConverter;
+import cloud.timo.TimoCloud.lib.log.LogEntry;
+import cloud.timo.TimoCloud.lib.log.LogStorage;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
@@ -35,6 +39,7 @@ public class Server implements Instance, Communicatable {
     private String map;
     private boolean starting;
     private boolean registered = false;
+    private LogStorage logStorage;
 
     private DoAfterAmount templateUpdate;
 
@@ -47,6 +52,7 @@ public class Server implements Instance, Communicatable {
         this.onlinePlayers = new HashSet<>();
         this.map = map;
         if (this.map == null) this.map = "";
+        this.logStorage = new LogStorage();
     }
 
     public boolean isStatic() {
@@ -58,7 +64,7 @@ public class Server implements Instance, Communicatable {
         try {
             this.starting = true;
             Message message = Message.create()
-                    .setType("START_SERVER")
+                    .setType(MessageType.BASE_START_SERVER)
                     .set("name", getName())
                     .set("id", getId())
                     .set("group", getGroup().getName())
@@ -129,7 +135,7 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void unregister() {
-        if (! isRegistered()) return;
+        if (!isRegistered()) return;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
         getGroup().removeServer(this);
         getBase().removeServer(this);
@@ -142,9 +148,9 @@ public class Server implements Instance, Communicatable {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                getBase().sendMessage(Message.create().setType("SERVER_STOPPED").setData(getId()));
+                getBase().sendMessage(Message.create().setType(MessageType.BASE_SERVER_STOPPED).setData(getId()));
             }
-        }, 300000);
+        }, 5 * 60 * 1000);
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
@@ -157,42 +163,45 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void onMessage(Message message) {
-        String type = (String) message.get("type");
+        MessageType type = message.getType();
         Object data = message.get("data");
         switch (type) {
-            case "SET_STATE":
+            case SERVER_SET_STATE:
                 setState((String) data);
                 break;
-            case "SET_EXTRA":
+            case SERVER_SET_EXTRA:
                 setExtra((String) data);
                 break;
-            case "SET_MOTD":
+            case SERVER_SET_MOTD:
                 setMotd((String) data);
                 break;
-            case "SET_MAP":
+            case SERVER_SET_MAP:
                 setMap((String) data);
                 break;
-            case "SET_PLAYERS":
+            case SERVER_SET_PLAYERS:
                 setOnlinePlayerCount(Integer.parseInt(((String) data).split("/")[0]));
                 setMaxPlayers(Integer.parseInt(((String) data).split("/")[1]));
                 break;
-            case "EXECUTE_COMMAND":
+            case SERVER_EXECUTE_COMMAND:
                 executeCommand((String) data);
                 break;
-            case "STOP_SERVER":
+            case SERVER_STOP:
                 stop();
                 break;
-            case "SERVER_STARTED":
+            case BASE_SERVER_STARTED:
                 setPort(((Number) message.get("port")).intValue());
                 break;
-            case "SERVER_NOT_STARTED":
+            case BASE_SERVER_NOT_STARTED:
                 //unregister();
                 break;
-            case "REGISTER":
+            case SERVER_REGISTER:
                 register();
                 break;
-            case "TRANSFER_FINISHED":
+            case SERVER_TRANSFER_FINISHED:
                 getTemplateUpdate().addOne();
+                break;
+            case SERVER_LOG_ENTRY:
+                logStorage.addEntry(JsonConverter.convertMapIfNecessary(data, LogEntry.class));
                 break;
             default:
                 sendMessage(message);
@@ -206,7 +215,7 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void onHandshakeSuccess() {
-        sendMessage(Message.create().setType("HANDSHAKE_SUCCESS"));
+        sendMessage(Message.create().setType(MessageType.SERVER_HANDSHAKE_SUCCESS));
     }
 
     @Override
@@ -311,13 +320,16 @@ public class Server implements Instance, Communicatable {
     }
 
     public boolean hasMap() {
-        return ! (getMap() == null || getMap().isEmpty());
+        return !(getMap() == null || getMap().isEmpty());
     }
 
     public boolean isStarting() {
         return starting;
     }
 
+    public LogStorage getLogStorage() {
+        return logStorage;
+    }
 
     public DoAfterAmount getTemplateUpdate() {
         return templateUpdate;
@@ -328,7 +340,7 @@ public class Server implements Instance, Communicatable {
     }
 
     public void executeCommand(String command) {
-        sendMessage(Message.create().setType("EXECUTE_COMMAND").setData(command));
+        sendMessage(Message.create().setType(MessageType.SERVER_EXECUTE_COMMAND).setData(command));
     }
 
     public ServerObject toServerObject() {

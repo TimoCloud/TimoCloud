@@ -15,7 +15,6 @@ import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
 import cloud.timo.TimoCloud.core.utils.completers.*;
-import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
@@ -29,7 +28,6 @@ import org.jline.terminal.TerminalBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.concurrent.Executors;
@@ -68,9 +66,10 @@ public class TimoCloudCore implements TimoCloudModule {
     private static final String ANSI_RED = "\u001B[31m";
 
     static {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+        System.setProperty("java.util.log.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
     }
 
+    @Override
     public void info(String message) {
         if (getReader() == null) {
             System.out.println(message);
@@ -85,6 +84,7 @@ public class TimoCloudCore implements TimoCloudModule {
         if (getLogger() != null) getLogger().info(message);
     }
 
+    @Override
     public void warning(String message) {
         if (getReader() == null) {
             System.out.println(message);
@@ -99,6 +99,7 @@ public class TimoCloudCore implements TimoCloudModule {
         if (getLogger() != null) getLogger().warning(message);
     }
 
+    @Override
     public void severe(String message) {
         if (getReader() == null) {
             System.err.println(message);
@@ -111,10 +112,6 @@ public class TimoCloudCore implements TimoCloudModule {
         getReader().getTerminal().writer().flush();
 
         if (getLogger() != null) getLogger().severe(message);
-    }
-
-    public void severe(Throwable throwable) {
-        throwable.printStackTrace(new PrintStream(new LoggingOutputStream(this::severe)));
     }
 
     @Override

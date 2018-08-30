@@ -11,16 +11,19 @@ import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
+import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.List;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.P_EXECUTE_COMMAND;
-import static cloud.timo.TimoCloud.api.async.APIRequestType.P_STOP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @JsonIgnoreProperties({"messageClientAddress"})
+@NoArgsConstructor
 public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
 
     private String name;
@@ -31,8 +34,6 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
     private String base;
     private InetSocketAddress inetSocketAddress;
     private MessageClientAddress messageClientAddress;
-
-    public ProxyObjectBasicImplementation() {}
 
     public ProxyObjectBasicImplementation(String name, String id, String group, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
         this.name = name;
@@ -100,19 +101,40 @@ public class ProxyObjectBasicImplementation implements ProxyObject, Comparable {
     }
 
     @Override
-    public APIRequestFuture executeCommand(String command) {
-        return new APIRequestImplementation(P_EXECUTE_COMMAND, getName(), command).submit();
+    public APIRequestFuture<Void> executeCommand(String command) {
+        return new APIRequestImplementation<Void>(P_EXECUTE_COMMAND, getId(), command).submit();
 
     }
 
     @Override
-    public APIRequestFuture stop() {
-        return new APIRequestImplementation(P_STOP, getName()).submit();
+    public APIRequestFuture<Void> stop() {
+        return new APIRequestImplementation<Void>(P_STOP, getId()).submit();
     }
 
     @Override
     public void sendPluginMessage(PluginMessage message) {
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(getMessageAddress(), message));
+    }
+
+    @Override
+    public APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime) {
+        return new APIRequestImplementation<LogFractionObject>(
+                P_GET_LOG_FRACTION,
+                getId(),
+                new TypeMap()
+                        .put("startTime", startTime)
+                        .put("endTime", endTime))
+                .submit();
+    }
+
+    @Override
+    public APIRequestFuture<LogFractionObject> getLogFraction(long startTime) {
+        return new APIRequestImplementation<LogFractionObject>(
+                P_GET_LOG_FRACTION,
+                getId(),
+                new TypeMap()
+                        .put("startTime", startTime))
+                .submit();
     }
 
     @Override

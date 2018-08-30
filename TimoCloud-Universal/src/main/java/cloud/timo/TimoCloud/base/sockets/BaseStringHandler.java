@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -20,13 +21,13 @@ public class BaseStringHandler extends BasicStringHandler {
 
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
-        String type = (String) message.get("type");
+        MessageType type = message.getType();
         Object data = message.get("data");
         switch (type) {
-            case "HANDSHAKE_SUCCESS":
+            case BASE_HANDSHAKE_SUCCESS:
                 TimoCloudBase.getInstance().onHandshakeSuccess();
                 break;
-            case "START_SERVER": {
+            case BASE_START_SERVER: {
                 String serverName = (String) message.get("name");
                 String id = (String) message.get("id");
                 int ram = ((Number) message.get("ram")).intValue();
@@ -40,7 +41,7 @@ public class BaseStringHandler extends BasicStringHandler {
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }
-            case "START_PROXY": {
+            case BASE_START_PROXY: {
                 String proxyName = (String) message.get("name");
                 String id = (String) message.get("id");
                 int ram = ((Number) message.get("ram")).intValue();
@@ -55,19 +56,17 @@ public class BaseStringHandler extends BasicStringHandler {
                 TimoCloudBase.getInstance().info("Added proxy " + proxyName + " to queue.");
                 break;
             }
-            case "SERVER_STARTED":
-                break;
-            case "SERVER_STOPPED":
+            case BASE_SERVER_STOPPED:
                 TimoCloudBase.getInstance().getInstanceManager().onServerStopped((String) data);
                 break;
-            case "PROXY_STOPPED":
+            case BASE_PROXY_STOPPED:
                 TimoCloudBase.getInstance().getInstanceManager().onProxyStopped((String) data);
                 break;
-            case "DELETE_DIRECTORY":
+            case BASE_DELETE_DIRECTORY:
                 File dir = new File((String) data);
                 if (dir.exists() && dir.isDirectory()) FileDeleteStrategy.FORCE.deleteQuietly(dir);
                 break;
-            case "TRANSFER":
+            case TRANSFER_TEMPLATE:
                 try {
                     InputStream inputStream = new ByteArrayInputStream(stringToByteArray((String) message.get("file")));
                     switch ((String) message.get("transferType")) {
@@ -84,7 +83,7 @@ public class BaseStringHandler extends BasicStringHandler {
                             TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
                             break;
                     }
-                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("TRANSFER_FINISHED").setTarget(message.getTarget()));
+                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.TEMPLATE_TRANSFER_FINISHED).setTarget(message.getTarget()));
                     TimoCloudBase.getInstance().getInstanceManager().setDownloadingTemplate(false);
                     break;
                 } catch (Exception e) {

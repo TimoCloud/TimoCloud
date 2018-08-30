@@ -41,11 +41,13 @@ public enum APIRequestType {
 
     P_EXECUTE_COMMAND                   (PROXY),
     P_STOP                              (PROXY),
+    P_GET_LOG_FRACTION                  (PROXY),
 
     S_EXECUTE_COMMAND                   (SERVER),
     S_STOP                              (SERVER),
     S_SET_STATE                         (SERVER),
     S_SET_EXTRA                         (SERVER),
+    S_GET_LOG_FRACTION                  (SERVER)
     ;
 
     private TargetType targetType;

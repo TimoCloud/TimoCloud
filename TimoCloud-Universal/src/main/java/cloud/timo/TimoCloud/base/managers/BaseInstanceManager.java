@@ -6,6 +6,7 @@ import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
@@ -49,7 +50,7 @@ public class BaseInstanceManager {
         boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy && cpu <= (Double) TimoCloudBase.getInstance().getFileManager().getConfig().get("cpu-max-load");
         long freeRam = Math.max(0, TimoCloudBase.getInstance().getResourceManager().getFreeMemory() - ((Integer) TimoCloudBase.getInstance().getFileManager().getConfig().get("ram-keep-free")).longValue());
         TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(
-                Message.create().setType("RESOURCES")
+                Message.create().setType(MessageType.BASE_RESOURCES)
                         .setData(Message.create()
                                 .set("ready", ready)
                                 .set("availableRam", freeRam)
@@ -160,7 +161,7 @@ public class BaseInstanceManager {
             if (templateDifferences.size() > 0 || mapDifferences.size() > 0 || globalDifferences.size() > 0) {
                 TimoCloudBase.getInstance().info("New server template updates found! Stopping and downloading updates...");
                 TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
-                        .setType("SERVER_TEMPLATE_REQUEST")
+                        .setType(MessageType.BASE_SERVER_TEMPLATE_REQUEST)
                         .setTarget(server.getId())
                         .setIfCondition("template", templateDirectory.getName(), templateDifferences.size() > 0)
                         .setIfCondition("map", server.getMap(), mapDifferences.size() > 0)
@@ -258,13 +259,13 @@ public class BaseInstanceManager {
             }
 
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
-                    .setType("SERVER_STARTED")
+                    .setType(MessageType.BASE_SERVER_STARTED)
                     .setTarget(server.getId())
                     .set("port", port));
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
-            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("SERVER_NOT_STARTED").setTarget(server.getId()));
+            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_SERVER_NOT_STARTED).setTarget(server.getId()));
         }
     }
 
@@ -293,7 +294,7 @@ public class BaseInstanceManager {
                 TimoCloudBase.getInstance().info("New proxy template updates found! Stopping and downloading updates...");
                 TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(
                         Message.create()
-                                .setType("PROXY_TEMPLATE_REQUEST")
+                                .setType(MessageType.BASE_PROXY_TEMPLATE_REQUEST)
                                 .setTarget(proxy.getId())
                                 .setIfCondition("template", templateDirectory.getName(), templateDifferences.size() > 0)
                                 .set("differences", Message.create()
@@ -393,13 +394,13 @@ public class BaseInstanceManager {
                 throw new ProxyStartException("Error while starting process");
             }
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
-                    .setType("PROXY_STARTED")
+                    .setType(MessageType.BASE_PROXY_STARTED)
                     .setTarget(proxy.getId())
                     .set("port", port));
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
-            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType("PROXY_NOT_STARTED").setTarget(proxy.getId()));
+            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_PROXY_NOT_STARTED).setTarget(proxy.getId()));
         }
     }
 
