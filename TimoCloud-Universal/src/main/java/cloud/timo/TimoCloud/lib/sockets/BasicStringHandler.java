@@ -29,7 +29,10 @@ public abstract class BasicStringHandler extends SimpleChannelInboundHandler<Str
     public void read(Channel channel, String message) {
         for (String c : message.split("")) {
             getParsed(channel).append(c);
-            if (c.equals("\"") && (getParsed(channel).length() < 2 || ! Character.toString(getParsed(channel).charAt(getParsed(channel).length() - 2)).equals("\\"))) setIsString(channel, !isString(channel));
+            if (c.equals("\"") &&
+                    (getParsed(channel).length() < 2 || ! Character.toString(getParsed(channel).charAt(getParsed(channel).length() - 2)).equals("\\"))) {
+                setIsString(channel, !isString(channel));
+            }
             if (isString(channel)) continue;
             if (c.equals("{")) open.put(channel, getOpen(channel) + 1);
             if (c.equals("}")) {
@@ -38,9 +41,9 @@ public abstract class BasicStringHandler extends SimpleChannelInboundHandler<Str
                     try {
                         String parsed = getParsed(channel).toString();
                         handleMessage(Message.createFromJsonString(parsed), parsed, channel);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         TimoCloudLogger.getLogger().severe("Error while parsing JSON message: " + getParsed(channel));
-                        e.printStackTrace();
+                        TimoCloudLogger.getLogger().severe(e);
                     }
                     parsed.put(channel, new StringBuilder());
                 }

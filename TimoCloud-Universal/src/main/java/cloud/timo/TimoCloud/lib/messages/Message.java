@@ -2,16 +2,15 @@ package cloud.timo.TimoCloud.lib.messages;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Message extends LinkedHashMap<String, Object> {
 
-    private static final Type HASH_MAP_TYPE = new TypeToken<Map<String, Object>>() {
-    }.getType();
+    private static final String TYPE_KEY = "t";
+    private static final String TARGET_KEY = "a";
+    private static final String DATA_KEY = "d";
 
     private Message() {
     }
@@ -54,17 +53,17 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public Message setType(MessageType type) {
-        set("type", type.getId());
+        set(TYPE_KEY, type.getId());
         return this;
     }
 
     public Message setTarget(String target) {
-        set("target", target);
+        set(TARGET_KEY, target);
         return this;
     }
 
     public Message setData(Object data) {
-        set("data", data);
+        set(DATA_KEY, data);
         return this;
     }
 
@@ -73,15 +72,15 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public MessageType getType() {
-        return MessageType.fromId((Integer) get("type"));
+        return MessageType.fromId(((Number) get(TYPE_KEY)).intValue());
     }
 
     public String getTarget() {
-        return (String) get("target");
+        return (String) get(TARGET_KEY);
     }
 
     public Object getData() {
-        return get("data");
+        return get(DATA_KEY);
     }
 
     public JsonObject toJsonObject() {

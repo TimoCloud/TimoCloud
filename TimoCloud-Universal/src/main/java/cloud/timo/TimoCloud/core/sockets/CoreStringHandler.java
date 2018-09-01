@@ -37,7 +37,7 @@ public class CoreStringHandler extends BasicStringHandler {
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
-        String targetId = (String) message.get("target");
+        String targetId = message.getTarget();
         Server server = TimoCloudCore.getInstance().getInstanceManager().getServerById(targetId);
         Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyById(targetId);
         String baseName = (String) message.get("base");
@@ -49,7 +49,7 @@ public class CoreStringHandler extends BasicStringHandler {
         else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
         switch (type) { // Handshakes
             case SERVER_HANDSHAKE: {

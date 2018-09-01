@@ -61,7 +61,7 @@ public class Base implements Communicatable {
     @Override
     public void onMessage(Message message) {
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             case BASE_RESOURCES:
                 Map map = (Map) data;

@@ -51,7 +51,7 @@ public class Cord implements Communicatable {
     @Override
     public void onMessage(Message message) {
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             default:
                 sendMessage(message);

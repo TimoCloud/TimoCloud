@@ -30,7 +30,7 @@ public class BungeeStringHandler extends BasicStringHandler {
         }
         String server = (String) message.get("name");
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             case PROXY_HANDSHAKE_SUCCESS:
                 TimoCloudBungee.getInstance().onHandshakeSuccess();

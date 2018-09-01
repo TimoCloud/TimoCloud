@@ -22,9 +22,7 @@ public class PipingLoggingPrintStream extends LoggingPrintStream {
     public void write(int b) {
         try {
             pipeStream.write(b);
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {}
         super.write(b);
     }
 

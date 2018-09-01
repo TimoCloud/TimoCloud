@@ -66,7 +66,7 @@ public class TimoCloudCore implements TimoCloudModule {
     private static final String ANSI_RED = "\u001B[31m";
 
     static {
-        System.setProperty("java.util.log.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
     }
 
     @Override

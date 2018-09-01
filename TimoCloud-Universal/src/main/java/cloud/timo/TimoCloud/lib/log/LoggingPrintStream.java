@@ -18,23 +18,14 @@ public class LoggingPrintStream extends PrintStream {
     @Override
     public void write(int b) {
         byteArrayOutputStream.write(b);
-        if (b == '\n') {
-            flush();
-        }
-        super.write(b);
     }
 
     @Override
     public void write(byte[] b, int off, int len) {
         byteArrayOutputStream.write(b, off, len);
-        if (b.length > 0 && b[b.length-1] == '\n') {
-            flush();
-        }
-        super.write(b, off, len);
     }
 
-    @Override
-    public void flush() {
+    private void newLine() {
         logger.accept(byteArrayOutputStream.toString());
         try {
             byteArrayOutputStream.close();
@@ -42,6 +33,65 @@ public class LoggingPrintStream extends PrintStream {
             e.printStackTrace(); // This should never happen
         }
         this.byteArrayOutputStream = new ByteArrayOutputStream();
-        super.flush();
+    }
+
+    @Override
+    public void println() {
+        super.println();
+        newLine();
+    }
+
+    @Override
+    public void println(boolean x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(char x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(int x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(long x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(float x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(double x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(char[] x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(String x) {
+        super.println(x);
+        newLine();
+    }
+
+    @Override
+    public void println(Object x) {
+        super.println(x);
+        newLine();
     }
 }

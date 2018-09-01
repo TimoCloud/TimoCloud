@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class LogEntryReader implements Consumer<String> {
 
     private static final LogLevel FALLBACK_LOG_LEVEL = LogLevel.INFO;
-    private static final Pattern LOG_LEVEL_PATTERN = Pattern.compile("*\\[($logLevel)\\]");
+    private static final Pattern LOG_LEVEL_PATTERN = Pattern.compile("\\[(.*?)\\]");
 
     private static Map<String, LogLevel> determinedLogLevels = new HashMap<>();
 
@@ -56,7 +56,7 @@ public class LogEntryReader implements Consumer<String> {
     private static String extractLogLevelString(String message) {
         Matcher matcher = LOG_LEVEL_PATTERN.matcher(message);
         if (! matcher.find()) return null;
-        return matcher.group(1);
+        return matcher.group();
     }
 
     private static LogLevel determineLogLevel(String levelString) { // TODO Improve reading of log levels

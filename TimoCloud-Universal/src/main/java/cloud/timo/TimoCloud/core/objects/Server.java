@@ -164,7 +164,7 @@ public class Server implements Instance, Communicatable {
     @Override
     public void onMessage(Message message) {
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             case SERVER_SET_STATE:
                 setState((String) data);

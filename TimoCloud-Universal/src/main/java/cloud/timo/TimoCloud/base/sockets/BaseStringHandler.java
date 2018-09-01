@@ -22,7 +22,7 @@ public class BaseStringHandler extends BasicStringHandler {
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             case BASE_HANDSHAKE_SUCCESS:
                 TimoCloudBase.getInstance().onHandshakeSuccess();

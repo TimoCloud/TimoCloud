@@ -154,7 +154,7 @@ public class Proxy implements Instance, Communicatable {
     @Override
     public void onMessage(Message message) {
         MessageType type = message.getType();
-        Object data = message.get("data");
+        Object data = message.getData();
         switch (type) {
             case PROXY_STOP:
                 stop();
