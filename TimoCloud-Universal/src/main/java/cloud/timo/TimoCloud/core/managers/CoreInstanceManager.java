@@ -627,7 +627,7 @@ public class CoreInstanceManager {
     private int serversNeeded(ServerGroup group) {
         int running = (int) group.getServers().stream().filter((server) -> isStateActive(server.getState(), group) || server.isStarting()).count();
         int needed = group.getOnlineAmount() - running;
-        return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount()) : needed;
+        return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount() - group.getServers().size()) : needed;
     }
 
     /**
