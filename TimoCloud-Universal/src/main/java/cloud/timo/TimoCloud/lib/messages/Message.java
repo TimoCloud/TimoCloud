@@ -9,7 +9,7 @@ import java.util.Map;
 public class Message extends LinkedHashMap<String, Object> {
 
     private static final String TYPE_KEY = "t";
-    private static final String TARGET_KEY = "a";
+    private static final String TARGET_KEY = "@";
     private static final String DATA_KEY = "d";
 
     private Message() {

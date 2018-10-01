@@ -106,16 +106,18 @@ public class ServerGroup implements Group {
 
     }
 
-    public void addStartingServer(Server server) {
+    public void addServer(Server server) {
         if (server == null) {
             TimoCloudCore.getInstance().severe("Fatal error: Tried to add server which is null. Please report this.");
             return;
         }
         servers.put(server.getId(), server);
+        TimoCloudCore.getInstance().getInstanceManager().addServer(server);
     }
 
     public void removeServer(Server server) {
         servers.remove(server.getId());
+        TimoCloudCore.getInstance().getInstanceManager().removeServer(server);
     }
 
     public Collection<Server> getServers() {

@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -26,6 +27,8 @@ public class BaseFileManager {
         private File proxyStaticDirectory;
     private File cacheDirectory;
     private File logsDirectory;
+        private File serverLogsDirectory;
+        private File proxyLogsDirectory;
     private File configFile;
     private Map<String, Object> config;
 
@@ -67,10 +70,13 @@ public class BaseFileManager {
 
             new File(serverGlobalDirectory, "plugins/").mkdirs();
             logsDirectory = new File(baseDirectory, "logs/");
-            logsDirectory.mkdirs();
-            if (new File("plugins/").exists()) {
-                TimoCloudBase.getInstance().severe("The global 'plugins' directory is outdated and will no longer be used. Please move global plugins to 'templates/Global/plugins/' and delete the 'plugins/' directory to hide this warning.");
-            }
+            serverLogsDirectory = new File(logsDirectory, "server/");
+            deleteDirectory(serverLogsDirectory);
+            serverLogsDirectory.mkdirs();
+            proxyLogsDirectory = new File(logsDirectory, "proxy/");
+            deleteDirectory(proxyLogsDirectory);
+            proxyLogsDirectory.mkdirs();
+
             this.configFile = new File(getConfigsDirectory(), "config.yml");
             configFile.createNewFile();
             Yaml yaml = new Yaml();
@@ -96,6 +102,10 @@ public class BaseFileManager {
             TimoCloudBase.getInstance().severe("Error while saving config: ");
             TimoCloudBase.getInstance().severe(e);
         }
+    }
+
+    public static void deleteDirectory(File directory) {
+        if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
     }
 
     public File getBaseDirectory() {
@@ -156,6 +166,14 @@ public class BaseFileManager {
 
     public File getLogsDirectory() {
         return logsDirectory;
+    }
+
+    public File getServerLogsDirectory() {
+        return serverLogsDirectory;
+    }
+
+    public File getProxyLogsDirectory() {
+        return proxyLogsDirectory;
     }
 
     public File getConfigFile() {

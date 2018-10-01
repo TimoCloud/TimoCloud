@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
-import cloud.timo.TimoCloud.lib.log.LoggingPrintStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
@@ -19,7 +18,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -67,20 +65,19 @@ public class TimoCloudBase implements TimoCloudModule {
         return (getTime() + getInstance().getPrefix() + color + message + ANSI_RESET);
     }
 
+    @Override
     public void info(String message) {
         System.out.println(formatLog(message, ANSI_RESET));
     }
 
+    @Override
     public void warning(String message) {
         System.err.println(formatLog(message, ANSI_YELLOW));
     }
 
+    @Override
     public void severe(String message) {
         System.err.println(formatLog(message, ANSI_RED));
-    }
-
-    public void severe(Throwable throwable) {
-        throwable.printStackTrace(new PrintStream(new LoggingPrintStream(this::severe)));
     }
 
     @Override

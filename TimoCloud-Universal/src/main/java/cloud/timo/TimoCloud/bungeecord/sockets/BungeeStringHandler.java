@@ -74,6 +74,10 @@ public class BungeeStringHandler extends BasicStringHandler {
                 ((TimoCloudMessageAPIBasicImplementation) TimoCloudAPI.getMessageAPI()).onMessage(addressedPluginMessage);
                 break;
             }
+            case PROXY_STOP: {
+                TimoCloudBungee.getInstance().stop();
+                break;
+            }
             default:
                 TimoCloudBungee.getInstance().severe("Could not categorize json message: " + message);
         }

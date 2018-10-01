@@ -2,8 +2,6 @@ package cloud.timo.TimoCloud.lib.global.logging;
 
 import cloud.timo.TimoCloud.lib.log.LoggingPrintStream;
 
-import java.io.PrintStream;
-
 /**
  * This class enables global methods to log to the currently active module
  */
@@ -16,7 +14,7 @@ public interface TimoCloudLogger {
     void severe(String message);
 
     default void severe(Throwable throwable) {
-        throwable.printStackTrace(new PrintStream(new LoggingPrintStream(this::severe)));
+        throwable.printStackTrace(new LoggingPrintStream(this::severe));
     }
 
     static TimoCloudLogger getLogger() {

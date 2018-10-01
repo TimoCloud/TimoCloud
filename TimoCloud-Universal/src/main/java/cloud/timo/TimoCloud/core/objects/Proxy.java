@@ -19,7 +19,9 @@ import io.netty.channel.Channel;
 
 import java.io.File;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Proxy implements Instance, Communicatable {
 
@@ -34,6 +36,7 @@ public class Proxy implements Instance, Communicatable {
     private Channel channel;
     private boolean starting;
     private boolean registered;
+    private boolean connected;
     private DnsRecord dnsRecord;
     private Set<Server> registeredServers;
     private LogStorage logStorage;
@@ -66,15 +69,13 @@ public class Proxy implements Instance, Communicatable {
         if (!isRegistered()) return;
         this.registered = false;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
+    }
+
+    private void onShutdown() {
         getGroup().removeProxy(this);
         getBase().removeProxy(this);
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
-            }
-        }, 5*60*1000);
+        getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
     }
 
     @Override
@@ -118,8 +119,8 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void stop() {
-        if (getChannel() != null) getChannel().close();
         unregister();
+        sendMessage(Message.create().setType(MessageType.PROXY_STOP));
     }
 
     public void registerServer(Server server) {
@@ -152,7 +153,7 @@ public class Proxy implements Instance, Communicatable {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
@@ -175,7 +176,9 @@ public class Proxy implements Instance, Communicatable {
                 getTemplateUpdate().addOne();
                 break;
             case PROXY_LOG_ENTRY:
-                logStorage.addEntry(JsonConverter.convertMapIfNecessary(data, LogEntry.class));
+                if (isRegistered() && sender instanceof Base) break;
+                LogEntry logEntry = JsonConverter.convertMapIfNecessary(data, LogEntry.class);
+                logStorage.addEntry(logEntry);
                 break;
             default:
                 sendMessage(message);
@@ -189,6 +192,7 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void onConnect(Channel channel) {
+        this.connected = true;
         setChannel(channel);
         register();
         TimoCloudCore.getInstance().info("Proxy " + getName() + " connected.");
@@ -196,9 +200,11 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void onDisconnect() {
+        this.connected = false;
         setChannel(null);
-        TimoCloudCore.getInstance().info("Proxy " + getName() + " disconnected.");
         unregister();
+        TimoCloudCore.getInstance().info("Proxy " + getName() + " disconnected.");
+        onShutdown();
     }
 
     @Override
@@ -268,6 +274,11 @@ public class Proxy implements Instance, Communicatable {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connected;
     }
 
     public DnsRecord getDnsRecord() {

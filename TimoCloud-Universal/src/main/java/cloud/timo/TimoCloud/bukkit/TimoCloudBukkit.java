@@ -109,6 +109,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     public void onSocketDisconnect(boolean connectionFailed) {
+        LogInjectionUtil.restoreSystemOutAndErr();
         info("Disconnected from TimoCloudCore. Stopping server.");
         if (connectionFailed) {
             System.exit(0);
@@ -126,7 +127,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         doEverySecond();
     }
 
-    private void stop() {
+    public void stop() {
         Bukkit.getScheduler().runTask(this, () -> {
             Bukkit.shutdown();
             System.exit(0);

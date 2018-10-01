@@ -21,6 +21,8 @@ public class CoreInstanceManager {
 
     private Map<String, ServerGroup> serverGroups;
     private Map<String, ProxyGroup> proxyGroups;
+    private Map<String, Server> servers;
+    private Map<String, Proxy> proxies;
     private Map<String, Base> bases;
     private Map<String, Cord> cords;
 
@@ -35,6 +37,8 @@ public class CoreInstanceManager {
     private void makeInstances() {
         serverGroups = new HashMap<>();
         proxyGroups = new HashMap<>();
+        servers = new HashMap<>();
+        proxies = new HashMap<>();
         bases = new HashMap<>();
         cords = new HashMap<>();
     }
@@ -338,149 +342,6 @@ public class CoreInstanceManager {
         proxy.start();
         return proxy;
     }
-
-    /**
-     * @return A collection of all server groups
-     */
-    public Collection<ServerGroup> getServerGroups() {
-        return serverGroups.values();
-    }
-
-    /**
-     * @return A collection of all proxy groups
-     */
-    public Collection<ProxyGroup> getProxyGroups() {
-        return proxyGroups.values();
-    }
-
-    /**
-     * @return A list of all server- and proxy groups
-     */
-    public List<Group> getGroups() {
-        return Stream.concat(
-                getServerGroups().stream(),
-                getProxyGroups().stream()
-        ).collect(Collectors.toList());
-    }
-
-    /**
-     * @return A List of all servers, proxies, cords andbases
-     */
-    public List<Communicatable> getAllCommunicatableInstances() {
-        return Stream.concat(
-                Stream.concat(
-                        getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream),
-                        getServerGroups().stream().map(ServerGroup::getServers).flatMap(Collection::stream)),
-                Stream.concat(
-                        getCords().stream(),
-                        getBases().stream()
-                )).collect(Collectors.toList());
-    }
-
-    /**
-     * Searches for a server by name (case-insensitive)
-     *
-     * @deprecated Use {@link CoreInstanceManager#getServerById(String)} instead
-     * @param name The server's name (case-insensitive)
-     * @return A server object
-     */
-    public Server getServerByName(String name) {
-        for (ServerGroup group : getServerGroups())
-            for (Server server : group.getServers())
-                if (server != null && server.getName().equalsIgnoreCase(name))
-                    return server;
-        return null;
-    }
-
-    /**
-     * Searches for a server by id
-     *
-     * @param id The server's id
-     * @return A server object
-     */
-    public Server getServerById(String id) {
-        for (ServerGroup group : getServerGroups()) {
-            Server server = group.getServerById(id);
-            if (server == null) continue;
-            return server;
-        }
-        return null;
-    }
-
-    /**
-     * Searches for a server by id first, if not found, by name
-     *
-     * @param identifier The server's id or name
-     * @return A server object
-     */
-    public Server getServerByIdentifier(String identifier) {
-        Server server = getServerById(identifier);
-        if (server != null) return server;
-        return getServerByName(identifier);
-    }
-
-    /**
-     * Searches for a proxy by name (case-insensitive)
-     *
-     * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
-     * @param name The proxy's name (case-insensitive)
-     * @return A proxy object
-     */
-    public Proxy getProxyByName(String name) {
-        for (ProxyGroup group : getProxyGroups())
-            for (Proxy proxy : group.getProxies())
-                if (proxy != null && proxy.getName().equalsIgnoreCase(name))
-                    return proxy;
-        return null;
-    }
-
-    /**
-     * Searches for a proxy by id
-     *
-     * @param id The proxy's id
-     * @return A proxy object
-     */
-    public Proxy getProxyById(String id) {
-        for (ProxyGroup group : getProxyGroups()) {
-            Proxy proxy = group.getProxyById(id);
-            if (proxy == null) continue;
-            return proxy;
-        }
-        return null;
-    }
-
-    /**
-     * Searches for a proxy by id first, if not found, by name
-     *
-     * @param identifier The proxy's id or name
-     * @return A proxy object
-     */
-    public Proxy getProxyByIdentifier(String identifier) {
-        Proxy proxy = getProxyById(identifier);
-        if (proxy != null) return proxy;
-        return getProxyByName(identifier);
-    }
-
-    /**
-     * Converts an API object into an internal server object
-     *
-     * @param object The API object which shall be converted
-     * @return An internal server object
-     */
-    public Server getServerByServerObject(ServerObject object) {
-        return getServerById(object.getId());
-    }
-
-    /**
-     * Converts an API object into an internal proxy object
-     *
-     * @param object The API object which shall be converted
-     * @return An internal proxy object
-     */
-    public Proxy getProxyByProxyObject(ProxyObject object) {
-        return getProxyById(object.getId());
-    }
-
     /**
      * @param group The group a free base shall be searched for
      * @return A base object if a free base is found, otherwise null
@@ -641,7 +502,7 @@ public class CoreInstanceManager {
     private int needed(Group group) {
         if (group instanceof ServerGroup) return serversNeeded((ServerGroup) group);
         if (group instanceof ProxyGroup) return proxiesNeeded((ProxyGroup) group);
-        return 0; // This should not happen
+        return 0; // This should never happen
     }
 
     /**
@@ -651,7 +512,7 @@ public class CoreInstanceManager {
     private int serversNeeded(ServerGroup group) {
         int running = (int) group.getServers().stream().filter((server) -> isStateActive(server.getState(), group) || server.isStarting()).count();
         int needed = group.getOnlineAmount() - running;
-        return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount()) : needed;
+        return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount() - group.getServers().size()) : needed;
     }
 
     /**
@@ -667,8 +528,8 @@ public class CoreInstanceManager {
                 divideRoundUp(slotsWanted, group.getMaxPlayerCountPerProxy()),
                 slotsLimit);
         wanted = Math.max(wanted, group.getMinAmount());
-        if (group.getMaxAmount() > 0) wanted = Math.min(wanted, group.getMaxAmount());
         if (group.isStatic()) wanted = 1;
+        if (group.getMaxAmount() > 0) wanted = Math.min(wanted, group.getMaxAmount());
         return wanted - running;
     }
 
@@ -697,6 +558,168 @@ public class CoreInstanceManager {
     public boolean isCordConnected(String name) {
         Cord cord = getCord(name);
         return cord != null && cord.isConnected();
+    }
+
+    /**
+     * @return A collection of all server groups
+     */
+    public Collection<ServerGroup> getServerGroups() {
+        return serverGroups.values();
+    }
+
+    /**
+     * @return A collection of all proxy groups
+     */
+    public Collection<ProxyGroup> getProxyGroups() {
+        return proxyGroups.values();
+    }
+
+    /**
+     * @return A list of all server- and proxy groups
+     */
+    public List<Group> getGroups() {
+        return Stream.concat(
+                getServerGroups().stream(),
+                getProxyGroups().stream()
+        ).collect(Collectors.toList());
+    }
+
+    /**
+     * @return A List of all servers, proxies, cords andbases
+     */
+    public List<Communicatable> getAllCommunicatableInstances() {
+        return Stream.concat(
+                Stream.concat(
+                        getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream),
+                        getServerGroups().stream().map(ServerGroup::getServers).flatMap(Collection::stream)),
+                Stream.concat(
+                        getCords().stream(),
+                        getBases().stream()
+                )).collect(Collectors.toList());
+    }
+
+    /**
+     * Searches for a server by name (case-insensitive)
+     *
+     * @deprecated Use {@link CoreInstanceManager#getServerById(String)} instead
+     * @param name The server's name (case-insensitive)
+     * @return A server object
+     */
+    @Deprecated
+    public Server getServerByName(String name) {
+        for (ServerGroup group : getServerGroups())
+            for (Server server : group.getServers())
+                if (server != null && server.getName().equalsIgnoreCase(name))
+                    return server;
+        return null;
+    }
+
+    /**
+     * Searches for a server by id
+     *
+     * @param id The server's id
+     * @return A server object
+     */
+    public Server getServerById(String id) {
+        return servers.get(id);
+    }
+
+    /**
+     * Searches for a server by id first, if not found, by name
+     *
+     * @param identifier The server's id or name
+     * @return A server object
+     */
+    public Server getServerByIdentifier(String identifier) {
+        Server server = getServerById(identifier);
+        if (server != null) return server;
+        return getServerByName(identifier);
+    }
+
+    /**
+     * Searches for a proxy by name (case-insensitive)
+     *
+     * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
+     * @param name The proxy's name (case-insensitive)
+     * @return A proxy object
+     */
+    @Deprecated
+    public Proxy getProxyByName(String name) {
+        for (ProxyGroup group : getProxyGroups())
+            for (Proxy proxy : group.getProxies())
+                if (proxy != null && proxy.getName().equalsIgnoreCase(name))
+                    return proxy;
+        return null;
+    }
+
+    /**
+     * Searches for a proxy by id
+     *
+     * @param id The proxy's id
+     * @return A proxy object
+     */
+    public Proxy getProxyById(String id) {
+        return proxies.get(id);
+    }
+
+    /**
+     * Searches for a proxy by id first, if not found, by name
+     *
+     * @param identifier The proxy's id or name
+     * @return A proxy object
+     */
+    public Proxy getProxyByIdentifier(String identifier) {
+        Proxy proxy = getProxyById(identifier);
+        if (proxy != null) return proxy;
+        return getProxyByName(identifier);
+    }
+
+    /**
+     * Converts an API object into an internal server object
+     *
+     * @param object The API object which shall be converted
+     * @return An internal server object
+     */
+    public Server getServerByServerObject(ServerObject object) {
+        return getServerById(object.getId());
+    }
+
+    /**
+     * Converts an API object into an internal proxy object
+     *
+     * @param object The API object which shall be converted
+     * @return An internal proxy object
+     */
+    public Proxy getProxyByProxyObject(ProxyObject object) {
+        return getProxyById(object.getId());
+    }
+
+    /**
+     * Registers the given server in the map for quick access by id
+     */
+    public void addServer(Server server) {
+        servers.put(server.getId(), server);
+    }
+
+    /**
+     * Removes the server from the map for quick access by id
+     */
+    public void removeServer(Server server) {
+        servers.remove(server.getId());
+    }
+
+    /**
+     * Registers the given server in the map for quick access by id
+     */
+    public void addProxy(Proxy proxy) {
+        proxies.put(proxy.getId(), proxy);
+    }
+
+    /**
+     * Removes the server from the map for quick access by id
+     */
+    public void removeProxy(Proxy proxy) {
+        proxies.remove(proxy.getId());
     }
 
     /**

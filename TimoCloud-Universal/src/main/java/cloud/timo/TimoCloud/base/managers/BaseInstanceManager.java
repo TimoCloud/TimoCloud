@@ -5,10 +5,13 @@ import cloud.timo.TimoCloud.base.exceptions.ProxyStartException;
 import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
+import cloud.timo.TimoCloud.base.utils.LogTailerListener;
+import cloud.timo.TimoCloud.lib.log.LogEntry;
+import cloud.timo.TimoCloud.lib.log.LogEntryReader;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.messages.MessageType;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
-import org.apache.commons.io.FileDeleteStrategy;
+import cloud.timo.TimoCloud.lib.utils.files.tailer.FileTailer;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -20,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class BaseInstanceManager {
 
@@ -32,6 +36,8 @@ public class BaseInstanceManager {
 
     private final ScheduledExecutorService scheduler;
 
+    private Map<String, FileTailer> logTailers;
+
     private boolean startingServer = false;
     private boolean startingProxy = false;
 
@@ -42,6 +48,7 @@ public class BaseInstanceManager {
         proxyQueue = new LinkedList<>();
         recentlyUsedPorts = new HashMap<>();
         scheduler = Executors.newScheduledThreadPool(1);
+        logTailers = new HashMap<>();
         scheduler.scheduleAtFixedRate(this::everySecond, millis, millis, TimeUnit.MILLISECONDS);
     }
 
@@ -127,10 +134,6 @@ public class BaseInstanceManager {
         }
     }
 
-    private void deleteDirectory(File directory) {
-        if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
-    }
-
     private void startServer(BaseServerObject server) {
         TimoCloudBase.getInstance().info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
@@ -176,7 +179,7 @@ public class BaseInstanceManager {
 
             File temporaryDirectory = server.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), server.getId());
             if (!server.isStatic()) {
-                if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
+                if (temporaryDirectory.exists()) BaseFileManager.deleteDirectory(temporaryDirectory);
                 copyDirectory(TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory(), temporaryDirectory);
             }
 
@@ -226,32 +229,43 @@ public class BaseInstanceManager {
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
 
+            File logFile = getServerLogFile(server.getId());
+            logFile.createNewFile();
 
-            ProcessBuilder pb = new ProcessBuilder(
-                    "/bin/sh", "-c",
-                    "screen -mdS " + server.getName() +
-                            " java -server " +
-                            " -Xmx" + server.getRam() + "M" +
-                            " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                            " -Dcom.mojang.eula.agree=true" +
-                            " -Dtimocloud-servername=" + server.getName() +
-                            " -Dtimocloud-serverid=" + server.getId() +
-                            " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
-                            " -Dtimocloud-randommap=" + randomMap +
-                            " -Dtimocloud-mapname=" + mapName +
-                            " -Dtimocloud-static=" + server.isStatic() +
-                            " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
-                            " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                            " -jar spigot.jar -o false -h 0.0.0.0 -p " + port
-            ).directory(temporaryDirectory);
+            FileTailer logTailer = generateLogTailer(logFile, (logEntry) -> {
+                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.SERVER_LOG_ENTRY)
+                        .setData(logEntry)
+                        .setTarget(server.getId()));
+            });
+            new Thread(logTailer).start();
+            this.logTailers.put(server.getId(), logTailer);
+
             try {
-                Process p = pb.start();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-                TimoCloudBase.getInstance().info("Successfully started screen session " + server.getName() + ".");
+                Process p = new ProcessBuilder(
+                        "/bin/sh", "-c",
+                        "screen -mdS " + server.getId() +
+                                " /bin/sh -c '" +
+                                "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
+                                " java -server" +
+                                " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
+                                " -Xmx" + server.getRam() + "M" +
+                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Dcom.mojang.eula.agree=true" +
+                                " -Dtimocloud-servername=" + server.getName() +
+                                " -Dtimocloud-serverid=" + server.getId() +
+                                " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
+                                " -Dtimocloud-randommap=" + randomMap +
+                                " -Dtimocloud-mapname=" + mapName +
+                                " -Dtimocloud-static=" + server.isStatic() +
+                                " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
+                                " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
+                                " -jar spigot.jar -o false -h 0.0.0.0 -p " + port +
+                                " | tee " + logFile.getAbsolutePath()
+                                + "'"
+                ).start();
+
+                TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ":");
                 TimoCloudBase.getInstance().severe(e);
@@ -306,7 +320,7 @@ public class BaseInstanceManager {
 
             File temporaryDirectory = proxy.isStatic() ? templateDirectory : new File(TimoCloudBase.getInstance().getFileManager().getProxyTemporaryDirectory(), proxy.getId());
             if (!proxy.isStatic()) {
-                if (temporaryDirectory.exists()) deleteDirectory(temporaryDirectory);
+                if (temporaryDirectory.exists()) BaseFileManager.deleteDirectory(temporaryDirectory);
                 copyDirectory(TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory(), temporaryDirectory);
             }
 
@@ -368,29 +382,42 @@ public class BaseInstanceManager {
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting proxy " + proxy.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
 
+            File logFile = getProxyLogFile(proxy.getId());
+            logFile.createNewFile();
 
-            ProcessBuilder pb = new ProcessBuilder(
-                    "/bin/sh", "-c",
-                    "screen -mdS " + proxy.getName() +
-                            " java -server " +
-                            " -Xmx" + proxy.getRam() + "M" +
-                            " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
-                            //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005" +
-                            " -Dcom.mojang.eula.agree=true" +
-                            " -Dtimocloud-proxyname=" + proxy.getName() +
-                            " -Dtimocloud-proxyid=" + proxy.getId() +
-                            " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
-                            " -Dtimocloud-static=" + proxy.isStatic() +
-                            " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
-                            " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                            " -jar BungeeCord.jar"
-            ).directory(temporaryDirectory);
+            FileTailer logTailer = generateLogTailer(logFile, (logEntry) -> {
+                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.PROXY_LOG_ENTRY)
+                        .setData(logEntry)
+                        .setTarget(proxy.getId()));
+            });
+            new Thread(logTailer).start();
+            this.logTailers.put(proxy.getId(), logTailer);
+
             try {
-                pb.start();
-                TimoCloudBase.getInstance().info("Successfully started screen session " + proxy.getName() + ".");
+                Process p = new ProcessBuilder(
+                        "/bin/sh", "-c",
+                        "screen -mdS " + proxy.getId() +
+                                " /bin/sh -c '" +
+                                "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
+                                " java -server" +
+                                " -Xmx" + proxy.getRam() + "M" +
+                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Dcom.mojang.eula.agree=true" +
+                                " -Dtimocloud-proxyname=" + proxy.getName() +
+                                " -Dtimocloud-proxyid=" + proxy.getId() +
+                                " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
+                                " -Dtimocloud-static=" + proxy.isStatic() +
+                                " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
+                                " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
+                                " -jar BungeeCord.jar" +
+                                " | tee " + logFile.getAbsolutePath()
+                                + "'"
+                ).start();
+
+                TimoCloudBase.getInstance().info("Successfully started proxy screen session " + proxy.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ":");
-                TimoCloudBase.getInstance().severe(e);
                 throw new ProxyStartException("Error while starting process");
             }
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
@@ -400,6 +427,7 @@ public class BaseInstanceManager {
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
+            TimoCloudBase.getInstance().severe(e);
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_PROXY_NOT_STARTED).setTarget(proxy.getId()));
         }
     }
@@ -460,47 +488,51 @@ public class BaseInstanceManager {
         }
     }
 
+    private FileTailer generateLogTailer(File logFile, Consumer<LogEntry> onMessage) {
+        LogEntryReader logEntryReader = new LogEntryReader(onMessage);
+        return new FileTailer(logFile, new LogTailerListener(logEntryReader), 500);
+    }
 
     public void onServerStopped(String id) {
-        File directory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), id);
-        /*
-        if ((Boolean) TimoCloudBase.getInstance().getFileManager().getConfig().get("save-logs")) {
-            File log = new File(directory, "/logs/latest.log");
-            if (log.exists()) {
-                try {
-                    File dir = new File(TimoCloudBase.getInstance().getFileManager().getLogsDirectory(), ServerToGroupUtil.getGroupByServer(name));
-                    dir.mkdirs();
-                    Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
-                } catch (Exception e) {
-                    TimoCloudBase.getInstance().severe(e);
-                }
-            } else {
-                TimoCloudBase.getInstance().severe("No log from server " + name + " exists.");
-            }
+        FileTailer tailer = logTailers.get(id);
+        if (tailer != null) {
+            tailer.stop();
+            logTailers.remove(id);
         }
-        */
-        deleteDirectory(directory);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                File directory = new File(TimoCloudBase.getInstance().getFileManager().getServerTemporaryDirectory(), id);
+                BaseFileManager.deleteDirectory(directory);
+                getServerLogFile(id).delete();
+            }
+        }, 5 * 60 * 1000);
     }
 
     public void onProxyStopped(String id) {
-        File directory = new File(TimoCloudBase.getInstance().getFileManager().getProxyTemporaryDirectory(), id);
-        /*
-        if ((Boolean) TimoCloudBase.getInstance().getFileManager().getConfig().get("save-logs")) {
-            File log = new File(directory, "proxy.log.0");
-            if (log.exists()) {
-                try {
-                    File dir = new File(TimoCloudBase.getInstance().getFileManager().getLogsDirectory(), ServerToGroupUtil.getGroupByServer(name));
-                    dir.mkdirs();
-                    Files.copy(log.toPath(), new File(dir, TimeUtil.formatTime() + "_" + name + ".log").toPath());
-                } catch (Exception e) {
-                    TimoCloudBase.getInstance().severe(e);
-                }
-            } else {
-                TimoCloudBase.getInstance().severe("No log from proxy " + name + " exists.");
-            }
+        FileTailer tailer = logTailers.get(id);
+        if (tailer != null) {
+            tailer.stop();
+            logTailers.remove(id);
         }
-        */
-        deleteDirectory(directory);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                File directory = new File(TimoCloudBase.getInstance().getFileManager().getProxyTemporaryDirectory(), id);
+                BaseFileManager.deleteDirectory(directory);
+                getProxyLogFile(id).delete();
+            }
+        }, 5 * 60 * 1000);
+    }
+
+    private static File getServerLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getServerLogsDirectory(), id + ".log");
+    }
+
+    private static File getProxyLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getProxyLogsDirectory(), id + ".log");
     }
 
     public boolean isDownloadingTemplate() {

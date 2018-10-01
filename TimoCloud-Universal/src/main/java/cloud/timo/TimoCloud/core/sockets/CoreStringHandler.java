@@ -320,8 +320,14 @@ public class CoreStringHandler extends BasicStringHandler {
                 }
                 break;
             }
+            case SERVER_LOG_ENTRY: {
+                if (! (target instanceof Server)) break; // Don't process log entries of already offline servers
+            }
+            case PROXY_LOG_ENTRY: {
+                if (! (target instanceof Proxy)) break; // Don't process log entries of already offline proxies
+            }
             default:
-                target.onMessage(message);
+                target.onMessage(message, sender);
         }
     }
 

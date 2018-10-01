@@ -26,13 +26,18 @@ public class LoggingPrintStream extends PrintStream {
     }
 
     private void newLine() {
-        logger.accept(byteArrayOutputStream.toString());
+        String line = byteArrayOutputStream.toString();
+        if (line.endsWith("\n")) {
+            line = line.substring(0, line.length()-1);
+        }
+        logger.accept(line);
         try {
             byteArrayOutputStream.close();
         } catch (Exception e) {
             e.printStackTrace(); // This should never happen
+        } finally {
+            this.byteArrayOutputStream = new ByteArrayOutputStream();
         }
-        this.byteArrayOutputStream = new ByteArrayOutputStream();
     }
 
     @Override

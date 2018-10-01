@@ -59,7 +59,7 @@ public class Base implements Communicatable {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
@@ -136,6 +136,7 @@ public class Base implements Communicatable {
         this.cpuLoad = cpuLoad;
     }
 
+    @Override
     public boolean isConnected() {
         return connected;
     }

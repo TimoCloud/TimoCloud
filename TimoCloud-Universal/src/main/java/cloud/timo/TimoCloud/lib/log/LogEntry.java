@@ -8,14 +8,14 @@ public class LogEntry implements Comparable<LogEntry> {
 
     private long timestamp;
     private LogLevel level;
+    private String prefix;
     private String message;
-    private String messageWithPrefix;
 
-    public LogEntry(long timestamp, LogLevel level, String message, String messageWithPrefix) {
+    public LogEntry(long timestamp, LogLevel level, String message, String prefix) {
         this.timestamp = timestamp;
         this.level = level;
         this.message = message;
-        this.messageWithPrefix = messageWithPrefix;
+        this.prefix = prefix;
     }
 
     public long getTimestamp() {
@@ -26,6 +26,10 @@ public class LogEntry implements Comparable<LogEntry> {
         return level;
     }
 
+    public String getPrefix() {
+        return prefix;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -34,7 +38,7 @@ public class LogEntry implements Comparable<LogEntry> {
      * @return The message as it is printed to the console, that means i.e. <b>[2018-08-15 20:06:45] [INFORMATION] Base BASE-1 connected.</b> instead of <b>Base BASE-1 connected.</b>
      */
     public String getMessageWithPrefix() {
-        return messageWithPrefix;
+        return getPrefix() + getMessage();
     }
 
     public LogEntryObject toLogEntryObject() {
@@ -46,27 +50,6 @@ public class LogEntry implements Comparable<LogEntry> {
         );
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LogEntry logEntry = (LogEntry) o;
-
-        if (timestamp != logEntry.timestamp) return false;
-        if (level != logEntry.level) return false;
-        if (message != null ? !message.equals(logEntry.message) : logEntry.message != null) return false;
-        return messageWithPrefix != null ? messageWithPrefix.equals(logEntry.messageWithPrefix) : logEntry.messageWithPrefix == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (timestamp ^ (timestamp >>> 32));
-        result = 31 * result + (level != null ? level.hashCode() : 0);
-        result = 31 * result + (message != null ? message.hashCode() : 0);
-        result = 31 * result + (messageWithPrefix != null ? messageWithPrefix.hashCode() : 0);
-        return result;
-    }
 
     @Override
     public int compareTo(LogEntry o) {

@@ -19,13 +19,15 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Server implements Instance, Communicatable {
 
     private String name;
     private String id;
-    private Integer port;
+    private int port;
     private ServerGroup group;
     private Channel channel;
     private Base base;
@@ -38,7 +40,8 @@ public class Server implements Instance, Communicatable {
     private int maxPlayers = 0;
     private String map;
     private boolean starting;
-    private boolean registered = false;
+    private boolean registered;
+    private boolean connected;
     private LogStorage logStorage;
 
     private DoAfterAmount templateUpdate;
@@ -95,29 +98,35 @@ public class Server implements Instance, Communicatable {
             TimoCloudCore.getInstance().severe(e);
             return;
         }
-        getGroup().addStartingServer(this);
+        getGroup().addServer(this);
         getBase().addServer(this);
     }
 
     @Override
     public void stop() {
-        if (getChannel() != null) getChannel().close();
         unregister();
+        sendMessage(Message.create().setType(MessageType.SERVER_STOP));
     }
 
     @Override
     public void onConnect(Channel channel) {
+        this.connected = true;
         setChannel(channel);
         TimoCloudCore.getInstance().info("Server " + getName() + " connected.");
     }
 
     @Override
     public void onDisconnect() {
+        this.connected = false;
         setChannel(null);
-        TimoCloudCore.getInstance().info("Server " + getName() + " disconnected.");
         unregister();
+        TimoCloudCore.getInstance().info("Server " + getName() + " disconnected.");
+        onShutdown();
     }
 
+    /**
+     * Called when the server is connected and completely loaded
+     */
     @Override
     public void register() {
         if (isRegistered()) return;
@@ -133,24 +142,31 @@ public class Server implements Instance, Communicatable {
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEvent(toServerObject()));
     }
 
+    /**
+     * Calling when the server is unloaded
+     */
     @Override
     public void unregister() {
         if (!isRegistered()) return;
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
-        getGroup().removeServer(this);
-        getBase().removeServer(this);
+
         setState("OFFLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.unregisterServer(this);
         }
+
         this.registered = false;
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                getBase().sendMessage(Message.create().setType(MessageType.BASE_SERVER_STOPPED).setData(getId()));
-            }
-        }, 5 * 60 * 1000);
+    }
+
+    /**
+     * Called when the server is completely shut down
+     */
+    private void onShutdown() {
+        getGroup().removeServer(this);
+        getBase().removeServer(this);
+
+        getBase().sendMessage(Message.create().setType(MessageType.BASE_SERVER_STOPPED).setData(getId()));
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
@@ -162,7 +178,7 @@ public class Server implements Instance, Communicatable {
     }
 
     @Override
-    public void onMessage(Message message) {
+    public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
@@ -201,7 +217,9 @@ public class Server implements Instance, Communicatable {
                 getTemplateUpdate().addOne();
                 break;
             case SERVER_LOG_ENTRY:
-                logStorage.addEntry(JsonConverter.convertMapIfNecessary(data, LogEntry.class));
+                if (isRegistered() && sender instanceof Base) break;
+                LogEntry logEntry = JsonConverter.convertMapIfNecessary(data, LogEntry.class);
+                logStorage.addEntry(logEntry);
                 break;
             default:
                 sendMessage(message);
@@ -230,6 +248,11 @@ public class Server implements Instance, Communicatable {
 
     public boolean isRegistered() {
         return registered;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connected;
     }
 
     @Override

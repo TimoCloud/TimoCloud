@@ -111,12 +111,13 @@ public class ProxyGroup implements Group {
             TimoCloudCore.getInstance().severe("Fatal error: Tried to add proxy which is null. Please report this.");
             return;
         }
-        if (proxies.containsKey(proxy.getId())) return;
         proxies.put(proxy.getId(), proxy);
+        TimoCloudCore.getInstance().getInstanceManager().addProxy(proxy);
     }
 
     public void removeProxy(Proxy proxy) {
         proxies.remove(proxy.getId());
+        TimoCloudCore.getInstance().getInstanceManager().removeProxy(proxy);
     }
 
     public void onProxyConnect(Proxy proxy) {

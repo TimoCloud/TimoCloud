@@ -155,6 +155,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     public void onSocketDisconnect() {
+        LogInjectionUtil.restoreSystemOutAndErr();
         info("Disconnected from TimoCloudCore. Shutting down....");
         stop();
     }
@@ -168,7 +169,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         everySecond();
     }
 
-    private void stop() {
+    public void stop() {
         getProxy().stop();
     }
 

@@ -12,7 +12,8 @@ import java.util.regex.Pattern;
 public class LogEntryReader implements Consumer<String> {
 
     private static final LogLevel FALLBACK_LOG_LEVEL = LogLevel.INFO;
-    private static final Pattern LOG_LEVEL_PATTERN = Pattern.compile("\\[(.*?)\\]");
+    private static final Pattern LOG_LEVEL_SEARCH_PATTERN = Pattern.compile("\\[(.*?)]");
+    private static final Pattern PREFIX_SEARCH_PATTERN = Pattern.compile("(^.*?\\[.*?] ?(\\[.*?])?:? ?)");
 
     private static Map<String, LogLevel> determinedLogLevels = new HashMap<>();
 
@@ -31,10 +32,11 @@ public class LogEntryReader implements Consumer<String> {
     @Override
     public void accept(String message) {
         LogLevel logLevel = getLogLevel(message);
-        String messageWithoutTimestamp = stripTimestamp(message);
-        String strippedMessage = stripLogLevel(messageWithoutTimestamp);
+        Matcher prefixMatcher = PREFIX_SEARCH_PATTERN.matcher(message);
+        String prefix = prefixMatcher.find() ? prefixMatcher.group() : "";
+        String strippedMessage = stripBrackets(message);
         long timestamp = new Date().getTime();
-        LogEntry logEntry = new LogEntry(timestamp, logLevel, strippedMessage, message);
+        LogEntry logEntry = new LogEntry(timestamp, logLevel, strippedMessage, prefix);
         logEntryConsumer.accept(logEntry);
     }
 
@@ -45,16 +47,12 @@ public class LogEntryReader implements Consumer<String> {
         return FALLBACK_LOG_LEVEL;
     }
 
-    private static String stripTimestamp(String message) {
-        return message.trim().replaceFirst("\\[*\\]", "").trim();
-    }
-
-    private static String stripLogLevel(String message) {
-        return message.trim().replaceFirst("\\[*\\]", "").trim();
+    private static String stripBrackets(String message) {
+        return message.trim().replaceFirst(PREFIX_SEARCH_PATTERN.pattern(), "").trim();
     }
 
     private static String extractLogLevelString(String message) {
-        Matcher matcher = LOG_LEVEL_PATTERN.matcher(message);
+        Matcher matcher = LOG_LEVEL_SEARCH_PATTERN.matcher(message);
         if (! matcher.find()) return null;
         return matcher.group();
     }
