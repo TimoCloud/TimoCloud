@@ -193,11 +193,12 @@ public class BaseInstanceManager {
             }
 
             File spigotJar = new File(temporaryDirectory, "spigot.jar");
-            if (!spigotJar.exists()) {
-                TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. Please make sure a the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
-                throw new ServerStartException("spigot.jar does not exist");
+            if (! spigotJar.exists()) {
+                TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. " + (
+                        server.isStatic() ? "Please make sure the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)."
+                                : "Please make sure to have a file called 'spigot.jar' in your template."));
+                throw new ProxyStartException("spigot.jar does not exist");
             }
-
 
             File plugins = new File(temporaryDirectory, "/plugins/");
             plugins.mkdirs();
@@ -317,10 +318,11 @@ public class BaseInstanceManager {
 
             File bungeeJar = new File(temporaryDirectory, "BungeeCord.jar");
             if (!bungeeJar.exists()) {
-                TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because BungeeCord.jar does not exist. Please make sure a the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!). If not, DON'T create it there, but in the Core template!");
+                TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because BungeeCord.jar does not exist. " + (
+                        proxy.isStatic() ? "Please make sure the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!)."
+                                : "Please make sure to have a file called 'BungeeCord.jar' in your template."));
                 throw new ProxyStartException("BungeeCord.jar does not exist");
             }
-
 
             File plugins = new File(temporaryDirectory, "/plugins/");
             plugins.mkdirs();
