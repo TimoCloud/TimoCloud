@@ -30,6 +30,31 @@ public class SignManager {
     private Map<Location, SignInstance> signInstances;
     private int updates = 0;
 
+    private static final Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
+        try {
+            org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
+            org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
+            if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
+            if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+            switch (sign1.getFacing()) {
+                case NORTH:
+                    return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                case SOUTH:
+                    return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                case EAST:
+                    return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                case WEST:
+                    return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                default:
+                    return 0;
+            }
+        } catch (Exception e) {
+            TimoCloudBukkit.getInstance().severe(e);
+            return 0;
+        }
+    };
+
     public SignManager() {
         load();
     }
@@ -320,30 +345,5 @@ public class SignManager {
         if (signInstance == null) return;
         signInstance.setActive(true);
     }
-
-    private static Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
-        try {
-            org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
-            org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
-            if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
-            if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
-                return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
-            switch (sign1.getFacing()) {
-                case NORTH:
-                    return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
-                case SOUTH:
-                    return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
-                case EAST:
-                    return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
-                case WEST:
-                    return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
-                default:
-                    return 0;
-            }
-        } catch (Exception e) {
-            TimoCloudBukkit.getInstance().severe(e);
-            return 0;
-        }
-    };
 
 }
