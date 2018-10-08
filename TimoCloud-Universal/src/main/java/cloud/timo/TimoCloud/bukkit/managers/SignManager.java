@@ -46,6 +46,7 @@ public class SignManager {
         FileConfiguration config = TimoCloudBukkit.getInstance().getFileManager().getSignTemplates();
         for (String template : config.getKeys(false)) {
             Map<String, SignLayout> layouts = new HashMap<>();
+            List<String> sortOutStates = config.getStringList(template + ".sortOutStates");
             try {
                 for (String layout : config.getConfigurationSection(template + ".layouts").getKeys(false)) {
                     List<String>[] lines = Arrays.copyOf(new Object[4], 4, List[].class);
@@ -76,7 +77,7 @@ public class SignManager {
                 if (!layouts.containsKey("Default")) {
                     throw new SignParseException("Template " + template + " does not have a default layout 'Default'. Please add it and type /signs reload");
                 }
-                signTemplates.add(new SignTemplate(template, layouts));
+                signTemplates.add(new SignTemplate(template, layouts, sortOutStates));
             } catch (Exception e) {
                 TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c.");
                 TimoCloudBukkit.getInstance().severe(e);
@@ -141,12 +142,12 @@ public class SignManager {
         };
         Map<String, SignLayout> layouts = new HashMap<>();
         layouts.put("Default", new SignLayout(lines, -1, null, 0));
-        return new SignTemplate("TemplateNotFound", layouts);
+        return new SignTemplate("TemplateNotFound", layouts, null);
     }
 
     public void updateSigns() {
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
-        List<SignInstance> dynamicInstances = new ArrayList<>();
+        Collection<SignInstance> dynamicInstances = new ArrayList<>();
         for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);
@@ -158,8 +159,8 @@ public class SignManager {
         updates++;
     }
 
-    private void processDynamicSigns(List<SignInstance> signInstances) {
-        Map<ServerGroupObject, List<SignInstance>> groups = new HashMap<>();
+    private void processDynamicSigns(Collection<SignInstance> signInstances) {
+        Map<ServerGroupObject, Collection<SignInstance>> groups = new HashMap<>();
         for (SignInstance signInstance : signInstances) {
             ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(signInstance.getTarget());
             groups.putIfAbsent(group, new ArrayList<>());
@@ -172,13 +173,20 @@ public class SignManager {
         return signInstance.isActive() && signInstance.getLocation().getBlock().getState() instanceof Sign;
     }
 
-    private void processDynamicSignsPerGroup(ServerGroupObject group, List<SignInstance> signInstances) {
+    private void processDynamicSignsPerGroup(ServerGroupObject group, Collection<SignInstance> signInstances) {
+        Map<SignTemplate, Collection<SignInstance>> templates = new HashMap<>();
+        for (SignInstance signInstance : signInstances) {
+            templates.putIfAbsent(signInstance.getTemplate(), new ArrayList<>());
+            templates.get(signInstance.getTemplate()).add(signInstance);
+        }
+        for (SignTemplate template : templates.keySet()) processDynamicSignsPerGroupAndTemplate(group, template, templates.get(template));
+    }
+
+    private void processDynamicSignsPerGroupAndTemplate(ServerGroupObject group, SignTemplate template, Collection<SignInstance> signInstances) {
         if (group == null) return;
         signInstances = signInstances.stream().filter(this::isSignActive).collect(Collectors.toList());
-
-        List<ServerObject> targets = new ArrayList<>();
-        for (ServerObject serverObject : group.getServers())
-            if (! group.getSortOutStates().contains(serverObject.getState())) targets.add(serverObject);
+        Collection<String> sortOutStates = template.getSortOutStates() != null ? template.getSortOutStates() : group.getSortOutStates();
+        List<ServerObject> targets = group.getServers().stream().filter(serverObject -> ! sortOutStates.contains(serverObject.getState())).collect(Collectors.toList());
         List<SignInstance> withPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() != 0).collect(Collectors.toList());
         List<SignInstance> withoutPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() == 0).collect(Collectors.toList());
         withPriority.sort(Comparator.comparing(SignInstance::getPriority));
@@ -194,30 +202,7 @@ public class SignManager {
         }
 
         step = -1;
-        withoutPriority.sort((o1, o2) -> {
-            try {
-                org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
-                org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
-                if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
-                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
-                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
-                switch (sign1.getFacing()) {
-                    case NORTH:
-                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
-                    case SOUTH:
-                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
-                    case EAST:
-                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
-                    case WEST:
-                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
-                    default:
-                        return 0;
-                }
-            } catch (Exception e) {
-                TimoCloudBukkit.getInstance().severe(e);
-                return 0;
-            }
-        });
+        withoutPriority.sort(compareSignInstancesByLocation);
         for (SignInstance signInstance : withoutPriority) {
             if (signInstance == null) return;
             step++;
@@ -335,5 +320,30 @@ public class SignManager {
         if (signInstance == null) return;
         signInstance.setActive(true);
     }
+
+    private static Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
+        try {
+            org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
+            org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
+            if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
+            if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+            switch (sign1.getFacing()) {
+                case NORTH:
+                    return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                case SOUTH:
+                    return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                case EAST:
+                    return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                case WEST:
+                    return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                default:
+                    return 0;
+            }
+        } catch (Exception e) {
+            TimoCloudBukkit.getInstance().severe(e);
+            return 0;
+        }
+    };
 
 }

@@ -1,16 +1,21 @@
 package cloud.timo.TimoCloud.bukkit.signs;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class SignTemplate {
     private String name;
     private Map<String, SignLayout> layouts;
-    private List<String> sortOutStates;
+    private Set<String> sortOutStates;
 
-    public SignTemplate(String name, Map<String, SignLayout> layouts) {
+    public SignTemplate(String name, Map<String, SignLayout> layouts, Collection<String> sortOutStates) {
         this.name = name;
         this.layouts = layouts;
+        if (sortOutStates != null) {
+            this.sortOutStates = new HashSet<>(sortOutStates);
+        }
     }
 
     public String getName() {
@@ -25,4 +30,10 @@ public class SignTemplate {
         layouts.put(name, layout);
     }
 
+    /**
+     * @return If custom sortOutStates for this template are defined, they will be returned. Otherwise null - if so, the server group's sortOut states will be used.
+     */
+    public Set<String> getSortOutStates() {
+        return sortOutStates;
+    }
 }
