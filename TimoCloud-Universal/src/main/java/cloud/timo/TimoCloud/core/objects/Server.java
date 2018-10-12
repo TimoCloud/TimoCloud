@@ -29,7 +29,7 @@ public class Server implements Instance, Communicatable {
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private Set<PlayerObject> onlinePlayers;
+    private final Set<PlayerObject> onlinePlayers;
     private int onlinePlayerCount = 0;
     private int maxPlayers = 0;
     private String map;
@@ -44,7 +44,7 @@ public class Server implements Instance, Communicatable {
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getAddress(), 0);
-        this.onlinePlayers = new HashSet<>();
+        this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.map = map;
         if (this.map == null) this.map = "";
     }
