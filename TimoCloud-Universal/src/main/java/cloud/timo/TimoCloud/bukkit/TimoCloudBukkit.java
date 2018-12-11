@@ -110,7 +110,7 @@ public class TimoCloudBukkit extends JavaPlugin {
         if (connectionFailed) {
             System.exit(0);
         } else {
-            stop();
+            if (isEnabled()) stop();
         }
     }
 
