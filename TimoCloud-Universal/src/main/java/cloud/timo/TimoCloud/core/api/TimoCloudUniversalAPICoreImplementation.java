@@ -59,7 +59,7 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
 
     @Override
     public BaseObject getBase(String name) {
-        Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(name);
+        Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(name);
         if (base == null) {
             return new BaseObjectOfflineImplementation(name);
         }

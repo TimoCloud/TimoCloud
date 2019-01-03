@@ -11,6 +11,11 @@ public interface BaseObject {
     String getName();
 
     /**
+     * @param name A non-existing base name
+     */
+    //APIRequestFuture<Void> setName(String name);
+
+    /**
      * @return The base's ip address
      */
     InetAddress getIpAddress();
@@ -29,6 +34,11 @@ public interface BaseObject {
      * @return The maximum amount of RAM servers/proxies on this base may use in total in megabytes
      */
     int getMaxRam();
+
+    /**
+     * @param ram The amount of ram in megabytes
+     */
+    //APIRequestFuture<Void> setMaxRam(int ram);
 
     /**
      * @return Whether the base is currently connected to the Core

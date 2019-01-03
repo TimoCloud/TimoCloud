@@ -53,6 +53,7 @@ public class CommandManager {
         registerCommand(new SendCommandCommandHandler(), "sendcommand", "executecommand", "send");
         registerCommand(new StopCommandHandler(), "stop", "end", "quit", "exit");
         registerCommand(new VersionCommandHandler(), "version", "info");
+        registerCommand(new AddBaseCommandHandler(), "addbase");
     }
 
     public void sendHelp(CommandSender sender) {

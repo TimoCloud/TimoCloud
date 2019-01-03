@@ -4,8 +4,8 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BungeeEventManager {

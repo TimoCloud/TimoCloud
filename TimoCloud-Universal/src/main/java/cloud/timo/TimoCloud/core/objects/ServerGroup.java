@@ -22,7 +22,9 @@ public class ServerGroup implements Group {
 
     private Map<String, Server> servers = new HashMap<>();
 
-    public ServerGroup() {}
+    public ServerGroup(ServerGroupProperties properties) {
+        construct(properties);
+    }
 
     public ServerGroup(Map<String, Object> properties) {
         construct(properties);
@@ -64,13 +66,17 @@ public class ServerGroup implements Group {
         return properties;
     }
 
-    public void construct(String name, int startupAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
-        if (isStatic() && startupAmount > 1) {
+    public void construct(ServerGroupProperties properties) {
+        construct(properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseName(), properties.getSortOutStates());
+    }
+
+    public void construct(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
+        if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
-            startupAmount = 1;
+            onlineAmount = 1;
         }
         this.name = name;
-        setOnlineAmount(startupAmount);
+        setOnlineAmount(onlineAmount);
         setMaxAmount(maxAmount);
         setRam(ram);
         setStatic(isStatic);

@@ -16,8 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 public class BungeeFileManager {
-    private String pluginsDirectory = "plugins/TimoCloud/";
-    private String configsDirectory = pluginsDirectory + "configs/";
+
+    private String baseDirectory = "plugins/TimoCloud/";
+    private String configsDirectory = baseDirectory + "configs/";
     private File configFile;
     private Configuration config;
     private File messagesFile;
@@ -48,7 +49,7 @@ public class BungeeFileManager {
             config = configNew;
 
             //Load messagesFile
-            messagesFile = new File(configsDirectory, "messages.yml");
+            messagesFile = new File(configsDirectory, "protocol.yml");
             if (!messagesFile.exists()) {
                 messagesFile.createNewFile();
             }
@@ -88,6 +89,10 @@ public class BungeeFileManager {
         } catch (Exception e) {
             TimoCloudBungee.getInstance().severe(e);
         }
+    }
+
+    public String getBaseDirectory() {
+        return baseDirectory;
     }
 
     public File getConfigFile() {

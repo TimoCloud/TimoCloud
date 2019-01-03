@@ -1,9 +1,9 @@
 package cloud.timo.TimoCloud.core.managers;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,13 +29,7 @@ public class TemplateManager {
             ZipEntry zipEntry = new ZipEntry(relative);
             zos.putNextEntry(zipEntry);
             if (! file.isDirectory()) {
-                FileInputStream fis = new FileInputStream(file);
-                byte[] bytes = new byte[1024];
-                int length;
-                while ((length = fis.read(bytes)) >= 0) {
-                    zos.write(bytes, 0, length);
-                }
-                fis.close();
+                Files.copy(file.toPath(), zos);
             }
             zipEntry.setTime(file.lastModified());
             zos.closeEntry();

@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.base.managers.BaseInstanceManager;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.communication.CommunicationTest;
 import cloud.timo.TimoCloud.core.managers.CoreFileManager;
-import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.protocol.Message;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import org.junit.Before;
 import org.junit.Test;

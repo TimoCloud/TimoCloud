@@ -24,13 +24,23 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyPairRetriever;
 import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.lib.log.utils.LogInjectionUtil;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
+import cloud.timo.TimoCloud.lib.sockets.AESDecrypter;
+import cloud.timo.TimoCloud.lib.sockets.AESEncrypter;
+import cloud.timo.TimoCloud.lib.sockets.RSAHandshakeHandler;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.plugin.Plugin;
 
+import java.io.File;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -150,8 +160,22 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         return Integer.parseInt(System.getProperty("timocloud-corehost").split(":")[1]);
     }
 
-    public void onSocketConnect() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAE).setTarget(getProxyId()));
+    public void onSocketConnect(Channel channel) {
+        try {
+            KeyPair keyPair = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "/keys/")).getKeyPair();
+            new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
+                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
+                channel.pipeline().addBefore("prepender", "handler", getBungeeStringHandler());
+                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
+                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAE).setTarget(getProxyId()));
+            })).startHandshake();
+        } catch (Exception e) {
+            severe("Error during public key authentification, please report this!");
+            e.printStackTrace();
+        }
     }
 
     public void onSocketDisconnect() {

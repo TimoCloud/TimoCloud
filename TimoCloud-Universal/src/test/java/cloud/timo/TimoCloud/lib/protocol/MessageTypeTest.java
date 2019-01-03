@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.lib.messages;
+package cloud.timo.TimoCloud.lib.protocol;
 
 import cloud.timo.TimoCloud.communication.CommunicationTest;
 import org.junit.Test;

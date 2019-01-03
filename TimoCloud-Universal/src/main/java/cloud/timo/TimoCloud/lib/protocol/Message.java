@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.lib.messages;
+package cloud.timo.TimoCloud.lib.protocol;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;

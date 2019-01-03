@@ -61,7 +61,7 @@ public interface ProxyObject {
     int getPort();
 
     /**
-     * @return The address plugin messages to this proxy shall be addressed to
+     * @return The address plugin protocol to this proxy shall be addressed to
      */
     MessageClientAddress getMessageAddress();
 

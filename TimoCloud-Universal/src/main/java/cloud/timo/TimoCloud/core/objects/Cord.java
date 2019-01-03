@@ -6,8 +6,8 @@ import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;

@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.managers;
 
-import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.protocol.Message;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -36,6 +36,7 @@ public class CoreFileManager {
     private Map<String, Object> cloudFlareConfig;
     private File serverGroupsFile;
     private File proxyGroupsFile;
+    private File basesFile;
 
     public CoreFileManager() {
     }
@@ -94,6 +95,8 @@ public class CoreFileManager {
             serverGroupsFile.createNewFile();
             this.proxyGroupsFile = new File(configsDirectory, "proxyGroups.json");
             proxyGroupsFile.createNewFile();
+            this.basesFile = new File(configsDirectory, "bases.json");
+            basesFile.createNewFile();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,5 +207,9 @@ public class CoreFileManager {
 
     public File getProxyGroupsFile() {
         return proxyGroupsFile;
+    }
+
+    public File getBasesFile() {
+        return basesFile;
     }
 }

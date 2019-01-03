@@ -1,6 +1,2 @@
-name: BASE-1
 core-ip: 127.0.0.1
 core-port: 5000
-ram: 4096
-ram-keep-free: 1024
-cpu-max-load: 90.0

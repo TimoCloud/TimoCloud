@@ -6,10 +6,12 @@ import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.base.utils.LogTailerListener;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyPairRetriever;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.lib.log.LogEntry;
 import cloud.timo.TimoCloud.lib.log.LogEntryReader;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import cloud.timo.TimoCloud.lib.utils.files.tailer.FileTailer;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +21,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.*;
 import java.net.ServerSocket;
 import java.nio.file.Files;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -54,14 +57,13 @@ public class BaseInstanceManager {
 
     public void updateResources() {
         double cpu = TimoCloudBase.getInstance().getResourceManager().getCpuUsage();
-        boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy && cpu <= (Double) TimoCloudBase.getInstance().getFileManager().getConfig().get("cpu-max-load");
-        long freeRam = Math.max(0, TimoCloudBase.getInstance().getResourceManager().getFreeMemory() - ((Integer) TimoCloudBase.getInstance().getFileManager().getConfig().get("ram-keep-free")).longValue());
+        boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy;
+        long freeRam = TimoCloudBase.getInstance().getResourceManager().getFreeMemory();
         TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(
                 Message.create().setType(MessageType.BASE_RESOURCES)
                         .setData(Message.create()
                                 .set("ready", ready)
-                                .set("availableRam", freeRam)
-                                .set("maxRam", TimoCloudBase.getInstance().getFileManager().getConfig().get("ram"))
+                                .set("freeRam", freeRam)
                                 .set("cpuLoad", cpu)));
     }
 
@@ -223,6 +225,8 @@ public class BaseInstanceManager {
             }
             blockPort(port);
 
+            PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
+
             File serverProperties = new File(temporaryDirectory, "server.properties");
             setProperty(serverProperties, "online-mode", "false");
             setProperty(serverProperties, "server-name", server.getName());
@@ -276,7 +280,9 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
                     .setType(MessageType.BASE_SERVER_STARTED)
                     .setTarget(server.getId())
-                    .set("port", port));
+                    .set("port", port)
+                    .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
+            );
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
@@ -358,6 +364,8 @@ public class BaseInstanceManager {
             }
             blockPort(port);
 
+            PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
+
             File configFile = new File(temporaryDirectory, "config.yml");
             configFile.createNewFile();
             Yaml yaml = new Yaml();
@@ -373,6 +381,7 @@ public class BaseInstanceManager {
             }
             map.put("host", "0.0.0.0:" + port);
             map.put("max_players", proxy.getMaxPlayers());
+            map.put("force_default_server", false);
             if (!proxy.isStatic()) map.put("query_enabled", false);
             if (listeners.size() == 0) listeners.add(map);
             FileWriter writer = new FileWriter(configFile);
@@ -425,7 +434,9 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
                     .setType(MessageType.BASE_PROXY_STARTED)
                     .setTarget(proxy.getId())
-                    .set("port", port));
+                    .set("port", port)
+                    .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
+            );
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());

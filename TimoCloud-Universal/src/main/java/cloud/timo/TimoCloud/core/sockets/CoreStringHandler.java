@@ -15,8 +15,8 @@ import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
@@ -29,7 +29,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.security.PublicKey;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @ChannelHandler.Sharable
 public class CoreStringHandler extends BasicStringHandler {
@@ -38,14 +40,14 @@ public class CoreStringHandler extends BasicStringHandler {
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         String targetId = message.getTarget();
-        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerById(targetId);
-        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyById(targetId);
+        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetId);
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(targetId);
         String baseName = (String) message.get("base");
         String cordName = (String) message.get("cord");
         Communicatable target = null;
         if (server != null) target = server;
         else if (proxy != null) target = proxy;
-        else if (baseName != null) target = TimoCloudCore.getInstance().getInstanceManager().getBase(baseName);
+        else if (baseName != null) target = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseName);
         else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
@@ -61,9 +63,14 @@ public class CoreStringHandler extends BasicStringHandler {
                     TimoCloudCore.getInstance().severe("Server connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
+                if (! channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(server.getPublicKey())) {
+                    TimoCloudCore.getInstance().severe(String.format("Server %s connected with wrong public key. Please report this.", server.getName()));
+                    return;
+                }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, server);
                 server.onConnect(channel);
                 server.onHandshakeSuccess();
+                channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
             case PROXY_HANDSHAE: {
@@ -71,21 +78,21 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (!address.equals(proxy.getBase().getAddress())) {
+                if (! address.equals(proxy.getBase().getAddress())) {
                     TimoCloudCore.getInstance().severe("Proxy connected with different InetAddress than its base. Refusing connection.");
+                    return;
+                }
+                if (! channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(proxy.getPublicKey())) {
+                    TimoCloudCore.getInstance().severe(String.format("Proxy %s connected with wrong public key. Please report this.", proxy.getName()));
                     return;
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, proxy);
                 proxy.onConnect(channel);
                 proxy.onHandshakeSuccess();
+                channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
             case BASE_HANDSHAKE: {
-                if (!ipAllowed(address)) {
-                    TimoCloudCore.getInstance().severe("Unknown base connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
-                    closeChannel(channel);
-                    return;
-                }
                 if (TimoCloudCore.getInstance().getInstanceManager().isBaseConnected(baseName)) {
                     TimoCloudCore.getInstance().severe("Error while base handshake: A base with the name '" + baseName + "' is already conencted.");
                     return;
@@ -96,10 +103,15 @@ public class CoreStringHandler extends BasicStringHandler {
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe("Unable to resolve public ip address '" + message.get("publicAddress") + "' for base " + baseName + ". Please make sure the base's hostname is configured correctly in your operating system.");
                 }
-                Base base = TimoCloudCore.getInstance().getInstanceManager().getOrCreateBase(baseName, address, publicAddress, channel);
+                PublicKey publicKey = channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get();
+                Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByPublicKey(publicKey);
+                if (base == null) { // First connection
+                    base = TimoCloudCore.getInstance().getInstanceManager().createBase(publicKey);
+                }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
-                base.onConnect(channel);
+                base.onConnect(channel, address, publicAddress);
                 base.onHandshakeSuccess();
+                channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
             case CORD_HANDSHAKE: {
@@ -116,6 +128,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, cord);
                 cord.onConnect(channel);
                 cord.onHandshakeSuccess();
+                channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
         }
@@ -218,11 +231,11 @@ public class CoreStringHandler extends BasicStringHandler {
                 try {
                     if (templateDifferences != null) {
                         File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), template);
-                        List<File> templateFiles = new ArrayList<>();
-                        for (String fileName : templateDifferences)
-                            templateFiles.add(new File(templateDirectory, fileName));
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, outputStream);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(
+                                templateDifferences.stream().map(fileName -> new File(templateDirectory, fileName)).collect(Collectors.toList()),
+                                templateDirectory,
+                                outputStream);
                         String content = byteArrayToString(outputStream.toByteArray());
                         channel.writeAndFlush(Message.create()
                                 .setType(MessageType.TRANSFER_TEMPLATE)
@@ -234,10 +247,11 @@ public class CoreStringHandler extends BasicStringHandler {
                     }
                     if (mapDifferences != null) {
                         File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), server.getGroup().getName() + "_" + map);
-                        List<File> mapFiles = new ArrayList<>();
-                        for (String fileName : mapDifferences) mapFiles.add(new File(mapDirectory, fileName));
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(mapFiles, mapDirectory, outputStream);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(
+                                mapDifferences.stream().map(fileName -> new File(mapDirectory, fileName)).collect(Collectors.toList()),
+                                mapDirectory,
+                                outputStream);
                         String content = byteArrayToString(outputStream.toByteArray());
                         channel.writeAndFlush(Message.create()
                                 .setType(MessageType.TRANSFER_TEMPLATE)
@@ -248,12 +262,12 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .toString());
                     }
                     if (globalDifferences != null) {
-                        List<File> templateFiles = new ArrayList<>();
                         File templateDirectory = TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory();
-                        for (String fileName : globalDifferences)
-                            templateFiles.add(new File(templateDirectory, fileName));
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, outputStream);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(
+                                globalDifferences.stream().map(fileName -> new File(templateDirectory, fileName)).collect(Collectors.toList()),
+                                templateDirectory,
+                                outputStream);
                         String content = byteArrayToString(outputStream.toByteArray());
                         channel.writeAndFlush(Message.create()
                                 .setType(MessageType.TRANSFER_TEMPLATE)
@@ -284,11 +298,11 @@ public class CoreStringHandler extends BasicStringHandler {
                 try {
                     if (templateDifferences != null) {
                         File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), template);
-                        List<File> templateFiles = new ArrayList<>();
-                        for (String fileName : templateDifferences)
-                            templateFiles.add(new File(templateDirectory, fileName));
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, outputStream);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(
+                                templateDifferences.stream().map(fileName -> new File(templateDirectory, fileName)).collect(Collectors.toList()),
+                                templateDirectory,
+                                outputStream);
                         String content = byteArrayToString(outputStream.toByteArray());
                         channel.writeAndFlush(Message.create()
                                 .setType(MessageType.TRANSFER_TEMPLATE)
@@ -299,12 +313,12 @@ public class CoreStringHandler extends BasicStringHandler {
                                 .toString());
                     }
                     if (globalDifferences != null) {
-                        List<File> templateFiles = new ArrayList<>();
                         File templateDirectory = TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory();
-                        for (String fileName : globalDifferences)
-                            templateFiles.add(new File(templateDirectory, fileName));
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(templateFiles, templateDirectory, outputStream);
+                        TimoCloudCore.getInstance().getTemplateManager().zipFiles(
+                                globalDifferences.stream().map(fileName -> new File(templateDirectory, fileName)).collect(Collectors.toList()),
+                                templateDirectory,
+                                outputStream);
                         String content = byteArrayToString(outputStream.toByteArray());
                         channel.writeAndFlush(Message.create()
                                 .setType(MessageType.TRANSFER_TEMPLATE)

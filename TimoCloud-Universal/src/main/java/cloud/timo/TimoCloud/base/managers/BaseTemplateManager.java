@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.base.managers;
 import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,16 +28,7 @@ public class BaseTemplateManager {
                 else Files.delete(file.toPath());
             }
             file.getParentFile().mkdirs();
-            file.createNewFile();
-            FileOutputStream fos = new FileOutputStream(file);
-            while (zipInputStream.available() > 0) {
-                byte[] bytes = new byte[BUFFER];
-                int readCount = zipInputStream.read(bytes, 0, BUFFER);
-                if (readCount <= 0) continue;
-                fos.write(bytes, 0, readCount);
-            }
-
-            fos.close();
+            Files.copy(zipInputStream, file.toPath());
             file.setLastModified(zipEntry.getTime());
             zipInputStream.closeEntry();
         }

@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.lib.debugger;
 
-import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.protocol.Message;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;

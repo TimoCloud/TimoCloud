@@ -18,10 +18,10 @@ public class RestartCommandHandler extends CommandFormatUtil implements CommandH
         ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(instance);
         ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(instance);
 
-        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByName(instance);
-        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(instance);
+        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(instance);
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(instance);
 
-        Base base = TimoCloudCore.getInstance().getInstanceManager().getBase(instance);
+        Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(instance);
 
         if (serverGroup == null && proxyGroup == null && server == null && proxy == null && base == null) {
             sender.sendError("Could not find any group, server, base or proxy with the name '" + instance + "'");

@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.sockets;
 
-import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.protocol.Message;
 import io.netty.channel.Channel;
 
 /**
@@ -21,4 +21,5 @@ public interface Communicatable {
     void sendMessage(Message message);
 
     void onHandshakeSuccess();
+
 }

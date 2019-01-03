@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.bukkit.sockets;
 
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
-import cloud.timo.TimoCloud.lib.messages.Message;
+import cloud.timo.TimoCloud.lib.protocol.Message;
 
 public class BukkitSocketMessageManager {
 

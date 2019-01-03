@@ -44,8 +44,9 @@ public class CommandFormatUtil {
     }
 
     public void displayBase(Base base, CommandSender sender) {
-        sender.sendMessage("  &e" + base.getName() +
-                " &7(&6Free RAM&7: &2" + base.getAvailableRam() + "MB" +
+        sender.sendMessage("  &e" + base.getName() + " " +
+                (base.isConnected() ? "&aConnected" : "&cNot connected") +
+                "&7, (&6Free RAM&7: &2" + base.getAvailableRam() + "MB" +
                 "&7, &6Max RAM&7: &2" + base.getMaxRam() + "MB" +
                 "&7, &6CPU load&7: &2" + (int) base.getCpuLoad() + "%" +
                 "&7, &6IP Address&7: &2" + formatIp(base.getAddress()) +
@@ -59,11 +60,11 @@ public class CommandFormatUtil {
         else if (group instanceof ProxyGroup) displayGroup((ProxyGroup) group, sender);
     }
 
-    public void notEnoughArgs(CommandSender commandSender, String usage){
+    public void notEnoughArgs(CommandSender commandSender, String usage) {
         commandSender.sendError("Not enough arguments. Please use: " + usage);
     }
 
-    public void invalidArgs(CommandSender commandSender, String usage){
+    public void invalidArgs(CommandSender commandSender, String usage) {
         commandSender.sendError("Invalid arguments. Please use: " + usage);
     }
 
@@ -76,5 +77,5 @@ public class CommandFormatUtil {
         if (s.startsWith("/")) s = s.substring(1);
         return s;
     }
-    
+
 }

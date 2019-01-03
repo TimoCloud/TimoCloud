@@ -100,7 +100,7 @@ public interface ServerObject {
     boolean isSortedOut();
 
     /**
-     * @return The address plugin messages to this server shall be addressed to
+     * @return The address plugin protocol to this server shall be addressed to
      */
     MessageClientAddress getMessageAddress();
 

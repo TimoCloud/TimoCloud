@@ -1,9 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-public interface Instance {
-
-    String getName();
-    String getId();
+public interface Instance extends Identifiable {
 
     Group getGroup();
 

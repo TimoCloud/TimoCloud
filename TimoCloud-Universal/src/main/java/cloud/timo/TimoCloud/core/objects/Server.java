@@ -7,11 +7,12 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 import cloud.timo.TimoCloud.lib.log.LogEntry;
 import cloud.timo.TimoCloud.lib.log.LogStorage;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
@@ -19,6 +20,7 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +45,7 @@ public class Server implements Instance, Communicatable {
     private boolean registered;
     private boolean connected;
     private LogStorage logStorage;
+    private PublicKey publicKey;
 
     private DoAfterAmount templateUpdate;
 
@@ -206,6 +209,12 @@ public class Server implements Instance, Communicatable {
                 break;
             case BASE_SERVER_STARTED:
                 setPort(((Number) message.get("port")).intValue());
+                try {
+                    setPublicKey(RSAKeyUtil.publicKeyFromBase64((String) message.get("publicKey")));
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe(String.format("Error while setting public key of server %s, please report this!", getName()));
+                    TimoCloudCore.getInstance().severe(e);
+                }
                 break;
             case BASE_SERVER_NOT_STARTED:
                 //unregister();
@@ -352,6 +361,16 @@ public class Server implements Instance, Communicatable {
 
     public LogStorage getLogStorage() {
         return logStorage;
+    }
+
+    @Override
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
+        TimoCloudCore.getInstance().getInstanceManager().serverDataUpdated(this);
     }
 
     public DoAfterAmount getTemplateUpdate() {

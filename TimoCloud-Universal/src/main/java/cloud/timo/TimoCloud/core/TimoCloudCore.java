@@ -57,6 +57,7 @@ public class TimoCloudCore implements TimoCloudModule {
     private PluginManager pluginManager;
     private PluginMessageManager pluginMessageManager;
     private APIRequestManager apiRequestManager;
+    private CorePublicKeyManager corePublicKeyManager;
 
     private boolean running;
     private boolean waitingForCommand = false;
@@ -161,7 +162,8 @@ public class TimoCloudCore implements TimoCloudModule {
                 node("listgroups"),
                 node("baseinfo", new Completers.TreeCompleter.Node(new BaseNameCompleter(), Collections.emptyList())),
                 node("listbases"),
-                node("sendcommand", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList()))
+                node("sendcommand", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList())),
+                node("addbase")
                 );
         Parser parser = new DefaultParser();
         String prompt = "> ";
@@ -212,6 +214,7 @@ public class TimoCloudCore implements TimoCloudModule {
         this.pluginManager = new PluginManager();
         this.pluginMessageManager = new PluginMessageManager();
         this.apiRequestManager = new APIRequestManager();
+        this.corePublicKeyManager = new CorePublicKeyManager();
 
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICoreImplementation());
         APIInstanceUtil.setCoreInstance(new TimoCloudCoreAPIImplementation());
@@ -318,6 +321,10 @@ public class TimoCloudCore implements TimoCloudModule {
 
     public APIRequestManager getApiRequestManager() {
         return apiRequestManager;
+    }
+
+    public CorePublicKeyManager getCorePublicKeyManager() {
+        return corePublicKeyManager;
     }
 
     public CoreSocketServer getSocketServer() {

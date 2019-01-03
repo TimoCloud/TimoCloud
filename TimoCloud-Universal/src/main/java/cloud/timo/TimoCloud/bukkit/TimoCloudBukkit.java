@@ -20,12 +20,20 @@ import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClient;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketClientHandler;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitSocketMessageManager;
 import cloud.timo.TimoCloud.bukkit.sockets.BukkitStringHandler;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyPairRetriever;
 import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.lib.log.utils.LogInjectionUtil;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
+import cloud.timo.TimoCloud.lib.sockets.AESDecrypter;
+import cloud.timo.TimoCloud.lib.sockets.AESEncrypter;
+import cloud.timo.TimoCloud.lib.sockets.RSAHandshakeHandler;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -34,6 +42,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -104,8 +113,22 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_REGISTER).setTarget(getServerId()));
     }
 
-    public void onSocketConnect() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_HANDSHAKE).setTarget(getServerId()));
+    public void onSocketConnect(Channel channel) {
+        try {
+            KeyPair keyPair = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "/keys/")).getKeyPair();
+            new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
+                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
+                channel.pipeline().addBefore("prepender", "handler", getStringHandler());
+                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
+                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_HANDSHAKE).setTarget(getServerId()));
+            })).startHandshake();
+        } catch (Exception e) {
+            severe("Error during public key authentification, please report this!");
+            e.printStackTrace();
+        }
     }
 
     public void onSocketDisconnect(boolean connectionFailed) {

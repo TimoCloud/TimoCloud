@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.api.internal;
 
+import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 
@@ -11,5 +12,7 @@ public interface TimoCloudInternalImplementationAPI {
     ServerGroupProperties.ServerGroupDefaultPropertiesProvider getServerGroupDefaultPropertiesProvider();
 
     ProxyGroupProperties.ProxyGroupDefaultPropertiesProvider getProxyGroupDefaultPropertiesProvider();
+
+    BaseProperties.BaseDefaultPropertiesProvider getBaseDefaultPropertiesProvider();
 
 }

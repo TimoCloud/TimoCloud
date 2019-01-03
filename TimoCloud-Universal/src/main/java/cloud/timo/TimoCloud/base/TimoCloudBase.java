@@ -8,11 +8,20 @@ import cloud.timo.TimoCloud.base.sockets.BaseSocketClient;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketClientHandler;
 import cloud.timo.TimoCloud.base.sockets.BaseSocketMessageManager;
 import cloud.timo.TimoCloud.base.sockets.BaseStringHandler;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyPairRetriever;
+import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
+import cloud.timo.TimoCloud.lib.sockets.AESDecrypter;
+import cloud.timo.TimoCloud.lib.sockets.AESEncrypter;
+import cloud.timo.TimoCloud.lib.sockets.RSAHandshakeHandler;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
+import io.netty.channel.Channel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
 import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.BufferedReader;
@@ -20,6 +29,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
+import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -47,6 +57,7 @@ public class TimoCloudBase implements TimoCloudModule {
     private OptionSet options;
     private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
+    private RSAKeyPairRetriever rsaKeyPairRetriever;
     private BaseInstanceManager instanceManager;
     private BaseTemplateManager templateManager;
     private BaseSocketClient socketClient;
@@ -56,18 +67,20 @@ public class TimoCloudBase implements TimoCloudModule {
     private BaseResourceManager resourceManager;
     private ScheduledExecutorService scheduler;
     private boolean connected = false;
+    private boolean handshakePerformed = false;
+    private boolean publicKeyPrinted;
 
     public static String getTime() {
         return "[" + format.format(new Date()) + "] ";
     }
 
     private static String formatLog(String message, String color) {
-        return (getTime() + getInstance().getPrefix() + color + message + ANSI_RESET);
+        return getTime() + getInstance().getPrefix() + color + message + ANSI_RESET;
     }
 
     @Override
     public void info(String message) {
-        System.out.println(formatLog(message, ANSI_RESET));
+        System.out.println(formatLog(message, ""));
     }
 
     @Override
@@ -96,6 +109,7 @@ public class TimoCloudBase implements TimoCloudModule {
     private void makeInstances() {
         instance = this;
         fileManager = new BaseFileManager();
+        rsaKeyPairRetriever = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "keys/"));
         instanceManager = new BaseInstanceManager(getServerManagerDelayMillis());
         templateManager = new BaseTemplateManager();
         socketClient = new BaseSocketClient();
@@ -143,20 +157,58 @@ public class TimoCloudBase implements TimoCloudModule {
         }).start();
     }
 
-    public void onSocketConnect() {
+    public void onSocketConnect(Channel channel) {
         if (isConnected()) return;
         setConnected(true);
+        try {
+            if (! getRsaKeyPairRetriever().isValidKeyPairExisting()) {
+                KeyPair keyPair = getRsaKeyPairRetriever().generateKeyPair();
+                info(String.format("Successfully generated public key! Please register this base at the Core by executing the following command in the Core console: '%saddbase %s'", ANSI_RED, RSAKeyUtil.publicKeyToBase64(keyPair.getPublic()) + ANSI_RESET));
+                this.publicKeyPrinted = true;
+                disconnect(channel);
+            }
+            KeyPair keyPair = getRsaKeyPairRetriever().getKeyPair();
+            new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
+                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
+                channel.pipeline().addBefore("prepender", "handler", TimoCloudBase.getInstance().getStringHandler());
+                channel.pipeline().addLast( "encrypter", new AESEncrypter(aesKey));
+                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_HANDSHAKE).set("base", getName()).set("publicAddress", getPublicIpAddress()));
-        info("Successfully connected to Core socket!");
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_HANDSHAKE).set("publicAddress", getPublicIpAddress()));
+                info("Successfully connected to Core socket!");
+            })).startHandshake();
+        } catch (Exception e) {
+            severe(e);
+            disconnect(channel);
+        }
+    }
+
+    private void disconnect(Channel channel) {
+        channel.close();
+        setConnected(false);
     }
 
     public void onSocketDisconnect() {
-        if (isConnected()) info("Disconnected from Core. Reconnecting...");
+        if (isConnected()) {
+            if (handshakePerformed) info("Disconnected from Core. Reconnecting...");
+            else {
+                if (! publicKeyPrinted) {
+                    try {
+                        info(String.format("In order to be able to connect to the Core, you have to register this base by executing the command '%saddbase %s' in the Core console.", ANSI_RED, RSAKeyUtil.publicKeyToBase64(getRsaKeyPairRetriever().getKeyPair().getPublic()) + ANSI_RESET));
+                    } catch (Exception e) {
+                        severe(e);
+                    }
+                    publicKeyPrinted = true;
+                }
+            }
+            handshakePerformed = false;
+        }
         setConnected(false);
     }
 
     public void onHandshakeSuccess() {
+        handshakePerformed = true;
         deleteOldDirectories();
     }
 
@@ -190,10 +242,6 @@ public class TimoCloudBase implements TimoCloudModule {
         return new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getFile()).getName();
     }
 
-    public String getName() {
-        return (String) getFileManager().getConfig().get("name");
-    }
-
     public String getCoreSocketIP() {
         return (String) getFileManager().getConfig().get("core-ip");
     }
@@ -208,6 +256,10 @@ public class TimoCloudBase implements TimoCloudModule {
 
     public BaseFileManager getFileManager() {
         return fileManager;
+    }
+
+    public RSAKeyPairRetriever getRsaKeyPairRetriever() {
+        return rsaKeyPairRetriever;
     }
 
     public BaseInstanceManager getInstanceManager() {

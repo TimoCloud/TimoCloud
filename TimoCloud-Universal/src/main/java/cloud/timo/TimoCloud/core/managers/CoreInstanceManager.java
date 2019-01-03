@@ -2,8 +2,10 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.storage.IdentifiableStorage;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -13,6 +15,7 @@ import io.netty.channel.Channel;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,34 +24,36 @@ public class CoreInstanceManager {
 
     private Map<String, ServerGroup> serverGroups;
     private Map<String, ProxyGroup> proxyGroups;
-    private Map<String, Server> servers;
-    private Map<String, Proxy> proxies;
-    private Map<String, Base> bases;
+    private IdentifiableStorage<Server> servers;
+    private IdentifiableStorage<Proxy> proxies;
+    private IdentifiableStorage<Base> bases;
     private Map<String, Cord> cords;
 
     private static final int MAX_SERVERS = 2500;
     private static final int MAX_PROXIES = 500;
+    private static final int MAX_BASES = 500;
 
     public void init() {
         makeInstances();
-        loadGroups();
+        loadEverything();
     }
 
     private void makeInstances() {
         serverGroups = new HashMap<>();
         proxyGroups = new HashMap<>();
-        servers = new HashMap<>();
-        proxies = new HashMap<>();
-        bases = new HashMap<>();
+        servers = new IdentifiableStorage<>();
+        proxies = new IdentifiableStorage<>();
+        bases = new IdentifiableStorage<>();
         cords = new HashMap<>();
     }
 
     /**
-     * Loads all server/proxy groups from config files
+     * Loads all server/proxy groups and bases from config files
      */
-    public void loadGroups() {
+    public void loadEverything() {
         loadServerGroups();
         loadProxyGroups();
+        loadBases();
     }
 
     /**
@@ -59,7 +64,8 @@ public class CoreInstanceManager {
         try {
             JsonArray serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
             for (JsonElement jsonElement : serverGroupsList) {
-                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType());
+                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                }.getType());
                 String name = (String) properties.get("name");
                 ServerGroup serverGroup = getServerGroupByName(name);
                 if (serverGroup != null) serverGroup.construct(properties);
@@ -81,7 +87,8 @@ public class CoreInstanceManager {
             Map<String, ProxyGroup> proxyGroups = new HashMap<>();
             JsonArray proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
             for (JsonElement jsonElement : proxyGroupsList) {
-                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>(){}.getType());
+                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                }.getType());
                 String name = (String) properties.get("name");
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
                 if (proxyGroup != null) proxyGroup.construct(properties);
@@ -95,12 +102,38 @@ public class CoreInstanceManager {
         }
     }
 
+    public void loadBases() {
+        try {
+            IdentifiableStorage<Base> bases = new IdentifiableStorage<>();
+            JsonArray baseList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getBasesFile());
+            for (JsonElement jsonElement : baseList) {
+                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                String id = (String) properties.get("id");
+                String name = (String) properties.get("name");
+                try {
+                    Base base = getBaseById(id);
+                    if (base != null) base.construct(properties);
+                    else base = new Base(properties);
+                    bases.add(base);
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
+                }
+            }
+            this.bases = bases;
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while loading bases: ");
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Saves both, server- & proxy configurations to config files
      */
-    public void saveGroups() {
+    public void saveEverything() {
         saveServerGroups();
         saveProxyGroups();
+        saveBases();
     }
 
     /**
@@ -127,6 +160,20 @@ public class CoreInstanceManager {
             TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Saves base configurations to config file
+     */
+    public void saveBases() {
+        JsonArray bases = new JsonArray();
+        getBases().stream().map(Base::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(bases::add);
+        try {
+            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while saving basess: ");
             e.printStackTrace();
         }
     }
@@ -239,6 +286,7 @@ public class CoreInstanceManager {
 
     /**
      * Looks for a free base and starts an instance if a free base is found
+     *
      * @param group The group of which an instance shall be started
      */
     public void startInstance(Group group) {
@@ -266,7 +314,6 @@ public class CoreInstanceManager {
      *
      * @param group The group of which an instance shall be started
      * @param base  The base an the server shall be started on
-     *
      * @return The started server
      */
     public Server startServer(ServerGroup group, Base base) {
@@ -330,7 +377,6 @@ public class CoreInstanceManager {
      *
      * @param group The group of which an instance shall be started
      * @param base  The base an the proxy shall be started on
-     *
      * @return The started proxy
      */
     public Proxy startProxy(ProxyGroup group, Base base) {
@@ -342,6 +388,7 @@ public class CoreInstanceManager {
         proxy.start();
         return proxy;
     }
+
     /**
      * @param group The group a free base shall be searched for
      * @return A base object if a free base is found, otherwise null
@@ -378,12 +425,12 @@ public class CoreInstanceManager {
             else demands.add(new GroupInstanceDemand(group, amount));
         }
 
-        while (! staticDemands.isEmpty()) { // Start static instances first
+        while (!staticDemands.isEmpty()) { // Start static instances first
             GroupInstanceDemand demand = staticDemands.poll();
             startInstance(demand.getGroup());
         }
 
-        while (! demands.isEmpty()) { // Start non-static instances
+        while (!demands.isEmpty()) { // Start non-static instances
             GroupInstanceDemand demand = demands.poll();
             startInstance(demand.getGroup());
             demand.changeAmount(-1);
@@ -431,6 +478,7 @@ public class CoreInstanceManager {
 
     /**
      * Generates a name for a new server instance
+     *
      * @param group The group a name shall be created for
      * @return A not yet existing server name
      */
@@ -454,8 +502,9 @@ public class CoreInstanceManager {
 
     /**
      * Generates a server name
+     *
      * @param group The server group a name shall be generated for
-     * @param n The server's id (starting from 1)
+     * @param n     The server's id (starting from 1)
      * @return The name for a server of the given group with the given id
      */
     private String generateName(ServerGroup group, int n) {
@@ -464,6 +513,7 @@ public class CoreInstanceManager {
 
     /**
      * Generates a name for a new proxy instance
+     *
      * @param group The group a name shall be created for
      * @return A not yet existing proxy name
      */
@@ -487,8 +537,9 @@ public class CoreInstanceManager {
 
     /**
      * Generates a proxy name
+     *
      * @param group The proxy group a name shall be generated for
-     * @param n The proxy's id (starting from 1)
+     * @param n     The proxy's id (starting from 1)
      * @return The name for a proxy of the given group with the given id
      */
     private String generateName(ProxyGroup group, int n) {
@@ -547,7 +598,7 @@ public class CoreInstanceManager {
      * @return Whether a base with this name exists and is connected
      */
     public boolean isBaseConnected(String name) {
-        Base base = getBase(name);
+        Base base = getBaseByName(name);
         return base != null && base.isConnected();
     }
 
@@ -601,17 +652,13 @@ public class CoreInstanceManager {
     /**
      * Searches for a server by name (case-insensitive)
      *
-     * @deprecated Use {@link CoreInstanceManager#getServerById(String)} instead
      * @param name The server's name (case-insensitive)
      * @return A server object
+     * @deprecated Use {@link CoreInstanceManager#getServerById(String)} instead
      */
     @Deprecated
     public Server getServerByName(String name) {
-        for (ServerGroup group : getServerGroups())
-            for (Server server : group.getServers())
-                if (server != null && server.getName().equalsIgnoreCase(name))
-                    return server;
-        return null;
+        return servers.getByName(name);
     }
 
     /**
@@ -621,7 +668,7 @@ public class CoreInstanceManager {
      * @return A server object
      */
     public Server getServerById(String id) {
-        return servers.get(id);
+        return servers.getById(id);
     }
 
     /**
@@ -631,25 +678,27 @@ public class CoreInstanceManager {
      * @return A server object
      */
     public Server getServerByIdentifier(String identifier) {
-        Server server = getServerById(identifier);
-        if (server != null) return server;
-        return getServerByName(identifier);
+        return servers.getByIdentifier(identifier);
+    }
+
+    /**
+     * @param publicKey The server's public RSA key
+     * @return A server object
+     */
+    public Server getServerByPublicKey(PublicKey publicKey) {
+        return servers.getByPublicKey(publicKey);
     }
 
     /**
      * Searches for a proxy by name (case-insensitive)
      *
-     * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
      * @param name The proxy's name (case-insensitive)
      * @return A proxy object
+     * @deprecated Use {@link CoreInstanceManager#getProxyById(String)} instead
      */
     @Deprecated
     public Proxy getProxyByName(String name) {
-        for (ProxyGroup group : getProxyGroups())
-            for (Proxy proxy : group.getProxies())
-                if (proxy != null && proxy.getName().equalsIgnoreCase(name))
-                    return proxy;
-        return null;
+        return proxies.getByName(name);
     }
 
     /**
@@ -659,7 +708,15 @@ public class CoreInstanceManager {
      * @return A proxy object
      */
     public Proxy getProxyById(String id) {
-        return proxies.get(id);
+        return proxies.getById(id);
+    }
+
+    /**
+     * @param publicKey The proxy's public RSA key
+     * @return A proxy object
+     */
+    public Proxy getProxyByPublicKey(PublicKey publicKey) {
+        return proxies.getByPublicKey(publicKey);
     }
 
     /**
@@ -669,9 +726,7 @@ public class CoreInstanceManager {
      * @return A proxy object
      */
     public Proxy getProxyByIdentifier(String identifier) {
-        Proxy proxy = getProxyById(identifier);
-        if (proxy != null) return proxy;
-        return getProxyByName(identifier);
+        return proxies.getByIdentifier(identifier);
     }
 
     /**
@@ -698,63 +753,115 @@ public class CoreInstanceManager {
      * Registers the given server in the map for quick access by id
      */
     public void addServer(Server server) {
-        servers.put(server.getId(), server);
+        servers.add(server);
     }
 
     /**
-     * Removes the server from the map for quick access by id
+     * Removes the server from the storage
      */
     public void removeServer(Server server) {
-        servers.remove(server.getId());
+        servers.remove(server);
     }
 
     /**
-     * Registers the given server in the map for quick access by id
+     * Registers the given server in storage
      */
     public void addProxy(Proxy proxy) {
-        proxies.put(proxy.getId(), proxy);
+        proxies.add(proxy);
     }
 
     /**
      * Removes the server from the map for quick access by id
      */
     public void removeProxy(Proxy proxy) {
-        proxies.remove(proxy.getId());
-    }
-
-    /**
-     * This method is called when a base connects
-     * If a base with the given name already exists (from a previous connection), the properties will just be modified, otherwise a new base object will be created
-     * @param name The base's name
-     * @param address The IP address the base connected from
-     * @param publicAddress The base's public IP address players can connect to
-     * @param channel The base's netty socket channel
-     * @return A base object with the given properties
-     */
-    public Base getOrCreateBase(String name, InetAddress address, InetAddress publicAddress, Channel channel) {
-        Base base = bases.getOrDefault(name, null);
-        if (base == null) {
-            base = new Base(name, address, publicAddress, channel);
-            bases.put(name, base);
-        } else {
-            base.setChannel(channel);
-            base.setAddress(address);
-        }
-        return base;
+        proxies.remove(proxy);
     }
 
     /**
      * @param name The base's name
      * @return A base object if a base with the given name exists, otherwise null
      */
-    public Base getBase(String name) {
-        return (Base) searchInMap(name, bases);
+    public Base getBaseByName(String name) {
+        return bases.getByName(name);
+    }
+
+    /**
+     * @param id The base's name
+     * @return A base object if a base with the given id exists, otherwise null
+     */
+    public Base getBaseById(String id) {
+        return bases.getById(id);
+    }
+
+    /**
+     * Searches for a base by id first, if not found, by name
+     *
+     * @param identifier The base's id or name
+     * @return A base object
+     */
+    public Base getBaseByIdentifier(String identifier) {
+        return bases.getByIdentifier(identifier);
+    }
+
+    /**
+     * @param publicKey The base's public RSA key
+     * @return A base object
+     */
+    public Base getBaseByPublicKey(PublicKey publicKey) {
+        return bases.getByPublicKey(publicKey);
+    }
+
+    public Base createBase(PublicKey publicKey) {
+        Base base = new Base(new BaseProperties(UUID.randomUUID().toString(), getNotExistingBaseName(), publicKey));
+        bases.add(base);
+        saveBases();
+        return base;
+    }
+
+    private String getNotExistingBaseName() {
+        for (int i = 1; i <= MAX_BASES; i++) {
+            String name = generateBaseName(i);
+            if (baseNameExists(name)) continue;
+            return name;
+        }
+        TimoCloudCore.getInstance().severe("Fatal error: No fitting name for new base found. Please report this!");
+        return null;
+    }
+
+    private String generateBaseName(int id) {
+        return "BASE-" + id;
+    }
+
+    private boolean baseNameExists(String name) {
+        return getBaseByName(name) != null;
+    }
+
+    /**
+     * Called when key properties changed
+     */
+    public void serverDataUpdated(Server server) {
+        servers.update(server);
+    }
+
+    /**
+     * Called when key properties changed
+     */
+    public void proxyDataUpdated(Proxy proxy) {
+        proxies.update(proxy);
+    }
+
+    /**
+     * Called when key properties changed
+     */
+    public void baseDataUpdated(Base base) {
+        bases.update(base);
     }
 
     /**
      * This method is called when a cord connects
      * If a cord with the given name already exists (from a previous connection), the properties will just be modified, otherwise a new cord object will be created
-     * @param name The cord's name
+     *
+     * @param name    The cord's name
      * @param address The IP address the cord connected from
      * @param channel The cord's netty socket channel
      * @return A cord object with the given properties
@@ -788,6 +895,7 @@ public class CoreInstanceManager {
 
     /**
      * This method searches case-insensitively for a key in a map
+     *
      * @param key The key which shall be searched for (case-insensitive)
      * @param map The map in which shall be searched
      * @return The key's value if existing, otherwise null
@@ -801,15 +909,16 @@ public class CoreInstanceManager {
     }
 
     /**
-     * @return A collection of all connected bases
+     * @return A collection of all bases
      */
     public Collection<Base> getBases() {
-        return bases.values();
+        return bases.getValues();
     }
 
     /**
      * A helper method to divide and rounding up
-     * @param num The number which shall be divided
+     *
+     * @param num     The number which shall be divided
      * @param divisor The divisor
      * @return The quotient, rounded up
      */

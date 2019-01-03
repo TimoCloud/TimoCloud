@@ -3,8 +3,8 @@ package cloud.timo.TimoCloud.base.sockets;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
-import cloud.timo.TimoCloud.lib.messages.Message;
-import cloud.timo.TimoCloud.lib.messages.MessageType;
+import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -72,18 +72,21 @@ public class BaseStringHandler extends BasicStringHandler {
                     switch ((String) message.get("transferType")) {
                         case "SERVER_TEMPLATE":
                             TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, new File(TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory(), (String) message.get("template")));
+                            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_TRANSFER_FINISHED).setTarget(message.getTarget()));
                             break;
                         case "SERVER_GLOBAL_TEMPLATE":
                             TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, TimoCloudBase.getInstance().getFileManager().getServerGlobalDirectory());
+                            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_TRANSFER_FINISHED).setTarget(message.getTarget()));
                             break;
                         case "PROXY_TEMPLATE":
                             TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, new File(TimoCloudBase.getInstance().getFileManager().getProxyTemplatesDirectory(), (String) message.get("template")));
+                            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_TRANSFER_FINISHED).setTarget(message.getTarget()));
                             break;
                         case "PROXY_GLOBAL_TEMPLATE":
                             TimoCloudBase.getInstance().getTemplateManager().extractFiles(inputStream, TimoCloudBase.getInstance().getFileManager().getProxyGlobalDirectory());
+                            TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_TRANSFER_FINISHED).setTarget(message.getTarget()));
                             break;
                     }
-                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.TEMPLATE_TRANSFER_FINISHED).setTarget(message.getTarget()));
                     TimoCloudBase.getInstance().getInstanceManager().setDownloadingTemplate(false);
                     break;
                 } catch (Exception e) {

@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
+import cloud.timo.TimoCloud.lib.sockets.PacketLengthPrepender;
+import cloud.timo.TimoCloud.lib.sockets.PacketLengthSplitter;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.string.StringDecoder;
@@ -12,6 +14,8 @@ public class CordPipeline extends ChannelInitializer<Channel> {
     @Override
     protected void initChannel(Channel ch) {
         ch.pipeline().addLast(TimoCloudCord.getInstance().getSocketClientHandler());
+        ch.pipeline().addLast("prepender", new PacketLengthPrepender());
+        ch.pipeline().addLast("splitter", new PacketLengthSplitter());
         ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
         ch.pipeline().addLast("handler", TimoCloudCord.getInstance().getStringHandler());

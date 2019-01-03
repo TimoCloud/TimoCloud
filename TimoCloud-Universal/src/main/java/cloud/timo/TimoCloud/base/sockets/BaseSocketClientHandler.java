@@ -14,7 +14,7 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         setChannel(ctx.channel());
-        TimoCloudBase.getInstance().onSocketConnect();
+        TimoCloudBase.getInstance().onSocketConnect(getChannel());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class BaseSocketClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
-        //causTimoCloudBase.getInstance().severe(e);
+        // TimoCloudBase.getInstance().severe(e);
         ctx.close();
         TimoCloudBase.getInstance().onSocketDisconnect();
     }

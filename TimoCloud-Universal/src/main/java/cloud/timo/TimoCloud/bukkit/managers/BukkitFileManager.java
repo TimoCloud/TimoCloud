@@ -15,7 +15,7 @@ import java.util.Arrays;
 
 public class BukkitFileManager {
 
-    private File path;
+    private File baseDirectory;
     private File signsPath;
 
     private File configFile;
@@ -31,8 +31,8 @@ public class BukkitFileManager {
 
     public void load() {
         try {
-            path  = new File(TimoCloudBukkit.getInstance().getTemporaryDirectory(), "/plugins/TimoCloud/");
-            path.mkdirs();
+            baseDirectory = new File(TimoCloudBukkit.getInstance().getTemporaryDirectory(), "/plugins/TimoCloud/");
+            baseDirectory.mkdirs();
 
             loadConfig();
             loadSignConfigs();
@@ -44,7 +44,7 @@ public class BukkitFileManager {
 
     private void loadConfig() {
         try {
-            configFile = new File(path, "config.yml");
+            configFile = new File(baseDirectory, "config.yml");
             configFile.createNewFile();
             config = YamlConfiguration.loadConfiguration(configFile);
 
@@ -57,7 +57,7 @@ public class BukkitFileManager {
 
     public void loadSignConfigs() {
         try {
-            signsPath = new File(path, "/signs/");
+            signsPath = new File(baseDirectory, "/signs/");
             signsPath.mkdirs();
 
             signTemplatesFile = new File(signsPath, "signTemplates.yml");
@@ -128,6 +128,10 @@ public class BukkitFileManager {
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe(e);
         }
+    }
+
+    public File getBaseDirectory() {
+        return baseDirectory;
     }
 
     public File getConfigFile() {

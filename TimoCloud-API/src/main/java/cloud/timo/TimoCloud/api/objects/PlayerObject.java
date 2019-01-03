@@ -41,6 +41,6 @@ public interface PlayerObject {
      * @param serverObject The server the player shall be sent to
      * @return A future being completed when the player is sent to the server
      */
-    APIRequestFuture sendToServer(ServerObject serverObject);
+    APIRequestFuture<Void> sendToServer(ServerObject serverObject);
 
 }
