@@ -48,7 +48,7 @@ public class TimoCloudBungee extends Plugin {
     private boolean shuttingDown = false;
 
     public void info(String message) {
-        getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
+        getLogger().info(ChatColor.translateAlternateColorCodes('&',  message));
     }
 
     public void warning(String message) {
@@ -88,7 +88,7 @@ public class TimoCloudBungee extends Plugin {
     @Override
     public void onDisable() {
         setShuttingDown(true);
-        info("Successfully stopped TimoCloudBungee!");
+        info("&cSuccessfully stopped TimoCloudBungee!");
     }
 
     private void makeInstances() throws Exception {
@@ -121,7 +121,7 @@ public class TimoCloudBungee extends Plugin {
     }
 
     private void connectToCore() {
-        info("Connecting to TimoCloudCore...");
+        info("&6Connecting to TimoCloudCore...");
         try {
             socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {

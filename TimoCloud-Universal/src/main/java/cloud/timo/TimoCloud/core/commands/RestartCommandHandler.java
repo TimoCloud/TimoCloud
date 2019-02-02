@@ -10,6 +10,8 @@ import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
+import java.util.ArrayList;
+
 public class RestartCommandHandler extends CommandFormatUtil implements CommandHandler {
 
     @Override
@@ -37,8 +39,8 @@ public class RestartCommandHandler extends CommandFormatUtil implements CommandH
         else if (server != null) server.stop();
         else if (proxy != null) proxy.stop();
         else if (base != null) {
-            for (Server serverOnBase : base.getServers()) serverOnBase.stop();
-            for (Proxy proxyOnBase : base.getProxies()) proxyOnBase.stop();
+            for (Server serverOnBase : new ArrayList<>(base.getServers())) serverOnBase.stop();
+            for (Proxy proxyOnBase : new ArrayList<>(base.getProxies())) proxyOnBase.stop();
         }
         sender.sendMessage("&2The group/server/proxy/base has successfully been stopped/restarted.");
     }

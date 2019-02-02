@@ -24,6 +24,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -76,7 +77,7 @@ public class TimoCloudBukkit extends JavaPlugin {
                     Thread.sleep(50); // Wait until we get the API data
                 } catch (Exception e) {}
             }
-            info("&ahas been enabled!");
+            info("&aTimoCloudBukkit has been enabled!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBukkit: ");
             TimoCloudBukkit.getInstance().severe(e);
@@ -140,6 +141,17 @@ public class TimoCloudBukkit extends JavaPlugin {
         APIInstanceUtil.setBukkitInstance(new TimoCloudBukkitAPIImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBukkitImplementation());
+    }
+
+    //Check if running on version 1.13 or above by accessing a material only available since 1.13
+    public boolean isVersion113OrAbove() {
+        try {
+            //1.13 Item
+            Material material = Material.DEAD_FIRE_CORAL_BLOCK;
+        } catch (NoSuchFieldError e) {
+            return false;
+        }
+        return true;
     }
 
     private void registerCommands() {

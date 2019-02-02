@@ -104,25 +104,31 @@ public class BukkitFileManager {
         signTemplates.addDefault("Default.layouts.STARTING.lines.3", "&estarting...");
         signTemplates.addDefault("Default.layouts.STARTING.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
         signTemplates.addDefault("Default.layouts.STARTING.updateSpeed", 5L);
-        signTemplates.addDefault("Default.layouts.STARTING.signBlockMaterial", "STAINED_CLAY");
-        signTemplates.addDefault("Default.layouts.STARTING.signBlockData", 4);
 
         signTemplates.addDefault("Default.layouts.ONLINE.lines.1", "[&3%name%&0]");
         signTemplates.addDefault("Default.layouts.ONLINE.lines.2", "&aOnline");
         signTemplates.addDefault("Default.layouts.ONLINE.lines.3", "&5%map%");
         signTemplates.addDefault("Default.layouts.ONLINE.lines.4", "%current_players%/%max_players%");
         signTemplates.addDefault("Default.layouts.ONLINE.updateSpeed", 0L);
-        signTemplates.addDefault("Default.layouts.ONLINE.signBlockMaterial", "STAINED_CLAY");
-        signTemplates.addDefault("Default.layouts.ONLINE.signBlockData", 5);
 
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.1", "&cWaiting");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.2", "&cfor");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.3", "&cserver");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.updateSpeed", 5L);
-        signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockMaterial", "STAINED_CLAY");
-        signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockData", 8);
 
+        if (TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
+            signTemplates.addDefault("Default.layouts.STARTING.signBlockMaterial", "GRAY_CONCRETE");
+            signTemplates.addDefault("Default.layouts.ONLINE.signBlockMaterial", "GREEN_CONCRETE");
+            signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockMaterial", "RED_CONCRETE");
+        } else {
+            signTemplates.addDefault("Default.layouts.STARTING.signBlockMaterial", "STAINED_CLAY");
+            signTemplates.addDefault("Default.layouts.STARTING.signBlockData", 4);
+            signTemplates.addDefault("Default.layouts.ONLINE.signBlockMaterial", "STAINED_CLAY");
+            signTemplates.addDefault("Default.layouts.ONLINE.signBlockData", 5);
+            signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockMaterial", "STAINED_CLAY");
+            signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockData", 8);
+        }
         try {
             signTemplates.save(signTemplatesFile);
         } catch (Exception e) {
