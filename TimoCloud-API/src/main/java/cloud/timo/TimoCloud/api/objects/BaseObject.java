@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.api.objects;
 import java.net.InetAddress;
 import java.util.Collection;
 
-public interface BaseObject {
+public interface BaseObject extends IdentifiableObject {
 
     /**
      * @return The base's name. Usually in the format BASE-1, ...

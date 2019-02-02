@@ -13,7 +13,7 @@ import java.util.List;
  * A cord object stands for a BungeeCord instance
  */
 
-public interface ProxyObject {
+public interface ProxyObject extends IdentifiableObject {
 
     /**
      * @return The cord's name

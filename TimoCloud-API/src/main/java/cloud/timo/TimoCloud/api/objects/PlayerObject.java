@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import java.net.InetAddress;
 import java.util.UUID;
 
-public interface PlayerObject {
+public interface PlayerObject extends IdentifiableObject {
 
     /**
      * @return The player's Minecraft name

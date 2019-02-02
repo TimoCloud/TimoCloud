@@ -16,7 +16,6 @@ import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import cloud.timo.TimoCloud.bungeecord.listeners.*;
-import cloud.timo.TimoCloud.bungeecord.managers.BungeeEventManager;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
 import cloud.timo.TimoCloud.bungeecord.managers.IpManager;
 import cloud.timo.TimoCloud.bungeecord.managers.LobbyManager;
@@ -50,7 +49,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     private static TimoCloudBungee instance;
     private BungeeFileManager fileManager;
     private LobbyManager lobbyManager;
-    private BungeeEventManager eventManager;
     private IpManager ipManager;
     private BungeeSocketClient socketClient;
     private BungeeSocketClientHandler socketClientHandler;
@@ -109,7 +107,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
         fileManager = new BungeeFileManager();
         lobbyManager = new LobbyManager();
-        eventManager = new BungeeEventManager();
         ipManager = new IpManager();
         socketClient = new BungeeSocketClient();
         socketClientHandler = new BungeeSocketClientHandler();
@@ -240,10 +237,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     public LobbyManager getLobbyManager() {
         return lobbyManager;
-    }
-
-    public BungeeEventManager getEventManager() {
-        return eventManager;
     }
 
     public IpManager getIpManager() {

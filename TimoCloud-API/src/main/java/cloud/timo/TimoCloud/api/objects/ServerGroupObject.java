@@ -4,7 +4,7 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 
 import java.util.Collection;
 
-public interface ServerGroupObject {
+public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * @return The group's name

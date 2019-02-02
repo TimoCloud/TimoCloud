@@ -9,7 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 
-public interface ServerObject {
+public interface ServerObject extends IdentifiableObject {
 
     /**
      * @return The server's name

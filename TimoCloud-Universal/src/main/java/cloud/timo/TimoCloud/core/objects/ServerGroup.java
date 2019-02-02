@@ -1,9 +1,11 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.propertyChanges.serverGroup.ServerGroupOnlineAmountChangedEvent;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
+import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -135,7 +137,9 @@ public class ServerGroup implements Group {
     }
 
     public void setOnlineAmount(int onlineAmount) {
+        int oldValue = getOnlineAmount();
         this.onlineAmount = onlineAmount;
+        EventTransmitter.sendEvent(new ServerGroupOnlineAmountChangedEvent(toGroupObject(), oldValue, onlineAmount));
     }
 
     public void setMaxAmount(int maxAmount) {

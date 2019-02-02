@@ -148,6 +148,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                         .setType(MessageType.SERVER_LOG_ENTRY)
                         .setData(logEntry)));
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MAP).setData(getMapName()));
+        requestApiData();
         doEverySecond();
     }
 
@@ -247,7 +248,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         sendEverything();
-        requestApiData();
     }
 
     private void registerTasks() {

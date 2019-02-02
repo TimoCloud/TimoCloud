@@ -1,10 +1,12 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup.ProxyGroupMaxAmountChangedEvent;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
+import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 
 import java.util.*;
@@ -210,7 +212,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setMaxAmount(int maxAmount) {
+        int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
+        EventTransmitter.sendEvent(new ProxyGroupMaxAmountChangedEvent(toGroupObject(), oldValue, maxAmount));
     }
 
     @Override

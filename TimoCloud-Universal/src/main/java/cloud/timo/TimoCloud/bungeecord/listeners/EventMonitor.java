@@ -6,6 +6,7 @@ import cloud.timo.TimoCloud.api.events.PlayerServerChangeEvent;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.utils.PlayerUtil;
+import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -38,10 +39,10 @@ public class EventMonitor implements Listener {
     public void onServerSwitchEvent(ServerSwitchEvent event) {
         PlayerObject playerObject = getPlayer(event.getPlayer());
         if (isPending(event.getPlayer().getUniqueId())) { // Join
-            TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerConnectEvent(playerObject));
+            EventTransmitter.sendEvent(new PlayerConnectEvent(playerObject));
             pending.remove(event.getPlayer().getUniqueId());
         } else { // Server change
-            TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerServerChangeEvent(
+            EventTransmitter.sendEvent(new PlayerServerChangeEvent(
                     playerObject,
                     previousServer.get(playerObject.getUuid()),
                     event.getPlayer().getServer().getInfo().getName()
@@ -53,7 +54,7 @@ public class EventMonitor implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
-        TimoCloudBungee.getInstance().getEventManager().sendEvent(new PlayerDisconnectEvent(getPlayer(event.getPlayer())));
+        EventTransmitter.sendEvent(new PlayerDisconnectEvent(getPlayer(event.getPlayer())));
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {
