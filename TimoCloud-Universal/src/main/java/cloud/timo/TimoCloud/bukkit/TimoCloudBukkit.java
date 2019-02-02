@@ -28,8 +28,6 @@ import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.sockets.AESDecrypter;
 import cloud.timo.TimoCloud.lib.sockets.AESEncrypter;
 import cloud.timo.TimoCloud.lib.sockets.RSAHandshakeHandler;
-import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
-import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.utils.network.InetAddressUtil;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -45,9 +43,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.security.KeyPair;
-import java.io.PrintStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
