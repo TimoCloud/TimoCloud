@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup.ProxyGroupMaxAmountChangedEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup.*;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
@@ -180,7 +180,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setMaxPlayerCountPerProxy(int maxPlayerCountPerProxy) {
+        int oldValue = maxPlayerCountPerProxy;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
+        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountPerProxyChangedEvent(toGroupObject(), oldValue, maxPlayerCountPerProxy));
     }
 
     public int getMaxPlayerCount() {
@@ -188,7 +190,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setMaxPlayerCount(int maxPlayerCount) {
+        int oldValue = getMaxPlayerCount();
         this.maxPlayerCount = maxPlayerCount;
+        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountChangedEvent(toGroupObject(), oldValue, maxPlayerCount));
     }
 
     public int getKeepFreeSlots() {
@@ -196,7 +200,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setKeepFreeSlots(int keepFreeSlots) {
+        int oldValue = getKeepFreeSlots();
         this.keepFreeSlots = keepFreeSlots;
+        EventTransmitter.sendEvent(new ProxyGroupKeepFreeSlotsChangedEvent(toGroupObject(), oldValue, keepFreeSlots));
     }
 
     public int getMinAmount() {
@@ -204,7 +210,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setMinAmount(int minAmount) {
+        int oldValue = getMinAmount();
         this.minAmount = minAmount;
+        EventTransmitter.sendEvent(new ProxyGroupMinAmountChangedEvent(toGroupObject(), oldValue, minAmount));
     }
 
     public int getMaxAmount() {
@@ -226,7 +234,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setRam(int ram) {
+        int oldValue = getRam();
         this.ram = ram;
+        EventTransmitter.sendEvent(new ProxyGroupRamChangedEvent(toGroupObject(), oldValue, ram));
     }
 
     public String getMotd() {
@@ -234,7 +244,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setMotd(String motd) {
+        String oldValue = getMotd();
         this.motd = motd;
+        EventTransmitter.sendEvent(new ProxyGroupMotdChangedEvent(toGroupObject(), oldValue, motd));
     }
 
     @Override
@@ -243,7 +255,10 @@ public class ProxyGroup implements Group {
     }
 
     public void setStatic(boolean aStatic) {
+        boolean oldValue = isStatic();
         isStatic = aStatic;
+        EventTransmitter.sendEvent(new ProxyGroupStaticChangedEvent(toGroupObject(), oldValue, isStatic));
+
     }
 
     @Override
@@ -252,7 +267,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setPriority(int priority) {
+        int oldValue = getPriority();
         this.priority = priority;
+        EventTransmitter.sendEvent(new ProxyGroupPriorityChangedEvent(toGroupObject(), oldValue, priority));
     }
 
     /**
@@ -285,6 +302,7 @@ public class ProxyGroup implements Group {
             }
             this.serverGroups.add(groupName);
         }
+        //Work for Timo?
     }
 
     @Override
@@ -293,7 +311,10 @@ public class ProxyGroup implements Group {
     }
 
     public void setBaseName(String baseName) {
+        String oldValue = getBaseName();
         this.baseName = baseName;
+        EventTransmitter.sendEvent(new ProxyGroupBaseNameChangedEvent(toGroupObject(), oldValue, baseName));
+
     }
 
     public ProxyChooseStrategy getProxyChooseStrategy() {
@@ -301,7 +322,9 @@ public class ProxyGroup implements Group {
     }
 
     public void setProxyChooseStrategy(ProxyChooseStrategy proxyChooseStrategy) {
+        ProxyChooseStrategy oldValue = getProxyChooseStrategy();
         this.proxyChooseStrategy = proxyChooseStrategy;
+        EventTransmitter.sendEvent(new ProxyGroupProxyChooseStrategyChangedEvent(toGroupObject(), oldValue, proxyChooseStrategy));
     }
 
     public Set<String> getHostNames() {
@@ -310,6 +333,7 @@ public class ProxyGroup implements Group {
 
     public void setHostNames(Set<String> hostNames) {
         this.hostNames = hostNames;
+        //Work for Timo?
     }
 
     public Collection<Proxy> getProxies() {
