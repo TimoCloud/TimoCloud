@@ -12,6 +12,7 @@ import cloud.timo.TimoCloud.lib.logging.LoggingOutputStream;
 import cloud.timo.TimoCloud.lib.messages.Message;
 import cloud.timo.TimoCloud.lib.modules.ModuleType;
 import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
+import cloud.timo.TimoCloud.lib.utils.network.InetAddressUtil;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import org.apache.commons.io.FileDeleteStrategy;
 
@@ -19,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -168,7 +168,7 @@ public class TimoCloudBase implements TimoCloudModule {
         } catch (Exception e) {
         }
         try {
-            return InetAddress.getLocalHost().getHostAddress();
+            return InetAddressUtil.getLocalHost().getHostAddress();
         } catch (Exception e) {
             severe("Error while retrieving own IP address: ");
             severe(e);

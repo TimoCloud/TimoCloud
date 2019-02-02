@@ -267,9 +267,11 @@ public class SignManager {
         Block attachedTo = getSignBlockAttached(signBlock);
         if (attachedTo == null) return;
         attachedTo.setType(material);
-        try {
-            Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
-        } catch (Exception e) {
+        if (! TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
+            try {
+                Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
+            } catch (Exception e) {
+            }
         }
     }
 
