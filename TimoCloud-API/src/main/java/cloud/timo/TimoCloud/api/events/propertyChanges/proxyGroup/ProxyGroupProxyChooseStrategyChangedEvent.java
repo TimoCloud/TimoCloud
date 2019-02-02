@@ -1,11 +1,12 @@
 package cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup;
 
 import cloud.timo.TimoCloud.api.events.EventType;
+import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 
-public class ProxyGroupProxyChooseStrategyChangedEvent  extends ProxyGroupPropertyChangedEvent<Integer> {
+public class ProxyGroupProxyChooseStrategyChangedEvent extends ProxyGroupPropertyChangedEvent<ProxyChooseStrategy> {
 
-    public ProxyGroupProxyChooseStrategyChangedEvent(ProxyGroupObject instance, Integer oldValue, Integer newValue) {
+    public ProxyGroupProxyChooseStrategyChangedEvent(ProxyGroupObject instance, ProxyChooseStrategy oldValue, ProxyChooseStrategy newValue) {
         super(instance, oldValue, newValue);
     }
 
