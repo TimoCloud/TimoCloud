@@ -16,7 +16,7 @@ public class BungeeSocketClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        TimoCloudBungee.getInstance().info("Successfully connected to bungee socket!");
+        TimoCloudBungee.getInstance().info("&6Successfully connected to bungee socket!");
         this.channel = ctx.channel();
         TimoCloudBungee.getInstance().onSocketConnect(ctx.channel());
         flush();

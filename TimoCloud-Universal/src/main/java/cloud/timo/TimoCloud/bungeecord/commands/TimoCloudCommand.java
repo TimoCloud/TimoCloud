@@ -76,7 +76,7 @@ public class TimoCloudCommand extends Command {
 
     public void sendMessage(String senderName, String message) {
         if (getSender(senderName) == null) return;
-        getSender(senderName).sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', message)));
+        getSender(senderName).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', message)));
     }
 
     private CommandSender getSender(String name) {

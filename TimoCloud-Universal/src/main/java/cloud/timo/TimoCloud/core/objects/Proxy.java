@@ -34,7 +34,7 @@ public class Proxy implements Instance, Communicatable {
     private InetSocketAddress address;
     private Base base;
     private int onlinePlayerCount;
-    private Set<PlayerObject> onlinePlayers;
+    private final Set<PlayerObject> onlinePlayers;
     private Channel channel;
     private boolean starting;
     private boolean registered;
@@ -52,7 +52,7 @@ public class Proxy implements Instance, Communicatable {
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getAddress(), 0);
-        this.onlinePlayers = new HashSet<>();
+        this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();
     }

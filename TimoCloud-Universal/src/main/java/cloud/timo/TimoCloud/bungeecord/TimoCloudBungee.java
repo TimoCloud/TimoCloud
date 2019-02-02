@@ -62,7 +62,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     @Override
     public void info(String message) {
-        getLogger().info(ChatColor.translateAlternateColorCodes('&', " " + message));
+        getLogger().info(ChatColor.translateAlternateColorCodes('&',  message));
     }
 
     @Override
@@ -101,7 +101,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     @Override
     public void onDisable() {
         setShuttingDown(true);
-        info("Successfully stopped TimoCloudBungee!");
+        info("&cSuccessfully stopped TimoCloudBungee!");
     }
 
     private void makeInstances() throws Exception {
@@ -138,7 +138,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     private void connectToCore() {
-        info("Connecting to TimoCloudCore...");
+        info("&6Connecting to TimoCloudCore...");
         try {
             socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {

@@ -17,6 +17,7 @@ import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import cloud.timo.TimoCloud.lib.sockets.AESDecrypter;
 import cloud.timo.TimoCloud.lib.sockets.AESEncrypter;
 import cloud.timo.TimoCloud.lib.sockets.RSAHandshakeHandler;
+import cloud.timo.TimoCloud.lib.utils.network.InetAddressUtil;
 import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
@@ -28,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.io.PrintStream;
 import java.net.URL;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
@@ -218,7 +220,7 @@ public class TimoCloudBase implements TimoCloudModule {
         } catch (Exception e) {
         }
         try {
-            return InetAddress.getLocalHost().getHostAddress();
+            return InetAddressUtil.getLocalHost().getHostAddress();
         } catch (Exception e) {
             severe("Error while retrieving own IP address: ");
             severe(e);

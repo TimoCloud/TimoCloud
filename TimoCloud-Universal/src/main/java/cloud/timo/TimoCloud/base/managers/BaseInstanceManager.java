@@ -379,6 +379,7 @@ public class BaseInstanceManager {
             if (proxy.isStatic() && map.containsKey("host")) {
                 port = Integer.parseInt(((String) map.get("host")).split(":")[1]);
             }
+            map.put("force_default_server", false);
             map.put("host", "0.0.0.0:" + port);
             map.put("max_players", proxy.getMaxPlayers());
             map.put("force_default_server", false);
