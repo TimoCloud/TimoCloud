@@ -1,13 +1,16 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.events.ServerRegisterEvent;
 import cloud.timo.TimoCloud.api.events.ServerUnregisterEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.server.*;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 import cloud.timo.TimoCloud.lib.log.LogEntry;
 import cloud.timo.TimoCloud.lib.log.LogStorage;
@@ -284,7 +287,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setAddress(InetSocketAddress address) {
+        InetSocketAddress oldValue = getAddress();
         this.address = address;
+        EventTransmitter.sendEvent(new ServerAddressChangedEvent(toServerObject(), oldValue, address));
     }
 
     public void setChannel(Channel channel) {
@@ -296,7 +301,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setState(String state) {
+        String oldValue = getState();
         this.state = state;
+        EventTransmitter.sendEvent(new ServerStateChangedEvent(toServerObject(), oldValue, state));
     }
 
     public String getExtra() {
@@ -304,7 +311,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setExtra(String extra) {
+        String oldValue = getExtra();
         this.extra = extra;
+        EventTransmitter.sendEvent(new ServerExtraChangedEvent(toServerObject(), oldValue, extra));
     }
 
     public String getMotd() {
@@ -312,7 +321,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setMotd(String motd) {
+        String oldValue = getMotd();
         this.motd = motd;
+        EventTransmitter.sendEvent(new ServerMotdChangedEvent(toServerObject(), oldValue, motd));
     }
 
     public Set<PlayerObject> getOnlinePlayers() {
@@ -324,8 +335,10 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setPort(Integer port) {
+        int oldValue = getPort();
         this.port = port;
         setAddress(new InetSocketAddress(getAddress().getAddress(), port));
+        EventTransmitter.sendEvent(new ServerPortChangedEvent(toServerObject(), oldValue, port));
     }
 
     public int getOnlinePlayerCount() {
@@ -333,7 +346,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setOnlinePlayerCount(int onlinePlayerCount) {
+        int oldValue = getOnlinePlayerCount();
         this.onlinePlayerCount = onlinePlayerCount;
+        EventTransmitter.sendEvent(new ServerOnlinePlayerCountChangedEvent(toServerObject(), oldValue, onlinePlayerCount));
     }
 
     public int getMaxPlayers() {
@@ -341,7 +356,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setMaxPlayers(int maxPlayers) {
+        int oldValue = getMaxPlayers();
         this.maxPlayers = maxPlayers;
+        EventTransmitter.sendEvent(new ServerMaxPlayersChangedEvent(toServerObject(), oldValue, maxPlayers));
     }
 
     public String getMap() {
@@ -349,7 +366,9 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setMap(String map) {
+        String oldValue = getMap();
         this.map = map;
+        EventTransmitter.sendEvent(new ServerMapChangedEvent(toServerObject(), oldValue, map));
     }
 
     public boolean hasMap() {
@@ -370,8 +389,10 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setPublicKey(PublicKey publicKey) {
+        PublicKey oldValue = getPublicKey();
         this.publicKey = publicKey;
         TimoCloudCore.getInstance().getInstanceManager().serverDataUpdated(this);
+        EventTransmitter.sendEvent(new ServerPublicKeyChangedEvent(toServerObject(), oldValue, publicKey));
     }
 
     public DoAfterAmount getTemplateUpdate() {
@@ -380,6 +401,7 @@ public class Server implements Instance, Communicatable {
 
     public void setTemplateUpdate(DoAfterAmount templateUpdate) {
         this.templateUpdate = templateUpdate;
+        //Work for Timo? DoAfterAmount dont exist in TimnoCloloudAPI
     }
 
     public void executeCommand(String command) {

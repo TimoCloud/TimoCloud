@@ -2,6 +2,9 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.ProxyRegisterEvent;
 import cloud.timo.TimoCloud.api.events.ProxyUnregisterEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.proxy.ProxyAddressChangedEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.proxy.ProxyPortChangedEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.proxy.ProxyPublicKeyChangedEvent;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -9,6 +12,7 @@ import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 import cloud.timo.TimoCloud.lib.log.LogEntry;
 import cloud.timo.TimoCloud.lib.log.LogStorage;
@@ -19,6 +23,7 @@ import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -249,8 +254,12 @@ public class Proxy implements Instance, Communicatable {
     }
 
     public void setPort(int port) {
+        int oldPort = getPort();
+        InetSocketAddress oldAddress = getAddress();
         this.port = port;
         this.address = new InetSocketAddress(getAddress().getAddress(), port);
+        EventTransmitter.sendEvent(new ProxyPortChangedEvent(toProxyObject(), oldPort, port));
+        EventTransmitter.sendEvent(new ProxyAddressChangedEvent(toProxyObject(), oldAddress, address));
     }
 
     public InetSocketAddress getAddress() {
@@ -297,6 +306,7 @@ public class Proxy implements Instance, Communicatable {
 
     public void setDnsRecord(DnsRecord dnsRecord) {
         this.dnsRecord = dnsRecord;
+        //Work for Timo. Object "DnsRecord" not exists in TimoCloudAPI Project
     }
 
     public Set<Server> getRegisteredServers() {
@@ -313,8 +323,10 @@ public class Proxy implements Instance, Communicatable {
     }
 
     public void setPublicKey(PublicKey publicKey) {
+        PublicKey oldValue = getPublicKey();
         this.publicKey = publicKey;
         TimoCloudCore.getInstance().getInstanceManager().proxyDataUpdated(this);
+        EventTransmitter.sendEvent(new ProxyPublicKeyChangedEvent(toProxyObject(), oldValue, publicKey));
     }
 
     public DoAfterAmount getTemplateUpdate() {
@@ -323,6 +335,7 @@ public class Proxy implements Instance, Communicatable {
 
     public void setTemplateUpdate(DoAfterAmount templateUpdate) {
         this.templateUpdate = templateUpdate;
+        //DoAfterAmount dont exist in TimoCloudAPI. Work for Timo?
     }
 
     public ProxyObject toProxyObject() {

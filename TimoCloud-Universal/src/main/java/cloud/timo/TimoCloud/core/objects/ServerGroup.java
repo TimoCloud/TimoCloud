@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.propertyChanges.serverGroup.ServerGroupOnlineAmountChangedEvent;
+import cloud.timo.TimoCloud.api.events.propertyChanges.serverGroup.*;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -143,7 +143,9 @@ public class ServerGroup implements Group {
     }
 
     public void setMaxAmount(int maxAmount) {
+        int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
+        EventTransmitter.sendEvent(new ServerGroupMaxAmountChangedEvent(toGroupObject(), oldValue, maxAmount));
     }
 
     public int getMaxAmount() {
@@ -158,11 +160,15 @@ public class ServerGroup implements Group {
     }
 
     public void setRam(int ram) {
+        int oldValue = getRam();
         this.ram = ram;
+        EventTransmitter.sendEvent(new ServerGroupRamChangedEvent(toGroupObject(), oldValue, ram));
     }
 
     public void setStatic(boolean isStatic) {
+        Boolean oldValue = isStatic();
         this.isStatic = isStatic;
+        EventTransmitter.sendEvent(new ServerGroupStaticChangedEvent(toGroupObject(), oldValue, isStatic));
     }
 
     @Override
@@ -175,11 +181,15 @@ public class ServerGroup implements Group {
     }
 
     public void setPriority(int priority) {
+        int oldValue = getPriority();
         this.priority = priority;
+        EventTransmitter.sendEvent(new ServerGroupPriorityChangedEvent(toGroupObject(), oldValue, priority));
     }
 
     public void setBaseName(String baseName) {
+        String oldValue = getBaseName();
         this.baseName = baseName;
+        EventTransmitter.sendEvent(new ServerGroupBaseNameChangedEvent(toGroupObject(), oldValue, baseName));
     }
 
     public String getBaseName() {
@@ -192,6 +202,7 @@ public class ServerGroup implements Group {
 
     public void setSortOutStates(Collection<String> sortOutStates) {
         this.sortOutStates = new HashSet<>(sortOutStates);
+        //Work for Timo?
     }
 
     public ServerGroupObject toGroupObject() {
