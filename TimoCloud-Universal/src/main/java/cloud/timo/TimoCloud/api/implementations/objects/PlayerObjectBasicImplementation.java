@@ -1,7 +1,10 @@
 package cloud.timo.TimoCloud.api.implementations.objects;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.PlayerObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
@@ -11,22 +14,27 @@ import java.net.InetAddress;
 import java.util.UUID;
 
 @NoArgsConstructor
-public class PlayerObjectBasicImplementation implements PlayerObject {
+public class PlayerObjectBasicImplementation implements PlayerObject, LinkableObject<PlayerObject> {
 
     private String name;
     private UUID uuid;
-    private String server;
-    private String proxy;
+    private ServerObjectLink server;
+    private ProxyObjectLink proxy;
     private InetAddress ipAddress;
     private boolean online;
 
-    public PlayerObjectBasicImplementation(String name, UUID uuid, String server, String proxy, InetAddress ipAddress, boolean online) {
+    public PlayerObjectBasicImplementation(String name, UUID uuid, ServerObject server, ProxyObject proxy, InetAddress ipAddress, boolean online) {
         this.name = name;
         this.uuid = uuid;
-        this.server = server;
-        this.proxy = proxy;
+        this.server = ((ServerObjectBasicImplementation) server).toLink();
+        this.proxy = ((ProxyObjectBasicImplementation) proxy).toLink();
         this.ipAddress = ipAddress;
         this.online = online;
+    }
+
+    @Override
+    public String getId() {
+        return getUuid().toString();
     }
 
     public String getName() {
@@ -46,19 +54,19 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
     }
 
     public ServerObject getServer() {
-        return TimoCloudAPI.getUniversalAPI().getServer(server);
+        return server.resolve();
     }
 
-    public void setServer(String server) {
-        this.server = server;
+    public void setServer(ServerObject server) {
+        this.server = ((ServerObjectBasicImplementation) server).toLink();
     }
 
     public ProxyObject getProxy() {
-        return TimoCloudAPI.getUniversalAPI().getProxy(proxy);
+        return proxy.resolve();
     }
 
-    public void setProxy(String proxy) {
-        this.proxy = proxy;
+    public void setProxy(ProxyObject proxy) {
+        this.proxy = ((ProxyObjectBasicImplementation) proxy).toLink();
     }
 
     public InetAddress getIpAddress() {
@@ -74,12 +82,17 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
     }
 
     @Override
-    public APIRequestFuture sendToServer(ServerObject serverObject) {
+    public APIRequestFuture<Void> sendToServer(ServerObject serverObject) {
         return getProxy().executeCommand(String.format("send %s %s", getName(), getProxy().getName()));
     }
 
     public void setOnline(boolean online) {
         this.online = online;
+    }
+
+    @Override
+    public PlayerObjectLink toLink() {
+        return new PlayerObjectLink(this);
     }
 
     @Override
@@ -96,4 +109,6 @@ public class PlayerObjectBasicImplementation implements PlayerObject {
     public int hashCode() {
         return uuid.hashCode();
     }
+
+
 }

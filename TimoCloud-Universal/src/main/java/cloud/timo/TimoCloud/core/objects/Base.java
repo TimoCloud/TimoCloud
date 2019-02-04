@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.events.propertyChanges.base.*;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
@@ -18,7 +17,7 @@ import java.security.PublicKey;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Base implements Identifiable, Communicatable {
+public class Base implements PublicKeyIdentifiable, Communicatable {
 
     private String id;
     private String name;
@@ -312,6 +311,7 @@ public class Base implements Identifiable, Communicatable {
 
     public BaseObject toBaseObject() {
         return new BaseObjectCoreImplementation(
+                getId(),
                 getName(),
                 getPublicAddress(),
                 getCpuLoad(),
@@ -319,8 +319,8 @@ public class Base implements Identifiable, Communicatable {
                 getMaxRam(),
                 isConnected(),
                 isReady(),
-                getServers().stream().map(Server::getId).collect(Collectors.toSet()),
-                getProxies().stream().map(Proxy::getId).collect(Collectors.toSet())
+                getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
+                getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toSet())
         );
     }
 

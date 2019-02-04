@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class ServerGroup implements Group {
 
+    private String id;
     private String name;
 
     private int onlineAmount;
@@ -19,7 +20,7 @@ public class ServerGroup implements Group {
     private int ram;
     private boolean isStatic;
     private int priority;
-    private String baseName;
+    private Base base;
     private Set<String> sortOutStates;
 
     private Map<String, Server> servers = new HashMap<>();
@@ -32,8 +33,8 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
-        construct(name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
+    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
+        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
     }
 
     public void construct(Map<String, Object> properties) {
@@ -41,13 +42,14 @@ public class ServerGroup implements Group {
             String name = (String) properties.get("name");
             ServerGroupProperties defaultProperties = new ServerGroupProperties(name);
             construct(
+                    (String) properties.getOrDefault("id", defaultProperties.getId()),
                     name,
                     ((Number) properties.getOrDefault("online-amount", defaultProperties.getOnlineAmount())).intValue(),
                     ((Number) properties.getOrDefault("max-amount", defaultProperties.getMaxAmount())).intValue(),
                     ((Number) properties.getOrDefault("ram", defaultProperties.getRam())).intValue(),
                     (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
                     ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
-                    (String) properties.getOrDefault("base", defaultProperties.getBaseName()),
+                    (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
                     (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
@@ -63,33 +65,40 @@ public class ServerGroup implements Group {
         properties.put("ram", getRam());
         properties.put("static", isStatic());
         properties.put("priority", getPriority());
-        if (getBaseName() != null) properties.put("base", getBaseName());
+        if (getBase() != null) properties.put("base", getBase().getId());
         properties.put("sort-out-states", getSortOutStates());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseName(), properties.getSortOutStates());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates());
     }
 
-    public void construct(String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
         }
+        this.id = id;
         this.name = name;
-        setOnlineAmount(onlineAmount);
-        setMaxAmount(maxAmount);
-        setRam(ram);
-        setStatic(isStatic);
-        setPriority(priority);
-        setBaseName(baseName);
-        setSortOutStates(sortOutStates);
-        if (isStatic() && getBaseName() == null) {
-            TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to get a server started.");
+        this.onlineAmount = onlineAmount;
+        this.maxAmount = maxAmount;
+        this.ram = ram;
+        this.isStatic = isStatic;
+        this.priority = priority;
+        if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
+        this.sortOutStates = new HashSet<>(sortOutStates);
+        if (isStatic() && getBase() == null) {
+            TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to enable starting of servers.");
         }
     }
 
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -186,14 +195,15 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupPriorityChangedEvent(toGroupObject(), oldValue, priority));
     }
 
-    public void setBaseName(String baseName) {
-        String oldValue = getBaseName();
-        this.baseName = baseName;
-        EventTransmitter.sendEvent(new ServerGroupBaseNameChangedEvent(toGroupObject(), oldValue, baseName));
+    public void setBase(Base base) {
+        Base oldValue = getBase();
+        this.base = base;
+        EventTransmitter.sendEvent(new ServerGroupBaseChangedEvent(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
     }
 
-    public String getBaseName() {
-        return baseName;
+    @Override
+    public Base getBase() {
+        return base;
     }
 
     public Set<String> getSortOutStates() {
@@ -207,13 +217,14 @@ public class ServerGroup implements Group {
 
     public ServerGroupObject toGroupObject() {
         return new ServerGroupObjectCoreImplementation(
+                getId(),
                 getName(),
                 getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
                 getOnlineAmount(),
                 getMaxAmount(),
                 getRam(),
                 isStatic(),
-                getBaseName(),
+                getBase().toBaseObject(),
                 getSortOutStates()
         );
     }

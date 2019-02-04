@@ -9,8 +9,12 @@ public abstract class PropertyChangedEvent<I extends IdentifiableObject, T> impl
     private T oldValue;
     private T newValue;
 
-    public PropertyChangedEvent(I instance, T oldValue, T newValue) {
+    public PropertyChangedEvent(I instance) {
         this.instanceId = instance.getId();
+    }
+
+    public PropertyChangedEvent(I instance, T oldValue, T newValue) {
+        this(instance);
         this.oldValue = oldValue;
         this.newValue = newValue;
     }

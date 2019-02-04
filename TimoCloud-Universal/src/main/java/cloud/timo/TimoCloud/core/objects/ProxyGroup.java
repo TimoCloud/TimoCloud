@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class ProxyGroup implements Group {
 
+    private String id;
     private String name;
     private int maxPlayerCountPerProxy;
     private int maxPlayerCount;
@@ -26,7 +27,7 @@ public class ProxyGroup implements Group {
     private int priority;
     private Collection<String> serverGroups;
     private boolean allServerGroups;
-    private String baseName;
+    private Base base;
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Map<String, Proxy> proxies = new HashMap<>();
@@ -35,8 +36,8 @@ public class ProxyGroup implements Group {
         construct(properties);
     }
 
-    public ProxyGroup(String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames) {
-        construct(name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
+    public ProxyGroup(String id, String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames) {
+        construct(id, name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
     }
 
     public ProxyGroup(Map<String, Object> properties) {
@@ -48,6 +49,7 @@ public class ProxyGroup implements Group {
             String name = (String) properties.get("name");
             ProxyGroupProperties defaultProperties = new ProxyGroupProperties(name);
             construct(
+                    (String) properties.getOrDefault("id", defaultProperties.getId()),
                     name,
                     ((Number) properties.getOrDefault("players-per-proxy", defaultProperties.getMaxPlayerCountPerProxy())).intValue(),
                     ((Number) properties.getOrDefault("max-players", defaultProperties.getMaxPlayerCount())).intValue(),
@@ -59,7 +61,7 @@ public class ProxyGroup implements Group {
                     (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
                     ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
                     (Collection<String>) properties.getOrDefault("serverGroups", defaultProperties.getServerGroups()),
-                    (String) properties.getOrDefault("base", defaultProperties.getBaseName()),
+                    (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
                     (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
                     (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()));
         } catch (Exception e) {
@@ -69,10 +71,11 @@ public class ProxyGroup implements Group {
     }
 
     public void construct(ProxyGroupProperties properties) {
-        construct(properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseName(), properties.getProxyChooseStrategy().name(), properties.getHostNames());
+        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames());
     }
 
-    public void construct(String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostnames) {
+    public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames) {
+        this.id = id;
         this.name = name;
         this.maxPlayerCountPerProxy = playersPerProxy;
         this.maxPlayerCount = maxPlayers;
@@ -86,14 +89,14 @@ public class ProxyGroup implements Group {
 
         setServerGroups(serverGroups);
 
-        this.baseName = baseName;
-        if (isStatic() && getBaseName() == null) {
+        if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
+        if (isStatic() && getBase() == null) {
             TimoCloudCore.getInstance().severe("Static proxy group " + getName() + " has no base specified. Please specify a base name in order to get the group started.");
         }
         this.proxyChooseStrategy = EnumUtil.valueOf(ProxyChooseStrategy.class, proxyChooseStrategy);
         if (this.proxyChooseStrategy == null) this.proxyChooseStrategy = ProxyChooseStrategy.BALANCE;
 
-        this.hostNames = hostnames.stream().map(String::trim).collect(Collectors.toSet());
+        this.hostNames = hostNames.stream().map(String::trim).collect(Collectors.toSet());
 
         reload();
     }
@@ -112,7 +115,7 @@ public class ProxyGroup implements Group {
         properties.put("priority", getPriority());
         properties.put("serverGroups", allServerGroups ? Collections.singletonList("*") : getServerGroups());
         properties.put("hostNames", getHostNames());
-        if (getBaseName() != null) properties.put("base", getBaseName());
+        if (getBase() != null) properties.put("base", getBase().getId());
         return properties;
     }
 
@@ -159,6 +162,11 @@ public class ProxyGroup implements Group {
             for (Server server : removeServers) proxy.unregisterServer(server);
             for (Server server : getRegisteredServers()) proxy.registerServer(server);
         }
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -306,15 +314,14 @@ public class ProxyGroup implements Group {
     }
 
     @Override
-    public String getBaseName() {
-        return baseName;
+    public Base getBase() {
+        return base;
     }
 
-    public void setBaseName(String baseName) {
-        String oldValue = getBaseName();
-        this.baseName = baseName;
-        EventTransmitter.sendEvent(new ProxyGroupBaseNameChangedEvent(toGroupObject(), oldValue, baseName));
-
+    public void setBase(Base base) {
+        Base oldValue = getBase();
+        this.base = base;
+        EventTransmitter.sendEvent(new ProxyGroupBaseChangedEvent(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
     }
 
     public ProxyChooseStrategy getProxyChooseStrategy() {
@@ -346,6 +353,7 @@ public class ProxyGroup implements Group {
 
     public ProxyGroupObject toGroupObject() {
         return new ProxyGroupObjectCoreImplementation(
+                getId(),
                 getName(),
                 getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
@@ -358,8 +366,8 @@ public class ProxyGroup implements Group {
                 getMotd(),
                 isStatic(),
                 getPriority(),
-                getServerGroups().stream().map(ServerGroup::getName).collect(Collectors.toSet()),
-                getBaseName(),
+                getServerGroups().stream().map(ServerGroup::toGroupObject).collect(Collectors.toSet()),
+                getBase().toBaseObject(),
                 getProxyChooseStrategy().name(),
                 Collections.unmodifiableSet(getHostNames())
         );

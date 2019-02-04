@@ -1,38 +1,50 @@
 package cloud.timo.TimoCloud.api.implementations.objects;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
-public class BaseObjectBasicImplementation implements BaseObject {
+public class BaseObjectBasicImplementation implements BaseObject, LinkableObject<BaseObject> {
 
+    private String id;
     private String name;
     private InetAddress ipAddress;
     private Double cpuLoad;
-    private int freeRam;
+    private int availableRam;
     private int maxRam;
     private boolean connected;
     private boolean ready;
-    private Set<String> servers;
-    private Set<String> proxies;
+    private Set<ServerObjectLink> servers;
+    private Set<ProxyObjectLink> proxies;
 
-    public BaseObjectBasicImplementation(String name, InetAddress ipAddress, Double cpuLoad, int freeRam, int maxRam, Boolean connected, Boolean ready, Set<String> servers, Set<String> proxies) {
+    public BaseObjectBasicImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Collection<ServerObject> servers, Collection<ProxyObject> proxies) {
+        this.id = id;
         this.name = name;
         this.ipAddress = ipAddress;
         this.cpuLoad = cpuLoad;
-        this.freeRam = freeRam;
+        this.availableRam = availableRam;
         this.maxRam = maxRam;
         this.connected = connected;
         this.ready = ready;
-        this.servers = servers;
-        this.proxies = proxies;
+        this.servers = servers.stream().map(serverObject -> (ServerObjectBasicImplementation) serverObject).map(ServerObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.proxies = proxies.stream().map(proxyObject -> (ProxyObjectBasicImplementation) proxyObject).map(ProxyObjectBasicImplementation::toLink).collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -40,9 +52,17 @@ public class BaseObjectBasicImplementation implements BaseObject {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     @Override
     public InetAddress getIpAddress() {
         return ipAddress;
+    }
+
+    public void setIpAddress(InetAddress ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     @Override
@@ -50,9 +70,17 @@ public class BaseObjectBasicImplementation implements BaseObject {
         return cpuLoad;
     }
 
+    public void setCpuLoad(Double cpuLoad) {
+        this.cpuLoad = cpuLoad;
+    }
+
     @Override
     public int getAvailableRam() {
-        return freeRam;
+        return availableRam;
+    }
+
+    public void setAvailableRam(int availableRam) {
+        this.availableRam = availableRam;
     }
 
     @Override
@@ -60,9 +88,17 @@ public class BaseObjectBasicImplementation implements BaseObject {
         return maxRam;
     }
 
+    public void setMaxRam(int maxRam) {
+        this.maxRam = maxRam;
+    }
+
     @Override
     public boolean isConnected() {
         return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 
     @Override
@@ -70,13 +106,38 @@ public class BaseObjectBasicImplementation implements BaseObject {
         return ready;
     }
 
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
+
     @Override
     public Set<ServerObject> getServers() {
-        return servers.stream().map(name -> TimoCloudAPI.getUniversalAPI().getServer(name)).collect(Collectors.toSet());
+        return Collections.unmodifiableSet(servers.stream().map(ServerObjectLink::resolve).collect(Collectors.toSet()));
+    }
+
+    public void addServer(ServerObject serverObject) {
+        servers.add(((ServerObjectBasicImplementation) serverObject).toLink());
+    }
+
+    public void removeServer(ServerObject serverObject) {
+        servers.remove(((ServerObjectBasicImplementation) serverObject).toLink());
     }
 
     @Override
     public Set<ProxyObject> getProxies() {
-        return proxies.stream().map(name -> TimoCloudAPI.getUniversalAPI().getProxy(name)).collect(Collectors.toSet());
+        return Collections.unmodifiableSet(proxies.stream().map(ProxyObjectLink::resolve).collect(Collectors.toSet()));
+    }
+
+    public void addProxy(ProxyObject proxyObject) {
+        proxies.add(((ProxyObjectBasicImplementation) proxyObject).toLink());
+    }
+
+    public void removeProxy(ProxyObject proxyObject) {
+        proxies.remove(((ProxyObjectBasicImplementation) proxyObject).toLink());
+    }
+
+    @Override
+    public BaseObjectLink toLink() {
+        return new BaseObjectLink(this);
     }
 }

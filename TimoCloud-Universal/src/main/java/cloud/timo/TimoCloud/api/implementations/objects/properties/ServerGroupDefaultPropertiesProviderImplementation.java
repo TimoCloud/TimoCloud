@@ -33,7 +33,7 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
     }
 
     @Override
-    public String getBaseName() {
+    public String getBaseIdentifier() {
         return null;
     }
 

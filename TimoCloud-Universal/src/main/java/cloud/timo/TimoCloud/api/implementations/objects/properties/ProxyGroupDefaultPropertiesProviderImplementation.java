@@ -59,7 +59,7 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     }
 
     @Override
-    public String getBaseName() {
+    public String getBaseIdentifier() {
         return null;
     }
 

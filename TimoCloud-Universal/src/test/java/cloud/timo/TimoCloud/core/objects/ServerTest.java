@@ -18,6 +18,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -116,6 +117,6 @@ public class ServerTest extends CommunicationTest {
     }
 
     private ServerGroup anyGroup() {
-        return new ServerGroup("Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
+        return new ServerGroup(UUID.randomUUID().toString(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
     }
 }

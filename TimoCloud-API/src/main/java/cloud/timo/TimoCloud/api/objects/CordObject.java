@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
  * A TimoCloudCord instance is a proxy which connects players to BungeeCord instances - depending on different integrated algorithms.
  * It can be helpful to balance players when starting proxies dynamically.
  */
-public interface CordObject {
+public interface CordObject extends IdentifiableObject {
 
     /**
      * @return The Cord's name

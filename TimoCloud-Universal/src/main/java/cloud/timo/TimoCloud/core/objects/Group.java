@@ -1,10 +1,17 @@
 package cloud.timo.TimoCloud.core.objects;
 
-public interface Group {
+public interface Group extends Identifiable {
+
     String getName();
+
     GroupType getType();
+
     int getRam();
+
     int getPriority();
+
     boolean isStatic();
-    String getBaseName();
+
+    Base getBase();
+
 }

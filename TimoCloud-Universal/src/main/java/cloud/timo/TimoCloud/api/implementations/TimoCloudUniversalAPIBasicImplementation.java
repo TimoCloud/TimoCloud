@@ -3,10 +3,11 @@ package cloud.timo.TimoCloud.api.implementations; // This relies on the jackson 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
-import cloud.timo.TimoCloud.api.implementations.objects.BaseObjectOfflineImplementation;
+import cloud.timo.TimoCloud.api.implementations.storage.IdentifiableObjectStorage;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,18 +15,19 @@ import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_PROXY_GROUP;
 import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_SERVER_GROUP;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
-    private Set<ServerGroupObject> serverGroups = new HashSet<>();
-    private Set<ProxyGroupObject> proxyGroups = new HashSet<>();
-    private Set<BaseObject> bases = new HashSet<>();
-    private Set<CordObject> cords = new HashSet<>();
-
+    private IdentifiableObjectStorage<ServerGroupObject> serverGroups = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ProxyGroupObject> proxyGroups = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ServerObject> servers = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ProxyObject> proxies = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<BaseObject> bases = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<PlayerObject> players = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<CordObject> cords = new IdentifiableObjectStorage<>();
 
     private final Class<? extends ServerObject> serverObjectImplementation;
     private final Class<? extends ProxyObject> proxyObjectImplementation;
@@ -63,31 +65,28 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     public void setData(Map<String, Object> json) {
-        Set<ServerGroupObject> serverGroups = new HashSet<>();
-        Set<ProxyGroupObject> proxyGroups = new HashSet<>();
-        Set<CordObject> cords = new HashSet<>();
-        Set<BaseObject> bases = new HashSet<>();
         try {
-            for (Object object : (List) json.get("serverGroups")) {
-                ServerGroupObject groupObject = getObjectMapper().readValue((String) object, serverGroupObjectImplementation);
-                serverGroups.add(groupObject);
-            }
-            this.serverGroups = serverGroups;
-            for (Object object : (List) json.get("proxyGroups")) {
-                ProxyGroupObject groupObject = getObjectMapper().readValue((String) object, proxyGroupObjectImplementation);
-                proxyGroups.add(groupObject);
-            }
-            this.proxyGroups = proxyGroups;
-            for (Object object : (List) json.get("cords")) {
-                CordObject cordObject = getObjectMapper().readValue((String) object, cordObjectImplementation);
-                cords.add(cordObject);
-            }
-            this.cords = cords;
-            for (Object object : (List) json.get("bases")) {
-                BaseObject baseObject = getObjectMapper().readValue((String) object, baseObjectImplementation);
-                bases.add(baseObject);
-            }
-            this.bases = bases;
+            ((Collection) json.get("serverGroups")).stream()
+                    .map(object -> readValue((String) object, serverGroupObjectImplementation))
+                    .forEach(serverGroup -> this.serverGroups.add((ServerGroupObject) serverGroup));
+            ((Collection) json.get("proxyGroups")).stream()
+                    .map(object -> readValue((String) object, proxyGroupObjectImplementation))
+                    .forEach(proxyGroup -> this.proxyGroups.add((ProxyGroupObject) proxyGroup));
+            ((Collection) json.get("servers")).stream()
+                    .map(object -> readValue((String) object, serverObjectImplementation))
+                    .forEach(server -> this.servers.add((ServerObject) server));
+            ((Collection) json.get("proxies")).stream()
+                    .map(object -> readValue((String) object, proxyObjectImplementation))
+                    .forEach(proxy -> this.proxies.add((ProxyObject) proxy));
+            ((Collection) json.get("bases")).stream()
+                    .map(object -> readValue((String) object, baseObjectImplementation))
+                    .forEach(base -> this.bases.add((BaseObject) base));
+            ((Collection) json.get("players")).stream()
+                    .map(object -> readValue((String) object, playerObjectImplementation))
+                    .forEach(player -> this.players.add((PlayerObject) player));
+            ((Collection) json.get("cords")).stream()
+                    .map(object -> readValue((String) object, cordObjectImplementation))
+                    .forEach(cord -> this.cords.add((CordObject) cord));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,94 +95,62 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
 
     @Override
     public Set<ServerGroupObject> getServerGroups() {
-        return Collections.unmodifiableSet(serverGroups == null ? Collections.emptySet() : serverGroups);
+        return Collections.unmodifiableSet(new HashSet<>(serverGroups.values()));
     }
 
     @Override
-    public ServerGroupObject getServerGroup(String groupName) {
-        Set<ServerGroupObject> groups = getServerGroups();
-        if (groups == null) return null;
-        for (ServerGroupObject group : groups) if (group.getName().equals(groupName)) return group;
-        for (ServerGroupObject group : groups) if (group.getName().equalsIgnoreCase(groupName)) return group;
-        return null;
+    public ServerGroupObject getServerGroup(String identifier) {
+        return serverGroups.getByIdentifier(identifier);
     }
 
     @Override
-    public ServerObject getServer(String serverName) {
-        for (ServerGroupObject group : serverGroups)
-            for (ServerObject server : group.getServers())
-                if (server.getName().equals(serverName) || server.getId().equals(serverName)) return server;
-        for (ServerGroupObject group : serverGroups)
-            for (ServerObject server : group.getServers())
-                if (server.getName().equalsIgnoreCase(serverName)) return server;
-        return null;
+    public ServerObject getServer(String identifier) {
+        return servers.getByIdentifier(identifier);
     }
 
     @Override
     public Set<ProxyGroupObject> getProxyGroups() {
-        return Collections.unmodifiableSet(proxyGroups == null ? Collections.emptySet() : proxyGroups);
+        return Collections.unmodifiableSet(new HashSet<>(proxyGroups.values()));
     }
 
     @Override
-    public ProxyGroupObject getProxyGroup(String groupName) {
-        for (ProxyGroupObject group : proxyGroups) if (group.getName().equals(groupName)) return group;
-        for (ProxyGroupObject group : proxyGroups) if (group.getName().equalsIgnoreCase(groupName)) return group;
-        return null;
+    public ProxyGroupObject getProxyGroup(String identifier) {
+        return proxyGroups.getByIdentifier(identifier);
     }
 
     @Override
-    public ProxyObject getProxy(String proxyName) {
-        for (ProxyGroupObject group : proxyGroups)
-            for (ProxyObject proxy : group.getProxies())
-                if (proxy.getName().equals(proxyName) || proxy.getId().equals(proxyName)) return proxy;
-        for (ProxyGroupObject group : proxyGroups)
-            for (ProxyObject proxy : group.getProxies())
-                if (proxy.getName().equalsIgnoreCase(proxyName)) return proxy;
-        return null;
+    public ProxyObject getProxy(String identifier) {
+        return proxies.getByIdentifier(identifier);
     }
 
     @Override
     public PlayerObject getPlayer(UUID uuid) {
-        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(Collection::stream).collect(Collectors.toList()))
-            for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
-                if (playerObject.getUuid().equals(uuid)) return playerObject;
-        return null;
+        return players.getById(uuid.toString());
     }
 
     @Override
     public PlayerObject getPlayer(String name) {
-        for (ProxyObject proxyObject : getProxyGroups().stream().map(ProxyGroupObject::getProxies).flatMap(Collection::stream).collect(Collectors.toList()))
-            for (PlayerObject playerObject : proxyObject.getOnlinePlayers())
-                if (playerObject.getName().equals(name)) return playerObject;
-        return null;
+        return players.getByName(name);
     }
 
     @Override
     public Collection<BaseObject> getBases() {
-        return Collections.unmodifiableSet(bases == null ? Collections.emptySet() : bases);
+        return Collections.unmodifiableSet(new HashSet<>(bases.values()));
     }
 
     @Override
-    public BaseObject getBase(String name) {
-        for (BaseObject baseObject : getBases())
-            if (baseObject.getName().equals(name)) return baseObject;
-        for (BaseObject baseObject : getBases())
-            if (baseObject.getName().equalsIgnoreCase(name)) return baseObject;
-        return new BaseObjectOfflineImplementation(name);
+    public BaseObject getBase(String identifier) {
+        return bases.getByIdentifier(identifier);
     }
 
     @Override
     public Collection<CordObject> getCords() {
-        return Collections.unmodifiableSet(cords == null ? Collections.emptySet() : cords);
+        return Collections.unmodifiableSet(new HashSet<>(cords.values()));
     }
 
     @Override
-    public CordObject getCord(String name) {
-        for (CordObject cordObject : getCords())
-            if (cordObject.getName().equals(name)) return cordObject;
-        for (CordObject cordObject : getCords())
-            if (cordObject.getName().equalsIgnoreCase(name)) return cordObject;
-        return null;
+    public CordObject getCord(String identifier) {
+        return cords.getByIdentifier(identifier);
     }
 
     @Override
@@ -194,6 +161,43 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     @Override
     public APIRequestFuture<ProxyGroupObject> createProxyGroup(ProxyGroupProperties properties) {
         return new APIRequestImplementation<ProxyGroupObject>(G_CREATE_PROXY_GROUP, properties).submit();
+    }
+
+    public IdentifiableObjectStorage<ServerGroupObject> getServerGroupStorage() {
+        return serverGroups;
+    }
+
+    public IdentifiableObjectStorage<ProxyGroupObject> getProxyGroupStorage() {
+        return proxyGroups;
+    }
+
+    public IdentifiableObjectStorage<ServerObject> getServerStorage() {
+        return servers;
+    }
+
+    public IdentifiableObjectStorage<ProxyObject> getProxyStorage() {
+        return proxies;
+    }
+
+    public IdentifiableObjectStorage<BaseObject> getBaseStorage() {
+        return bases;
+    }
+
+    public IdentifiableObjectStorage<PlayerObject> getPlayerStorage() {
+        return players;
+    }
+
+    public IdentifiableObjectStorage<CordObject> getCordStorage() {
+        return cords;
+    }
+
+    private <T> T readValue(String input, Class<? extends T> clazz) {
+        try {
+            return getObjectMapper().readValue(input, clazz);
+        } catch (Exception e) {
+            TimoCloudLogger.getLogger().severe(e);
+            return null;
+        }
     }
 
     public ObjectMapper getObjectMapper() {

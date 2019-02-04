@@ -9,8 +9,7 @@ import java.net.InetSocketAddress;
 @NoArgsConstructor
 public class CordObjectCoreImplementation extends CordObjectBasicImplementation implements CordObject {
 
-    public CordObjectCoreImplementation(String name, InetSocketAddress address, boolean connected) {
-        super(name, address, connected);
+    public CordObjectCoreImplementation(String id, String name, InetSocketAddress address, boolean connected) {
+        super(id, name, address, connected);
     }
-
 }

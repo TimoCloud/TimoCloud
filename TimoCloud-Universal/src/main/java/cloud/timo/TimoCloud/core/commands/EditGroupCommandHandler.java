@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.commands.utils.CommandFormatUtil;
+import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Group;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
@@ -42,10 +43,15 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
                     serverGroup.setMaxAmount(Integer.parseInt(value));
                     break;
                 case "base":
-                    String baseName = value;
-                    if (baseName.equalsIgnoreCase("none") || baseName.equalsIgnoreCase("dynamic"))
-                        baseName = null;
-                    serverGroup.setBaseName(baseName);
+                    String baseIdentifier = value;
+                    if (baseIdentifier.equalsIgnoreCase("none") || baseIdentifier.equalsIgnoreCase("dynamic"))
+                        baseIdentifier = null;
+                    Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
+                    if (base == null) {
+                        sender.sendError("A base with the given name or id does not exist!");
+                        return;
+                    }
+                    serverGroup.setBase(base);
                     break;
                 case "ram":
                     int ram = Integer.parseInt(value);
@@ -83,10 +89,15 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
                     proxyGroup.setMaxAmount(Integer.parseInt(value));
                     break;
                 case "base":
-                    String baseName = value;
-                    if (baseName.equalsIgnoreCase("none") || baseName.equalsIgnoreCase("dynamic"))
-                        baseName = null;
-                    proxyGroup.setBaseName(baseName);
+                    String baseIdentifier = value;
+                    if (baseIdentifier.equalsIgnoreCase("none") || baseIdentifier.equalsIgnoreCase("dynamic"))
+                        baseIdentifier = null;
+                    Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
+                    if (base == null) {
+                        sender.sendError("A base with the given name or id does not exist!");
+                        return;
+                    }
+                    proxyGroup.setBase(base);
                     break;
                 case "ram":
                     int ram = Integer.parseInt(value);

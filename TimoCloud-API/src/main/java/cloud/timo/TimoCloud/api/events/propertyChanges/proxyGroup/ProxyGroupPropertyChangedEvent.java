@@ -6,6 +6,10 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 
 public abstract class ProxyGroupPropertyChangedEvent<T> extends PropertyChangedEvent<ProxyGroupObject, T> {
 
+    public ProxyGroupPropertyChangedEvent(ProxyGroupObject instannce) {
+        super(instannce);
+    }
+
     public ProxyGroupPropertyChangedEvent(ProxyGroupObject instance, T oldValue, T newValue) {
         super(instance, oldValue, newValue);
     }

@@ -22,12 +22,12 @@ import java.util.stream.Stream;
 
 public class CoreInstanceManager {
 
-    private Map<String, ServerGroup> serverGroups;
-    private Map<String, ProxyGroup> proxyGroups;
+    private IdentifiableStorage<ServerGroup> serverGroups;
+    private IdentifiableStorage<ProxyGroup> proxyGroups;
     private IdentifiableStorage<Server> servers;
     private IdentifiableStorage<Proxy> proxies;
     private IdentifiableStorage<Base> bases;
-    private Map<String, Cord> cords;
+    private IdentifiableStorage<Cord> cords;
 
     private static final int MAX_SERVERS = 2500;
     private static final int MAX_PROXIES = 500;
@@ -39,29 +39,29 @@ public class CoreInstanceManager {
     }
 
     private void makeInstances() {
-        serverGroups = new HashMap<>();
-        proxyGroups = new HashMap<>();
+        serverGroups = new IdentifiableStorage<>();
+        proxyGroups = new IdentifiableStorage<>();
         servers = new IdentifiableStorage<>();
         proxies = new IdentifiableStorage<>();
         bases = new IdentifiableStorage<>();
-        cords = new HashMap<>();
+        cords = new IdentifiableStorage<>();
     }
 
     /**
      * Loads all server/proxy groups and bases from config files
      */
     public void loadEverything() {
+        loadBases();
         loadServerGroups();
         loadProxyGroups();
-        loadBases();
     }
 
     /**
      * Loads server group configurations from config file
      */
     public void loadServerGroups() {
-        Map<String, ServerGroup> serverGroups = new HashMap<>();
         try {
+            serverGroups.clear();
             JsonArray serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
             for (JsonElement jsonElement : serverGroupsList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -70,13 +70,12 @@ public class CoreInstanceManager {
                 ServerGroup serverGroup = getServerGroupByName(name);
                 if (serverGroup != null) serverGroup.construct(properties);
                 else serverGroup = new ServerGroup(properties);
-                serverGroups.put(serverGroup.getName(), serverGroup);
+                serverGroups.add(serverGroup);
             }
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server groups: ");
             e.printStackTrace();
         }
-        this.serverGroups = serverGroups;
     }
 
     /**
@@ -84,7 +83,7 @@ public class CoreInstanceManager {
      */
     public void loadProxyGroups() {
         try {
-            Map<String, ProxyGroup> proxyGroups = new HashMap<>();
+            proxyGroups.clear();
             JsonArray proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
             for (JsonElement jsonElement : proxyGroupsList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -93,9 +92,8 @@ public class CoreInstanceManager {
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
                 if (proxyGroup != null) proxyGroup.construct(properties);
                 else proxyGroup = new ProxyGroup(properties);
-                proxyGroups.put(proxyGroup.getName(), proxyGroup);
+                proxyGroups.add(proxyGroup);
             }
-            this.proxyGroups = proxyGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading proxy groups: ");
             e.printStackTrace();
@@ -104,7 +102,7 @@ public class CoreInstanceManager {
 
     public void loadBases() {
         try {
-            IdentifiableStorage<Base> bases = new IdentifiableStorage<>();
+            bases.clear();
             JsonArray baseList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getBasesFile());
             for (JsonElement jsonElement : baseList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -120,7 +118,6 @@ public class CoreInstanceManager {
                     TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
                 }
             }
-            this.bases = bases;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading bases: ");
             e.printStackTrace();
@@ -131,9 +128,9 @@ public class CoreInstanceManager {
      * Saves both, server- & proxy configurations to config files
      */
     public void saveEverything() {
+        saveBases();
         saveServerGroups();
         saveProxyGroups();
-        saveBases();
     }
 
     /**
@@ -199,36 +196,33 @@ public class CoreInstanceManager {
     }
 
     /**
-     * Gets a server group by name (case-sensitive)
-     *
-     * @param name Case-sensitive
-     * @return Server group object
-     */
-    public ServerGroup getServerGroupByExactName(String name) {
-        return serverGroups.get(name);
-    }
-
-    /**
      * Gets a server group by name (case-insensitive)
      *
      * @param name Case-insensitive
      * @return Server group object
      */
     public ServerGroup getServerGroupByName(String name) {
-        if (getServerGroupByExactName(name) != null) return getServerGroupByExactName(name);
-        for (ServerGroup serverGroup : serverGroups.values())
-            if (serverGroup.getName().equalsIgnoreCase(name)) return serverGroup;
-        return null;
+        return serverGroups.getByName(name);
     }
 
     /**
-     * Gets a proxy group by name (case-sensitive)
+     * Gets a server group by id
      *
-     * @param name Case-sensitive
-     * @return Proxy group object
+     * @param id The group's id
+     * @return Server group object
      */
-    public ProxyGroup getProxyGroupByExactName(String name) {
-        return proxyGroups.get(name);
+    public ServerGroup getServerGroupById(String id) {
+        return serverGroups.getById(id);
+    }
+
+    /**
+     * Gets a server group by name or id
+     *
+     * @param identifier The group's name or id
+     * @return Server group object
+     */
+    public ServerGroup getServerGroupByIdentifier(String identifier) {
+        return serverGroups.getByIdentifier(identifier);
     }
 
     /**
@@ -238,10 +232,27 @@ public class CoreInstanceManager {
      * @return Proxy group object
      */
     public ProxyGroup getProxyGroupByName(String name) {
-        if (getProxyGroupByExactName(name) != null) return getProxyGroupByExactName(name);
-        for (ProxyGroup proxyGroup : proxyGroups.values())
-            if (proxyGroup.getName().equalsIgnoreCase(name)) return proxyGroup;
-        return null;
+        return proxyGroups.getByName(name);
+    }
+
+    /**
+     * Gets a proxy group by id
+     *
+     * @param id The group's id
+     * @return Proxy group object
+     */
+    public ProxyGroup getProxyGroupById(String id) {
+        return proxyGroups.getById(id);
+    }
+
+    /**
+     * Gets a proxy group by name or id
+     *
+     * @param identifier The group's name or id
+     * @return Proxy group object
+     */
+    public ProxyGroup getProxyGroupByIdentifier(String identifier) {
+        return proxyGroups.getByIdentifier(identifier);
     }
 
     /**
@@ -250,7 +261,7 @@ public class CoreInstanceManager {
      * @param group The server group which shall be registered
      */
     public void addGroup(ServerGroup group) {
-        serverGroups.put(group.getName(), group);
+        serverGroups.add(group);
     }
 
     /**
@@ -259,7 +270,7 @@ public class CoreInstanceManager {
      * @param group The proxy group which shall be registered
      */
     public void addGroup(ProxyGroup group) {
-        proxyGroups.put(group.getName(), group);
+        proxyGroups.add(group);
     }
 
     /**
@@ -394,12 +405,12 @@ public class CoreInstanceManager {
      * @return A base object if a free base is found, otherwise null
      */
     public Base getFreeBase(Group group) {
-        if (group.isStatic() && group.getBaseName() == null)
+        if (group.isStatic() && group.getBase() == null)
             return null; // A static group has to have a base specified statically
         return getBases().stream()
                 .filter(Base::isConnected)
                 .filter(Base::isReady)
-                .filter(base -> group.getBaseName() == null || group.getBaseName().equals(base.getName()))
+                .filter(base -> group.getBase() == null || group.getBase().equals(base))
                 .filter(base -> base.getAvailableRam() >= group.getRam())
                 .min(Comparator.comparingInt(Base::getAvailableRam)).orElse(null);
     }
@@ -867,10 +878,10 @@ public class CoreInstanceManager {
      * @return A cord object with the given properties
      */
     public Cord getOrCreateCord(String name, InetAddress address, Channel channel) {
-        Cord cord = cords.getOrDefault(name, null);
+        Cord cord = cords.getByIdentifier(name);
         if (cord == null) {
             cord = new Cord(name, address, channel);
-            cords.put(name, cord);
+            cords.add(cord);
         } else {
             cord.setChannel(channel);
             cord.setAddress(address);
@@ -879,11 +890,11 @@ public class CoreInstanceManager {
     }
 
     /**
-     * @param name The cord's name
-     * @return A cord object if a cord with the given name exists, otherwise null
+     * @param identifier The cord's name or id
+     * @return A cord object if a cord with the given name or id exists, otherwise null
      */
-    public Cord getCord(String name) {
-        return (Cord) searchInMap(name, cords);
+    public Cord getCord(String identifier) {
+        return cords.getByIdentifier(identifier);
     }
 
     /**
@@ -912,7 +923,7 @@ public class CoreInstanceManager {
      * @return A collection of all bases
      */
     public Collection<Base> getBases() {
-        return bases.getValues();
+        return bases.values();
     }
 
     /**

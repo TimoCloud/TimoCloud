@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.events.ServerRegisterEvent;
 import cloud.timo.TimoCloud.api.events.ServerUnregisterEvent;
 import cloud.timo.TimoCloud.api.events.propertyChanges.server.*;
@@ -287,9 +286,7 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setAddress(InetSocketAddress address) {
-        InetSocketAddress oldValue = getAddress();
         this.address = address;
-        EventTransmitter.sendEvent(new ServerAddressChangedEvent(toServerObject(), oldValue, address));
     }
 
     public void setChannel(Channel channel) {
@@ -335,10 +332,8 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setPort(Integer port) {
-        int oldValue = getPort();
         this.port = port;
         setAddress(new InetSocketAddress(getAddress().getAddress(), port));
-        EventTransmitter.sendEvent(new ServerPortChangedEvent(toServerObject(), oldValue, port));
     }
 
     public int getOnlinePlayerCount() {
@@ -389,10 +384,8 @@ public class Server implements Instance, Communicatable {
     }
 
     public void setPublicKey(PublicKey publicKey) {
-        PublicKey oldValue = getPublicKey();
         this.publicKey = publicKey;
         TimoCloudCore.getInstance().getInstanceManager().serverDataUpdated(this);
-        EventTransmitter.sendEvent(new ServerPublicKeyChangedEvent(toServerObject(), oldValue, publicKey));
     }
 
     public DoAfterAmount getTemplateUpdate() {
@@ -412,7 +405,7 @@ public class Server implements Instance, Communicatable {
         return new ServerObjectCoreImplementation(
                 getName(),
                 getId(),
-                getGroup().getName(),
+                getGroup().toGroupObject(),
                 getState(),
                 getExtra(),
                 getMap(),
@@ -420,7 +413,7 @@ public class Server implements Instance, Communicatable {
                 new ArrayList<>(getOnlinePlayers()),
                 getOnlinePlayerCount(),
                 getMaxPlayers(),
-                getBase() == null ? null : getBase().getName(),
+                getBase().toBaseObject(),
                 getAddress()
         );
     }

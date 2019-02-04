@@ -13,8 +13,9 @@ import io.netty.channel.Channel;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class Cord implements Communicatable {
+public class Cord implements Communicatable, Identifiable {
 
+    private String id;
     private String name;
     private InetAddress address;
     private int port;
@@ -22,6 +23,7 @@ public class Cord implements Communicatable {
     private boolean connected;
 
     public Cord(String name, InetAddress address, Channel channel) {
+        this.id = name; // TODO Generate IDs
         this.name = name;
         this.address = address;
         this.channel = channel;
@@ -69,6 +71,11 @@ public class Cord implements Communicatable {
         sendMessage(Message.create().setType(MessageType.CORD_HANDSHAKE_SUCCESS));
     }
 
+    @Override
+    public String getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
@@ -103,6 +110,6 @@ public class Cord implements Communicatable {
     }
 
     public CordObject toCordObject() {
-        return new CordObjectCoreImplementation(getName(), getSocketAddress(), isConnected());
+        return new CordObjectCoreImplementation(getId(), getName(), getSocketAddress(), isConnected());
     }
 }

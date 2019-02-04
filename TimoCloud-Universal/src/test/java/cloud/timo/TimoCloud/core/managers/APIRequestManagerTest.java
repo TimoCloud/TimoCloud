@@ -8,10 +8,7 @@ import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
-import cloud.timo.TimoCloud.core.objects.Proxy;
-import cloud.timo.TimoCloud.core.objects.ProxyGroup;
-import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.core.objects.ServerGroup;
+import cloud.timo.TimoCloud.core.objects.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +17,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.security.PublicKey;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -62,9 +60,11 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestGCreateServerGroupValid() {
         when(coreInstanceManager.getGroupByName(anyString())).thenReturn(null);
+        String baseIdentifier = "BASE-2";
+        setBaseExisting(baseIdentifier);
         ArgumentCaptor<ServerGroup> argumentCaptor = ArgumentCaptor.forClass(ServerGroup.class);
         ServerGroupProperties serverGroupProperties = new ServerGroupProperties("TestServerGroup")
-                .setBaseName("BASE-2")
+                .setBaseIdentifier(baseIdentifier)
                 .setMaxAmount(50)
                 .setOnlineAmount(7)
                 .setPriority(3)
@@ -96,9 +96,11 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestGCreateProxyGroupValid() {
         when(coreInstanceManager.getGroupByName(anyString())).thenReturn(null);
+        String baseIdentifier = "BASE-3";
+        setBaseExisting(baseIdentifier);
         ArgumentCaptor<ProxyGroup> argumentCaptor = ArgumentCaptor.forClass(ProxyGroup.class);
         ProxyGroupProperties proxyGroupProperties = new ProxyGroupProperties("TestProxyGroup")
-                .setBaseName("BASE-3")
+                .setBaseIdentifier(baseIdentifier)
                 .setHostNames(Arrays.asList("test.timo.cloud", "test1.timo.cloud"))
                 .setKeepFreeSlots(33)
                 .setMaxAmount(1)
@@ -250,15 +252,31 @@ public class APIRequestManagerTest extends TimoCloudTest {
 
     @Test
     public void processRequestSGSetBaseValid() {
-        String value = "BASE-19";
-        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        String baseIdentifier = UUID.randomUUID().toString();
+        Base value = new Base(baseIdentifier, "BASE-24", 10000, 1000, 91.0, mock(PublicKey.class));
+        when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
+        ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
+        assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
+                        APIRequestType.SG_SET_BASE,
+                        "TestServerGroup",
+                        value.getId()
+                )
+        ).isSuccess());
+        verify(serverGroup, times(1)).setBase(argumentCaptor.capture());
+        assertEquals(value, argumentCaptor.getValue());
+    }
+
+    @Test
+    public void processRequestSGSetBaseValidNull() {
+        Base value = null;
+        ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
         assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
                         APIRequestType.SG_SET_BASE,
                         "TestServerGroup",
                         value
                 )
         ).isSuccess());
-        verify(serverGroup, times(1)).setBaseName(argumentCaptor.capture());
+        verify(serverGroup, times(1)).setBase(argumentCaptor.capture());
         assertEquals(value, argumentCaptor.getValue());
     }
 
@@ -584,15 +602,31 @@ public class APIRequestManagerTest extends TimoCloudTest {
 
     @Test
     public void processRequestPGSetBaseValid() {
-        String value = "BASE-5";
-        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        String baseIdentifier = UUID.randomUUID().toString();
+        Base value = new Base(baseIdentifier, "BASE-5", 1000000, 100, 94.0, mock(PublicKey.class));
+        when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
+        ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
+        assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
+                        APIRequestType.PG_SET_BASE,
+                        "TestProxyGroup",
+                        value.getId()
+                )
+        ).isSuccess());
+        verify(proxyGroup, times(1)).setBase(argumentCaptor.capture());
+        assertEquals(value, argumentCaptor.getValue());
+    }
+
+    @Test
+    public void processRequestPGSetBaseValidNull() {
+        Base value = null;
+        ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
         assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
                         APIRequestType.PG_SET_BASE,
                         "TestProxyGroup",
                         value
                 )
         ).isSuccess());
-        verify(proxyGroup, times(1)).setBaseName(argumentCaptor.capture());
+        verify(proxyGroup, times(1)).setBase(argumentCaptor.capture());
         assertEquals(value, argumentCaptor.getValue());
     }
 
@@ -672,7 +706,10 @@ public class APIRequestManagerTest extends TimoCloudTest {
     private void assertServerGroupPropertiesEquals(ServerGroupProperties serverGroupProperties, ServerGroup serverGroup) {
         assertNotNull(serverGroupProperties);
         assertNotNull(serverGroup);
-        assertEquals(serverGroupProperties.getBaseName(), serverGroup.getBaseName());
+        assertTrue((serverGroupProperties.getBaseIdentifier() == null && serverGroup.getBase() == null) ||
+                (serverGroupProperties.getBaseIdentifier() != null &&
+                (serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getId()) ||
+                        serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getName()))));
         assertEquals((int) serverGroupProperties.getMaxAmount(), serverGroup.getMaxAmount());
         assertEquals(serverGroupProperties.getName(), serverGroup.getName());
         assertEquals((int) serverGroupProperties.getOnlineAmount(), serverGroup.getOnlineAmount());
@@ -685,7 +722,10 @@ public class APIRequestManagerTest extends TimoCloudTest {
     private void assertProxyGroupPropertiesEquals(ProxyGroupProperties proxyGroupProperties, ProxyGroup proxyGroup) {
         assertNotNull(proxyGroupProperties);
         assertNotNull(proxyGroup);
-        assertEquals(proxyGroupProperties.getBaseName(), proxyGroup.getBaseName());
+        assertTrue((proxyGroupProperties.getBaseIdentifier() == null && proxyGroup.getBase() == null) ||
+                (proxyGroupProperties.getBaseIdentifier() != null &&
+                (proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getId()) ||
+                        proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getName()))));
         assertCollectionEqualsInAnyOrder(proxyGroupProperties.getHostNames(), proxyGroup.getHostNames());
         assertEquals((int) proxyGroupProperties.getKeepFreeSlots(), proxyGroup.getKeepFreeSlots());
         assertEquals((int) proxyGroupProperties.getMinAmount(), proxyGroup.getMinAmount());
@@ -699,5 +739,9 @@ public class APIRequestManagerTest extends TimoCloudTest {
         assertEquals((int) proxyGroupProperties.getRam(), proxyGroup.getRam());
         assertCollectionEqualsInAnyOrder(proxyGroupProperties.getServerGroups(), proxyGroup.getServerGroupNames());
         assertEquals(proxyGroupProperties.isStatic(), proxyGroup.isStatic());
+    }
+
+    private void setBaseExisting(String identifier) {
+        when(coreInstanceManager.getBaseByIdentifier(eq(identifier))).thenReturn(new Base(identifier, identifier, 0, 0, 0, mock(PublicKey.class)));
     }
 }

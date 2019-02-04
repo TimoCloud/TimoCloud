@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-public interface Instance extends Identifiable {
+public interface Instance extends PublicKeyIdentifiable {
 
     Group getGroup();
 

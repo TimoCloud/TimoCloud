@@ -3,31 +3,38 @@ package cloud.timo.TimoCloud.api.objects.properties;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class ServerGroupProperties {
 
+    private String id;
     private String name;
     private Integer onlineAmount;
     private Integer maxAmount;
     private Integer ram;
     private Boolean isStatic;
     private Integer priority;
-    private String baseName;
+    private String baseIdentifier;
     private Collection<String> sortOutStates;
 
-    private ServerGroupProperties() {
+    public ServerGroupProperties(String id, String name) {
+        this.id = id;
+        this.name = name;
         this.onlineAmount = getDefaultPropertiesProvider().getOnlineAmount();
         this.maxAmount = getDefaultPropertiesProvider().getMaxAmount();
         this.ram = getDefaultPropertiesProvider().getRam();
         this.isStatic = getDefaultPropertiesProvider().isStatic();
         this.priority = getDefaultPropertiesProvider().getPriority();
-        this.baseName = getDefaultPropertiesProvider().getBaseName();
+        this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
     }
-    
+
     public ServerGroupProperties(String name) {
-        this();
-        this.name = name;
+        this(generateId(), name);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -84,12 +91,12 @@ public class ServerGroupProperties {
         return this;
     }
 
-    public String getBaseName() {
-        return baseName;
+    public String getBaseIdentifier() {
+        return baseIdentifier;
     }
 
-    public ServerGroupProperties setBaseName(String baseName) {
-        this.baseName = baseName;
+    public ServerGroupProperties setBaseIdentifier(String baseIdentifier) {
+        this.baseIdentifier = baseIdentifier;
         return this;
     }
 
@@ -106,6 +113,10 @@ public class ServerGroupProperties {
         return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
     }
 
+    public static String generateId() {
+        return UUID.randomUUID().toString();
+    }
+
     public interface ServerGroupDefaultPropertiesProvider {
 
         Integer getOnlineAmount();
@@ -118,7 +129,7 @@ public class ServerGroupProperties {
 
         Integer getPriority();
 
-        String getBaseName();
+        String getBaseIdentifier();
 
         Collection<String> getSortOutStates();
 

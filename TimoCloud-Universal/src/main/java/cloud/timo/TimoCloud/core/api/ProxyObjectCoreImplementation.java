@@ -1,24 +1,20 @@
 package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.implementations.objects.ProxyObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
-import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.Proxy;
 import lombok.NoArgsConstructor;
 
 import java.net.InetSocketAddress;
-import java.util.List;
+import java.util.Collection;
 
 @NoArgsConstructor
 public class ProxyObjectCoreImplementation extends ProxyObjectBasicImplementation implements ProxyObject {
 
-    public ProxyObjectCoreImplementation(String name, String id, String group, List<PlayerObject> onlinePlayers, int onlinePlayerCount, String base, InetSocketAddress inetSocketAddress) {
+    public ProxyObjectCoreImplementation(String name, String id, ProxyGroupObject group, Collection<PlayerObject> onlinePlayers, int onlinePlayerCount, BaseObject base, InetSocketAddress inetSocketAddress) {
         super(name, id, group, onlinePlayers, onlinePlayerCount, base, inetSocketAddress);
-    }
-
-    private Proxy getProxy() {
-        return TimoCloudCore.getInstance().getInstanceManager().getProxyById(getId());
     }
 
 }

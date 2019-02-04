@@ -11,10 +11,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.Proxy;
-import cloud.timo.TimoCloud.core.objects.ProxyGroup;
-import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.core.objects.ServerGroup;
+import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
 import cloud.timo.TimoCloud.lib.json.JsonConverter;
 import cloud.timo.TimoCloud.lib.log.LogEntry;
@@ -24,7 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-// Next free error code: 14
+// Next free error code: 15
 public class APIRequestManager implements MessageListener {
 
     @Override
@@ -60,7 +57,10 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(isStatic, "Static");
                             Integer priority = serverGroupProperties.getPriority();
                             validateNotNull(priority, "Priority");
-                            String baseName = serverGroupProperties.getBaseName();
+                            String baseIdentifier = serverGroupProperties.getBaseIdentifier();
+                            if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
+                                throw new APIRequestError("Base does not exist", 14);
+                            }
                             Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
 
@@ -69,13 +69,14 @@ public class APIRequestManager implements MessageListener {
                             }
 
                             ServerGroup serverGroup = new ServerGroup(
+                                    ServerGroupProperties.generateId(),
                                     name,
                                     onlineAmount,
                                     maxAmount,
                                     ram,
                                     isStatic,
                                     priority,
-                                    baseName,
+                                    baseIdentifier,
                                     sortOutStates
                             );
 
@@ -113,7 +114,10 @@ public class APIRequestManager implements MessageListener {
                             Collection<String> serverGroups = proxyGroupProperties.getServerGroups();
                             validateNotNull(serverGroups, "ServerGroups");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
-                            String baseName = proxyGroupProperties.getBaseName();
+                            String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
+                            if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
+                                throw new APIRequestError("Base does not exist", 14);
+                            }
                             ProxyChooseStrategy proxyChooseStrategy = proxyGroupProperties.getProxyChooseStrategy();
                             validateNotNull(proxyChooseStrategy, "ProxyChooseStrategy");
                             Collection<String> hostNames = proxyGroupProperties.getHostNames();
@@ -124,6 +128,7 @@ public class APIRequestManager implements MessageListener {
                             }
 
                             ProxyGroup proxyGroup = new ProxyGroup(
+                                    ProxyGroupProperties.generateId(),
                                     name,
                                     maxPlayerCountPerProxy,
                                     maxPlayerCount,
@@ -135,7 +140,7 @@ public class APIRequestManager implements MessageListener {
                                     isStatic,
                                     priority,
                                     serverGroups,
-                                    baseName,
+                                    baseIdentifier,
                                     proxyChooseStrategy.name(),
                                     hostNames
                             );
@@ -210,11 +215,19 @@ public class APIRequestManager implements MessageListener {
                             break;
                         }
                         case PG_SET_BASE: {
-                            if (! data.containsKey("value")) {
+                            if (!data.containsKey("value")) {
                                 throw new APIRequestError("Missing value for base", 5);
                             }
                             String value = data.getString("value");
-                            proxyGroup.setBaseName(value);
+                            if (value == null) {
+                                proxyGroup.setBase(null);
+                                break;
+                            }
+                            Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(value);
+                            if (base == null) {
+                                throw new APIRequestError("Base does not exist", 14);
+                            }
+                            proxyGroup.setBase(base);
                             break;
                         }
                         case PG_SET_PROXY_CHOOSE_STRATEGY: {
@@ -275,11 +288,19 @@ public class APIRequestManager implements MessageListener {
                             break;
                         }
                         case SG_SET_BASE: {
-                            if (! data.containsKey("value")) {
+                            if (!data.containsKey("value")) {
                                 throw new APIRequestError("Missing value for base", 5);
                             }
                             String value = data.getString("value");
-                            serverGroup.setBaseName(value);
+                            if (value == null) {
+                                serverGroup.setBase(null);
+                                break;
+                            }
+                            Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(value);
+                            if (base == null) {
+                                throw new APIRequestError("Base does not exist", 14);
+                            }
+                            serverGroup.setBase(base);
                             break;
                         }
                         case SG_SET_ONLINE_AMOUNT: {

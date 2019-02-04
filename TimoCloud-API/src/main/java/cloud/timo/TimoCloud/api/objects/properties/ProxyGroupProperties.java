@@ -4,8 +4,11 @@ import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class ProxyGroupProperties {
+
+    private String id;
     private String name;
     private Integer maxPlayerCountPerProxy;
     private Integer maxPlayerCount;
@@ -17,11 +20,12 @@ public class ProxyGroupProperties {
     private Boolean isStatic;
     private Integer priority;
     private Collection<String> serverGroups;
-    private String baseName;
+    private String baseIdentifier;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
 
-    public ProxyGroupProperties(String name) {
+    public ProxyGroupProperties(String id, String name) {
+        this.id = id;
         this.name = name;
         this.maxPlayerCountPerProxy = getDefaultPropertiesProvider().getMaxPlayerCountPerProxy();
         this.maxPlayerCount = getDefaultPropertiesProvider().getMaxPlayerCount();
@@ -33,8 +37,16 @@ public class ProxyGroupProperties {
         this.isStatic = getDefaultPropertiesProvider().isStatic();
         this.priority = getDefaultPropertiesProvider().getPriority();
         this.serverGroups = getDefaultPropertiesProvider().getServerGroups();
-        this.baseName = getDefaultPropertiesProvider().getBaseName();
+        this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
+    }
+
+    public ProxyGroupProperties(String name) {
+        this(generateId(), name);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -136,12 +148,12 @@ public class ProxyGroupProperties {
         return this;
     }
 
-    public String getBaseName() {
-        return baseName;
+    public String getBaseIdentifier() {
+        return baseIdentifier;
     }
 
-    public ProxyGroupProperties setBaseName(String baseName) {
-        this.baseName = baseName;
+    public ProxyGroupProperties setBaseIdentifier(String baseIdentifier) {
+        this.baseIdentifier = baseIdentifier;
         return this;
     }
 
@@ -167,6 +179,10 @@ public class ProxyGroupProperties {
         return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
     }
 
+    public static String generateId() {
+        return UUID.randomUUID().toString();
+    }
+
     public interface ProxyGroupDefaultPropertiesProvider {
 
         Integer getMaxPlayerCountPerProxy();
@@ -189,7 +205,7 @@ public class ProxyGroupProperties {
 
         Collection<String> getServerGroups();
 
-        String getBaseName();
+        String getBaseIdentifier();
 
         ProxyChooseStrategy getProxyChooseStrategy();
 

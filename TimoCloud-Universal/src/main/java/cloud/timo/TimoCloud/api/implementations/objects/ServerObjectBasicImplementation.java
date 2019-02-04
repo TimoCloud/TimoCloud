@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
+import cloud.timo.TimoCloud.api.internal.links.*;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -18,40 +19,42 @@ import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 @NoArgsConstructor
-public class ServerObjectBasicImplementation implements ServerObject, Comparable {
+public class ServerObjectBasicImplementation implements ServerObject, LinkableObject<ServerObject>, Comparable {
 
     private String name;
     private String id;
-    private String group;
+    private ServerGroupObjectLink group;
     protected String state;
     protected String extra;
     private String map;
     private String motd;
-    private List<PlayerObject> onlinePlayers;
+    private Collection<PlayerObjectLink> onlinePlayers;
     private int onlinePlayerCount;
     private int maxPlayerCount;
-    private String base;
+    private BaseObjectLink base;
     private InetSocketAddress socketAddress;
     private MessageClientAddress messageClientAddress;
 
-    public ServerObjectBasicImplementation(String name, String id, String group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, String base, InetSocketAddress socketAddress) {
+    public ServerObjectBasicImplementation(String name, String id, ServerGroupObject group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, BaseObject base, InetSocketAddress socketAddress) {
         this.name = name;
         this.id = id;
-        this.group = group;
+        this.group = ((ServerGroupObjectBasicImplementation) group).toLink();
         this.state = state;
         this.extra = extra;
         this.map = map;
         this.motd = motd;
-        this.onlinePlayers = onlinePlayers;
+        this.onlinePlayers = onlinePlayers.stream().map(playerObject -> (PlayerObjectBasicImplementation) playerObject).map(PlayerObjectBasicImplementation::toLink).collect(Collectors.toSet());
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
-        this.base = base;
+        this.base = ((BaseObjectBasicImplementation) base).toLink();
         this.socketAddress = socketAddress;
     }
 
@@ -67,15 +70,11 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public ServerGroupObject getGroup() {
-        return TimoCloudAPI.getUniversalAPI().getServerGroup(group);
+        return group.resolve();
     }
 
-    public String getGroupName() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
+    public void setGroup(ServerGroupObject group) {
+        this.group = ((ServerGroupObjectBasicImplementation) group).toLink();
     }
 
     @Override
@@ -112,7 +111,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public List<PlayerObject> getOnlinePlayers() {
-        return onlinePlayers;
+        return onlinePlayers.stream().map(PlayerObjectLink::resolve).collect(Collectors.toList());
     }
 
     @Override
@@ -127,7 +126,7 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
 
     @Override
     public BaseObject getBase() {
-        return TimoCloudAPI.getUniversalAPI().getBase(base);
+        return base.resolve();
     }
 
     @Override
@@ -199,6 +198,11 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
     }
 
     @Override
+    public ServerObjectLink toLink() {
+        return new ServerObjectLink(this);
+    }
+
+    @Override
     public int compareTo(Object o) {
         if (!(o instanceof ServerObject)) return 1;
         ServerObject so = (ServerObject) o;
@@ -208,4 +212,5 @@ public class ServerObjectBasicImplementation implements ServerObject, Comparable
             return getName().compareTo(so.getName());
         }
     }
+
 }

@@ -2,7 +2,6 @@ package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.api.implementations.objects.BaseObjectOfflineImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
@@ -24,14 +23,14 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
-    public ServerGroupObject getServerGroup(String groupName) {
-        ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(groupName);
+    public ServerGroupObject getServerGroup(String identifier) {
+        ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByIdentifier(identifier);
         return serverGroup == null ? null : serverGroup.toGroupObject();
     }
 
     @Override
-    public ServerObject getServer(String serverName) {
-        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByName(serverName);
+    public ServerObject getServer(String identifier) {
+        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(identifier);
         return server == null ? null : server.toServerObject();
     }
 
@@ -41,14 +40,14 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
-    public ProxyGroupObject getProxyGroup(String groupName) {
-        ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(groupName);
+    public ProxyGroupObject getProxyGroup(String identifier) {
+        ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByIdentifier(identifier);
         return proxyGroup == null ? null : proxyGroup.toGroupObject();
     }
 
     @Override
-    public ProxyObject getProxy(String proxyName) {
-        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByName(proxyName);
+    public ProxyObject getProxy(String identifier) {
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(identifier);
         return proxy == null ? null : proxy.toProxyObject();
     }
 
@@ -58,12 +57,9 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
-    public BaseObject getBase(String name) {
-        Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(name);
-        if (base == null) {
-            return new BaseObjectOfflineImplementation(name);
-        }
-        return base.toBaseObject();
+    public BaseObject getBase(String identifier) {
+        Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(identifier);
+        return base == null ? null : base.toBaseObject();
     }
 
     @Override
@@ -72,8 +68,9 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
-    public CordObject getCord(String name) {
-        return null;
+    public CordObject getCord(String identifier) {
+        Cord cord = TimoCloudCore.getInstance().getInstanceManager().getCord(identifier);
+        return cord == null ? null : cord.toCordObject();
     }
 
     @Override
@@ -91,4 +88,5 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
                 if (playerObject.getName().equals(name)) return playerObject;
         return null;
     }
+
 }

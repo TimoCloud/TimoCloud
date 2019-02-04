@@ -6,6 +6,10 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 
 public abstract class ServerGroupPropertyChangedEvent<T> extends PropertyChangedEvent<ServerGroupObject, T> {
 
+    public ServerGroupPropertyChangedEvent(ServerGroupObject instance) {
+        super(instance);
+    }
+
     public ServerGroupPropertyChangedEvent(ServerGroupObject instance, T oldValue, T newValue) {
         super(instance, oldValue, newValue);
     }

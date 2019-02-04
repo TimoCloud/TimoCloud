@@ -1,22 +1,24 @@
 package cloud.timo.TimoCloud.api.implementations.objects;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
+import cloud.timo.TimoCloud.api.internal.links.*;
 import cloud.timo.TimoCloud.api.objects.*;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @NoArgsConstructor
-public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
+public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, LinkableObject<ProxyGroupObject> {
 
+    private String id;
     private String name;
-    private Collection<ProxyObject> proxies;
+    private Collection<ProxyObjectLink> proxies;
     private int onlinePlayerCount;
     private int maxPlayerCount;
     private int maxPlayerCountPerProxy;
@@ -27,14 +29,15 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     private String motd;
     private boolean isStatic;
     private int priority;
-    private Collection<String> serverGroups;
-    private String base;
+    private Collection<ServerGroupObjectLink> serverGroups;
+    private BaseObjectLink base;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
 
-    public ProxyGroupObjectBasicImplementation(String name, Collection<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String base, String proxyChooseStrategy, Collection<String> hostNames) {
+    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObject> serverGroups, BaseObject base, String proxyChooseStrategy, Collection<String> hostNames) {
+        this.id = id;
         this.name = name;
-        this.proxies = proxies;
+        this.proxies = proxies.stream().map(proxyObject -> (ProxyObjectBasicImplementation) proxyObject).map(ProxyObjectBasicImplementation::toLink).collect(Collectors.toSet());
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
@@ -45,10 +48,15 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
         this.motd = motd;
         this.isStatic = isStatic;
         this.priority = priority;
-        this.serverGroups = serverGroups;
-        this.base = base;
+        this.serverGroups = serverGroups.stream().map(serverGroupObject -> (ServerGroupObjectBasicImplementation) serverGroupObject).map(ServerGroupObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.base = ((BaseObjectBasicImplementation) base).toLink();
         this.proxyChooseStrategy = ProxyChooseStrategy.valueOf(proxyChooseStrategy);
         this.hostNames = hostNames;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -58,7 +66,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
 
     @Override
     public Collection<ProxyObject> getProxies() {
-        return proxies;
+        return proxies.stream().map(ProxyObjectLink::resolve).collect(Collectors.toSet());
     }
 
     @Override
@@ -158,12 +166,12 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
 
     @Override
     public List<ServerGroupObject> getServerGroups() {
-        return serverGroups.stream().map(serverGroup -> TimoCloudAPI.getUniversalAPI().getServerGroup(serverGroup)).collect(Collectors.toList());
+        return Collections.unmodifiableList(serverGroups.stream().map(ServerGroupObjectLink::resolve).collect(Collectors.toList()));
     }
 
     @Override
     public BaseObject getBase() {
-        return TimoCloudAPI.getUniversalAPI().getBase(base);
+        return base.resolve();
     }
 
     @Override
@@ -189,5 +197,10 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject {
     @Override
     public APIRequestFuture<Void> setHostNames(Collection<String> value) {
         return new APIRequestImplementation<Void>(PG_SET_HOST_NAMES, getName(), value).submit();
+    }
+
+    @Override
+    public ProxyGroupObjectLink toLink() {
+        return new ProxyGroupObjectLink(this);
     }
 }

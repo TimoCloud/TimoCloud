@@ -20,14 +20,14 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a server group by name
-     * @param groupName The group's name, case-insensitive
+     * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
-    ServerGroupObject getServerGroup(String groupName);
+    ServerGroupObject getServerGroup(String identifier);
 
     /**
      * Use this to get a server by name
-     * @param identifier The server's name or id, case-insensitive
+     * @param identifier The server's name or id, case-sensitive
      * @return A {@link ServerObject} corresponding to the given name or id
      */
     ServerObject getServer(String identifier);
@@ -39,10 +39,10 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a proxy group by name
-     * @param groupName The group's name, case-insensitive
+     * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
-    ProxyGroupObject getProxyGroup(String groupName);
+    ProxyGroupObject getProxyGroup(String identifier);
 
     /**
      * Use this to get a proxy by name
@@ -57,10 +57,10 @@ public interface TimoCloudUniversalAPI {
     Collection<BaseObject> getBases();
 
     /**
-     * @param name The base's name, case-insensitive
+     * @param identifier The base's name or id, case-sensitive
      * @return A {@link BaseObject} corresponding to the given name
      */
-    BaseObject getBase(String name);
+    BaseObject getBase(String identifier);
 
     /**
      * @return A collection of all connected {@link CordObject}s
@@ -68,10 +68,10 @@ public interface TimoCloudUniversalAPI {
     Collection<CordObject> getCords();
 
     /**
-     * @param name The cord's name, case-insensitive
+     * @param identifier The cord's name or id, case-sensitive
      * @return A {@link CordObject} corresponding to the given name
      */
-    CordObject getCord(String name);
+    CordObject getCord(String identifier);
 
     /**
      * @param uuid The player's Minecraft UUID

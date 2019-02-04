@@ -1,8 +1,11 @@
 package cloud.timo.TimoCloud.api.implementations.objects;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.ServerGroupObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
@@ -10,38 +13,46 @@ import lombok.NoArgsConstructor;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 @NoArgsConstructor
-public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
+public class ServerGroupObjectBasicImplementation implements ServerGroupObject, LinkableObject<ServerGroupObject> {
 
-    private Set<ServerObject> servers;
+    private String id;
     private String name;
     private int startupAmount;
     private int maxAmount;
     private int ram;
     private boolean isStatic;
-    private String base;
+    private BaseObjectLink base;
     private Set<String> sortOutStates;
+    private Set<ServerObjectLink> servers;
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String name, Set<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, String base, Set<String> sortOutStates) {
+    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, BaseObject base, Set<String> sortOutStates) {
+        this.id = id;
         this.name = name;
-        this.servers = servers;
+        this.servers = servers.stream().map(serverObject -> (ServerObjectBasicImplementation) serverObject).map(ServerObjectBasicImplementation::toLink).collect(Collectors.toSet());
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;
         this.isStatic = isStatic;
-        this.base = base;
+        this.base = ((BaseObjectBasicImplementation) base).toLink();
         this.sortOutStates = sortOutStates;
     }
 
     @Override
     public Collection<ServerObject> getServers() {
-        return servers;
+        return servers.stream().map(ServerObjectLink::resolve).collect(Collectors.toSet());
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
@@ -91,7 +102,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
 
     @Override
     public BaseObject getBase() {
-        return TimoCloudAPI.getUniversalAPI().getBase(base);
+        return base.resolve();
     }
 
     @Override
@@ -108,5 +119,11 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject {
     public APIRequestFuture<Void> setSortOutStates(Collection<String> value) {
         return new APIRequestImplementation<Void>(SG_SET_SORT_OUT_STATES, getName(), value).submit();
     }
+
+    @Override
+    public ServerGroupObjectLink toLink() {
+        return new ServerGroupObjectLink(this);
+    }
+
 
 }
