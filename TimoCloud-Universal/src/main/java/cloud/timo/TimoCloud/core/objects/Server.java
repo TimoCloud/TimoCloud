@@ -1,8 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.ServerRegisterEvent;
-import cloud.timo.TimoCloud.api.events.ServerUnregisterEvent;
-import cloud.timo.TimoCloud.api.events.propertyChanges.server.*;
+import cloud.timo.TimoCloud.api.events.server.*;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -145,7 +143,7 @@ public class Server implements Instance, Communicatable {
         this.starting = false;
         this.registered = true;
         TimoCloudCore.getInstance().info("Server " + getName() + " registered.");
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEvent(toServerObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEventBasicImplementation(toServerObject()));
     }
 
     /**
@@ -154,7 +152,7 @@ public class Server implements Instance, Communicatable {
     @Override
     public void unregister() {
         if (!isRegistered()) return;
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEvent(toServerObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEventBasicImplementation(toServerObject()));
 
         setState("OFFLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
@@ -300,7 +298,7 @@ public class Server implements Instance, Communicatable {
     public void setState(String state) {
         String oldValue = getState();
         this.state = state;
-        EventTransmitter.sendEvent(new ServerStateChangedEvent(toServerObject(), oldValue, state));
+        EventTransmitter.sendEvent(new ServerStateChangeEventBasicImplementation(toServerObject(), oldValue, state));
     }
 
     public String getExtra() {
@@ -310,7 +308,7 @@ public class Server implements Instance, Communicatable {
     public void setExtra(String extra) {
         String oldValue = getExtra();
         this.extra = extra;
-        EventTransmitter.sendEvent(new ServerExtraChangedEvent(toServerObject(), oldValue, extra));
+        EventTransmitter.sendEvent(new ServerExtraChangeEventBasicImplementation(toServerObject(), oldValue, extra));
     }
 
     public String getMotd() {
@@ -320,7 +318,7 @@ public class Server implements Instance, Communicatable {
     public void setMotd(String motd) {
         String oldValue = getMotd();
         this.motd = motd;
-        EventTransmitter.sendEvent(new ServerMotdChangedEvent(toServerObject(), oldValue, motd));
+        EventTransmitter.sendEvent(new ServerMotdChangeEventBasicImplementation(toServerObject(), oldValue, motd));
     }
 
     public Set<PlayerObject> getOnlinePlayers() {
@@ -343,7 +341,7 @@ public class Server implements Instance, Communicatable {
     public void setOnlinePlayerCount(int onlinePlayerCount) {
         int oldValue = getOnlinePlayerCount();
         this.onlinePlayerCount = onlinePlayerCount;
-        EventTransmitter.sendEvent(new ServerOnlinePlayerCountChangedEvent(toServerObject(), oldValue, onlinePlayerCount));
+        EventTransmitter.sendEvent(new ServerOnlinePlayerCountChangeEventBasicImplementation(toServerObject(), oldValue, onlinePlayerCount));
     }
 
     public int getMaxPlayers() {
@@ -353,7 +351,7 @@ public class Server implements Instance, Communicatable {
     public void setMaxPlayers(int maxPlayers) {
         int oldValue = getMaxPlayers();
         this.maxPlayers = maxPlayers;
-        EventTransmitter.sendEvent(new ServerMaxPlayersChangedEvent(toServerObject(), oldValue, maxPlayers));
+        EventTransmitter.sendEvent(new ServerMaxPlayersChangeEventBasicImplementation(toServerObject(), oldValue, maxPlayers));
     }
 
     public String getMap() {
@@ -363,7 +361,7 @@ public class Server implements Instance, Communicatable {
     public void setMap(String map) {
         String oldValue = getMap();
         this.map = map;
-        EventTransmitter.sendEvent(new ServerMapChangedEvent(toServerObject(), oldValue, map));
+        EventTransmitter.sendEvent(new ServerMapChangeEventBasicImplementation(toServerObject(), oldValue, map));
     }
 
     public boolean hasMap() {

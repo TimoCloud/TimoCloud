@@ -2,8 +2,8 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
-import cloud.timo.TimoCloud.api.events.ProxyRegisterEvent;
-import cloud.timo.TimoCloud.api.events.ProxyUnregisterEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.cloudflare.CloudFlareException;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;

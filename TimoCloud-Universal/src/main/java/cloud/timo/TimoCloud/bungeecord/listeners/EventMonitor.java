@@ -1,8 +1,8 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
-import cloud.timo.TimoCloud.api.events.PlayerConnectEvent;
-import cloud.timo.TimoCloud.api.events.PlayerDisconnectEvent;
-import cloud.timo.TimoCloud.api.events.PlayerServerChangeEvent;
+import cloud.timo.TimoCloud.api.events.player.PlayerConnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.utils.PlayerUtil;
@@ -39,10 +39,10 @@ public class EventMonitor implements Listener {
     public void onServerSwitchEvent(ServerSwitchEvent event) {
         PlayerObject playerObject = getPlayer(event.getPlayer());
         if (isPending(event.getPlayer().getUniqueId())) { // Join
-            EventTransmitter.sendEvent(new PlayerConnectEvent(playerObject));
+            EventTransmitter.sendEvent(new PlayerConnectEventBasicImplementation(playerObject));
             pending.remove(event.getPlayer().getUniqueId());
         } else { // Server change
-            EventTransmitter.sendEvent(new PlayerServerChangeEvent(
+            EventTransmitter.sendEvent(new PlayerServerChangeEventBasicImplementation(
                     playerObject,
                     previousServer.get(playerObject.getUuid()),
                     event.getPlayer().getServer().getInfo().getName()
@@ -54,7 +54,7 @@ public class EventMonitor implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
-        EventTransmitter.sendEvent(new PlayerDisconnectEvent(getPlayer(event.getPlayer())));
+        EventTransmitter.sendEvent(new PlayerDisconnectEventBasicImplementation(getPlayer(event.getPlayer())));
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {

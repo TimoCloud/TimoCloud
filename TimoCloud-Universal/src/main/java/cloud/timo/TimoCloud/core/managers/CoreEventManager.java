@@ -1,7 +1,12 @@
 package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.events.*;
+import cloud.timo.TimoCloud.api.events.Event;
+import cloud.timo.TimoCloud.api.events.EventHandler;
+import cloud.timo.TimoCloud.api.events.Listener;
+import cloud.timo.TimoCloud.api.events.player.PlayerConnectEvent;
+import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEvent;
+import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEvent;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;

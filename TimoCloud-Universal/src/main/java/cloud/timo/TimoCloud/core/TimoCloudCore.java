@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
 import cloud.timo.TimoCloud.core.api.TimoCloudCoreAPIImplementation;
+import cloud.timo.TimoCloud.core.api.TimoCloudInternalMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
 import cloud.timo.TimoCloud.core.managers.*;
@@ -116,7 +117,7 @@ public class TimoCloudCore implements TimoCloudModule {
     }
 
     @Override
-    public void load(OptionSet optionSet) throws Exception{
+    public void load(OptionSet optionSet) throws Exception {
         running = true;
         shuttingDown = false;
         this.options = optionSet;
@@ -221,6 +222,7 @@ public class TimoCloudCore implements TimoCloudModule {
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
+        APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPICoreImplementation());
         TimoCloudAPI.getEventAPI().registerListener(getEventManager());
         TimoCloudAPI.getEventAPI().registerListener(getCloudFlareManager());
         TimoCloudAPI.getMessageAPI().registerMessageListener(getApiRequestManager(), "TIMOCLOUD_API_REQUEST");

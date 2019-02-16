@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup.*;
+import cloud.timo.TimoCloud.api.events.proxyGroup.*;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
@@ -190,7 +190,7 @@ public class ProxyGroup implements Group {
     public void setMaxPlayerCountPerProxy(int maxPlayerCountPerProxy) {
         int oldValue = maxPlayerCountPerProxy;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
-        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountPerProxyChangedEvent(toGroupObject(), oldValue, maxPlayerCountPerProxy));
+        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountPerProxyChangeEventBasicImplementation(toGroupObject(), oldValue, maxPlayerCountPerProxy));
     }
 
     public int getMaxPlayerCount() {
@@ -200,7 +200,7 @@ public class ProxyGroup implements Group {
     public void setMaxPlayerCount(int maxPlayerCount) {
         int oldValue = getMaxPlayerCount();
         this.maxPlayerCount = maxPlayerCount;
-        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountChangedEvent(toGroupObject(), oldValue, maxPlayerCount));
+        EventTransmitter.sendEvent(new ProxyGroupMaxPlayerCountChangeEventBasicImplementation(toGroupObject(), oldValue, maxPlayerCount));
     }
 
     public int getKeepFreeSlots() {
@@ -210,7 +210,7 @@ public class ProxyGroup implements Group {
     public void setKeepFreeSlots(int keepFreeSlots) {
         int oldValue = getKeepFreeSlots();
         this.keepFreeSlots = keepFreeSlots;
-        EventTransmitter.sendEvent(new ProxyGroupKeepFreeSlotsChangedEvent(toGroupObject(), oldValue, keepFreeSlots));
+        EventTransmitter.sendEvent(new ProxyGroupKeepFreeSlotsChangeEventBasicImplementation(toGroupObject(), oldValue, keepFreeSlots));
     }
 
     public int getMinAmount() {
@@ -220,7 +220,7 @@ public class ProxyGroup implements Group {
     public void setMinAmount(int minAmount) {
         int oldValue = getMinAmount();
         this.minAmount = minAmount;
-        EventTransmitter.sendEvent(new ProxyGroupMinAmountChangedEvent(toGroupObject(), oldValue, minAmount));
+        EventTransmitter.sendEvent(new ProxyGroupMinAmountChangeEventBasicImplementation(toGroupObject(), oldValue, minAmount));
     }
 
     public int getMaxAmount() {
@@ -230,7 +230,7 @@ public class ProxyGroup implements Group {
     public void setMaxAmount(int maxAmount) {
         int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
-        EventTransmitter.sendEvent(new ProxyGroupMaxAmountChangedEvent(toGroupObject(), oldValue, maxAmount));
+        EventTransmitter.sendEvent(new ProxyGroupMaxAmountChangeEventBasicImplementation(toGroupObject(), oldValue, maxAmount));
     }
 
     @Override
@@ -244,7 +244,7 @@ public class ProxyGroup implements Group {
     public void setRam(int ram) {
         int oldValue = getRam();
         this.ram = ram;
-        EventTransmitter.sendEvent(new ProxyGroupRamChangedEvent(toGroupObject(), oldValue, ram));
+        EventTransmitter.sendEvent(new ProxyGroupRamChangeEventBasicImplementation(toGroupObject(), oldValue, ram));
     }
 
     public String getMotd() {
@@ -254,7 +254,7 @@ public class ProxyGroup implements Group {
     public void setMotd(String motd) {
         String oldValue = getMotd();
         this.motd = motd;
-        EventTransmitter.sendEvent(new ProxyGroupMotdChangedEvent(toGroupObject(), oldValue, motd));
+        EventTransmitter.sendEvent(new ProxyGroupMotdChangeEventBasicImplementation(toGroupObject(), oldValue, motd));
     }
 
     @Override
@@ -265,7 +265,7 @@ public class ProxyGroup implements Group {
     public void setStatic(boolean aStatic) {
         boolean oldValue = isStatic();
         isStatic = aStatic;
-        EventTransmitter.sendEvent(new ProxyGroupStaticChangedEvent(toGroupObject(), oldValue, isStatic));
+        EventTransmitter.sendEvent(new ProxyGroupStaticChangeEventBasicImplementation(toGroupObject(), oldValue, isStatic));
 
     }
 
@@ -277,7 +277,7 @@ public class ProxyGroup implements Group {
     public void setPriority(int priority) {
         int oldValue = getPriority();
         this.priority = priority;
-        EventTransmitter.sendEvent(new ProxyGroupPriorityChangedEvent(toGroupObject(), oldValue, priority));
+        EventTransmitter.sendEvent(new ProxyGroupPriorityChangeEventBasicImplementation(toGroupObject(), oldValue, priority));
     }
 
     /**
@@ -321,7 +321,7 @@ public class ProxyGroup implements Group {
     public void setBase(Base base) {
         Base oldValue = getBase();
         this.base = base;
-        EventTransmitter.sendEvent(new ProxyGroupBaseChangedEvent(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
+        EventTransmitter.sendEvent(new ProxyGroupBaseChangeEventBasicImplementation(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
     }
 
     public ProxyChooseStrategy getProxyChooseStrategy() {
@@ -331,7 +331,7 @@ public class ProxyGroup implements Group {
     public void setProxyChooseStrategy(ProxyChooseStrategy proxyChooseStrategy) {
         ProxyChooseStrategy oldValue = getProxyChooseStrategy();
         this.proxyChooseStrategy = proxyChooseStrategy;
-        EventTransmitter.sendEvent(new ProxyGroupProxyChooseStrategyChangedEvent(toGroupObject(), oldValue, proxyChooseStrategy));
+        EventTransmitter.sendEvent(new ProxyGroupProxyChooseStrategyChangeEventBasicImplementation(toGroupObject(), oldValue, proxyChooseStrategy));
     }
 
     public Set<String> getHostNames() {

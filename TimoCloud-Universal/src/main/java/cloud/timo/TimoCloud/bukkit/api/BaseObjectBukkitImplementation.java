@@ -15,4 +15,5 @@ public class BaseObjectBukkitImplementation extends BaseObjectBasicImplementatio
     public BaseObjectBukkitImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Collection<ServerObject> servers, Collection<ProxyObject> proxies) {
         super(id, name, ipAddress, cpuLoad, availableRam, maxRam, connected, ready, servers, proxies);
     }
+
 }

@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.propertyChanges.serverGroup.*;
+import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -148,13 +148,13 @@ public class ServerGroup implements Group {
     public void setOnlineAmount(int onlineAmount) {
         int oldValue = getOnlineAmount();
         this.onlineAmount = onlineAmount;
-        EventTransmitter.sendEvent(new ServerGroupOnlineAmountChangedEvent(toGroupObject(), oldValue, onlineAmount));
+        EventTransmitter.sendEvent(new ServerGroupOnlineAmountChangeEventBasicImplementation(toGroupObject(), oldValue, onlineAmount));
     }
 
     public void setMaxAmount(int maxAmount) {
         int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
-        EventTransmitter.sendEvent(new ServerGroupMaxAmountChangedEvent(toGroupObject(), oldValue, maxAmount));
+        EventTransmitter.sendEvent(new ServerGroupMaxAmountChangeEventBasicImplementation(toGroupObject(), oldValue, maxAmount));
     }
 
     public int getMaxAmount() {
@@ -171,13 +171,13 @@ public class ServerGroup implements Group {
     public void setRam(int ram) {
         int oldValue = getRam();
         this.ram = ram;
-        EventTransmitter.sendEvent(new ServerGroupRamChangedEvent(toGroupObject(), oldValue, ram));
+        EventTransmitter.sendEvent(new ServerGroupRamChangeEventBasicImplementation(toGroupObject(), oldValue, ram));
     }
 
     public void setStatic(boolean isStatic) {
         Boolean oldValue = isStatic();
         this.isStatic = isStatic;
-        EventTransmitter.sendEvent(new ServerGroupStaticChangedEvent(toGroupObject(), oldValue, isStatic));
+        EventTransmitter.sendEvent(new ServerGroupStaticChangeEventBasicImplementation(toGroupObject(), oldValue, isStatic));
     }
 
     @Override
@@ -192,13 +192,13 @@ public class ServerGroup implements Group {
     public void setPriority(int priority) {
         int oldValue = getPriority();
         this.priority = priority;
-        EventTransmitter.sendEvent(new ServerGroupPriorityChangedEvent(toGroupObject(), oldValue, priority));
+        EventTransmitter.sendEvent(new ServerGroupPriorityChangeEventBasicImplementation(toGroupObject(), oldValue, priority));
     }
 
     public void setBase(Base base) {
         Base oldValue = getBase();
         this.base = base;
-        EventTransmitter.sendEvent(new ServerGroupBaseChangedEvent(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
+        EventTransmitter.sendEvent(new ServerGroupBaseChangeEventBasicImplementation(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
     }
 
     @Override

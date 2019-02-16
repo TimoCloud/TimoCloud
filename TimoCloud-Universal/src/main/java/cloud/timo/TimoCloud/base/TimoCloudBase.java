@@ -1,5 +1,7 @@
 package cloud.timo.TimoCloud.base;
 
+import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
+import cloud.timo.TimoCloud.base.api.TimoCloudInternalMessageAPIBaseImplementation;
 import cloud.timo.TimoCloud.base.managers.BaseFileManager;
 import cloud.timo.TimoCloud.base.managers.BaseInstanceManager;
 import cloud.timo.TimoCloud.base.managers.BaseResourceManager;
@@ -94,7 +96,7 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     @Override
-    public void load(OptionSet optionSet) {
+    public void load(OptionSet optionSet) throws Exception {
         this.options = optionSet;
         makeInstances();
         info(ANSI_GREEN + "Base has been loaded");
@@ -106,7 +108,7 @@ public class TimoCloudBase implements TimoCloudModule {
 
     }
 
-    private void makeInstances() {
+    private void makeInstances() throws Exception {
         instance = this;
         fileManager = new BaseFileManager();
         rsaKeyPairRetriever = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "keys/"));
@@ -118,6 +120,7 @@ public class TimoCloudBase implements TimoCloudModule {
         resourceManager = new BaseResourceManager();
         stringHandler = new BaseStringHandler();
         scheduler = Executors.newScheduledThreadPool(1);
+        APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBaseImplementation());
     }
 
     private void scheduleConnecting() {

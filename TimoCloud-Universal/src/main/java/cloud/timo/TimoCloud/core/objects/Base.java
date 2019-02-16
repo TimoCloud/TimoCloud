@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.propertyChanges.base.*;
+import cloud.timo.TimoCloud.api.events.base.*;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -171,7 +171,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         String oldValue = getName();
         this.name = name;
         TimoCloudCore.getInstance().getInstanceManager().baseDataUpdated(this);
-        EventTransmitter.sendEvent(new BaseNameChangedEvent(toBaseObject(), oldValue, name));
+        EventTransmitter.sendEvent(new BaseNameChangeEventBasicImplementation(toBaseObject(), oldValue, name));
     }
 
     public InetAddress getAddress() {
@@ -181,7 +181,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setAddress(InetAddress address) {
         InetAddress oldValue = getAddress();
         this.address = address;
-        EventTransmitter.sendEvent(new BaseAddressChangedEvent(toBaseObject(), oldValue, address));
+        EventTransmitter.sendEvent(new BaseAddressChangeEventBasicImplementation(toBaseObject(), oldValue, address));
     }
 
     public InetAddress getPublicAddress() {
@@ -191,7 +191,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public Base setPublicAddress(InetAddress publicAddress) {
         InetAddress oldValue = getPublicAddress();
         this.publicAddress = publicAddress;
-        EventTransmitter.sendEvent(new BasePublicAddressChangedEvent(toBaseObject(), oldValue, publicAddress));
+        EventTransmitter.sendEvent(new BasePublicAddressChangeEventBasicImplementation(toBaseObject(), oldValue, publicAddress));
         return this;
     }
 
@@ -211,7 +211,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setAvailableRam(int availableRam) {
         int oldValue = getAvailableRam();
         this.availableRam = availableRam;
-        EventTransmitter.sendEvent(new BaseAvailableRamChangedEvent(toBaseObject(), oldValue, availableRam));
+        EventTransmitter.sendEvent(new BaseAvailableRamChangeEventBasicImplementation(toBaseObject(), oldValue, availableRam));
     }
 
     public int getMaxRam() {
@@ -221,7 +221,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setMaxRam(int maxRam) {
         int oldValue = getMaxRam();
         this.maxRam = maxRam;
-        EventTransmitter.sendEvent(new BaseMaxRamChangedEvent(toBaseObject(), oldValue, maxRam));
+        EventTransmitter.sendEvent(new BaseMaxRamChangeEventBasicImplementation(toBaseObject(), oldValue, maxRam));
     }
 
     public int getKeepFreeRam() {
@@ -231,7 +231,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public Base setKeepFreeRam(int keepFreeRam) {
         int oldValue = getKeepFreeRam();
         this.keepFreeRam = keepFreeRam;
-        EventTransmitter.sendEvent(new BaseKeepFreeRamChangedEvent(toBaseObject(), oldValue, keepFreeRam));
+        EventTransmitter.sendEvent(new BaseKeepFreeRamChangeEventBasicImplementation(toBaseObject(), oldValue, keepFreeRam));
         return this;
     }
 
@@ -242,7 +242,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setCpuLoad(double cpuLoad) {
         double oldValue = getCpuLoad();
         this.cpuLoad = cpuLoad;
-        EventTransmitter.sendEvent(new BaseCpuLoadChangedEvent(toBaseObject(), oldValue, cpuLoad));
+        EventTransmitter.sendEvent(new BaseCpuLoadChangeEventBasicImplementation(toBaseObject(), oldValue, cpuLoad));
     }
 
     public double getMaxCpuLoad() {
@@ -252,7 +252,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public Base setMaxCpuLoad(double maxCpuLoad) {
         double oldValue = getMaxCpuLoad();
         this.maxCpuLoad = maxCpuLoad;
-        EventTransmitter.sendEvent(new BaseMaxCpuLoadChangedEvent(toBaseObject(), oldValue, maxCpuLoad));
+        EventTransmitter.sendEvent(new BaseMaxCpuLoadChangeEventBasicImplementation(toBaseObject(), oldValue, maxCpuLoad));
         return this;
     }
 
@@ -268,7 +268,10 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setConnected(boolean connected) {
         boolean oldValue = isConnected();
         this.connected = connected;
-        EventTransmitter.sendEvent(new BaseConnectedChangedEvent(toBaseObject(), oldValue, connected));
+        if (oldValue != connected) {
+            if (connected) EventTransmitter.sendEvent(new BaseConnectEventBasicImplementation(toBaseObject()));
+            else EventTransmitter.sendEvent(new BaseDisconnectEventBasicImplementation(toBaseObject()));
+        }
     }
 
     public boolean isReady() {
@@ -278,7 +281,10 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void setReady(boolean ready) {
         boolean oldValue = isReady();
         this.ready = ready;
-        EventTransmitter.sendEvent(new BaseReadyChangedEvent(toBaseObject(), oldValue, ready));
+        if (oldValue != ready) {
+            if (ready) EventTransmitter.sendEvent(new BaseReadyEventBasicImplementation(toBaseObject()));
+            else EventTransmitter.sendEvent(new BaseNotReadyEventBasicImplementation(toBaseObject()));
+        }
     }
 
     public Set<Server> getServers() {

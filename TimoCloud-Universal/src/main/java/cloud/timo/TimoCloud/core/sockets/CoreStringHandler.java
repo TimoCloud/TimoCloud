@@ -52,7 +52,7 @@ public class CoreStringHandler extends BasicStringHandler {
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
         Object data = message.getData();
-        InetAddress address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
+        InetAddress address = channel == null ? null : ((InetSocketAddress) channel.remoteAddress()).getAddress();
         switch (type) { // Handshakes
             case SERVER_HANDSHAKE: {
                 if (server == null) {
@@ -134,7 +134,7 @@ public class CoreStringHandler extends BasicStringHandler {
         }
 
         // No Handshake, so we have to check if the channel is registered
-        if (sender == null) {
+        if (sender == null && channel != null) { // If channel is null, the message is internal (sender is core)
             closeChannel(channel);
             TimoCloudCore.getInstance().severe("Unknown connection from " + channel.remoteAddress() + ", blocking. Please make sure to block the TimoCloudCore socket port (" + TimoCloudCore.getInstance().getSocketPort() + ") in your firewall to avoid this.");
             return;

@@ -2,11 +2,13 @@ package cloud.timo.TimoCloud.api.implementations; // This relies on the jackson 
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
+import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.implementations.storage.IdentifiableObjectStorage;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -50,7 +52,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         this.baseObjectImplementation = baseObjectImplementation;
         this.cordObjectImplementation = cordObjectImplementation;
 
-        objectMapper = new ObjectMapper();
+        this.objectMapper = prepareObjectMapper();
+    }
+
+    private ObjectMapper prepareObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(ServerObject.class, serverObjectImplementation);
@@ -58,10 +64,17 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         resolver.addMapping(PlayerObject.class, playerObjectImplementation);
         resolver.addMapping(BaseObject.class, baseObjectImplementation);
         resolver.addMapping(CordObject.class, cordObjectImplementation);
+
+        for (Class<? extends Event> eventClass : EventUtil.getEventClassImplementations().keySet()) {
+            resolver.addMapping((Class) eventClass, EventUtil.getEventClassImplementation(eventClass));
+        }
+
         module.setAbstractTypes(resolver);
         objectMapper.registerModule(module);
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+
+        return objectMapper;
     }
 
     public void setData(Map<String, Object> json) {

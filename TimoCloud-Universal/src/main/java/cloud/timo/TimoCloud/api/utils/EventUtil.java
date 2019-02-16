@@ -1,102 +1,105 @@
 package cloud.timo.TimoCloud.api.utils;
 
-import cloud.timo.TimoCloud.api.events.*;
-import cloud.timo.TimoCloud.api.events.propertyChanges.base.*;
-import cloud.timo.TimoCloud.api.events.propertyChanges.proxyGroup.*;
-import cloud.timo.TimoCloud.api.events.propertyChanges.server.*;
-import cloud.timo.TimoCloud.api.events.propertyChanges.serverGroup.*;
+import cloud.timo.TimoCloud.api.events.Event;
+import cloud.timo.TimoCloud.api.events.EventType;
+import cloud.timo.TimoCloud.api.events.base.*;
+import cloud.timo.TimoCloud.api.events.cord.CordConnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.player.PlayerConnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.*;
+import cloud.timo.TimoCloud.api.events.server.*;
+import cloud.timo.TimoCloud.api.events.serverGroup.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class EventUtil {
 
-    public static Class<? extends Event> getClassByEventType(EventType eventType) {
-        switch (eventType) {
-            case PLAYER_CONNECT:
-                return PlayerConnectEvent.class;
-            case PLAYER_DISCONNECT:
-                return PlayerDisconnectEvent.class;
-            case PLAYER_SERVER_CHANGE:
-                return PlayerServerChangeEvent.class;
-            case SERVER_REGISTER:
-                return ServerRegisterEvent.class;
-            case SERVER_UNREGISTER:
-                return ServerUnregisterEvent.class;
-            case PROXY_REGISTER:
-                return ProxyRegisterEvent.class;
-            case PROXY_UNREGISTER:
-                return ProxyUnregisterEvent.class;
-            case CORD_CONNECT:
-                return CordConnectEvent.class;
-            case CORD_DISCONNECT:
-                return CordDisconnectEvent.class;
-            case PG_MAX_AMOUNT_CHANGED:
-                return ProxyGroupMaxAmountChangedEvent.class;
-            case PG_MIN_AMOUNT_CHANGED:
-                return ProxyGroupMinAmountChangedEvent.class;
-            case PG_KEEP_FREE_SLOTS_CHANGED:
-                return ProxyGroupKeepFreeSlotsChangedEvent.class;
-            case PG_MAX_PLAYER_COUNT_CHANGED:
-                return ProxyGroupMaxPlayerCountChangedEvent.class;
-            case PG_MAX_PLAYER_COUNT_PER_PROXY_CHANGED:
-                return ProxyGroupMaxPlayerCountPerProxyChangedEvent.class;
-            case PG_BASE_CHANGED:
-                return ProxyGroupBaseChangedEvent.class;
-            case PG_MOTD_CHANGED:
-                return ProxyGroupMotdChangedEvent.class;
-            case PG_PRIORITY_CHANGED:
-                return ProxyGroupPriorityChangedEvent.class;
-            case PG_PROXY_CHOOSE_STRATEGY_CHANGED:
-                return ProxyGroupProxyChooseStrategyChangedEvent.class;
-            case PG_RAM_CHANGED:
-                return ProxyGroupRamChangedEvent.class;
-            case PG_STATIC_CHANGED:
-                return ProxyGroupStaticChangedEvent.class;
-            case B_NAME_CHANGED:
-                return BaseNameChangedEvent.class;
-            case B_ADDRESS_CHANGED:
-                return BaseAddressChangedEvent.class;
-            case B_PUBLIC_ADDRESS_CHANGED:
-                return BasePublicAddressChangedEvent.class;
-            case B_AVAILABLE_RAM_CHANGED:
-                return BaseAvailableRamChangedEvent.class;
-            case B_MAX_RAM_CHANGED:
-                return BaseMaxRamChangedEvent.class;
-            case B_KEEP_FREE_RAM_CHANGED:
-                return BaseKeepFreeRamChangedEvent.class;
-            case B_CPU_LOAD_CHANGED:
-                return BaseCpuLoadChangedEvent.class;
-            case B_MAX_CPU_LOAD_CHANGED:
-                return BaseMaxCpuLoadChangedEvent.class;
-            case B_CONNECTED_CHANGED:
-                return BaseConnectedChangedEvent.class;
-            case B_READY_CHANGED:
-                return BaseReadyChangedEvent.class;
-            case S_STATE_CHANGED:
-                return ServerStateChangedEvent.class;
-            case S_EXTRA_CHANGED:
-                return ServerExtraChangedEvent.class;
-            case S_MOTD_CHANGED:
-                return ServerMotdChangedEvent.class;
-            case S_ONLINE_PLAYER_COUNT_CHANGED:
-                return ServerOnlinePlayerCountChangedEvent.class;
-            case S_MAX_PLAYERS_CHANGED:
-                return ServerMaxPlayersChangedEvent.class;
-            case S_MAP_CHANGED:
-                return ServerMapChangedEvent.class;
-            case SG_ONLINE_AMOUNT_CHANGED:
-                return ServerGroupOnlineAmountChangedEvent.class;
-            case SG_MAX_ONLINE_AMOUNT_CHANGED:
-                return ServerGroupMaxAmountChangedEvent.class;
-            case SG_RAM_CHANGED:
-                return ServerGroupRamChangedEvent.class;
-            case SG_STATIC_CHANGED:
-                return ServerGroupStaticChangedEvent.class;
-            case SG_PRIORITY_CHANGED:
-                return ServerGroupPriorityChangedEvent.class;
-            case SG_BASE_CHANGED:
-                return ServerGroupBaseChangedEvent.class;
-            default:
-                return null;
+    private static final Map<Class<? extends Event>, Class<? extends Event>> eventClassImplementations = new HashMap<>();
+    private static final Map<EventType, Class<? extends Event>> eventClassesByType = new HashMap<>();
+
+    static {
+        final Class[] events = {
+                BaseAddressChangeEventBasicImplementation.class,
+                BaseAvailableRamChangeEventBasicImplementation.class,
+                BaseConnectEventBasicImplementation.class,
+                BaseCpuLoadChangeEventBasicImplementation.class,
+                BaseDisconnectEventBasicImplementation.class,
+                BaseKeepFreeRamChangeEventBasicImplementation.class,
+                BaseMaxCpuLoadChangeEventBasicImplementation.class,
+                BaseMaxRamChangeEventBasicImplementation.class,
+                BaseNameChangeEventBasicImplementation.class,
+                BaseNotReadyEventBasicImplementation.class,
+                BasePublicAddressChangeEventBasicImplementation.class,
+                BaseReadyEventBasicImplementation.class,
+
+                CordConnectEventBasicImplementation.class,
+                CordDisconnectEventBasicImplementation.class,
+                PlayerConnectEventBasicImplementation.class,
+                PlayerDisconnectEventBasicImplementation.class,
+                PlayerServerChangeEventBasicImplementation.class,
+                PlayerServerChangeEventBasicImplementation.class,
+
+                ProxyRegisterEventBasicImplementation.class,
+                ProxyUnregisterEventBasicImplementation.class,
+
+                ProxyGroupBaseChangeEventBasicImplementation.class,
+                ProxyGroupKeepFreeSlotsChangeEventBasicImplementation.class,
+                ProxyGroupMaxAmountChangeEventBasicImplementation.class,
+                ProxyGroupMaxPlayerCountChangeEventBasicImplementation.class,
+                ProxyGroupMaxPlayerCountPerProxyChangeEventBasicImplementation.class,
+                ProxyGroupMinAmountChangeEventBasicImplementation.class,
+                ProxyGroupMotdChangeEventBasicImplementation.class,
+                ProxyGroupPriorityChangeEventBasicImplementation.class,
+                ProxyGroupProxyChooseStrategyChangeEventBasicImplementation.class,
+                ProxyGroupRamChangeEventBasicImplementation.class,
+                ProxyGroupStaticChangeEventBasicImplementation.class,
+
+                ServerExtraChangeEventBasicImplementation.class,
+                ServerMapChangeEventBasicImplementation.class,
+                ServerMaxPlayersChangeEventBasicImplementation.class,
+                ServerMotdChangeEventBasicImplementation.class,
+                ServerOnlinePlayerCountChangeEventBasicImplementation.class,
+                ServerRegisterEventBasicImplementation.class,
+                ServerStateChangeEventBasicImplementation.class,
+                ServerUnregisterEventBasicImplementation.class,
+
+                ServerGroupBaseChangeEventBasicImplementation.class,
+                ServerGroupMaxAmountChangeEventBasicImplementation.class,
+                ServerGroupOnlineAmountChangeEventBasicImplementation.class,
+                ServerGroupPriorityChangeEventBasicImplementation.class,
+                ServerGroupRamChangeEventBasicImplementation.class,
+                ServerGroupStaticChangeEventBasicImplementation.class
+        };
+
+        for (Class<? extends Event> clazz : events) {
+            for (Class interf : clazz.getInterfaces()) {
+                if (! Event.class.isAssignableFrom(interf)) continue;
+                eventClassImplementations.put(interf, clazz);
+                break;
+            }
+            try {
+                Event event = clazz.newInstance();
+                eventClassesByType.put(event.getType(), clazz);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    public static Class<? extends Event> getClassByEventType(EventType eventType) {
+        return eventClassesByType.get(eventType);
+    }
+
+    public static Class<? extends Event> getEventClassImplementation(Class<? extends Event> clazz) {
+        return eventClassImplementations.get(clazz);
+    }
+
+    public static Map<Class<? extends Event>, Class<? extends Event>> getEventClassImplementations() {
+        return eventClassImplementations;
+    }
 }

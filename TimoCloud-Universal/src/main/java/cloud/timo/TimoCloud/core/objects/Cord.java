@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.CordConnectEvent;
-import cloud.timo.TimoCloud.api.events.CordDisconnectEvent;
+import cloud.timo.TimoCloud.api.events.cord.CordConnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.CordObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
@@ -34,7 +34,7 @@ public class Cord implements Communicatable, Identifiable {
         this.channel = channel;
         this.connected = true;
         TimoCloudCore.getInstance().info("TimoCloudCord " + getName() + " connected.");
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new CordConnectEvent(toCordObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new CordConnectEventBasicImplementation(toCordObject()));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class Cord implements Communicatable, Identifiable {
         this.channel = null;
         this.connected = false;
         TimoCloudCore.getInstance().info("TimoCloudCord " + getName() + " disconnected.");
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new CordDisconnectEvent(toCordObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new CordDisconnectEventBasicImplementation(toCordObject()));
     }
 
     @Override

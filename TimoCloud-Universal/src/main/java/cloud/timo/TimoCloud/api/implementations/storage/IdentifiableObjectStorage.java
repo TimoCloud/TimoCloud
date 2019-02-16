@@ -18,10 +18,12 @@ public class IdentifiableObjectStorage<T extends IdentifiableObject> {
     }
 
     public T getById(String id) {
+        if (id == null) return null;
         return byId.get(id);
     }
 
     public T getByName(String name) {
+        if (name == null) return null;
         name = name.toLowerCase();
         Collection<T> identifiables = byName.get(name);
         if (identifiables == null || identifiables.size() == 0) return null;
@@ -33,6 +35,7 @@ public class IdentifiableObjectStorage<T extends IdentifiableObject> {
      * @return Identifiable whose name or id matches the given identifier
      */
     public T getByIdentifier(String identifier) {
+        if (identifier == null) return null;
         T idResult = getById(identifier);
         return idResult != null ? idResult : getByName(identifier);
     }

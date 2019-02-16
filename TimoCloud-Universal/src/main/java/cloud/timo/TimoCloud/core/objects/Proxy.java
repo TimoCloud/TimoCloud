@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.ProxyRegisterEvent;
-import cloud.timo.TimoCloud.api.events.ProxyUnregisterEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -65,14 +65,14 @@ public class Proxy implements Instance, Communicatable {
         this.starting = false;
         this.registered = true;
         for (Server server : getGroup().getRegisteredServers()) registerServer(server);
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyRegisterEvent(toProxyObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyRegisterEventBasicImplementation(toProxyObject()));
     }
 
     @Override
     public void unregister() {
         if (!isRegistered()) return;
         this.registered = false;
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEvent(toProxyObject()));
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyUnregisterEventBasicImplementation(toProxyObject()));
     }
 
     private void onShutdown() {

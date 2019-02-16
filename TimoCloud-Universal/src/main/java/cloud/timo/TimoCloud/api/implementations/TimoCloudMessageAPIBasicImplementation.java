@@ -2,7 +2,7 @@ package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudMessageAPI;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
-import cloud.timo.TimoCloud.api.messages.internal.TypeSpecificMessageListener;
+import cloud.timo.TimoCloud.api.messages.TypeSpecificMessageListener;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
