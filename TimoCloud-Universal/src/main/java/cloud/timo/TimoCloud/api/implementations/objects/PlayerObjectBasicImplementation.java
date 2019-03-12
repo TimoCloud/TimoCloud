@@ -23,11 +23,11 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     private InetAddress ipAddress;
     private boolean online;
 
-    public PlayerObjectBasicImplementation(String name, UUID uuid, ServerObject server, ProxyObject proxy, InetAddress ipAddress, boolean online) {
+    public PlayerObjectBasicImplementation(String name, UUID uuid, ServerObjectLink server, ProxyObjectLink proxy, InetAddress ipAddress, boolean online) {
         this.name = name;
         this.uuid = uuid;
-        this.server = ((ServerObjectBasicImplementation) server).toLink();
-        this.proxy = ((ProxyObjectBasicImplementation) proxy).toLink();
+        this.server = server;
+        this.proxy = proxy;
         this.ipAddress = ipAddress;
         this.online = online;
     }

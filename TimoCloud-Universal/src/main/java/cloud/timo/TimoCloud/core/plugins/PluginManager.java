@@ -4,8 +4,8 @@ import cloud.timo.TimoCloud.api.plugins.PluginLoadException;
 import cloud.timo.TimoCloud.api.plugins.PluginUnloadException;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPlugin;
 import cloud.timo.TimoCloud.api.plugins.TimoCloudPluginDescription;
+import cloud.timo.TimoCloud.common.Assert;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.lib.Assert;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;

@@ -33,6 +33,11 @@ public interface TimoCloudUniversalAPI {
     ServerObject getServer(String identifier);
 
     /**
+     * @return A collection of all servers in the network
+     */
+    Collection<ServerObject> getServers();
+
+    /**
      * @return A collection of {@link ProxyGroupObject} containing all proxy groups
      */
     Collection<ProxyGroupObject> getProxyGroups();
@@ -50,6 +55,11 @@ public interface TimoCloudUniversalAPI {
      * @return A {@link ServerObject} corresponding to the given name or id
      */
     ProxyObject getProxy(String identifier);
+
+    /**
+     * @return A collection of all proxies in the network
+     */
+    Collection<ProxyObject> getProxies();
 
     /**
      * @return A collection of all bases
@@ -84,6 +94,11 @@ public interface TimoCloudUniversalAPI {
      * @return If the player is online, this will return a PlayerObject, else null
      */
     PlayerObject getPlayer(String name);
+
+    /**
+     * @return A collection of all players in the network
+     */
+    Collection<PlayerObject> getPlayers();
 
     /**
      * @param properties The group's properties

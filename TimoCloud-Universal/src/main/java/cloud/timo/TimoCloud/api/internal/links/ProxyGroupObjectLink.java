@@ -2,7 +2,9 @@ package cloud.timo.TimoCloud.api.internal.links;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ProxyGroupObjectLink extends IdentifiableLink<ProxyGroupObject> {
 
     public ProxyGroupObjectLink(ProxyGroupObject proxyGroupObject) {

@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.api.implementations.async;
 import cloud.timo.TimoCloud.api.async.APIRequest;
 import cloud.timo.TimoCloud.api.async.APIRequestError;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
-import cloud.timo.TimoCloud.lib.json.JsonConverter;
+import cloud.timo.TimoCloud.common.json.JsonConverter;
 
 public class APIResponse<T> {
 

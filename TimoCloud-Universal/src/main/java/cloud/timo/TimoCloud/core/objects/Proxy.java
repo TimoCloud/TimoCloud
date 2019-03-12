@@ -2,29 +2,31 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
+import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.common.json.JsonConverter;
+import cloud.timo.TimoCloud.common.log.LogEntry;
+import cloud.timo.TimoCloud.common.log.LogStorage;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
+import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
-import cloud.timo.TimoCloud.lib.json.JsonConverter;
-import cloud.timo.TimoCloud.lib.log.LogEntry;
-import cloud.timo.TimoCloud.lib.log.LogStorage;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
-import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
-import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
 
@@ -297,7 +299,7 @@ public class Proxy implements Instance, Communicatable {
 
     public void setDnsRecord(DnsRecord dnsRecord) {
         this.dnsRecord = dnsRecord;
-        //Work for Timo. Object "DnsRecord" not exists in TimoCloudAPI Project
+        //TODO Work for Timo. Object "DnsRecord" does not exist in TimoCloudAPI Project
     }
 
     public Set<Server> getRegisteredServers() {
@@ -324,19 +326,22 @@ public class Proxy implements Instance, Communicatable {
 
     public void setTemplateUpdate(DoAfterAmount templateUpdate) {
         this.templateUpdate = templateUpdate;
-        //DoAfterAmount dont exist in TimoCloudAPI. Work for Timo?
     }
 
     public ProxyObject toProxyObject() {
         return new ProxyObjectCoreImplementation(
                 getName(),
                 getId(),
-                getGroup().toGroupObject(),
-                new ArrayList<>(getOnlinePlayers()),
+                getGroup().toLink(),
+                getOnlinePlayers().stream().map(player -> ((PlayerObjectBasicImplementation) player).toLink()).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
-                getBase().toBaseObject(),
+                getBase().toLink(),
                 getAddress()
         );
+    }
+
+    public ProxyObjectLink toLink() {
+        return new ProxyObjectLink(getId(), getName());
     }
 
     @Override

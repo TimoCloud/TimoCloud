@@ -10,11 +10,11 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.common.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.json.JsonConverter;
+import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
-import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
-import cloud.timo.TimoCloud.lib.json.JsonConverter;
-import cloud.timo.TimoCloud.lib.log.LogEntry;
 
 import java.util.Arrays;
 import java.util.Collection;

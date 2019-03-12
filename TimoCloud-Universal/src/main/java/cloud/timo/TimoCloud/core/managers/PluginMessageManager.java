@@ -3,10 +3,10 @@ package cloud.timo.TimoCloud.core.managers;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudMessageAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
 
 public class PluginMessageManager {
 

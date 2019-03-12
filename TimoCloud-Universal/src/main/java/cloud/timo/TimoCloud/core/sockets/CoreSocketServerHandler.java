@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.sockets;
 
-import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.Message;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

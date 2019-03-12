@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base.sockets;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
-import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.Message;
 
 public class BaseSocketMessageManager {
 

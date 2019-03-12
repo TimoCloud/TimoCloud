@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.managers;
 
-import cloud.timo.TimoCloud.lib.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.Message;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

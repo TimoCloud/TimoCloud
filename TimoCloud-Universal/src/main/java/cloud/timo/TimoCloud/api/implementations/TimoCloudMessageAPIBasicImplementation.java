@@ -8,9 +8,9 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
-import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
 
 import java.util.ArrayList;
 import java.util.List;

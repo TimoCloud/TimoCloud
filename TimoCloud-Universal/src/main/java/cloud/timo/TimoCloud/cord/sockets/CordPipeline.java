@@ -1,8 +1,8 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
+import cloud.timo.TimoCloud.common.sockets.PacketLengthPrepender;
+import cloud.timo.TimoCloud.common.sockets.PacketLengthSplitter;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
-import cloud.timo.TimoCloud.lib.sockets.PacketLengthPrepender;
-import cloud.timo.TimoCloud.lib.sockets.PacketLengthSplitter;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.codec.string.StringDecoder;

@@ -2,9 +2,11 @@ package cloud.timo.TimoCloud.api.internal.links;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@NoArgsConstructor
 public class PlayerObjectLink extends IdentifiableLink<PlayerObject> {
 
     public PlayerObjectLink(PlayerObject playerObject) {

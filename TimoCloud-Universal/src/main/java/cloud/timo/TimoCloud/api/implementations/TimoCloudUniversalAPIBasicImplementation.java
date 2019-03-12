@@ -9,7 +9,7 @@ import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
-import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -122,6 +122,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
+    public Collection<ServerObject> getServers() {
+        return servers.values();
+    }
+
+    @Override
     public Set<ProxyGroupObject> getProxyGroups() {
         return Collections.unmodifiableSet(new HashSet<>(proxyGroups.values()));
     }
@@ -137,6 +142,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
+    public Collection<ProxyObject> getProxies() {
+        return proxies.values();
+    }
+
+    @Override
     public PlayerObject getPlayer(UUID uuid) {
         return players.getById(uuid.toString());
     }
@@ -144,6 +154,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     @Override
     public PlayerObject getPlayer(String name) {
         return players.getByName(name);
+    }
+
+    @Override
+    public Collection<PlayerObject> getPlayers() {
+        return players.values();
     }
 
     @Override

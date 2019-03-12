@@ -5,22 +5,19 @@ import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
-import cloud.timo.TimoCloud.api.objects.BaseObject;
-import cloud.timo.TimoCloud.api.objects.CordObject;
-import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
+import cloud.timo.TimoCloud.common.utils.EnumUtil;
+import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
-import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
-import cloud.timo.TimoCloud.lib.utils.EnumUtil;
-import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -142,10 +139,13 @@ public class CoreStringHandler extends BasicStringHandler {
 
         switch (type) {
             case GET_API_DATA: {
-                Set serverGroups = new HashSet<>();
-                Set proxyGroups = new HashSet();
-                Set cords = new HashSet();
-                Set bases = new HashSet();
+                Set<String> serverGroups = new HashSet<>();
+                Set<String> proxyGroups = new HashSet<>();
+                Set<String> servers = new HashSet<>();
+                Set<String> proxies = new HashSet<>();
+                Set<String> bases = new HashSet<>();
+                Set<String> players = new HashSet<>();
+                Set<String> cords = new HashSet<>();
                 ObjectMapper objectMapper = ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper();
                 try {
                     for (ServerGroupObject serverGroupObject : TimoCloudAPI.getUniversalAPI().getServerGroups()) {
@@ -154,11 +154,20 @@ public class CoreStringHandler extends BasicStringHandler {
                     for (ProxyGroupObject proxyGroupObject : TimoCloudAPI.getUniversalAPI().getProxyGroups()) {
                         proxyGroups.add(objectMapper.writeValueAsString(proxyGroupObject));
                     }
-                    for (CordObject cordObject : TimoCloudAPI.getUniversalAPI().getCords()) {
-                        cords.add(objectMapper.writeValueAsString(cordObject));
+                    for (ServerObject serverObject : TimoCloudAPI.getUniversalAPI().getServers()) {
+                        servers.add(objectMapper.writeValueAsString(serverObject));
+                    }
+                    for (ProxyObject proxyObject : TimoCloudAPI.getUniversalAPI().getProxies()) {
+                        proxies.add(objectMapper.writeValueAsString(proxyObject));
+                    }
+                    for (PlayerObject playerObject : TimoCloudAPI.getUniversalAPI().getPlayers()) {
+                        players.add(objectMapper.writeValueAsString(playerObject));
                     }
                     for (BaseObject baseObject : TimoCloudAPI.getUniversalAPI().getBases()) {
                         bases.add(objectMapper.writeValueAsString(baseObject));
+                    }
+                    for (CordObject cordObject : TimoCloudAPI.getUniversalAPI().getCords()) {
+                        cords.add(objectMapper.writeValueAsString(cordObject));
                     }
                     TimoCloudCore.getInstance().getSocketServerHandler().sendMessage(channel, Message.create()
                             .setType(MessageType.API_DATA)
@@ -166,8 +175,12 @@ public class CoreStringHandler extends BasicStringHandler {
                                     Message.create()
                                             .set("serverGroups", serverGroups)
                                             .set("proxyGroups", proxyGroups)
+                                            .set("servers", servers)
+                                            .set("proxies", proxies)
+                                            .set("players", players)
+                                            .set("bases", bases)
                                             .set("cords", cords)
-                                            .set("bases", bases)));
+                            ));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

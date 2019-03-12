@@ -6,7 +6,7 @@ import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEventBasicImplem
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.utils.PlayerUtil;
-import cloud.timo.TimoCloud.lib.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;

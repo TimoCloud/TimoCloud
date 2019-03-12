@@ -33,15 +33,15 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObject> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, BaseObject base, Set<String> sortOutStates) {
+    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, BaseObjectLink base, Set<String> sortOutStates) {
         this.id = id;
         this.name = name;
-        this.servers = servers.stream().map(serverObject -> (ServerObjectBasicImplementation) serverObject).map(ServerObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.servers = servers;
         this.startupAmount = startupAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;
         this.isStatic = isStatic;
-        this.base = ((BaseObjectBasicImplementation) base).toLink();
+        this.base = base;
         this.sortOutStates = sortOutStates;
     }
 

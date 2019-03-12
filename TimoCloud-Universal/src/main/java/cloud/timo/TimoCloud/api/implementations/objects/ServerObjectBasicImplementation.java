@@ -13,7 +13,7 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
-import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
@@ -43,18 +44,18 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
     private InetSocketAddress socketAddress;
     private MessageClientAddress messageClientAddress;
 
-    public ServerObjectBasicImplementation(String name, String id, ServerGroupObject group, String state, String extra, String map, String motd, List<PlayerObject> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, BaseObject base, InetSocketAddress socketAddress) {
+    public ServerObjectBasicImplementation(String name, String id, ServerGroupObjectLink group, String state, String extra, String map, String motd, Set<PlayerObjectLink> onlinePlayers, int onlinePlayerCount, int maxPlayerCount, BaseObjectLink base, InetSocketAddress socketAddress) {
         this.name = name;
         this.id = id;
-        this.group = ((ServerGroupObjectBasicImplementation) group).toLink();
+        this.group = group;
         this.state = state;
         this.extra = extra;
         this.map = map;
         this.motd = motd;
-        this.onlinePlayers = onlinePlayers.stream().map(playerObject -> (PlayerObjectBasicImplementation) playerObject).map(PlayerObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.onlinePlayers = onlinePlayers;
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
-        this.base = ((BaseObjectBasicImplementation) base).toLink();
+        this.base = base;
         this.socketAddress = socketAddress;
     }
 

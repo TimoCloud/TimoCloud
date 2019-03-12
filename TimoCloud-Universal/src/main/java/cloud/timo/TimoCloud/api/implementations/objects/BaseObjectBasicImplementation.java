@@ -10,7 +10,6 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,7 +28,7 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     private Set<ServerObjectLink> servers;
     private Set<ProxyObjectLink> proxies;
 
-    public BaseObjectBasicImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Collection<ServerObject> servers, Collection<ProxyObject> proxies) {
+    public BaseObjectBasicImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Set<ServerObjectLink> servers, Set<ProxyObjectLink> proxies) {
         this.id = id;
         this.name = name;
         this.ipAddress = ipAddress;
@@ -38,8 +37,8 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
         this.maxRam = maxRam;
         this.connected = connected;
         this.ready = ready;
-        this.servers = servers.stream().map(serverObject -> (ServerObjectBasicImplementation) serverObject).map(ServerObjectBasicImplementation::toLink).collect(Collectors.toSet());
-        this.proxies = proxies.stream().map(proxyObject -> (ProxyObjectBasicImplementation) proxyObject).map(ProxyObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.servers = servers;
+        this.proxies = proxies;
     }
 
     @Override

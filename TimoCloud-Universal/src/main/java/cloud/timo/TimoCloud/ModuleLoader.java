@@ -1,13 +1,13 @@
 package cloud.timo.TimoCloud;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.common.modules.ModuleType;
+import cloud.timo.TimoCloud.common.modules.TimoCloudModule;
+import cloud.timo.TimoCloud.common.utils.options.OptionParser;
+import cloud.timo.TimoCloud.common.utils.options.OptionSet;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
-import cloud.timo.TimoCloud.lib.modules.ModuleType;
-import cloud.timo.TimoCloud.lib.modules.TimoCloudModule;
-import cloud.timo.TimoCloud.lib.utils.options.OptionParser;
-import cloud.timo.TimoCloud.lib.utils.options.OptionSet;
 
 import java.util.Arrays;
 import java.util.Scanner;

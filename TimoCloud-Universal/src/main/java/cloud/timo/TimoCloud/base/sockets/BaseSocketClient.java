@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base.sockets;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
-import cloud.timo.TimoCloud.lib.utils.network.NettyUtil;
+import cloud.timo.TimoCloud.common.utils.network.NettyUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;

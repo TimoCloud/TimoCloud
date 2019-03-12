@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base.utils;
 
-import cloud.timo.TimoCloud.lib.global.logging.TimoCloudLogger;
-import cloud.timo.TimoCloud.lib.utils.files.tailer.FileTailerListener;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailerListener;
 
 import java.util.function.Consumer;
 

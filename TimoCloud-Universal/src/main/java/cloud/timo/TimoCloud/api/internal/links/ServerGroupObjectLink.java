@@ -2,7 +2,9 @@ package cloud.timo.TimoCloud.api.internal.links;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ServerGroupObjectLink extends IdentifiableLink<ServerGroupObject> {
 
     public ServerGroupObjectLink(ServerGroupObject serverGroupObject) {

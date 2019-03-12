@@ -9,7 +9,7 @@ import cloud.timo.TimoCloud.bukkit.signs.SignInstance;
 import cloud.timo.TimoCloud.bukkit.signs.SignLayout;
 import cloud.timo.TimoCloud.bukkit.signs.SignParseException;
 import cloud.timo.TimoCloud.bukkit.signs.SignTemplate;
-import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import cloud.timo.TimoCloud.common.json.JsonObjectBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

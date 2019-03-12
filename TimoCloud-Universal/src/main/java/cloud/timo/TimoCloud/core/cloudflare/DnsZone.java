@@ -1,6 +1,6 @@
 package cloud.timo.TimoCloud.core.cloudflare;
 
-import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import cloud.timo.TimoCloud.common.json.JsonObjectBuilder;
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

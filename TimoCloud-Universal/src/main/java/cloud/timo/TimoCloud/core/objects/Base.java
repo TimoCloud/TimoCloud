@@ -1,15 +1,16 @@
 package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.base.*;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
+import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.BaseObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
-import cloud.timo.TimoCloud.lib.events.EventTransmitter;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;
@@ -325,9 +326,13 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                 getMaxRam(),
                 isConnected(),
                 isReady(),
-                getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
-                getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toSet())
+                getServers().stream().map(Server::toLink).collect(Collectors.toSet()),
+                getProxies().stream().map(Proxy::toLink).collect(Collectors.toSet())
         );
+    }
+
+    public BaseObjectLink toLink() {
+        return new BaseObjectLink(getId(), getName());
     }
 
     @Override

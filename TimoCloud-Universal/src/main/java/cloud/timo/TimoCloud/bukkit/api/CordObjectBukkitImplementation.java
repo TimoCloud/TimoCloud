@@ -4,12 +4,7 @@ import cloud.timo.TimoCloud.api.implementations.objects.CordObjectBasicImplement
 import cloud.timo.TimoCloud.api.objects.CordObject;
 import lombok.NoArgsConstructor;
 
-import java.net.InetSocketAddress;
-
 @NoArgsConstructor
 public class CordObjectBukkitImplementation extends CordObjectBasicImplementation implements CordObject {
 
-    public CordObjectBukkitImplementation(String id, String name, InetSocketAddress address, boolean connected) {
-        super(id, name, address, connected);
-    }
 }

@@ -2,12 +2,13 @@ package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.cord.CordConnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.internal.links.CordObjectLink;
 import cloud.timo.TimoCloud.api.objects.CordObject;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;
@@ -111,5 +112,9 @@ public class Cord implements Communicatable, Identifiable {
 
     public CordObject toCordObject() {
         return new CordObjectCoreImplementation(getId(), getName(), getSocketAddress(), isConnected());
+    }
+
+    public CordObjectLink toLink() {
+        return new CordObjectLink(getId(), getName());
     }
 }

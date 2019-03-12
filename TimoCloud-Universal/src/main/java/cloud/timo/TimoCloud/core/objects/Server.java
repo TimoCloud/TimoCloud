@@ -1,30 +1,32 @@
 package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.server.*;
+import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
+import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.json.JsonConverter;
+import cloud.timo.TimoCloud.common.log.LogEntry;
+import cloud.timo.TimoCloud.common.log.LogStorage;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
+import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import cloud.timo.TimoCloud.lib.encryption.RSAKeyUtil;
-import cloud.timo.TimoCloud.lib.events.EventTransmitter;
-import cloud.timo.TimoCloud.lib.json.JsonConverter;
-import cloud.timo.TimoCloud.lib.log.LogEntry;
-import cloud.timo.TimoCloud.lib.log.LogStorage;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
-import cloud.timo.TimoCloud.lib.utils.DoAfterAmount;
-import cloud.timo.TimoCloud.lib.utils.HashUtil;
 import io.netty.channel.Channel;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Server implements Instance, Communicatable {
 
@@ -392,7 +394,6 @@ public class Server implements Instance, Communicatable {
 
     public void setTemplateUpdate(DoAfterAmount templateUpdate) {
         this.templateUpdate = templateUpdate;
-        //Work for Timo? DoAfterAmount dont exist in TimnoCloloudAPI
     }
 
     public void executeCommand(String command) {
@@ -403,17 +404,21 @@ public class Server implements Instance, Communicatable {
         return new ServerObjectCoreImplementation(
                 getName(),
                 getId(),
-                getGroup().toGroupObject(),
+                getGroup().toLink(),
                 getState(),
                 getExtra(),
                 getMap(),
                 getMotd(),
-                new ArrayList<>(getOnlinePlayers()),
+                getOnlinePlayers().stream().map(player -> ((PlayerObjectBasicImplementation) player).toLink()).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
                 getMaxPlayers(),
-                getBase().toBaseObject(),
+                getBase().toLink(),
                 getAddress()
         );
+    }
+
+    public ServerObjectLink toLink() {
+        return new ServerObjectLink(getId(), getName());
     }
 
     @Override

@@ -6,7 +6,7 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.async.APIRequestType;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
-import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 
 import java.util.HashMap;
 import java.util.Map;

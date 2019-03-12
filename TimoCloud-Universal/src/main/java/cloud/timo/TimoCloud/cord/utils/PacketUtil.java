@@ -1,10 +1,10 @@
 package cloud.timo.TimoCloud.cord.utils;
 
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
 import cloud.timo.TimoCloud.cord.sockets.ProxyDownstreamHandler;
 import cloud.timo.TimoCloud.cord.sockets.ProxyUpstreamHandler;
-import cloud.timo.TimoCloud.lib.protocol.Message;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.util.AttributeKey;

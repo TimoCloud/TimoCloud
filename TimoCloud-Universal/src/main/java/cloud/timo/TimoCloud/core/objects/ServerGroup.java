@@ -1,11 +1,12 @@
 package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.serverGroup.*;
+import cloud.timo.TimoCloud.api.internal.links.ServerGroupObjectLink;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
-import cloud.timo.TimoCloud.lib.events.EventTransmitter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -212,21 +213,25 @@ public class ServerGroup implements Group {
 
     public void setSortOutStates(Collection<String> sortOutStates) {
         this.sortOutStates = new HashSet<>(sortOutStates);
-        //Work for Timo?
+        //TODO Work for Timo?
     }
 
     public ServerGroupObject toGroupObject() {
         return new ServerGroupObjectCoreImplementation(
                 getId(),
                 getName(),
-                getServers().stream().map(Server::toServerObject).collect(Collectors.toSet()),
+                getServers().stream().map(Server::toLink).collect(Collectors.toSet()),
                 getOnlineAmount(),
                 getMaxAmount(),
                 getRam(),
                 isStatic(),
-                getBase().toBaseObject(),
+                getBase() == null ? null : getBase().toLink(),
                 getSortOutStates()
         );
+    }
+
+    public ServerGroupObjectLink toLink() {
+        return new ServerGroupObjectLink(getId(), getName());
     }
 
     @Override

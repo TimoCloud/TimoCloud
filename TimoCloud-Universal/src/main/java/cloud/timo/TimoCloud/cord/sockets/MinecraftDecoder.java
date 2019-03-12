@@ -2,10 +2,10 @@ package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;

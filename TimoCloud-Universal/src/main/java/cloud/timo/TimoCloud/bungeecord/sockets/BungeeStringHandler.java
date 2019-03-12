@@ -9,12 +9,12 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
-import cloud.timo.TimoCloud.lib.protocol.Message;
-import cloud.timo.TimoCloud.lib.protocol.MessageType;
-import cloud.timo.TimoCloud.lib.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.lib.utils.EnumUtil;
-import cloud.timo.TimoCloud.lib.utils.PluginMessageSerializer;
-import cloud.timo.TimoCloud.lib.utils.network.InetAddressUtil;
+import cloud.timo.TimoCloud.common.protocol.Message;
+import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.common.utils.EnumUtil;
+import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
+import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
 import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;

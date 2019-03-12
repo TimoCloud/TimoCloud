@@ -28,6 +28,7 @@ public class CoreInstanceManager {
     private IdentifiableStorage<Proxy> proxies;
     private IdentifiableStorage<Base> bases;
     private IdentifiableStorage<Cord> cords;
+    // TODO Store players here, not in proxy objects
 
     private static final int MAX_SERVERS = 2500;
     private static final int MAX_PROXIES = 500;
@@ -701,6 +702,13 @@ public class CoreInstanceManager {
     }
 
     /**
+     * @return A collection of all servers
+     */
+    public Collection<Server> getServers() {
+        return servers.values();
+    }
+
+    /**
      * Searches for a proxy by name (case-insensitive)
      *
      * @param name The proxy's name (case-insensitive)
@@ -738,6 +746,13 @@ public class CoreInstanceManager {
      */
     public Proxy getProxyByIdentifier(String identifier) {
         return proxies.getByIdentifier(identifier);
+    }
+
+    /**
+     * @return A collection of all proxies
+     */
+    public Collection<Proxy> getProxies() {
+        return proxies.values();
     }
 
     /**

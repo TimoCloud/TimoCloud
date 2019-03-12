@@ -2,7 +2,9 @@ package cloud.timo.TimoCloud.api.internal.links;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.CordObject;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class CordObjectLink extends IdentifiableLink<CordObject> {
 
     public CordObjectLink(CordObject cordObject) {

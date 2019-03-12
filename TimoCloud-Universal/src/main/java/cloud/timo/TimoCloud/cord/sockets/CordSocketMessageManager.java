@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
+import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
-import cloud.timo.TimoCloud.lib.protocol.Message;
 
 public class CordSocketMessageManager {
 

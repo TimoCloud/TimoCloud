@@ -35,6 +35,11 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     }
 
     @Override
+    public Collection<ServerObject> getServers() {
+        return TimoCloudCore.getInstance().getInstanceManager().getServers().stream().map(Server::toServerObject).collect(Collectors.toList());
+    }
+
+    @Override
     public Set<ProxyGroupObject> getProxyGroups() {
         return TimoCloudCore.getInstance().getInstanceManager().getProxyGroups().stream().map(ProxyGroup::toGroupObject).collect(Collectors.toSet());
     }
@@ -49,6 +54,11 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     public ProxyObject getProxy(String identifier) {
         Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(identifier);
         return proxy == null ? null : proxy.toProxyObject();
+    }
+
+    @Override
+    public Collection<ProxyObject> getProxies() {
+        return TimoCloudCore.getInstance().getInstanceManager().getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toList());
     }
 
     @Override
@@ -89,4 +99,8 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
         return null;
     }
 
+    @Override
+    public Collection<PlayerObject> getPlayers() {
+        return TimoCloudCore.getInstance().getInstanceManager().getProxies().stream().flatMap(proxy -> proxy.getOnlinePlayers().stream()).collect(Collectors.toSet());
+    }
 }

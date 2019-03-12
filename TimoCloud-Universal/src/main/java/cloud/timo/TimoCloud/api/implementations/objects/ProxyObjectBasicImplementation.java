@@ -13,13 +13,12 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
-import cloud.timo.TimoCloud.lib.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -40,13 +39,13 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     private InetSocketAddress inetSocketAddress;
     private MessageClientAddress messageClientAddress;
 
-    public ProxyObjectBasicImplementation(String name, String id, ProxyGroupObject group, Collection<PlayerObject> onlinePlayers, int onlinePlayerCount, BaseObject base, InetSocketAddress inetSocketAddress) {
+    public ProxyObjectBasicImplementation(String name, String id, ProxyGroupObjectLink group, Set<PlayerObjectLink> onlinePlayers, int onlinePlayerCount, BaseObjectLink base, InetSocketAddress inetSocketAddress) {
         this.name = name;
         this.id = id;
-        this.group = ((ProxyGroupObjectBasicImplementation) group).toLink();
-        this.onlinePlayers = onlinePlayers.stream().map(playerObject -> ((PlayerObjectBasicImplementation) playerObject).toLink()).collect(Collectors.toSet());
+        this.group = group;
+        this.onlinePlayers = onlinePlayers;
         this.onlinePlayerCount = onlinePlayerCount;
-        this.base = ((BaseObjectBasicImplementation) base).toLink();
+        this.base = base;
         this.inetSocketAddress = inetSocketAddress;
     }
 

@@ -1,13 +1,14 @@
 package cloud.timo.TimoCloud.core.objects;
 
 import cloud.timo.TimoCloud.api.events.proxyGroup.*;
+import cloud.timo.TimoCloud.api.internal.links.ProxyGroupObjectLink;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
-import cloud.timo.TimoCloud.lib.events.EventTransmitter;
-import cloud.timo.TimoCloud.lib.utils.EnumUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -310,7 +311,7 @@ public class ProxyGroup implements Group {
             }
             this.serverGroups.add(groupName);
         }
-        //Work for Timo?
+        //TODO Work for Timo?
     }
 
     @Override
@@ -340,7 +341,7 @@ public class ProxyGroup implements Group {
 
     public void setHostNames(Set<String> hostNames) {
         this.hostNames = hostNames;
-        //Work for Timo?
+        //TODO Work for Timo?
     }
 
     public Collection<Proxy> getProxies() {
@@ -355,7 +356,7 @@ public class ProxyGroup implements Group {
         return new ProxyGroupObjectCoreImplementation(
                 getId(),
                 getName(),
-                getProxies().stream().map(Proxy::toProxyObject).collect(Collectors.toSet()),
+                getProxies().stream().map(Proxy::toLink).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
                 getMaxPlayerCount(),
                 getMaxPlayerCountPerProxy(),
@@ -366,11 +367,15 @@ public class ProxyGroup implements Group {
                 getMotd(),
                 isStatic(),
                 getPriority(),
-                getServerGroups().stream().map(ServerGroup::toGroupObject).collect(Collectors.toSet()),
-                getBase().toBaseObject(),
+                getServerGroups().stream().map(ServerGroup::toLink).collect(Collectors.toSet()),
+                getBase() == null ? null : getBase().toLink(),
                 getProxyChooseStrategy().name(),
                 Collections.unmodifiableSet(getHostNames())
         );
+    }
+
+    public ProxyGroupObjectLink toLink() {
+        return new ProxyGroupObjectLink(getId(), getName());
     }
 
     @Override

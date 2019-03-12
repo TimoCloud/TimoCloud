@@ -34,10 +34,10 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
 
-    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObject> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObject> serverGroups, BaseObject base, String proxyChooseStrategy, Collection<String> hostNames) {
+    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames) {
         this.id = id;
         this.name = name;
-        this.proxies = proxies.stream().map(proxyObject -> (ProxyObjectBasicImplementation) proxyObject).map(ProxyObjectBasicImplementation::toLink).collect(Collectors.toSet());
+        this.proxies = proxies;
         this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
@@ -48,8 +48,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
         this.motd = motd;
         this.isStatic = isStatic;
         this.priority = priority;
-        this.serverGroups = serverGroups.stream().map(serverGroupObject -> (ServerGroupObjectBasicImplementation) serverGroupObject).map(ServerGroupObjectBasicImplementation::toLink).collect(Collectors.toSet());
-        this.base = ((BaseObjectBasicImplementation) base).toLink();
+        this.serverGroups = serverGroups;
+        this.base = base;
         this.proxyChooseStrategy = ProxyChooseStrategy.valueOf(proxyChooseStrategy);
         this.hostNames = hostNames;
     }

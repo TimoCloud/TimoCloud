@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.bukkit.helpers;
 
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
-import cloud.timo.TimoCloud.lib.json.JsonObjectBuilder;
+import cloud.timo.TimoCloud.common.json.JsonObjectBuilder;
 import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
