@@ -1,3 +1,1 @@
 socket-port: 5000
-allowedIPs:
-- 127.0.0.1

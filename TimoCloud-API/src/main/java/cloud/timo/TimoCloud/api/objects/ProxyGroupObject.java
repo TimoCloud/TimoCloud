@@ -161,4 +161,10 @@ public interface ProxyGroupObject extends IdentifiableObject {
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setHostNames(Collection<String> value);
+
+    /**
+     * Attention: This permanently deletes the proxy group from the network
+     * @return A future being completed when the group was deleted
+     */
+    APIRequestFuture<Void> delete();
 }

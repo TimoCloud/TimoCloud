@@ -44,8 +44,8 @@ public class TimoCloudCore implements TimoCloudModule {
     private boolean shuttingDown;
     private OptionSet options;
     private CoreFileManager fileManager;
-    SimpleFormatter simpleFormatter = new SimpleFormatter();
-    Logger logger;
+    private SimpleFormatter simpleFormatter = new SimpleFormatter();
+    private Logger logger;
     private CoreSocketServer socketServer;
     private CoreSocketServerHandler socketServerHandler;
     private CoreStringHandler stringHandler;
@@ -217,9 +217,9 @@ public class TimoCloudCore implements TimoCloudModule {
         this.apiRequestManager = new APIRequestManager();
         this.corePublicKeyManager = new CorePublicKeyManager();
 
+        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICoreImplementation());
         APIInstanceUtil.setCoreInstance(new TimoCloudCoreAPIImplementation());
-        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICoreImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPICoreImplementation());

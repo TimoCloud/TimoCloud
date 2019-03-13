@@ -172,9 +172,9 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         stateByEventManager = new StateByEventManager();
 
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBukkitImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBukkitImplementation());
         APIInstanceUtil.setBukkitInstance(new TimoCloudBukkitAPIImplementation());
-        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBukkitImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

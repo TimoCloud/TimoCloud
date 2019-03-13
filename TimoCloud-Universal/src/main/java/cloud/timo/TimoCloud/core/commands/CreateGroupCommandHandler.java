@@ -47,7 +47,7 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
             }
 
             ServerGroup serverGroup = new ServerGroup(properties);
-            TimoCloudCore.getInstance().getInstanceManager().addGroup(serverGroup);
+            TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
             TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
             group = serverGroup;
         } else if (type.equalsIgnoreCase("proxy")) {
@@ -64,7 +64,7 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
             }
 
             ProxyGroup proxyGroup = new ProxyGroup(properties);
-            TimoCloudCore.getInstance().getInstanceManager().addGroup(proxyGroup);
+            TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
             TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
             group = proxyGroup;
         } else {

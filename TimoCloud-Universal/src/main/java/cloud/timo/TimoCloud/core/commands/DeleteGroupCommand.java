@@ -24,8 +24,8 @@ public class DeleteGroupCommand extends CommandFormatUtil implements CommandHand
                 return;
             }
             if (serverGroup != null)
-                TimoCloudCore.getInstance().getInstanceManager().removeServerGroup(serverGroup);
-            if (proxyGroup != null) TimoCloudCore.getInstance().getInstanceManager().removeProxyGroup(proxyGroup);
+                TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
+            if (proxyGroup != null) TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
 
             sender.sendMessage("Successfully deleted group &e" + name);
         } catch (Exception e) {

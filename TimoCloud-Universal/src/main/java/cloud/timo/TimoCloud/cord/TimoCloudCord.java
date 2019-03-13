@@ -109,8 +109,8 @@ public class TimoCloudCord implements TimoCloudModule {
         workerGroup = new NioEventLoopGroup();
 
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPICordImplementation());
-        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICordImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
+        APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPICordImplementation());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPICordImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

@@ -6,15 +6,15 @@ import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 public class EventManager implements TimoCloudEventAPI {
 
-    private List<Listener> listeners;
+    private Collection<Listener> listeners;
 
     public EventManager() {
-        listeners = new ArrayList<>();
+        listeners = new HashSet<>();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class EventManager implements TimoCloudEventAPI {
         }
     }
 
-    public List<Listener> getListeners() {
+    public Collection<Listener> getListeners() {
         return listeners;
     }
 }

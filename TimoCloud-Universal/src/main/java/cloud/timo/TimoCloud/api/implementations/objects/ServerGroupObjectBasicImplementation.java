@@ -67,7 +67,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setOnlineAmount(int value) {
-        return new APIRequestImplementation<Void>(SG_SET_ONLINE_AMOUNT, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_ONLINE_AMOUNT, getId(), value).submit();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setMaxAmount(int value) {
-        return new APIRequestImplementation<Void>(SG_SET_MAX_AMOUNT, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_MAX_AMOUNT, getId(), value).submit();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setRam(int value) {
-        return new APIRequestImplementation<Void>(SG_SET_RAM, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_RAM, getId(), value).submit();
     }
 
     @Override
@@ -97,7 +97,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setStatic(boolean value) {
-        return new APIRequestImplementation<Void>(SG_SET_STATIC, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_STATIC, getId(), value).submit();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setBase(BaseObject value) {
-        return new APIRequestImplementation<Void>(SG_SET_BASE, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_BASE, getId(), value).submit();
     }
 
     @Override
@@ -117,7 +117,12 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public APIRequestFuture<Void> setSortOutStates(Collection<String> value) {
-        return new APIRequestImplementation<Void>(SG_SET_SORT_OUT_STATES, getName(), value).submit();
+        return new APIRequestImplementation<Void>(SG_SET_SORT_OUT_STATES, getId(), value).submit();
+    }
+
+    @Override
+    public APIRequestFuture<Void> delete() {
+        return new APIRequestImplementation<Void>(SG_DELETE, getId()).submit();
     }
 
     @Override

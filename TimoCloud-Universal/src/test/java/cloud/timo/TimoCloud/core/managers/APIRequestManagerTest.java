@@ -76,7 +76,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                 null,
                 serverGroupProperties)
         ).isSuccess());
-        verify(getCore().getInstanceManager(), times(1)).addGroup(argumentCaptor.capture());
+        verify(getCore().getInstanceManager(), times(1)).createGroup(argumentCaptor.capture());
         ServerGroup serverGroup = argumentCaptor.getValue();
         assertServerGroupPropertiesEquals(serverGroupProperties, serverGroup);
     }
@@ -90,7 +90,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                 null,
                 serverGroupProperties)
         ).isSuccess());
-        verify(getCore().getInstanceManager(), times(0)).addGroup(any(ServerGroup.class));
+        verify(getCore().getInstanceManager(), times(0)).createGroup(any(ServerGroup.class));
     }
 
     @Test
@@ -117,7 +117,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                 null,
                 proxyGroupProperties)
         ).isSuccess());
-        verify(getCore().getInstanceManager(), times(1)).addGroup(argumentCaptor.capture());
+        verify(getCore().getInstanceManager(), times(1)).createGroup(argumentCaptor.capture());
         ProxyGroup proxyGroup = argumentCaptor.getValue();
         assertProxyGroupPropertiesEquals(proxyGroupProperties, proxyGroup);
     }
@@ -131,7 +131,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                 null,
                 proxyGroupProperties)
         ).isSuccess());
-        verify(getCore().getInstanceManager(), times(0)).addGroup(any(ProxyGroup.class));
+        verify(getCore().getInstanceManager(), times(0)).createGroup(any(ProxyGroup.class));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                         groupName
                 )
         ).isSuccess());
-        verify(coreInstanceManager, times(0)).removeServerGroup(any(ServerGroup.class));
+        verify(coreInstanceManager, times(0)).deleteGroup(any(ServerGroup.class));
     }
 
     @Test
@@ -350,7 +350,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                         "TestServerGroup"
                 )
         ).isSuccess());
-        verify(coreInstanceManager, times(1)).removeServerGroup(serverGroup);
+        verify(coreInstanceManager, times(1)).deleteGroup(serverGroup);
     }
 
 
@@ -363,7 +363,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                         groupName
                 )
         ).isSuccess());
-        verify(coreInstanceManager, times(0)).removeProxyGroup(any(ProxyGroup.class));
+        verify(coreInstanceManager, times(0)).deleteGroup(any(ProxyGroup.class));
     }
 
     @Test
@@ -700,7 +700,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
                         "TestProxyGroup"
                 )
         ).isSuccess());
-        verify(coreInstanceManager, times(1)).removeProxyGroup(proxyGroup);
+        verify(coreInstanceManager, times(1)).deleteGroup(proxyGroup);
     }
 
     private void assertServerGroupPropertiesEquals(ServerGroupProperties serverGroupProperties, ServerGroup serverGroup) {

@@ -1,8 +1,12 @@
 package cloud.timo.TimoCloud.core.managers;
 
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupCreatedEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupCreatedEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupDeletedEventBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.core.objects.storage.IdentifiableStorage;
@@ -257,21 +261,23 @@ public class CoreInstanceManager {
     }
 
     /**
-     * Registers a server group
+     * Creates a server group
      *
      * @param group The server group which shall be registered
      */
-    public void addGroup(ServerGroup group) {
+    public void createGroup(ServerGroup group) {
         serverGroups.add(group);
+        EventTransmitter.sendEvent(new ServerGroupCreatedEventBasicImplementation(group.toGroupObject()));
     }
 
     /**
-     * Registers a proxy group
+     * Creates a proxy group
      *
      * @param group The proxy group which shall be registered
      */
-    public void addGroup(ProxyGroup group) {
+    public void createGroup(ProxyGroup group) {
         proxyGroups.add(group);
+        EventTransmitter.sendEvent(new ProxyGroupCreatedEventBasicImplementation(group.toGroupObject()));
     }
 
     /**
@@ -279,10 +285,11 @@ public class CoreInstanceManager {
      *
      * @param group The server group which shall be deleted
      */
-    public void removeServerGroup(ServerGroup group) {
+    public void deleteGroup(ServerGroup group) {
         getServerGroups().remove(group);
         group.stopAllServers();
         saveServerGroups();
+        EventTransmitter.sendEvent(new ServerGroupDeletedEventBasicImplementation(group.toGroupObject()));
     }
 
     /**
@@ -290,10 +297,11 @@ public class CoreInstanceManager {
      *
      * @param group The proxy group which shall be deleted
      */
-    public void removeProxyGroup(ProxyGroup group) {
+    public void deleteGroup(ProxyGroup group) {
         getProxyGroups().remove(group);
         group.stopAllProxies();
         saveProxyGroups();
+        EventTransmitter.sendEvent(new ProxyGroupCreatedEventBasicImplementation(group.toGroupObject()));
     }
 
     /**

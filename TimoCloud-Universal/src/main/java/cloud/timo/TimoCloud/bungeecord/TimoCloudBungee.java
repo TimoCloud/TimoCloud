@@ -115,9 +115,9 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         timoCloudCommand = new TimoCloudCommand();
 
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBungeeImplementation());
+        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBungeeImplementation());
         APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
-        APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBungeeImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

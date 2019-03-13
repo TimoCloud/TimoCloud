@@ -112,11 +112,6 @@ public class CoreStringHandler extends BasicStringHandler {
                 return;
             }
             case CORD_HANDSHAKE: {
-                if (!ipAllowed(address)) {
-                    TimoCloudCore.getInstance().severe("Unknown cord connected from " + address.getHostAddress() + ". If you want to allow this connection, please add the IP address to 'allowedIPs' in your config.yml, else, please block the port " + ((Integer) TimoCloudCore.getInstance().getFileManager().getConfig().get("socket-port")) + " in your firewall.");
-                    closeChannel(channel);
-                    return;
-                }
                 if (TimoCloudCore.getInstance().getInstanceManager().isCordConnected(cordName)) {
                     TimoCloudCore.getInstance().severe("Error while cord handshake: A cord with the name '" + cordName + "' is already conencted.");
                     return;
@@ -360,20 +355,6 @@ public class CoreStringHandler extends BasicStringHandler {
 
     private String byteArrayToString(byte[] bytes) throws Exception {
         return Base64.getEncoder().encodeToString(bytes);
-    }
-
-    private boolean ipAllowed(InetAddress inetAddress) {
-        for (String ipString : (List<String>) TimoCloudCore.getInstance().getFileManager().getConfig().get("allowedIPs")) {
-            try {
-                for (InetAddress allowed : InetAddress.getAllByName(ipString)) {
-                    if (inetAddress.equals(allowed)) return true;
-                }
-            } catch (Exception e) {
-                TimoCloudCore.getInstance().severe("Error while parsing InetAddress: ");
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
 }

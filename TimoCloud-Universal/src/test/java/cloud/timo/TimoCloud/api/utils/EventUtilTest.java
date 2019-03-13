@@ -14,7 +14,7 @@ public class EventUtilTest extends CommunicationTest {
     @Test
     public void getClassByEventType() {
         for (EventType eventType : EventType.values()) {
-            assertNotNull(EventUtil.getClassByEventType(eventType));
+            assertNotNull(String.format("No event class implementation found for event type '%s', please add an implementation of this event type to EventUtil.java.", eventType.name()), EventUtil.getClassByEventType(eventType));
         }
     }
 }

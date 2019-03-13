@@ -80,7 +80,7 @@ public class APIRequestManager implements MessageListener {
                                     sortOutStates
                             );
 
-                            TimoCloudCore.getInstance().getInstanceManager().addGroup(serverGroup);
+                            TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
                             TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
                             break;
                         }
@@ -145,7 +145,7 @@ public class APIRequestManager implements MessageListener {
                                     hostNames
                             );
 
-                            TimoCloudCore.getInstance().getInstanceManager().addGroup(proxyGroup);
+                            TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
                             TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                             break;
                         }
@@ -248,7 +248,7 @@ public class APIRequestManager implements MessageListener {
                             break;
                         }
                         case PG_DELETE: {
-                            TimoCloudCore.getInstance().getInstanceManager().removeProxyGroup(proxyGroup);
+                            TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
                             break;
                         }
                     }
@@ -315,7 +315,7 @@ public class APIRequestManager implements MessageListener {
                             serverGroup.setSortOutStates(value);
                         }
                         case SG_DELETE: {
-                            TimoCloudCore.getInstance().getInstanceManager().removeServerGroup(serverGroup);
+                            TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
                             break;
                         }
                     }

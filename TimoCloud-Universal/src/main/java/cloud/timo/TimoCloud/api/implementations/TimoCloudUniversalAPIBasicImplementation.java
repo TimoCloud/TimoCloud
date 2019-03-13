@@ -1,9 +1,11 @@
 package cloud.timo.TimoCloud.api.implementations; // This relies on the jackson API, hence it has to be in the TimoCloud-Universal package
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
+import cloud.timo.TimoCloud.api.implementations.listeners.TimoCloudUniversalAPIStorageUpdateListener;
 import cloud.timo.TimoCloud.api.implementations.storage.IdentifiableObjectStorage;
 import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
@@ -53,6 +55,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         this.cordObjectImplementation = cordObjectImplementation;
 
         this.objectMapper = prepareObjectMapper();
+        TimoCloudAPI.getEventAPI().registerListener(new TimoCloudUniversalAPIStorageUpdateListener(this));
     }
 
     private ObjectMapper prepareObjectMapper() {

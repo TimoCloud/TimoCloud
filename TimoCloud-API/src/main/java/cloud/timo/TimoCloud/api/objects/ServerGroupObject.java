@@ -87,4 +87,10 @@ public interface ServerGroupObject extends IdentifiableObject {
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setSortOutStates(Collection<String> value);
+
+    /**
+     * Attention: This permanently deletes the server group from the network
+     * @return A future being completed when the group was deleted
+     */
+    APIRequestFuture<Void> delete();
 }

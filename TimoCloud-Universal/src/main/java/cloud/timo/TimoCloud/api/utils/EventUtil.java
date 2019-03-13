@@ -47,6 +47,7 @@ public class EventUtil {
                 ProxyRegisterEventBasicImplementation.class,
                 ProxyUnregisterEventBasicImplementation.class,
 
+                ProxyGroupCreatedEventBasicImplementation.class,
                 ProxyGroupBaseChangeEventBasicImplementation.class,
                 ProxyGroupKeepFreeSlotsChangeEventBasicImplementation.class,
                 ProxyGroupMaxAmountChangeEventBasicImplementation.class,
@@ -58,6 +59,7 @@ public class EventUtil {
                 ProxyGroupProxyChooseStrategyChangeEventBasicImplementation.class,
                 ProxyGroupRamChangeEventBasicImplementation.class,
                 ProxyGroupStaticChangeEventBasicImplementation.class,
+                ProxyGroupDeletedEventBasicImplementation.class,
 
                 ServerExtraChangeEventBasicImplementation.class,
                 ServerMapChangeEventBasicImplementation.class,
@@ -68,12 +70,14 @@ public class EventUtil {
                 ServerStateChangeEventBasicImplementation.class,
                 ServerUnregisterEventBasicImplementation.class,
 
+                ServerGroupCreatedEventBasicImplementation.class,
                 ServerGroupBaseChangeEventBasicImplementation.class,
                 ServerGroupMaxAmountChangeEventBasicImplementation.class,
                 ServerGroupOnlineAmountChangeEventBasicImplementation.class,
                 ServerGroupPriorityChangeEventBasicImplementation.class,
                 ServerGroupRamChangeEventBasicImplementation.class,
-                ServerGroupStaticChangeEventBasicImplementation.class
+                ServerGroupStaticChangeEventBasicImplementation.class,
+                ServerGroupDeletedEventBasicImplementation.class
         };
 
         for (Class<? extends Event> clazz : events) {
