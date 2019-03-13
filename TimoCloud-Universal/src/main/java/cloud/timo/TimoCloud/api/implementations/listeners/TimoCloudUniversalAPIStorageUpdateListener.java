@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.api.implementations.listeners;
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.base.BaseAddressChangeEvent;
-import cloud.timo.TimoCloud.api.events.base.BaseAddressChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupCreatedEvent;
 import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupDeletedEvent;
 import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupCreatedEvent;
@@ -21,7 +20,7 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     @EventHandler
     public void onBaseAddressChangeEvent(BaseAddressChangeEvent event) {
-        ((BaseObjectBasicImplementation) ((BaseAddressChangeEventBasicImplementation) event).getInstance()).setIpAddress(event.getNewValue());
+        ((BaseObjectBasicImplementation) event.getBase()).setIpAddress(event.getNewValue());
     }
 
     @EventHandler
