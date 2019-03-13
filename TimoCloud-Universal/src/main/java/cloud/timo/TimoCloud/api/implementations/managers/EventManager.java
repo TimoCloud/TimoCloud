@@ -7,14 +7,14 @@ import cloud.timo.TimoCloud.api.events.Listener;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class EventManager implements TimoCloudEventAPI {
 
     private Collection<Listener> listeners;
 
     public EventManager() {
-        listeners = new HashSet<>();
+        listeners = new LinkedHashSet<>();
     }
 
     @Override
