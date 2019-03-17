@@ -665,12 +665,8 @@ public class CoreInstanceManager {
      */
     public List<Communicatable> getAllCommunicatableInstances() {
         return Stream.concat(
-                Stream.concat(
-                        getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream),
-                        getServerGroups().stream().map(ServerGroup::getServers).flatMap(Collection::stream)),
-                Stream.concat(
-                        getCords().stream(),
-                        getBases().stream()
+                Stream.concat(getProxies().stream(), getServers().stream()),
+                Stream.concat(getCords().stream(), getBases().stream()
                 )).collect(Collectors.toList());
     }
 

@@ -41,7 +41,7 @@ public class EventManager implements TimoCloudEventAPI {
                 try {
                     EventHandler eventHandler = method.getAnnotation(EventHandler.class);
                     if (eventHandler == null) continue;
-                    if (method.getParameterTypes().length != 1 || ! method.getParameterTypes()[0].equals(event.getClass())) continue;
+                    if (method.getParameterTypes().length != 1 || ! method.getParameterTypes()[0].isAssignableFrom(event.getClass())) continue;
                     method.invoke(listener, event);
                 } catch (Exception e) {
                     System.err.println("Uncaught exception while firing event: ");

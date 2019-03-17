@@ -26,7 +26,6 @@ public class BukkitStringHandler extends BasicStringHandler {
             TimoCloudBukkit.getInstance().severe("Error while parsing json (json is null): " + originalMessage);
             return;
         }
-        String server = (String) message.getTarget();
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
