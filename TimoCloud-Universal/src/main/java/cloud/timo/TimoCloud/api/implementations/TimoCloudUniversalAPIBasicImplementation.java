@@ -62,6 +62,8 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
+        resolver.addMapping(ServerGroupObject.class, serverGroupObjectImplementation);
+        resolver.addMapping(ProxyGroupObject.class, proxyGroupObjectImplementation);
         resolver.addMapping(ServerObject.class, serverObjectImplementation);
         resolver.addMapping(ProxyObject.class, proxyObjectImplementation);
         resolver.addMapping(PlayerObject.class, playerObjectImplementation);

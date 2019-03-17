@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 public class BaseInstanceManager {
 
-    private static final long STATIC_CREATE_TIME = 1482773874000L;
+    private static final long STATIC_CREATE_TIME = 1482773874000L; // This is the exact time the project TimoCloud has come to life at
 
     private LinkedList<BaseServerObject> serverQueue;
     private LinkedList<BaseProxyObject> proxyQueue;
@@ -441,7 +441,6 @@ public class BaseInstanceManager {
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
-            TimoCloudBase.getInstance().severe(e);
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_PROXY_NOT_STARTED).setTarget(proxy.getId()));
         }
     }

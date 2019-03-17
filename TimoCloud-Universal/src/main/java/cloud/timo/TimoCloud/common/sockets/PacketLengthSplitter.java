@@ -18,7 +18,7 @@ public class PacketLengthSplitter extends ByteToMessageDecoder {
                 byteBuf.resetReaderIndex();
                 return;
             }
-            out.add(byteBuf.copy(byteBuf.readerIndex(), length).retain());
+            out.add(byteBuf.copy(byteBuf.readerIndex(), length));
             byteBuf.skipBytes(length);
         }
     }

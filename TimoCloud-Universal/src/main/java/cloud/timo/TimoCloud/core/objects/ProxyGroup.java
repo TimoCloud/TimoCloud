@@ -336,7 +336,7 @@ public class ProxyGroup implements Group {
     }
 
     public Set<String> getHostNames() {
-        return hostNames;
+        return hostNames == null ? Collections.emptySet() : hostNames;
     }
 
     public void setHostNames(Set<String> hostNames) {

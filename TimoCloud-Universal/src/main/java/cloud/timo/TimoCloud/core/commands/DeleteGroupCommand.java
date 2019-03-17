@@ -23,8 +23,7 @@ public class DeleteGroupCommand extends CommandFormatUtil implements CommandHand
                 sender.sendError("The group " + name + " does not exist. Type 'listgroups' for a list of all groups.");
                 return;
             }
-            if (serverGroup != null)
-                TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
+            if (serverGroup != null) TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
             if (proxyGroup != null) TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
 
             sender.sendMessage("Successfully deleted group &e" + name);

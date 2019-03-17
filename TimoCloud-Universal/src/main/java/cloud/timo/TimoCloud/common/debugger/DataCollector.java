@@ -48,7 +48,7 @@ public class DataCollector {
                 } else if (object instanceof Map) {
                     final Map map = (Map) object;
                     data = map.keySet().stream().map(key -> Message.create()
-                            .set("key", key.toString())
+                            .set("key", key == null ? null : key.toString())
                             .setIfCondition("value", collectData(map.get(key), used, newId + "." + key), ! HIDDEN_KEYS.contains(key))
                             .setIfCondition("hidden", true, HIDDEN_KEYS.contains(key))
                     ).collect(Collectors.toList());

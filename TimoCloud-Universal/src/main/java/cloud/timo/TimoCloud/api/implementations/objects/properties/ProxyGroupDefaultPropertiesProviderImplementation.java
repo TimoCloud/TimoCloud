@@ -68,4 +68,8 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
         return ProxyChooseStrategy.BALANCE;
     }
 
+    @Override
+    public Collection<String> getHostNames() {
+        return Collections.emptySet();
+    }
 }

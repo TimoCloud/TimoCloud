@@ -66,7 +66,7 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
 
     private PluginMessage generatePluginMessage(Map data) {
         return new PluginMessage("TIMOCLOUD_API_REQUEST")
-                .setType(getType().name())
+                .set("rtype", getType().name())
                 .set("id", getId())
                 .set("target", getTarget())
                 .set("data", data);
@@ -94,7 +94,7 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
 
     public static APIRequestImplementation fromMap(Map map) {
         APIRequestImplementation request = new APIRequestImplementation(
-                APIRequestType.valueOf((String) map.get("type")),
+                APIRequestType.valueOf((String) map.get("rtype")),
                 (String) map.get("target"),
                 (Map) map.get("data")
         );

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.bukkit.commands;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bukkit.managers.BukkitMessageManager;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,8 +19,12 @@ public class TimoCloudBukkitCommand implements CommandExecutor {
             return false;
         }
         if (args[0].equalsIgnoreCase("setstate")) {
-            TimoCloudAPI.getBukkitAPI().getThisServer().setState(args[1]);
-            BukkitMessageManager.sendMessage(sender, "&aState has successfully been set to &e" + args[1]);
+            TimoCloudAPI.getBukkitAPI().getThisServer().setState(args[1]).onCompletion(() -> {
+                BukkitMessageManager.sendMessage(sender, "&aState has successfully been set to &e" + args[1]);
+            }).onError((error) -> {
+                BukkitMessageManager.sendMessage(sender, "&cError while setting state, see console for details.");
+                TimoCloudLogger.getLogger().severe(error);
+            });
         }
         return false;
     }

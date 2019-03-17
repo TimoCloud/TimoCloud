@@ -39,6 +39,7 @@ public class ProxyGroupProperties {
         this.serverGroups = getDefaultPropertiesProvider().getServerGroups();
         this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
+        this.hostNames = getDefaultPropertiesProvider().getHostNames();
     }
 
     public ProxyGroupProperties(String name) {
@@ -208,6 +209,8 @@ public class ProxyGroupProperties {
         String getBaseIdentifier();
 
         ProxyChooseStrategy getProxyChooseStrategy();
+
+        Collection<String> getHostNames();
 
     }
 }

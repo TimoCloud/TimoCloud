@@ -66,7 +66,7 @@ public class CoreInstanceManager {
      */
     public void loadServerGroups() {
         try {
-            serverGroups.clear();
+            IdentifiableStorage<ServerGroup> serverGroups = new IdentifiableStorage<>();
             JsonArray serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
             for (JsonElement jsonElement : serverGroupsList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -77,6 +77,7 @@ public class CoreInstanceManager {
                 else serverGroup = new ServerGroup(properties);
                 serverGroups.add(serverGroup);
             }
+            this.serverGroups = serverGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server groups: ");
             e.printStackTrace();
@@ -88,7 +89,7 @@ public class CoreInstanceManager {
      */
     public void loadProxyGroups() {
         try {
-            proxyGroups.clear();
+            IdentifiableStorage<ProxyGroup> proxyGroups = new IdentifiableStorage<>();
             JsonArray proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
             for (JsonElement jsonElement : proxyGroupsList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -99,6 +100,7 @@ public class CoreInstanceManager {
                 else proxyGroup = new ProxyGroup(properties);
                 proxyGroups.add(proxyGroup);
             }
+            this.proxyGroups = proxyGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading proxy groups: ");
             e.printStackTrace();
@@ -107,7 +109,7 @@ public class CoreInstanceManager {
 
     public void loadBases() {
         try {
-            bases.clear();
+            IdentifiableStorage<Base> bases = new IdentifiableStorage<>();
             JsonArray baseList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getBasesFile());
             for (JsonElement jsonElement : baseList) {
                 Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
@@ -123,6 +125,7 @@ public class CoreInstanceManager {
                     TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
                 }
             }
+            this.bases = bases;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading bases: ");
             e.printStackTrace();
@@ -267,6 +270,7 @@ public class CoreInstanceManager {
      */
     public void createGroup(ServerGroup group) {
         serverGroups.add(group);
+        saveServerGroups();
         EventTransmitter.sendEvent(new ServerGroupCreatedEventBasicImplementation(group.toGroupObject()));
     }
 
@@ -277,6 +281,7 @@ public class CoreInstanceManager {
      */
     public void createGroup(ProxyGroup group) {
         proxyGroups.add(group);
+        saveProxyGroups();
         EventTransmitter.sendEvent(new ProxyGroupCreatedEventBasicImplementation(group.toGroupObject()));
     }
 
@@ -286,7 +291,7 @@ public class CoreInstanceManager {
      * @param group The server group which shall be deleted
      */
     public void deleteGroup(ServerGroup group) {
-        getServerGroups().remove(group);
+        serverGroups.remove(group);
         group.stopAllServers();
         saveServerGroups();
         EventTransmitter.sendEvent(new ServerGroupDeletedEventBasicImplementation(group.toGroupObject()));
@@ -298,7 +303,7 @@ public class CoreInstanceManager {
      * @param group The proxy group which shall be deleted
      */
     public void deleteGroup(ProxyGroup group) {
-        getProxyGroups().remove(group);
+        proxyGroups.remove(group);
         group.stopAllProxies();
         saveProxyGroups();
         EventTransmitter.sendEvent(new ProxyGroupCreatedEventBasicImplementation(group.toGroupObject()));
@@ -309,7 +314,7 @@ public class CoreInstanceManager {
      *
      * @param group The group of which an instance shall be started
      */
-    public void startInstance(Group group) {
+    private void startInstance(Group group) {
         Base base = getFreeBase(group);
         if (base == null) return;
         startInstance(group, base);
@@ -321,7 +326,7 @@ public class CoreInstanceManager {
      * @param group The group of which an instance shall be started
      * @param base  The base the server/proxy shall be started on
      */
-    public void startInstance(Group group, Base base) {
+    private void startInstance(Group group, Base base) {
         if (group instanceof ServerGroup) {
             startServer((ServerGroup) group, base);
         } else if (group instanceof ProxyGroup) {
@@ -336,7 +341,7 @@ public class CoreInstanceManager {
      * @param base  The base an the server shall be started on
      * @return The started server
      */
-    public Server startServer(ServerGroup group, Base base) {
+    private Server startServer(ServerGroup group, Base base) {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
         String id = name + "_" + token;
@@ -399,7 +404,7 @@ public class CoreInstanceManager {
      * @param base  The base an the proxy shall be started on
      * @return The started proxy
      */
-    public Proxy startProxy(ProxyGroup group, Base base) {
+    private Proxy startProxy(ProxyGroup group, Base base) {
         String name = getNotExistingName(group);
         String token = UUID.randomUUID().toString();
         String id = name + "_" + token;

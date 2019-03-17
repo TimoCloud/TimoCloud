@@ -81,7 +81,6 @@ public class APIRequestManager implements MessageListener {
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
-                            TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
                             break;
                         }
                         case G_CREATE_PROXY_GROUP: {
@@ -146,7 +145,6 @@ public class APIRequestManager implements MessageListener {
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
-                            TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                             break;
                         }
                     }

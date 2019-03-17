@@ -2,21 +2,20 @@ package cloud.timo.TimoCloud.core.commands;
 
 import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
+import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
+import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.commands.utils.CommandFormatUtil;
 import cloud.timo.TimoCloud.core.objects.Group;
 import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class CreateGroupCommandHandler extends CommandFormatUtil implements CommandHandler {
 
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
-        if (args.length < 5) {
-            notEnoughArgs(sender, "addgroup <groupType (String)> <groupName (String)> <onlineAmount (int)> <ram (int)> <static (boolean)> <base (String), only needed if static=true>");
+        if (args.length < 4) {
+            notEnoughArgs(sender, "addgroup <groupType (String)> <groupName (String)> <onlineAmount (int), only needed for server groups> <ram (int)> <static (boolean)> <base (String), only needed if static=true>");
             return;
         }
         String type = args[0];
@@ -27,17 +26,16 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
         }
         Group group;
         if (type.equalsIgnoreCase("server")) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("name", name);
+            ServerGroupProperties properties = new ServerGroupProperties(name);
             int onlineAmount = Integer.parseInt(args[2]);
-            properties.put("online-amount", onlineAmount);
-            properties.put("ram", Integer.parseInt(args[3]));
+            properties.setOnlineAmount(onlineAmount);
+            properties.setRam(Integer.parseInt(args[3]));
             boolean isStatic = Boolean.parseBoolean(args[4]);
-            properties.put("static", isStatic);
-            if (isStatic && args.length > 5) properties.put("base", args[5]);
+            properties.setStatic(isStatic);
+            if (isStatic && args.length > 5) properties.setBaseIdentifier(args[5]);
 
-            if (isStatic && !properties.containsKey("base")) {
-                sender.sendError("If you create a static group, you have to specify a base!");
+            if (isStatic && properties.getBaseIdentifier() == null) {
+                sender.sendError("When creating a static group, you have to specify a base!");
                 return;
             }
 
@@ -48,24 +46,21 @@ public class CreateGroupCommandHandler extends CommandFormatUtil implements Comm
 
             ServerGroup serverGroup = new ServerGroup(properties);
             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
-            TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
             group = serverGroup;
         } else if (type.equalsIgnoreCase("proxy")) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put("name", name);
-            properties.put("ram", Integer.parseInt(args[2]));
+            ProxyGroupProperties properties = new ProxyGroupProperties(name);
+            properties.setRam(Integer.parseInt(args[2]));
             boolean isStatic = Boolean.parseBoolean(args[3]);
-            properties.put("static", isStatic);
-            if (isStatic && args.length > 4) properties.put("base", args[4]);
+            properties.setStatic(isStatic);
+            if (isStatic) properties.setBaseIdentifier(args[4]);
 
-            if (isStatic && !properties.containsKey("base")) {
-                sender.sendError("If you create a static group, you have to specify a base!");
+            if (isStatic && properties.getBaseIdentifier() == null) {
+                sender.sendError("When creating a static group, you have to specify a base!");
                 return;
             }
 
             ProxyGroup proxyGroup = new ProxyGroup(properties);
             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
-            TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
             group = proxyGroup;
         } else {
             sender.sendError("Unknown group type: '" + type + "'");
