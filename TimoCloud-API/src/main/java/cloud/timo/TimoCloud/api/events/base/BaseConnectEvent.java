@@ -7,4 +7,8 @@ public interface BaseConnectEvent extends Event {
 
     BaseObject getBase();
 
+    Boolean getOldValue();
+
+    Boolean getNewValue();
+
 }

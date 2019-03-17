@@ -5,21 +5,14 @@ import cloud.timo.TimoCloud.api.objects.BaseObject;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class BaseConnectEventBasicImplementation implements BaseConnectEvent {
+public class BaseConnectEventBasicImplementation extends BasePropertyChangeEvent<Boolean>  implements BaseConnectEvent {
 
-    private BaseObject baseObject;
-
-    public BaseConnectEventBasicImplementation(BaseObject instance) {
-        this.baseObject = instance;
-    }
-
-    @Override
-    public BaseObject getBase() {
-        return baseObject;
+    public BaseConnectEventBasicImplementation(BaseObject instance, Boolean oldValue, Boolean newValue) {
+        super(instance, oldValue, newValue);
     }
 
     @Override
     public EventType getType() {
-        return EventType.B_CONNECT;
+        return EventType.B_CPU_LOAD_CHANGE;
     }
 }

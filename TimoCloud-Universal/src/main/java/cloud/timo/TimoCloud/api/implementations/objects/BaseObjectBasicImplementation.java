@@ -22,6 +22,7 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     private InetAddress ipAddress;
     private Double cpuLoad;
     private int availableRam;
+    private int maxCpuLoad;
     private int maxRam;
     private boolean connected;
     private boolean ready;
@@ -81,6 +82,11 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     public void setAvailableRam(int availableRam) {
         this.availableRam = availableRam;
     }
+
+    public void setMaxCpuLoad(int maxCpuLoad){
+        this.maxCpuLoad = maxCpuLoad;
+    }
+
 
     @Override
     public int getMaxRam() {
