@@ -26,6 +26,11 @@ public interface BaseObject extends IdentifiableObject {
     Double getCpuLoad();
 
     /**
+     * If the current CPU load is higher than the max CPU load, no instances will be started by this base
+     */
+    Double getMaxCpuLoad();
+
+    /**
      * @return The amount of usable RAM in megabytes
      */
     int getAvailableRam();

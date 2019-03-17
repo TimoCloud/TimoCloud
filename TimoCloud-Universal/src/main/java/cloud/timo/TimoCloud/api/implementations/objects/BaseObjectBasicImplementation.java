@@ -21,6 +21,7 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     private String name;
     private InetAddress ipAddress;
     private Double cpuLoad;
+    private Double maxCpuLoad;
     private int availableRam;
     private int maxRam;
     private boolean connected;
@@ -28,11 +29,12 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     private Set<ServerObjectLink> servers;
     private Set<ProxyObjectLink> proxies;
 
-    public BaseObjectBasicImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Set<ServerObjectLink> servers, Set<ProxyObjectLink> proxies) {
+    public BaseObjectBasicImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, Double maxCpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Set<ServerObjectLink> servers, Set<ProxyObjectLink> proxies) {
         this.id = id;
         this.name = name;
         this.ipAddress = ipAddress;
         this.cpuLoad = cpuLoad;
+        this.maxCpuLoad = maxCpuLoad;
         this.availableRam = availableRam;
         this.maxRam = maxRam;
         this.connected = connected;
@@ -74,6 +76,16 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     }
 
     @Override
+    public Double getMaxCpuLoad() {
+        return maxCpuLoad;
+    }
+
+    public void setMaxCpuLoad(Double maxCpuLoad){
+        this.maxCpuLoad = maxCpuLoad;
+    }
+
+
+    @Override
     public int getAvailableRam() {
         return availableRam;
     }
@@ -81,6 +93,8 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
     public void setAvailableRam(int availableRam) {
         this.availableRam = availableRam;
     }
+
+
 
     @Override
     public int getMaxRam() {

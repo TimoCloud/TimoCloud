@@ -322,6 +322,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                 getName(),
                 getPublicAddress(),
                 getCpuLoad(),
+                getMaxCpuLoad(),
                 getAvailableRam(),
                 getMaxRam(),
                 isConnected(),

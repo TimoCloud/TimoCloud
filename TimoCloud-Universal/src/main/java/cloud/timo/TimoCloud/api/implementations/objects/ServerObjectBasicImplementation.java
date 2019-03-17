@@ -214,4 +214,12 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
         }
     }
 
+    public void addPlayer(PlayerObjectLink playerObjectLink) {
+        this.onlinePlayers.add(playerObjectLink);
+    }
+
+    public void removePlayer(PlayerObjectLink playerObjectLink) {
+        this.onlinePlayers.remove(playerObjectLink);
+    }
+
 }

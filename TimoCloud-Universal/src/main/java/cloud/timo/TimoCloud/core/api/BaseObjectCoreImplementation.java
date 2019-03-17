@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class BaseObjectCoreImplementation extends BaseObjectBasicImplementation implements BaseObject  {
 
-    public BaseObjectCoreImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Set<ServerObjectLink> servers, Set<ProxyObjectLink> proxies) {
-        super(id, name, ipAddress, cpuLoad, availableRam, maxRam, connected, ready, servers, proxies);
+    public BaseObjectCoreImplementation(String id, String name, InetAddress ipAddress, Double cpuLoad, Double maxCpuLoad, int availableRam, int maxRam, Boolean connected, Boolean ready, Set<ServerObjectLink> servers, Set<ProxyObjectLink> proxies) {
+        super(id, name, ipAddress, cpuLoad, maxCpuLoad, availableRam, maxRam, connected, ready, servers, proxies);
     }
 }

@@ -7,5 +7,4 @@ public interface BaseDisconnectEvent extends Event {
 
     BaseObject getBase();
 
-
 }

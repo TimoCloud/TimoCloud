@@ -138,6 +138,13 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
                 .submit();
     }
 
+    public void addPlayer(PlayerObjectLink playerObjectLink) {
+        this.onlinePlayers.add(playerObjectLink);
+    }
+
+    public void removePlayer(PlayerObjectLink playerObjectLink) {
+        this.onlinePlayers.remove(playerObjectLink);
+    }
 
     @Override
     public ProxyObjectLink toLink() {
