@@ -40,7 +40,7 @@ public class BungeeStringHandler extends BasicStringHandler {
                 break;
             case EVENT_FIRED:
                 try {
-                    EventType eventType = EnumUtil.valueOf(EventType.class, (String) message.get("eventType"));
+                    EventType eventType = EnumUtil.valueOf(EventType.class, (String) message.get("eT"));
                     ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue((String) data, EventUtil.getClassByEventType(eventType)));
                 } catch (Exception e) {
                     System.err.println("Error while parsing event from json: ");

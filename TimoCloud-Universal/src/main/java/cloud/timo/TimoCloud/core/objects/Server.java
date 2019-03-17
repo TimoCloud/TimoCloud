@@ -320,7 +320,9 @@ public class Server implements Instance, Communicatable {
     public void setMotd(String motd) {
         String oldValue = getMotd();
         this.motd = motd;
-        EventTransmitter.sendEvent(new ServerMotdChangeEventBasicImplementation(toServerObject(), oldValue, motd));
+        if (! motd.equals(oldValue)) {
+            EventTransmitter.sendEvent(new ServerMotdChangeEventBasicImplementation(toServerObject(), oldValue, motd));
+        }
     }
 
     public Set<PlayerObject> getOnlinePlayers() {
@@ -343,7 +345,9 @@ public class Server implements Instance, Communicatable {
     public void setOnlinePlayerCount(int onlinePlayerCount) {
         int oldValue = getOnlinePlayerCount();
         this.onlinePlayerCount = onlinePlayerCount;
-        EventTransmitter.sendEvent(new ServerOnlinePlayerCountChangeEventBasicImplementation(toServerObject(), oldValue, onlinePlayerCount));
+        if (onlinePlayerCount != oldValue) {
+            EventTransmitter.sendEvent(new ServerOnlinePlayerCountChangeEventBasicImplementation(toServerObject(), oldValue, onlinePlayerCount));
+        }
     }
 
     public int getMaxPlayers() {
@@ -353,7 +357,9 @@ public class Server implements Instance, Communicatable {
     public void setMaxPlayers(int maxPlayers) {
         int oldValue = getMaxPlayers();
         this.maxPlayers = maxPlayers;
-        EventTransmitter.sendEvent(new ServerMaxPlayersChangeEventBasicImplementation(toServerObject(), oldValue, maxPlayers));
+        if (maxPlayers != oldValue) {
+            EventTransmitter.sendEvent(new ServerMaxPlayersChangeEventBasicImplementation(toServerObject(), oldValue, maxPlayers));
+        }
     }
 
     public String getMap() {

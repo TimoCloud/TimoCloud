@@ -186,7 +186,7 @@ public class CoreStringHandler extends BasicStringHandler {
                     TimoCloudCore.getInstance().getEventManager().fireEvent(
                             ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue(
                                     (String) data, EventUtil.getClassByEventType(
-                                            EnumUtil.valueOf(EventType.class, (String) message.get("eventType")))));
+                                            EnumUtil.valueOf(EventType.class, (String) message.get("eT")))));
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe("Error while firing event: ");
                     e.printStackTrace();

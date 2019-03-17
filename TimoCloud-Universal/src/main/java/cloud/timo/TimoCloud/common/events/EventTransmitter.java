@@ -15,7 +15,7 @@ public class EventTransmitter {
         try {
             TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                     .setType(MessageType.FIRE_EVENT)
-                    .set("eventType", event.getType().name())
+                    .set("eT", event.getType().name())
                     .setData(getObjectMapper().writeValueAsString(event))
                     .toString());
         } catch (Exception e) {

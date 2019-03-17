@@ -1,11 +1,15 @@
 package cloud.timo.TimoCloud.api.events;
 
 import cloud.timo.TimoCloud.api.objects.IdentifiableObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class PropertyChangeEvent<I extends IdentifiableObject, T> implements Event {
 
+    @JsonProperty("id")
     private String instanceId;
+    @JsonProperty("oV")
     private T oldValue;
+    @JsonProperty("nV")
     private T newValue;
 
     public PropertyChangeEvent() {

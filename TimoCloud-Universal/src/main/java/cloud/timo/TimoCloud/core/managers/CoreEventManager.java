@@ -25,7 +25,7 @@ public class CoreEventManager implements Listener {
     public void fireEvent(Event event) {
         Message message = Message.create()
                 .setType(MessageType.EVENT_FIRED)
-                .set("eventType", event.getType().name())
+                .set("eT", event.getType().name())
                 .setData(eventToJSON(event));
         for (Communicatable communicatable : TimoCloudCore.getInstance().getInstanceManager().getAllCommunicatableInstances()) {
             if (communicatable instanceof Base) continue; // Bases do not support events
