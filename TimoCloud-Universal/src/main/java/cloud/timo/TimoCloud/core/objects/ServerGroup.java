@@ -226,6 +226,7 @@ public class ServerGroup implements Group {
                 getRam(),
                 isStatic(),
                 getBase() == null ? null : getBase().toLink(),
+                getPriority(),
                 getSortOutStates()
         );
     }
