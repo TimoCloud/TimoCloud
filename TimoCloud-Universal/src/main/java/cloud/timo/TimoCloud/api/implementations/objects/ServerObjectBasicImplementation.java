@@ -222,4 +222,52 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
         this.onlinePlayers.remove(playerObjectLink);
     }
 
+    public void setNameInternally(String name){
+        this.name = name;
+    }
+
+    public void setIdInternally(String id){
+        this.id = id;
+    }
+
+    public void setServerGroupObjectLink(ServerGroupObjectLink serverGroupObjectLink){
+        this.group = serverGroupObjectLink;
+    }
+
+    public void setStateInternally(String state){
+        this.state = state;
+    }
+
+    public void setExtraInternally(String extra){
+        this.extra = extra;
+    }
+
+    public void setMapInternally(String map){
+        this.map = map;
+    }
+
+    public void setMotdInternally(String motd){
+        this.motd = motd;
+    }
+
+    public void setOnlinePlayerCountInternally(int i){
+        this.onlinePlayerCount = i;
+    }
+
+    public void setMaxPlayerCountInternally(int i){
+        this.maxPlayerCount = i;
+    }
+
+    public void setBaseObjectLinkInternally(BaseObjectLink base){
+        this.base = base;
+    }
+
+    public void setSocketAddressInternally(InetSocketAddress inetSocketAddress){
+        this.socketAddress = inetSocketAddress;
+    }
+
+    public void setMessageClientAddressInternally(MessageClientAddress messageClientAddress){
+        this.messageClientAddress = messageClientAddress;
+    }
+
 }

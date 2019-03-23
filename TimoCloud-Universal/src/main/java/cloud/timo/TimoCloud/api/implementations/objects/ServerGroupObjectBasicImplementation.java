@@ -130,5 +130,32 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
         return new ServerGroupObjectLink(this);
     }
 
+    public void setIdInternally(String id) {
+        this.id = id;
+    }
+
+    public void setNameInternally(String name) {
+        this.name = name;
+    }
+
+    public void setStartupAmountInternally(int i) {
+        this.startupAmount = i;
+    }
+
+    public void  setMaxAmoutInternally(int i) {
+        this.maxAmount = i;
+    }
+
+    public void setRamInternally(int i) {
+        this.ram = i;
+    }
+
+    public void setStaticInternally(boolean b) {
+        this.isStatic = b;
+    }
+
+    public void setBaseInternally(BaseObjectLink base) {
+        this.base = base;
+    }
 
 }

@@ -209,4 +209,60 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
         return new ProxyGroupObjectLink(this);
     }
 
+    public void setIdInternally(String id) {
+        this.id = id;
+    }
+
+    public void setNameInternally(String name) {
+        this.name = name;
+    }
+
+    public void setOnlinePlayerCountInternally(int i) {
+        this.onlinePlayerCount = i;
+    }
+
+    public void setMaxPlayerCountInternally(int i) {
+        this.maxPlayerCount = i;
+    }
+
+    public void setMaxPlayerCountPerProxyInternally(int i) {
+        this.maxPlayerCountPerProxy = i;
+    }
+
+    public void setKeepFreeSlotsInternally(int i) {
+        this.keepFreeSlots = i;
+    }
+
+    public void setMinAmountInternally(int i) {
+        this.minAmount = i;
+    }
+
+    public void setMaxAmoutInternally(int i) {
+        this.maxAmount = i;
+    }
+
+    public void setRamInternally(int i) {
+        this.ram = i;
+    }
+
+    public void setMotdInternally(String motd) {
+        this.motd = motd;
+    }
+
+    public void setStaticInternally(boolean b) {
+        this.isStatic = b;
+    }
+
+    public void setPriorityInternally(int i) {
+        this.priority = i;
+    }
+
+    public void setBaseInternally(BaseObject base) {
+        this.base = new BaseObjectLink(base);
+    }
+
+    public void setProxyChooseStrategyInternally(ProxyChooseStrategy proxyChooseStrategyInternally) {
+        this.proxyChooseStrategy = proxyChooseStrategyInternally;
+    }
+
 }
