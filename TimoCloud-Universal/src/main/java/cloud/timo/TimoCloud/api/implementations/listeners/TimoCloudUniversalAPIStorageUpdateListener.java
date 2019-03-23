@@ -8,15 +8,12 @@ import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerConnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEvent;
-import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
 import cloud.timo.TimoCloud.api.events.proxyGroup.*;
 import cloud.timo.TimoCloud.api.events.server.*;
 import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.core.objects.Cord;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -90,12 +87,12 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     //Cord Events
     @EventHandler
     public void onCordDisconnectEvent(CordDisconnectEvent event){
-        ((CordObjectBasicImplementation) event.getCord()).getIpAddress();
+        api.getCordStorage().remove(event.getCord());
     }
 
     @EventHandler
     public void onCordConnectEvent(CordConnectEvent event){
-        ((CordObjectBasicImplementation) event.getCord()).getIpAddress();
+        api.getCordStorage().add(event.getCord());
     }
 
     //Player Events
@@ -240,12 +237,12 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     @EventHandler
     public void onServerGroupOnlineAmountChangeEvent(ServerGroupOnlineAmountChangeEvent event){
-        //((ServerGroupObjectBasicImplementation) event.getServerGroup()).setOnlineAmountInternally(event.getNewValue());
+        ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setOnlineAmountInternally(event.getNewValue());
     }
 
     @EventHandler
     public void onServerGroupPriorityChangeEvent(ServerGroupPriorityChangeEvent event){
-        //((ServerGroupObjectBasicImplementation) event.getServerGroup()).setPriorityInternally(event.getNewValue());
+        ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setPriorityInternally(event.getNewValue());
     }
 
     @EventHandler

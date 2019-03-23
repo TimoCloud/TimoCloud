@@ -15,6 +15,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
@@ -30,12 +31,20 @@ import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 @NoArgsConstructor
 public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObject<ProxyObject>, Comparable {
 
+    // Assign short json property names so that the JSON object is smaller
+    @JsonProperty("n")
     private String name;
+    @JsonProperty("i")
     private String id;
+    @JsonProperty("g")
     private ProxyGroupObjectLink group;
+    @JsonProperty("op")
     private Set<PlayerObjectLink> onlinePlayers;
+    @JsonProperty("opc")
     private int onlinePlayerCount;
+    @JsonProperty("b")
     private BaseObjectLink base;
+    @JsonProperty("a")
     private InetSocketAddress inetSocketAddress;
     private MessageClientAddress messageClientAddress;
 

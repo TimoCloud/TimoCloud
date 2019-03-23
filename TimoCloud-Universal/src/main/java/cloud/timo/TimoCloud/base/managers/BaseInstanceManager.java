@@ -14,6 +14,7 @@ import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailer;
+import cloud.timo.TimoCloud.cord.utils.MathUtil;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -57,6 +58,7 @@ public class BaseInstanceManager {
 
     public void updateResources() {
         double cpu = TimoCloudBase.getInstance().getResourceManager().getCpuUsage();
+        cpu = MathUtil.round(cpu, 2); // Do not send all decimal places
         boolean ready = serverQueue.isEmpty() && proxyQueue.isEmpty() && !startingServer && !startingProxy;
         long freeRam = TimoCloudBase.getInstance().getResourceManager().getFreeMemory();
         TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(

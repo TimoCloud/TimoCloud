@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.internal.links.*;
 import cloud.timo.TimoCloud.api.objects.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
@@ -16,22 +17,40 @@ import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 @NoArgsConstructor
 public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, LinkableObject<ProxyGroupObject> {
 
+    // Assign short json property names so that the JSON object is smaller
+    @JsonProperty("i")
     private String id;
+    @JsonProperty("n")
     private String name;
+    @JsonProperty("ps")
     private Collection<ProxyObjectLink> proxies;
+    @JsonProperty("opc")
     private int onlinePlayerCount;
+    @JsonProperty("mpc")
     private int maxPlayerCount;
+    @JsonProperty("mpcp")
     private int maxPlayerCountPerProxy;
+    @JsonProperty("kf")
     private int keepFreeSlots;
+    @JsonProperty("mia")
     private int minAmount;
+    @JsonProperty("maa")
     private int maxAmount;
+    @JsonProperty("r")
     private int ram;
+    @JsonProperty("mo")
     private String motd;
+    @JsonProperty("s")
     private boolean isStatic;
+    @JsonProperty("pr")
     private int priority;
+    @JsonProperty("sg")
     private Collection<ServerGroupObjectLink> serverGroups;
+    @JsonProperty("b")
     private BaseObjectLink base;
+    @JsonProperty("pcs")
     private ProxyChooseStrategy proxyChooseStrategy;
+    @JsonProperty("hn")
     private Collection<String> hostNames;
 
     public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames) {

@@ -112,7 +112,7 @@ public interface ProxyGroupObject extends IdentifiableObject {
     APIRequestFuture<Void> setStatic(boolean value);
 
     /**
-     * @return The group's priority. Groups with higher priorities will be started sooner than groups with lower priorities.
+     * @return The group's priority. Groups with higher priorities will be started before groups with lower priorities.
      */
     int getPriority();
 

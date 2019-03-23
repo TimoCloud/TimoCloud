@@ -12,6 +12,8 @@ public class Message extends LinkedHashMap<String, Object> {
     private static final String TARGET_KEY = "@";
     private static final String DATA_KEY = "d";
 
+    private static final GsonBuilder GSON_BUILDER = new GsonBuilder();
+
     private Message() {
     }
 
@@ -84,13 +86,13 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public JsonObject toJsonObject() {
-        return new GsonBuilder()
+        return GSON_BUILDER
                 .create()
                 .toJsonTree(this).getAsJsonObject();
     }
 
     public String toJson() {
-        return new GsonBuilder()
+        return GSON_BUILDER
                 .create()
                 .toJson(this);
     }

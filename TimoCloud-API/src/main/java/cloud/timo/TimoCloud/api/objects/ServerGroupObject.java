@@ -63,6 +63,17 @@ public interface ServerGroupObject extends IdentifiableObject {
     APIRequestFuture<Void> setStatic(boolean value);
 
     /**
+     * @return The group's priority. Groups with higher priorities will be started before groups with lower priorities.
+     */
+    int getPriority();
+
+    /**
+     * Changes the group's priority
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture<Void> setPriority(int value);
+
+    /**
      * If a base is assigned to the group, this will return its name. If the dynamic automatic-base-selection system is used, this will return null.
      * @return A String if the base has been set statically, else null
      */

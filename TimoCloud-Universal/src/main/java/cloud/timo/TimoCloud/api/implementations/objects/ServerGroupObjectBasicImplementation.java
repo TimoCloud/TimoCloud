@@ -9,6 +9,7 @@ import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
@@ -20,24 +21,36 @@ import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 @NoArgsConstructor
 public class ServerGroupObjectBasicImplementation implements ServerGroupObject, LinkableObject<ServerGroupObject> {
 
+    // Assign short json property names so that the JSON object is smaller
+    @JsonProperty("i")
     private String id;
+    @JsonProperty("n")
     private String name;
-    private int startupAmount;
+    @JsonProperty("oa")
+    private int onlineAmount;
+    @JsonProperty("ma")
     private int maxAmount;
+    @JsonProperty("r")
     private int ram;
+    @JsonProperty("s")
     private boolean isStatic;
+    @JsonProperty("p")
+    private int priority;
+    @JsonProperty("b")
     private BaseObjectLink base;
+    @JsonProperty("so")
     private Set<String> sortOutStates;
+    @JsonProperty("se")
     private Set<ServerObjectLink> servers;
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int startupAmount, int maxAmount, int ram, boolean isStatic, BaseObjectLink base, Set<String> sortOutStates) {
+    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, BaseObjectLink base, Set<String> sortOutStates) {
         this.id = id;
         this.name = name;
         this.servers = servers;
-        this.startupAmount = startupAmount;
+        this.onlineAmount = onlineAmount;
         this.maxAmount = maxAmount;
         this.ram = ram;
         this.isStatic = isStatic;
@@ -62,7 +75,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     @Override
     public int getOnlineAmount() {
-        return startupAmount;
+        return onlineAmount;
     }
 
     @Override
@@ -101,6 +114,16 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     }
 
     @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public APIRequestFuture<Void> setPriority(int value) {
+        return new APIRequestImplementation<Void>(SG_SET_PRIORITY, getId(), value).submit();
+    }
+
+    @Override
     public BaseObject getBase() {
         return base.resolve();
     }
@@ -130,19 +153,15 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
         return new ServerGroupObjectLink(this);
     }
 
-    public void setIdInternally(String id) {
-        this.id = id;
-    }
-
     public void setNameInternally(String name) {
         this.name = name;
     }
 
-    public void setStartupAmountInternally(int i) {
-        this.startupAmount = i;
+    public void setOnlineAmountInternally(int i) {
+        this.onlineAmount = i;
     }
 
-    public void  setMaxAmoutInternally(int i) {
+    public void setMaxAmoutInternally(int i) {
         this.maxAmount = i;
     }
 
@@ -152,6 +171,10 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     public void setStaticInternally(boolean b) {
         this.isStatic = b;
+    }
+
+    public void setPriorityInternally(int value) {
+        this.priority = value;
     }
 
     public void setBaseInternally(BaseObjectLink base) {

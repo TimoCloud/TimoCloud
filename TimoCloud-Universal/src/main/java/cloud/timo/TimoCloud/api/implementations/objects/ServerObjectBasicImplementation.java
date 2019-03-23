@@ -15,6 +15,7 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
@@ -30,17 +31,30 @@ import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 @NoArgsConstructor
 public class ServerObjectBasicImplementation implements ServerObject, LinkableObject<ServerObject>, Comparable {
 
+    // Assign short json property names so that the JSON object is smaller
+    @JsonProperty("n")
     private String name;
+    @JsonProperty("i")
     private String id;
+    @JsonProperty("g")
     private ServerGroupObjectLink group;
+    @JsonProperty("s")
     protected String state;
+    @JsonProperty("e")
     protected String extra;
+    @JsonProperty("m")
     private String map;
+    @JsonProperty("mo")
     private String motd;
+    @JsonProperty("op")
     private Collection<PlayerObjectLink> onlinePlayers;
+    @JsonProperty("opc")
     private int onlinePlayerCount;
+    @JsonProperty("mpc")
     private int maxPlayerCount;
+    @JsonProperty("b")
     private BaseObjectLink base;
+    @JsonProperty("a")
     private InetSocketAddress socketAddress;
     private MessageClientAddress messageClientAddress;
 
