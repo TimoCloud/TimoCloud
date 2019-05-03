@@ -113,9 +113,20 @@ public class PluginManager {
         order.add(plugin);
     }
 
+    private static JarEntry searchForTimoCloudYml(JarFile jarFile) {
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            File file = new File(entry.getName());
+
+            if (file.getName().equals("timocloud.yml")) return entry;
+        }
+        return null;
+    }
+
     public TimoCloudPluginDescription loadPlugin(File file) throws IOException, PluginLoadException {
         JarFile jar = new JarFile(file);
-        JarEntry entry = jar.getJarEntry("timocloud.yml");
+        JarEntry entry = searchForTimoCloudYml(jar);
         if (entry == null) {
             throw new PluginLoadException("Jar does not contain timocloud.yml");
         }

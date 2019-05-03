@@ -5,7 +5,7 @@ import java.net.URLClassLoader;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-public class PluginClassLoader extends URLClassLoader  {
+public class PluginClassLoader extends URLClassLoader {
 
     private static final Set<PluginClassLoader> allLoaders = new CopyOnWriteArraySet<>();
 
@@ -26,14 +26,14 @@ public class PluginClassLoader extends URLClassLoader  {
     private Class<?> loadClass0(String name, boolean resolve, boolean checkOther) throws ClassNotFoundException {
         try {
             return super.loadClass(name, resolve);
-        } catch (ClassNotFoundException ex) {}
+        } catch (ClassNotFoundException ex) {
+        }
         if (checkOther) {
             for (PluginClassLoader loader : allLoaders) {
-                if (loader != this) {
-                    try {
-                        return loader.loadClass0(name, resolve, false);
-                    } catch (ClassNotFoundException ex) {}
-                }
+                if (loader == this) continue;
+                try {
+                    return loader.loadClass0(name, resolve, false);
+                } catch (ClassNotFoundException ex) {}
             }
         }
         throw new ClassNotFoundException(name);

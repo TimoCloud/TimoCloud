@@ -24,11 +24,11 @@ public class StateByEventManager {
     }
 
     public void onPlayerJoin() {
-        setStateByPlayerCount();
+        TimoCloudBukkit.getInstance().getServer().getScheduler().runTask(TimoCloudBukkit.getInstance(), this::setStateByPlayerCount);
     }
 
     public void onPlayerQuit() {
-        setStateByPlayerCount();
+        TimoCloudBukkit.getInstance().getServer().getScheduler().runTask(TimoCloudBukkit.getInstance(), this::setStateByPlayerCount);
     }
 
     public void setStateByPlayerCount() {
