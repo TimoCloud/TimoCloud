@@ -109,8 +109,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         }
     }
 
-    private void registerAtBungeeCord() {
+    /**
+     * Called when the server is fully ready
+     */
+    private void registerAtCore() {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_REGISTER).setTarget(getServerId()));
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MAP).setData(getMapName()));
     }
 
     public void onSocketConnect(Channel channel) {
@@ -146,7 +150,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 getSocketMessageManager().sendMessage(Message.create()
                         .setType(MessageType.SERVER_LOG_ENTRY)
                         .setData(logEntry)));
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MAP).setData(getMapName()));
         requestApiData();
         doEverySecond();
     }
@@ -250,7 +253,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtBungeeCord, 0L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::doEverySecond, 20L, 20L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             getSignManager().updateSigns();
