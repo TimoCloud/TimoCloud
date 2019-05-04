@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.api.implementations.listeners;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.base.*;
@@ -13,7 +14,12 @@ import cloud.timo.TimoCloud.api.events.server.*;
 import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
+import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
+
+import java.util.function.Consumer;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -184,6 +190,18 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     }
 
     //Server Events
+    @EventHandler
+    public void onServerRegisterEvent(ServerRegisterEvent event){
+        System.out.println(event.getServer().getId());
+        api.getServerStorage().update(event.getServer());
+    }
+
+    @EventHandler
+    public void onServerUnregisterEvent(ServerUnregisterEvent event){
+        System.out.println(event.getServer().getId());
+        api.getServerStorage().remove(event.getServer());
+    }
+
     @EventHandler
     public void onServerExtraChangeEvent(ServerExtraChangeEvent event){
         ((ServerObjectBasicImplementation) event.getServer()).setExtraInternally(event.getNewValue());
