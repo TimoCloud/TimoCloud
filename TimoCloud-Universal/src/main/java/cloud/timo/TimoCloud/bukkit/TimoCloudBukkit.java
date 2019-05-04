@@ -307,8 +307,9 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     public void sendPlayers() {
-        TimoCloudBukkit.getInstance().getServer().getScheduler().runTask(TimoCloudBukkit.getInstance(), () -> {
+        TimoCloudBukkit.getInstance().getServer().getScheduler().callSyncMethod(TimoCloudBukkit.getInstance(), () -> {
             getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
+            return null;
         });
     }
 
