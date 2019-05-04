@@ -45,6 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
@@ -254,7 +255,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void registerTasks() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::doEverySecond, 20L, 20L);
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
             getSignManager().updateSigns();
         }, 5L, 1L);
@@ -306,11 +307,11 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         }
     }
 
+    /**
+     * Must be called asynchronously
+     */
     public void sendPlayers() {
-        TimoCloudBukkit.getInstance().getServer().getScheduler().callSyncMethod(TimoCloudBukkit.getInstance(), () -> {
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
-            return null;
-        });
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
     }
 
     public static TimoCloudBukkit getInstance() {

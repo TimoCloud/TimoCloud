@@ -10,9 +10,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class PlayerQuit implements Listener {
     @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        event.getPlayer().kickPlayer("");
+        TimoCloudBukkit.getInstance().getServer().getScheduler().runTaskAsynchronously(TimoCloudBukkit.getInstance(), () -> TimoCloudBukkit.getInstance().sendPlayers());
         Bukkit.getScheduler().scheduleSyncDelayedTask(TimoCloudBukkit.getInstance(), () -> {
-            TimoCloudBukkit.getInstance().sendPlayers();
             TimoCloudBukkit.getInstance().getStateByEventManager().onPlayerQuit();
         }, 1L);
     }
