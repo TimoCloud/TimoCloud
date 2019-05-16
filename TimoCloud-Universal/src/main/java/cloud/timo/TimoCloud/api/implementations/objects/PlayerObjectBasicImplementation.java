@@ -54,7 +54,11 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     }
 
     public ServerObject getServer() {
-        return server.resolve();
+        try {
+            return server.resolve();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void setServer(ServerObject server) {

@@ -42,7 +42,6 @@ public class EventUtil {
                 PlayerConnectEventBasicImplementation.class,
                 PlayerDisconnectEventBasicImplementation.class,
                 PlayerServerChangeEventBasicImplementation.class,
-                PlayerServerChangeEventBasicImplementation.class,
 
                 ProxyRegisterEventBasicImplementation.class,
                 ProxyUnregisterEventBasicImplementation.class,

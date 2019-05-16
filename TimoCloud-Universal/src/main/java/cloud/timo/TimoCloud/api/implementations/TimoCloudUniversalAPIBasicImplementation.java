@@ -55,7 +55,6 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         this.cordObjectImplementation = cordObjectImplementation;
 
         this.objectMapper = prepareObjectMapper();
-        TimoCloudAPI.getEventAPI().registerListener(new TimoCloudUniversalAPIStorageUpdateListener(this));
     }
 
     private ObjectMapper prepareObjectMapper() {
@@ -107,6 +106,9 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
                     .forEach(cord -> this.cords.add((CordObject) cord));
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (! this.gotAnyData) {
+            TimoCloudAPI.getEventAPI().registerListener(new TimoCloudUniversalAPIStorageUpdateListener(this));
         }
         this.gotAnyData = true;
     }

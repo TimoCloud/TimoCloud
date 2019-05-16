@@ -106,7 +106,8 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     @EventHandler
     public void onPlayerDisconnectEvent(PlayerDisconnectEvent event) {
         api.getPlayerStorage().remove(event.getPlayer());
-        ((ServerObjectBasicImplementation) event.getPlayer().getServer()).removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
+        ServerObjectBasicImplementation server = ((ServerObjectBasicImplementation) event.getPlayer().getServer());
+        if (server != null) server.removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
         ((ProxyObjectBasicImplementation) event.getPlayer().getProxy()).removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
     }
 
