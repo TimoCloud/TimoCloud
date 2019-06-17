@@ -38,6 +38,7 @@ import io.netty.util.CharsetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -157,8 +158,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     public void stop() {
         Bukkit.getScheduler().runTask(this, () -> {
-            Bukkit.shutdown();
-            //System.exit(0);
+            Bukkit.getServer().shutdown();
         });
     }
 
@@ -256,14 +256,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private void registerTasks() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
         Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            getSignManager().updateSigns();
-        }, 5L, 1L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
     private void sendEverything() {
         sendMotds();
-        sendPlayers();
+        TimoCloudBukkit.getInstance().getServer().getScheduler().runTaskAsynchronously(TimoCloudBukkit.getInstance(), () -> TimoCloudBukkit.getInstance().sendPlayers());
     }
 
     private void requestApiData() {

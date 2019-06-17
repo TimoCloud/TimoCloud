@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.api.implementations.listeners;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.base.*;
@@ -9,17 +8,14 @@ import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerConnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
 import cloud.timo.TimoCloud.api.events.proxyGroup.*;
 import cloud.timo.TimoCloud.api.events.server.*;
 import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
-import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
-
-import java.util.function.Consumer;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -119,12 +115,28 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     @EventHandler
     public void onPlayerServerChangeEvent(PlayerServerChangeEvent event) {
+        System.out.println("PLAYERSERVERCHANGEEVENT:");
+        System.out.println(event.getServerTo().getName());
+        System.out.println(event.getServerFrom().getName());
+        System.out.println("PLAYERSERVERCHANGEEVENT END");
+        api.getPlayerStorage().update(event.getPlayer());
         ((PlayerObjectBasicImplementation) event.getPlayer()).setServer(event.getServerTo());
         ((ServerObjectBasicImplementation) event.getServerFrom()).removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
         ((ServerObjectBasicImplementation) event.getServerTo()).addPlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
+
     }
 
     //ProxyGroup Events
+    @EventHandler
+    public void onProxyRegisterEvent(ProxyRegisterEvent event){
+        api.getProxyStorage().add(event.getProxy());
+    }
+
+    @EventHandler
+    public void onProxyUnregisterEvent(ProxyUnregisterEvent event){
+        api.getProxyStorage().remove(event.getProxy());
+    }
+
     @EventHandler
     public void onProxyGroupCreatedEvent(ProxyGroupCreatedEvent event) {
         api.getProxyGroupStorage().add(event.getProxyGroup());
@@ -193,13 +205,11 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     //Server Events
     @EventHandler
     public void onServerRegisterEvent(ServerRegisterEvent event){
-        System.out.println(event.getServer().getId());
-        api.getServerStorage().update(event.getServer());
+        api.getServerStorage().add(event.getServer());
     }
 
     @EventHandler
     public void onServerUnregisterEvent(ServerUnregisterEvent event){
-        System.out.println(event.getServer().getId());
         api.getServerStorage().remove(event.getServer());
     }
 

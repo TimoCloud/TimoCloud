@@ -1,10 +1,9 @@
 package cloud.timo.TimoCloud.api.events.proxy;
 
-import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 
-public class ProxyUnregisterEventBasicImplementation implements Event {
+public class ProxyUnregisterEventBasicImplementation implements ProxyUnregisterEvent {
 
     private ProxyObject proxy;
 

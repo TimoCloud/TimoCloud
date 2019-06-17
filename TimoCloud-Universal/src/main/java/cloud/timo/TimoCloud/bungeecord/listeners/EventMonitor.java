@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.player.PlayerConnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEventBasicImplementation;
@@ -45,16 +46,17 @@ public class EventMonitor implements Listener {
             EventTransmitter.sendEvent(new PlayerServerChangeEventBasicImplementation(
                     playerObject,
                     previousServer.get(playerObject.getUuid()),
-                    event.getPlayer().getServer().getInfo().getName()
-            ));
+                    event.getPlayer().getServer().getInfo().getName()));
         }
+
         previousServer.put(event.getPlayer().getUniqueId(), event.getPlayer().getServer().getInfo().getName());
     }
 
     @EventHandler
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
-        EventTransmitter.sendEvent(new PlayerDisconnectEventBasicImplementation(getPlayer(event.getPlayer())));
+        EventTransmitter.sendEvent(new  PlayerDisconnectEventBasicImplementation(getPlayer(event.getPlayer())));
+
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {
