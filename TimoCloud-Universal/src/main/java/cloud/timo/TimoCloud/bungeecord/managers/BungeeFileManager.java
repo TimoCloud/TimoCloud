@@ -49,7 +49,7 @@ public class BungeeFileManager {
             config = configNew;
 
             //Load messagesFile
-            messagesFile = new File(configsDirectory, "protocol.yml");
+            messagesFile = new File(configsDirectory, "messages.yml");
             if (!messagesFile.exists()) {
                 messagesFile.createNewFile();
             }

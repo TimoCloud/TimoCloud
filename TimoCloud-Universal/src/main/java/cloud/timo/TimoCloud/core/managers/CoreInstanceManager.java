@@ -771,6 +771,7 @@ public class CoreInstanceManager {
      * @return An internal server object
      */
     public Server getServerByServerObject(ServerObject object) {
+        if (object == null) return null;
         return getServerById(object.getId());
     }
 
@@ -781,6 +782,7 @@ public class CoreInstanceManager {
      * @return An internal proxy object
      */
     public Proxy getProxyByProxyObject(ProxyObject object) {
+        if (object == null) return null;
         return getProxyById(object.getId());
     }
 

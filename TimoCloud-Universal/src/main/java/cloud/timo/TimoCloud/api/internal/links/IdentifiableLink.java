@@ -28,9 +28,7 @@ public abstract class IdentifiableLink<T extends IdentifiableObject> implements 
     }
 
     public T resolve() {
-        T target = findTarget();
-        if (target == null) throw new LinkResolveException(this);
-        return target;
+        return findTarget();
     }
 
     /**

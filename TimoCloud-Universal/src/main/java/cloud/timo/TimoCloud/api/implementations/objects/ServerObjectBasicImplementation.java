@@ -284,4 +284,19 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
         this.messageClientAddress = messageClientAddress;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServerObjectBasicImplementation that = (ServerObjectBasicImplementation) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

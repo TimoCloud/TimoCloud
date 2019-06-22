@@ -284,4 +284,28 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
         this.proxyChooseStrategy = proxyChooseStrategyInternally;
     }
 
+    public void addProxyInternally(ProxyObjectLink proxy) {
+        this.proxies.add(proxy);
+    }
+
+    public void removeProxyInternally(ProxyObjectLink proxy) {
+        this.proxies.remove(proxy);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProxyGroupObjectBasicImplementation that = (ProxyGroupObjectBasicImplementation) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
 }

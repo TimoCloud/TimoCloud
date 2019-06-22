@@ -16,6 +16,8 @@ import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -82,18 +84,18 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     }
 
     @EventHandler
-    public void onBaseMaxRamChangeEvent(BaseMaxRamChangeEvent event){
+    public void onBaseMaxRamChangeEvent(BaseMaxRamChangeEvent event) {
         ((BaseObjectBasicImplementation) event.getBase()).setMaxRam(event.getNewValue());
     }
 
     //Cord Events
     @EventHandler
-    public void onCordDisconnectEvent(CordDisconnectEvent event){
+    public void onCordDisconnectEvent(CordDisconnectEvent event) {
         api.getCordStorage().remove(event.getCord());
     }
 
     @EventHandler
-    public void onCordConnectEvent(CordConnectEvent event){
+    public void onCordConnectEvent(CordConnectEvent event) {
         api.getCordStorage().add(event.getCord());
     }
 
@@ -115,10 +117,6 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     @EventHandler
     public void onPlayerServerChangeEvent(PlayerServerChangeEvent event) {
-        System.out.println("PLAYERSERVERCHANGEEVENT:");
-        System.out.println(event.getServerTo().getName());
-        System.out.println(event.getServerFrom().getName());
-        System.out.println("PLAYERSERVERCHANGEEVENT END");
         api.getPlayerStorage().update(event.getPlayer());
         ((PlayerObjectBasicImplementation) event.getPlayer()).setServer(event.getServerTo());
         ((ServerObjectBasicImplementation) event.getServerFrom()).removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
@@ -128,13 +126,17 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     //ProxyGroup Events
     @EventHandler
-    public void onProxyRegisterEvent(ProxyRegisterEvent event){
-        api.getProxyStorage().add(event.getProxy());
+    public void onProxyRegisterEvent(ProxyRegisterEvent event) {
+        ProxyObject proxy = event.getProxy();
+        api.getProxyStorage().add(proxy);
+        ((ProxyGroupObjectBasicImplementation) proxy.getGroup()).addProxyInternally(((ProxyObjectBasicImplementation) proxy).toLink());
     }
 
     @EventHandler
-    public void onProxyUnregisterEvent(ProxyUnregisterEvent event){
-        api.getProxyStorage().remove(event.getProxy());
+    public void onProxyUnregisterEvent(ProxyUnregisterEvent event) {
+        ProxyObject proxy = event.getProxy();
+        api.getProxyStorage().remove(proxy);
+        ((ProxyGroupObjectBasicImplementation) proxy.getGroup()).removeProxyInternally(((ProxyObjectBasicImplementation) proxy).toLink());
     }
 
     @EventHandler
@@ -204,17 +206,21 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     //Server Events
     @EventHandler
-    public void onServerRegisterEvent(ServerRegisterEvent event){
-        api.getServerStorage().add(event.getServer());
+    public void onServerRegisterEvent(ServerRegisterEvent event) {
+        ServerObject server = event.getServer();
+        api.getServerStorage().add(server);
+        ((ServerGroupObjectBasicImplementation) server.getGroup()).addServerInternally(((ServerObjectBasicImplementation) server).toLink());
     }
 
     @EventHandler
-    public void onServerUnregisterEvent(ServerUnregisterEvent event){
-        api.getServerStorage().remove(event.getServer());
+    public void onServerUnregisterEvent(ServerUnregisterEvent event) {
+        ServerObject server = event.getServer();
+        api.getServerStorage().remove(server);
+        ((ServerGroupObjectBasicImplementation) server.getGroup()).removeServerInternally(((ServerObjectBasicImplementation) server).toLink());
     }
 
     @EventHandler
-    public void onServerExtraChangeEvent(ServerExtraChangeEvent event){
+    public void onServerExtraChangeEvent(ServerExtraChangeEvent event) {
         ((ServerObjectBasicImplementation) event.getServer()).setExtraInternally(event.getNewValue());
     }
 
@@ -255,32 +261,32 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     }
 
     @EventHandler
-    public void onServerGroupBaseChangeEvent(ServerGroupBaseChangeEvent event){
+    public void onServerGroupBaseChangeEvent(ServerGroupBaseChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setBaseInternally(new BaseObjectLink(event.getNewValue()));
     }
 
     @EventHandler
-    public void onServerGroupMaxAmountChangeEvent(ServerGroupMaxAmountChangeEvent event){
+    public void onServerGroupMaxAmountChangeEvent(ServerGroupMaxAmountChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setMaxAmoutInternally(event.getNewValue());
     }
 
     @EventHandler
-    public void onServerGroupOnlineAmountChangeEvent(ServerGroupOnlineAmountChangeEvent event){
+    public void onServerGroupOnlineAmountChangeEvent(ServerGroupOnlineAmountChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setOnlineAmountInternally(event.getNewValue());
     }
 
     @EventHandler
-    public void onServerGroupPriorityChangeEvent(ServerGroupPriorityChangeEvent event){
+    public void onServerGroupPriorityChangeEvent(ServerGroupPriorityChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setPriorityInternally(event.getNewValue());
     }
 
     @EventHandler
-    public void onServerGroupRamChangeEvent(ServerGroupRamChangeEvent event){
+    public void onServerGroupRamChangeEvent(ServerGroupRamChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setRamInternally(event.getNewValue());
     }
 
     @EventHandler
-    public void onServerGroupStaticChangeEvent(ServerGroupStaticChangeEvent event){
+    public void onServerGroupStaticChangeEvent(ServerGroupStaticChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setStaticInternally(event.getNewValue());
     }
 

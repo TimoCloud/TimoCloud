@@ -41,6 +41,7 @@ public class IdentifiableObjectStorage<T extends IdentifiableObject> {
     }
 
     public void add(T identifiable) {
+        remove(identifiable);
         byId.put(identifiable.getId(), identifiable);
         byName.putIfAbsent(identifiable.getName().toLowerCase(), new LinkedHashSet<>());
         byName.get(identifiable.getName().toLowerCase()).add(identifiable);
@@ -53,7 +54,7 @@ public class IdentifiableObjectStorage<T extends IdentifiableObject> {
         }
     }
 
-    public void update(T identifiable) { // Called when keys like name or pulic key changed
+    public void update(T identifiable) { // Called when keys like name or public key changed
         remove(identifiable);
         add(identifiable);
     }

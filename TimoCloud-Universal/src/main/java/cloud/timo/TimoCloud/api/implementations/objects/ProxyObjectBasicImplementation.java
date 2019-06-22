@@ -170,4 +170,20 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
             return getName().compareTo(so.getName());
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProxyObjectBasicImplementation that = (ProxyObjectBasicImplementation) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

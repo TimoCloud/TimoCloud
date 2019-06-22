@@ -50,6 +50,7 @@ public class IdentifiableStorage <T extends Identifiable> {
     }
 
     public void add(T identifiable) {
+        remove(identifiable);
         byId.put(identifiable.getId(), identifiable);
         if (identifiable instanceof PublicKeyIdentifiable) byPublicKey.put(((PublicKeyIdentifiable) identifiable).getPublicKey(), identifiable);
         byName.putIfAbsent(identifiable.getName().toLowerCase(), new LinkedHashSet<>());

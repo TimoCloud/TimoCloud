@@ -181,4 +181,28 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
         this.base = base;
     }
 
+    public void addServerInternally(ServerObjectLink server) {
+        this.servers.add(server);
+    }
+
+    public void removeServerInternally(ServerObjectLink server) {
+        this.servers.remove(server);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ServerGroupObjectBasicImplementation that = (ServerGroupObjectBasicImplementation) o;
+
+        return id.equals(that.id);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
 }

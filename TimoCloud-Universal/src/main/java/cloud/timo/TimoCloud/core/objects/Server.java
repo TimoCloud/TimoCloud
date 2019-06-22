@@ -154,8 +154,8 @@ public class Server implements Instance, Communicatable {
     @Override
     public void unregister() {
         if (!isRegistered()) return;
-        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEventBasicImplementation(toServerObject()));
         setState("OFFLINE");
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerUnregisterEventBasicImplementation(toServerObject()));
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.unregisterServer(this);
@@ -299,7 +299,7 @@ public class Server implements Instance, Communicatable {
     public void setState(String state) {
         String oldValue = getState();
         this.state = state;
-        EventTransmitter.sendEvent(new ServerStateChangeEventBasicImplementation(toServerObject(), oldValue, state));
+        if (this.isRegistered()) EventTransmitter.sendEvent(new ServerStateChangeEventBasicImplementation(toServerObject(), oldValue, state));
     }
 
     public String getExtra() {
@@ -309,7 +309,7 @@ public class Server implements Instance, Communicatable {
     public void setExtra(String extra) {
         String oldValue = getExtra();
         this.extra = extra;
-        EventTransmitter.sendEvent(new ServerExtraChangeEventBasicImplementation(toServerObject(), oldValue, extra));
+        if (this.isRegistered()) EventTransmitter.sendEvent(new ServerExtraChangeEventBasicImplementation(toServerObject(), oldValue, extra));
     }
 
     public String getMotd() {
@@ -319,7 +319,7 @@ public class Server implements Instance, Communicatable {
     public void setMotd(String motd) {
         String oldValue = getMotd();
         this.motd = motd;
-        if (! motd.equals(oldValue)) {
+        if (this.isRegistered() && ! motd.equals(oldValue)) {
             EventTransmitter.sendEvent(new ServerMotdChangeEventBasicImplementation(toServerObject(), oldValue, motd));
         }
     }
