@@ -39,7 +39,7 @@ public class CloudFlareManager implements Listener {
     }
 
     public void load() {
-        if (!enabled()) return;
+        if (! enabled()) return;
         deleteExistingRecords();
     }
 
@@ -112,18 +112,18 @@ public class CloudFlareManager implements Listener {
 
     private void deleteExistingRecords() {
         executorService.submit(() -> {
-            for (DnsZone zone : getZones()) {
+            getZones().parallelStream().forEach(zone -> {
                 for (DnsRecord record : getRecords(zone)) {
                     if (record.getName().contains(".base.")) deleteRecord(record);
                 }
-            }
+            });
         });
         executorService.submit(() -> {
-            for (String hostname : getActiveHostnames()) { // Delete SRV records
+            getActiveHostnames().parallelStream().forEach(hostname -> { // Delete SRV records
                 for (DnsRecord record : getMatchingSrvRecords(hostname, "SRV")) {
                     deleteRecord(record);
                 }
-            }
+            });
         });
     }
 

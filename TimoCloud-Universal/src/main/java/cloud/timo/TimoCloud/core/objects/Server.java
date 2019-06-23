@@ -116,8 +116,9 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void onConnect(Channel channel) {
-        this.connected = true;
         setChannel(channel);
+        if (isConnected()) return;
+        this.connected = true;
         TimoCloudCore.getInstance().info("Server " + getName() + " connected.");
     }
 

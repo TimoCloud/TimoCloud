@@ -38,7 +38,6 @@ import io.netty.util.CharsetUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -58,6 +57,8 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private SignManager signManager;
     private StateByEventManager stateByEventManager;
     private String prefix = "[TimoCloud] ";
+    private boolean enabled = false;
+    private boolean disabling = false;
 
     @Override
     public void info(String message) {
@@ -76,29 +77,39 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     @Override
     public void onEnable() {
-        try {
-            info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
-            makeInstances();
+        this.disabling = false;
+        if (this.enabled) {
             registerCommands();
             registerListeners();
             registerTasks();
-            registerChannel();
-            Executors.newSingleThreadExecutor().submit(this::connectToCore);
-            while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
-                try {
-                    Thread.sleep(50); // Wait until we get the API data
-                } catch (Exception e) {
+        } else {
+            try {
+                info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+                makeInstances();
+                registerCommands();
+                registerListeners();
+                registerTasks();
+                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
+                registerChannel();
+                Executors.newSingleThreadExecutor().submit(this::connectToCore);
+                while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
+                    try {
+                        Thread.sleep(50); // Wait until we get the API data
+                    } catch (Exception e) {
+                    }
                 }
+                this.enabled = true;
+                info("&aTimoCloudBukkit has been enabled!");
+            } catch (Exception e) {
+                severe("Error while enabling TimoCloudBukkit: ");
+                TimoCloudBukkit.getInstance().severe(e);
             }
-            info("&aTimoCloudBukkit has been enabled!");
-        } catch (Exception e) {
-            severe("Error while enabling TimoCloudBukkit: ");
-            TimoCloudBukkit.getInstance().severe(e);
         }
     }
 
     @Override
     public void onDisable() {
+        this.disabling = true;
         info("&chas been disabled!");
     }
 
@@ -250,12 +261,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void doEverySecond() {
+        if (this.disabling) return;
         sendEverything();
     }
 
     private void registerTasks() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
-        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
