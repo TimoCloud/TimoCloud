@@ -101,6 +101,12 @@ public class CoreStringHandler extends BasicStringHandler {
                     TimoCloudCore.getInstance().severe("Unable to resolve public ip address '" + message.get("publicAddress") + "' for base " + baseName + ". Please make sure the base's hostname is configured correctly in your operating system.");
                 }
                 PublicKey publicKey = channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get();
+
+                if (! TimoCloudCore.getInstance().getCorePublicKeyManager().redeemBaseKeyIfPermitted(publicKey)) {
+                    channel.close();
+                    return;
+                }
+
                 Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByPublicKey(publicKey);
                 if (base == null) { // First connection
                     base = TimoCloudCore.getInstance().getInstanceManager().createBase(publicKey);

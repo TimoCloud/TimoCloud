@@ -11,6 +11,7 @@ public class HelpCommandHandler implements CommandHandler {
         sender.sendMessage("  &6help &7- &7shows this page");
         sender.sendMessage("  &6version &7- &7shows the plugin version");
         sender.sendMessage("  &6reload &7- &7reloads all configs");
+        sender.sendMessage("  &6addbase <publicKey> &7- registers a new base");
         sender.sendMessage("  &6addgroup server &7<&2groupName &7(&9String&7)> <&2onlineAmount &7(&9int&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a server group");
         sender.sendMessage("  &6addgroup proxy &7<&2groupName &7(&9String&7)> <&2ram &7(&9int&7)> <&2static &7(&9boolean&7)> <&2base &7(&9String&7), &6only needed if static=true&7> - &7creates a proxy group");
         sender.sendMessage("  &6removegroup &7<&2groupName&7> - &7deletes a group");

@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.core.objects.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -252,7 +253,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
 
     @Test
     public void processRequestSGSetBaseValid() {
-        String baseIdentifier = UUID.randomUUID().toString();
+        String baseIdentifier = RandomIdGenerator.generateId();
         Base value = new Base(baseIdentifier, "BASE-24", 10000, 1000, 91.0, mock(PublicKey.class));
         when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
         ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
@@ -602,7 +603,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
 
     @Test
     public void processRequestPGSetBaseValid() {
-        String baseIdentifier = UUID.randomUUID().toString();
+        String baseIdentifier = RandomIdGenerator.generateId();
         Base value = new Base(baseIdentifier, "BASE-5", 1000000, 100, 94.0, mock(PublicKey.class));
         when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
         ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);

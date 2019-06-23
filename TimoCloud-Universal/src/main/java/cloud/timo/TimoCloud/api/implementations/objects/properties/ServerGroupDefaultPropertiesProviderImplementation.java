@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.api.implementations.objects.properties;
 
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,4 +43,8 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
         return Arrays.asList("OFFLINE", "STARTING", "INGAME", "RESTARTING");
     }
 
+    @Override
+    public String generateId() {
+        return RandomIdGenerator.generateId();
+    }
 }

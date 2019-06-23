@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
 import cloud.timo.TimoCloud.common.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.core.objects.storage.IdentifiableStorage;
@@ -343,7 +344,7 @@ public class CoreInstanceManager {
      */
     private Server startServer(ServerGroup group, Base base) {
         String name = getNotExistingName(group);
-        String token = UUID.randomUUID().toString();
+        String token = RandomIdGenerator.generateId();
         String id = name + "_" + token;
 
         List<String> maps = getAvailableMaps(group);
@@ -406,7 +407,7 @@ public class CoreInstanceManager {
      */
     private Proxy startProxy(ProxyGroup group, Base base) {
         String name = getNotExistingName(group);
-        String token = UUID.randomUUID().toString();
+        String token = RandomIdGenerator.generateId();
         String id = name + "_" + token;
 
         Proxy proxy = new Proxy(name, id, base, group);
@@ -849,7 +850,7 @@ public class CoreInstanceManager {
     }
 
     public Base createBase(PublicKey publicKey) {
-        Base base = new Base(new BaseProperties(UUID.randomUUID().toString(), getNotExistingBaseName(), publicKey));
+        Base base = new Base(new BaseProperties(RandomIdGenerator.generateId(), getNotExistingBaseName(), publicKey));
         bases.add(base);
         saveBases();
         return base;

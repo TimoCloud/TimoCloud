@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.api.objects.properties;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class ServerGroupProperties {
 
@@ -114,7 +113,7 @@ public class ServerGroupProperties {
     }
 
     public static String generateId() {
-        return UUID.randomUUID().toString();
+        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ServerGroupDefaultPropertiesProvider {
@@ -132,6 +131,9 @@ public class ServerGroupProperties {
         String getBaseIdentifier();
 
         Collection<String> getSortOutStates();
+
+
+        String generateId();
 
     }
 }

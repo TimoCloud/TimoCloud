@@ -12,6 +12,7 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.cord.sockets.CordSocketClientHandler;
 import cloud.timo.TimoCloud.cord.sockets.CordSocketMessageManager;
 import cloud.timo.TimoCloud.cord.sockets.CordStringHandler;
@@ -29,8 +30,6 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -203,7 +202,7 @@ public class CommunicationTest extends TimoCloudTest {
     private Message anyMessage() {
         return Message.create()
                 .setType(MessageType.API_DATA)
-                .setTarget(UUID.randomUUID().toString())
+                .setTarget(RandomIdGenerator.generateId())
                 .set("test", "TEST")
                 .setData(Message.create()
                         .set("name", "Timo")

@@ -7,10 +7,10 @@ import cloud.timo.TimoCloud.api.async.APIRequestType;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class APIRequestImplementation<T> implements APIRequest<T> {
     private APIRequestType type;
@@ -61,7 +61,7 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
     }
 
     private static String generateId() {
-        return UUID.randomUUID().toString();
+        return RandomIdGenerator.generateId();
     }
 
     private PluginMessage generatePluginMessage(Map data) {

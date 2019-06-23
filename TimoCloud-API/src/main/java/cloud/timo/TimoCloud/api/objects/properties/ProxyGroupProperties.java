@@ -4,7 +4,6 @@ import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class ProxyGroupProperties {
 
@@ -181,7 +180,7 @@ public class ProxyGroupProperties {
     }
 
     public static String generateId() {
-        return UUID.randomUUID().toString();
+        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ProxyGroupDefaultPropertiesProvider {
@@ -211,6 +210,9 @@ public class ProxyGroupProperties {
         ProxyChooseStrategy getProxyChooseStrategy();
 
         Collection<String> getHostNames();
+
+
+        String generateId();
 
     }
 }

@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api.implementations.objects.properties;
 
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,5 +72,10 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     @Override
     public Collection<String> getHostNames() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public String generateId() {
+        return RandomIdGenerator.generateId();
     }
 }

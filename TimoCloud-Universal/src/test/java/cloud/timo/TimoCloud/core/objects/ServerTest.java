@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.base.managers.BaseInstanceManager;
 import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.communication.CommunicationTest;
 import cloud.timo.TimoCloud.core.managers.CoreFileManager;
 import org.junit.Before;
@@ -18,7 +19,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -117,6 +117,6 @@ public class ServerTest extends CommunicationTest {
     }
 
     private ServerGroup anyGroup() {
-        return new ServerGroup(UUID.randomUUID().toString(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
+        return new ServerGroup(RandomIdGenerator.generateId(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
     }
 }
