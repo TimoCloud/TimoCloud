@@ -279,7 +279,7 @@ public class SignManager {
         if (! signBlock.getType().name().contains("WALL_SIGN")) return null;
 
         if (TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
-            return signBlock.getRelative(((org.bukkit.block.data.type.Sign) signBlock.getBlockData()).getRotation());
+            return signBlock.getRelative(((org.bukkit.block.data.type.WallSign) signBlock.getBlockData()).getFacing());
         } else {
             return signBlock.getRelative(((org.bukkit.material.Sign) signBlock.getState().getData()).getAttachedFace());
         }
