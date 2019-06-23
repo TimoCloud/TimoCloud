@@ -7,7 +7,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class BungeeMessageManager {
     public static void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(new TextComponent(TimoCloudBungee.getInstance().getPrefix() + ChatColor.translateAlternateColorCodes('&', message)));
+        sender.sendMessage(TextComponent.fromLegacyText(TimoCloudBungee.getInstance().getPrefix() + ChatColor.translateAlternateColorCodes('&', message)));
     }
 
     public static void noPermission(CommandSender sender) {
