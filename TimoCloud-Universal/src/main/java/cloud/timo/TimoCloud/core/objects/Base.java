@@ -114,7 +114,6 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         setReady(false);
         setAddress(address);
         setPublicAddress(publicAddress);
-        TimoCloudCore.getInstance().getCloudFlareManager().onBaseRegisterEvent(this);
         TimoCloudCore.getInstance().info("Base " + getName() + " connected.");
     }
 
@@ -125,7 +124,6 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         setReady(false);
         setCpuLoad(0);
         setAvailableRam(0);
-        TimoCloudCore.getInstance().getCloudFlareManager().onBaseUnregisterEvent(this);
         TimoCloudCore.getInstance().info("Base " + getName() + " disconnected.");
     }
 

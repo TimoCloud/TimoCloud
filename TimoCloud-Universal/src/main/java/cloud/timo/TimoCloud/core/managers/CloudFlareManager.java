@@ -2,8 +2,11 @@ package cloud.timo.TimoCloud.core.managers;
 
 import cloud.timo.TimoCloud.api.events.EventHandler;
 import cloud.timo.TimoCloud.api.events.Listener;
+import cloud.timo.TimoCloud.api.events.base.BaseConnectEvent;
+import cloud.timo.TimoCloud.api.events.base.BaseDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.common.objects.HttpRequestProperty;
 import cloud.timo.TimoCloud.common.utils.ArrayUtil;
 import cloud.timo.TimoCloud.common.utils.network.HttpRequestUtil;
@@ -12,7 +15,6 @@ import cloud.timo.TimoCloud.core.cloudflare.CloudFlareException;
 import cloud.timo.TimoCloud.core.cloudflare.DnsRecord;
 import cloud.timo.TimoCloud.core.cloudflare.DnsZone;
 import cloud.timo.TimoCloud.core.cloudflare.SrvRecord;
-import cloud.timo.TimoCloud.core.objects.Base;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -63,7 +65,7 @@ public class CloudFlareManager implements Listener {
                             1,
                             1,
                             proxy.getPort(),
-                            proxy.getBase().getName().toLowerCase() + ".base." + getDomainByHostname(hostName))
+                            proxy.getBase().getId() + ".base." + getDomainByHostname(hostName))
                     ));
                     break;
                 }
@@ -81,21 +83,26 @@ public class CloudFlareManager implements Listener {
         });
     }
 
-    public void onBaseRegisterEvent(Base base) {
-        if (!enabled()) return;
+
+    @EventHandler
+    public void onBaseRegisterEvent(BaseConnectEvent event) {
+        if (! enabled()) return;
+        BaseObject base = event.getBase();
         executorService.submit(() -> {
             for (DnsZone zone : getZones()) {
-                addRecord(new DnsRecord(null, "A", base.getName().toLowerCase() + ".base." + zone.getName(), formatInetAddress(base.getPublicAddress()), 1, zone));
+                addRecord(new DnsRecord(null, "A", base.getId() + ".base." + zone.getName(), formatInetAddress(base.getIpAddress()), 1, zone));
             }
         });
     }
 
-    public void onBaseUnregisterEvent(Base base) {
-        if (!enabled()) return;
+    @EventHandler
+    public void onBaseUnregisterEvent(BaseDisconnectEvent event) {
+        if (! enabled()) return;
+        BaseObject base = event.getBase();
         executorService.submit(() -> {
             for (DnsZone zone : getZones()) {
                 for (DnsRecord record : getRecords(zone)) {
-                    if (record.getName().startsWith(base.getName().toLowerCase() + ".base.")) {
+                    if (record.getName().startsWith(base.getId() + ".base.")) {
                         deleteRecord(record);
                     }
                 }
