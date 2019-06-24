@@ -22,7 +22,9 @@ import com.google.gson.JsonObject;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class CloudFlareManager implements Listener {
 
     private static final String CLOUDFLARE_API_URL = "https://api.cloudflare.com/client/v4/";
     private ExecutorService executorService;
+    private Set<DnsRecord> createdRecords;
 
     public CloudFlareManager() {
         executorService = Executors.newCachedThreadPool();
@@ -40,6 +43,7 @@ public class CloudFlareManager implements Listener {
 
     public void load() {
         if (! enabled()) return;
+        createdRecords = new HashSet<>();
         deleteExistingRecords();
     }
 
@@ -52,7 +56,7 @@ public class CloudFlareManager implements Listener {
         if (!enabled()) return;
         executorService.submit(() -> {
             Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
-            for (String hostName : getActiveHostnames()) {
+            getActiveHostnames().parallelStream().forEach(hostName -> {
                 for (String hostName1 : proxy.getGroup().getHostNames()) {
                     if (!nameMatches(hostName, hostName1)) continue;
                     proxy.setDnsRecord(addRecord(new SrvRecord(
@@ -69,7 +73,7 @@ public class CloudFlareManager implements Listener {
                     ));
                     break;
                 }
-            }
+            });
         });
     }
 
@@ -89,9 +93,9 @@ public class CloudFlareManager implements Listener {
         if (! enabled()) return;
         BaseObject base = event.getBase();
         executorService.submit(() -> {
-            for (DnsZone zone : getZones()) {
+            getZones().parallelStream().forEach(zone -> {
                 addRecord(new DnsRecord(null, "A", base.getId() + ".base." + zone.getName(), formatInetAddress(base.getIpAddress()), 1, zone));
-            }
+            });
         });
     }
 
@@ -100,36 +104,44 @@ public class CloudFlareManager implements Listener {
         if (! enabled()) return;
         BaseObject base = event.getBase();
         executorService.submit(() -> {
-            for (DnsZone zone : getZones()) {
-                for (DnsRecord record : getRecords(zone)) {
+            getZones().parallelStream().forEach(zone -> {
+                getRecords(zone).parallelStream().forEach(record -> {
                     if (record.getName().startsWith(base.getId() + ".base.")) {
                         deleteRecord(record);
                     }
-                }
-            }
+                });
+            });
         });
     }
 
     private void deleteExistingRecords() {
         executorService.submit(() -> {
             getZones().parallelStream().forEach(zone -> {
-                for (DnsRecord record : getRecords(zone)) {
-                    if (record.getName().contains(".base.")) deleteRecord(record);
-                }
+                getRecords(zone).parallelStream().forEach(record -> {
+                    if (record.getName().contains(".base.")) {
+                        if (! createdRecords.contains(record)) {
+                            deleteRecord(record);
+                        }
+                    }
+                });
             });
         });
         executorService.submit(() -> {
             getActiveHostnames().parallelStream().forEach(hostname -> { // Delete SRV records
-                for (DnsRecord record : getMatchingSrvRecords(hostname, "SRV")) {
-                    deleteRecord(record);
-                }
+                getMatchingSrvRecords(hostname, "SRV").parallelStream().forEach(record -> {
+                    if (! createdRecords.contains(record)) {
+                        deleteRecord(record);
+                    }
+                });
             });
         });
     }
 
     private DnsRecord addRecord(DnsRecord record) {
         try {
-            return DnsRecord.fromJson(request(CLOUDFLARE_API_URL + "zones/" + record.getZone().getId() + "/dns_records", "POST", record.toJson().toString()).getAsJsonObject());
+            DnsRecord createdRecord = DnsRecord.fromJson(request(CLOUDFLARE_API_URL + "zones/" + record.getZone().getId() + "/dns_records", "POST", record.toJson().toString()).getAsJsonObject());
+            this.createdRecords.add(createdRecord);
+            return createdRecord;
         } catch (Exception e) {
             if (e.getMessage().contains("The record already exists.")) return null; // This happens when a base connects while we are deleting old records
             TimoCloudCore.getInstance().severe(e);

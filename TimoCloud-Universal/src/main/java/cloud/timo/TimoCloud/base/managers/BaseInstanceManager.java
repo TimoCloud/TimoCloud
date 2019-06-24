@@ -255,7 +255,7 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
+                                " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
                                 " -Xmx" + server.getRam() + "M" +
                                 " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                                 " -Dcom.mojang.eula.agree=true" +
@@ -415,7 +415,7 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
+                                " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
                                 " -Xmx" + proxy.getRam() + "M" +
                                 " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                                 " -Dcom.mojang.eula.agree=true" +

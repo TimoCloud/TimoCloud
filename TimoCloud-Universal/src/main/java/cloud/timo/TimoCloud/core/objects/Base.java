@@ -110,10 +110,10 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
 
     public void onConnect(Channel channel, InetAddress address, InetAddress publicAddress) {
         setChannel(channel);
-        setConnected(true);
-        setReady(false);
-        setAddress(address);
         setPublicAddress(publicAddress);
+        setAddress(address);
+        setReady(false);
+        setConnected(true); // Also fires event
         TimoCloudCore.getInstance().info("Base " + getName() + " connected.");
     }
 

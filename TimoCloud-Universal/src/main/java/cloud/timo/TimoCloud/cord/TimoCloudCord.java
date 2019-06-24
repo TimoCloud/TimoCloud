@@ -136,7 +136,6 @@ public class TimoCloudCord implements TimoCloudModule {
     private void everySecond() {
         try {
             connectToSocket();
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
         } catch (Exception e) {
             TimoCloudCord.getInstance().severe(e);
         }
@@ -164,7 +163,7 @@ public class TimoCloudCord implements TimoCloudModule {
     }
 
     public void onHandshakeSuccess() {
-
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
     private void initSocketServer() {

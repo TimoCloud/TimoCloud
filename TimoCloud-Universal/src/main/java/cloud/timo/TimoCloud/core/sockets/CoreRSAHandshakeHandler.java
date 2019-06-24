@@ -61,7 +61,10 @@ public class CoreRSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf
                 @Override
                 public void run() {
                     if (! channel.isOpen()) return;
-                    if (! channel.hasAttr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY)) channel.close();
+                    if (! channel.hasAttr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY)) {
+                        channel.close();
+                        return;
+                    }
                     if (! channel.attr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).get()) channel.close(); // If the client did not perform the handshake within 5 seconds, it probably was not permitted to connect since it was not able to decrypt the AES key and perform the handshake
                 }
             }, 5000);

@@ -187,6 +187,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
                         .setType(MessageType.PROXY_LOG_ENTRY)
                         .setData(logEntry))
         );
+        requestApiData();
         everySecond();
     }
 
@@ -196,7 +197,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     private void everySecond() {
         sendEverything();
-        requestApiData();
     }
 
     private void requestApiData() {

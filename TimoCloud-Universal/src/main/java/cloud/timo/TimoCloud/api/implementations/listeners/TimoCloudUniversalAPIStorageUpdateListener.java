@@ -119,7 +119,8 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     public void onPlayerServerChangeEvent(PlayerServerChangeEvent event) {
         api.getPlayerStorage().update(event.getPlayer());
         ((PlayerObjectBasicImplementation) event.getPlayer()).setServer(event.getServerTo());
-        ((ServerObjectBasicImplementation) event.getServerFrom()).removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
+        ServerObjectBasicImplementation serverFrom = (ServerObjectBasicImplementation) event.getServerFrom();
+        if (serverFrom != null) serverFrom.removePlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
         ((ServerObjectBasicImplementation) event.getServerTo()).addPlayer(((PlayerObjectBasicImplementation) event.getPlayer()).toLink());
 
     }
