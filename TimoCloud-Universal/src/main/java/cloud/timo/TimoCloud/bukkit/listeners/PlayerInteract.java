@@ -10,13 +10,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class PlayerInteract implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
-        if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
+        if (! event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         Block block = event.getClickedBlock();
 
         if (block.getType().name().contains("WALL_SIGN")) {
             TimoCloudBukkit.getInstance().getSignManager().onSignClick(event.getPlayer(), block.getLocation());
         }
     }
+
 }
