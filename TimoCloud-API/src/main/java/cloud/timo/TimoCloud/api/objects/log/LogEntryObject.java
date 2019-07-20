@@ -2,6 +2,14 @@ package cloud.timo.TimoCloud.api.objects.log;
 
 public interface LogEntryObject {
 
+    /**
+     * @return The nano time can be used to retrieve the order of log entries
+     */
+    long getNanoTime();
+
+    /**
+     * @return Unix timestamp
+     */
     long getTimestamp();
 
     LogLevel getLevel();

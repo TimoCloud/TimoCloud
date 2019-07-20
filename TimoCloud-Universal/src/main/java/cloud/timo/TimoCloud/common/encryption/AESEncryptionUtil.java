@@ -13,7 +13,7 @@ public class AESEncryptionUtil {
 
     private static final String CIPHER_IDENTIFIER = "AES/CBC/PKCS5PADDING";
     private static final int IV_LENGTH = 16;
-    private static final int AES_KEY_LENGTH = 128;
+    private static final int AES_KEY_LENGTH = 256;
 
     private static byte[] generateInitVector() {
         byte[] iv = new byte[IV_LENGTH];

@@ -6,18 +6,30 @@ import cloud.timo.TimoCloud.api.objects.log.LogLevel;
 
 public class LogEntry implements Comparable<LogEntry> {
 
+    private long nanoTime;
     private long timestamp;
     private LogLevel level;
     private String prefix;
     private String message;
 
-    public LogEntry(long timestamp, LogLevel level, String message, String prefix) {
+    public LogEntry(long nanoTime, long timestamp, LogLevel level, String message, String prefix) {
+        this.nanoTime = nanoTime;
         this.timestamp = timestamp;
         this.level = level;
         this.message = message;
         this.prefix = prefix;
     }
 
+    /**
+     * @return The nano time can be used to retrieve the order of log entries
+     */
+    public long getNanoTime() {
+        return nanoTime;
+    }
+
+    /**
+     * @return Unix timestamp
+     */
     public long getTimestamp() {
         return timestamp;
     }
@@ -43,6 +55,7 @@ public class LogEntry implements Comparable<LogEntry> {
 
     public LogEntryObject toLogEntryObject() {
         return new LogEntryObjectImplementation(
+                getNanoTime(),
                 getTimestamp(),
                 getLevel(),
                 getMessage(),
@@ -52,8 +65,28 @@ public class LogEntry implements Comparable<LogEntry> {
 
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LogEntry logEntry = (LogEntry) o;
+
+        if (nanoTime != logEntry.nanoTime) return false;
+        if (level != logEntry.level) return false;
+        return message != null ? message.equals(logEntry.message) : logEntry.message == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (nanoTime ^ (nanoTime >>> 32));
+        result = 31 * result + (level != null ? level.hashCode() : 0);
+        result = 31 * result + (message != null ? message.hashCode() : 0);
+        return result;
+    }
+
+    @Override
     public int compareTo(LogEntry o) {
-        if (getTimestamp() == o.getTimestamp()) return 0;
-        return getTimestamp() < o.getTimestamp() ? -1 : 1;
+        if (getNanoTime() == o.getNanoTime()) return 0;
+        return getNanoTime() < o.getNanoTime() ? -1 : 1;
     }
 }

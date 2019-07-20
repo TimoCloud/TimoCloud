@@ -36,7 +36,8 @@ public class LogEntryReader implements Consumer<String> {
         String prefix = prefixMatcher.find() ? prefixMatcher.group() : "";
         String strippedMessage = stripBrackets(message);
         long timestamp = new Date().getTime();
-        LogEntry logEntry = new LogEntry(timestamp, logLevel, strippedMessage, prefix);
+        long nanoTime = System.nanoTime();
+        LogEntry logEntry = new LogEntry(nanoTime, timestamp, logLevel, strippedMessage, prefix);
         logEntryConsumer.accept(logEntry);
     }
 

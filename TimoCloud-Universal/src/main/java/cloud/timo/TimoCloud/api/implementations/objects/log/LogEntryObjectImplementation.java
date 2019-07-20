@@ -7,16 +7,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LogEntryObjectImplementation implements LogEntryObject {
 
+    private long nanoTime;
     private long timestamp;
     private LogLevel level;
     private String message;
     private String messageWithPrefix;
 
-    public LogEntryObjectImplementation(long timestamp, LogLevel level, String message, String messageWithPrefix) {
+    public LogEntryObjectImplementation(long nanoTime, long timestamp, LogLevel level, String message, String messageWithPrefix) {
+        this.nanoTime = nanoTime;
         this.timestamp = timestamp;
         this.level = level;
         this.message = message;
         this.messageWithPrefix = messageWithPrefix;
+    }
+
+    @Override
+    public long getNanoTime() {
+        return nanoTime;
     }
 
     @Override
