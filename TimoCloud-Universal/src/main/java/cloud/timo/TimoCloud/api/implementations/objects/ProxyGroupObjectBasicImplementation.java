@@ -24,8 +24,6 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     private String name;
     @JsonProperty("ps")
     private Collection<ProxyObjectLink> proxies;
-    @JsonProperty("opc")
-    private int onlinePlayerCount;
     @JsonProperty("mpc")
     private int maxPlayerCount;
     @JsonProperty("mpcp")
@@ -53,11 +51,10 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     @JsonProperty("hn")
     private Collection<String> hostNames;
 
-    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int onlinePlayerCount, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames) {
+    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames) {
         this.id = id;
         this.name = name;
         this.proxies = proxies;
-        this.onlinePlayerCount = onlinePlayerCount;
         this.maxPlayerCount = maxPlayerCount;
         this.maxPlayerCountPerProxy = maxPlayerCountPerProxy;
         this.keepFreeSlots = keepFreeSlots;
@@ -90,7 +87,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
 
     @Override
     public int getOnlinePlayerCount() {
-        return onlinePlayerCount;
+        return getProxies().stream().mapToInt(ProxyObject::getOnlinePlayerCount).sum();
     }
 
     @Override
@@ -234,10 +231,6 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
 
     public void setNameInternally(String name) {
         this.name = name;
-    }
-
-    public void setOnlinePlayerCountInternally(int i) {
-        this.onlinePlayerCount = i;
     }
 
     public void setMaxPlayerCountInternally(int i) {

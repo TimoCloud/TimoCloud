@@ -54,7 +54,7 @@ public class Proxy implements Instance, Communicatable {
         this.id = id;
         this.group = group;
         this.base = base;
-        this.address = new InetSocketAddress(base.getAddress(), 0);
+        this.address = new InetSocketAddress(base.getPublicAddress(), 0);
         this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();

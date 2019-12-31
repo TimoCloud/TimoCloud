@@ -357,7 +357,6 @@ public class ProxyGroup implements Group {
                 getId(),
                 getName(),
                 getProxies().stream().map(Proxy::toLink).collect(Collectors.toSet()),
-                getOnlinePlayerCount(),
                 getMaxPlayerCount(),
                 getMaxPlayerCountPerProxy(),
                 getKeepFreeSlots(),

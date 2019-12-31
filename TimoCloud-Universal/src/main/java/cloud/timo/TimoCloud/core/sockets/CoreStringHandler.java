@@ -56,7 +56,7 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (!address.equals(server.getBase().getAddress())) {
+                if (! (address.equals(server.getBase().getAddress()) || address.equals(server.getBase().getPublicAddress()))) {
                     TimoCloudCore.getInstance().severe("Server connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
@@ -75,7 +75,7 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (! address.equals(proxy.getBase().getAddress())) {
+                if (! (address.equals(proxy.getBase().getAddress()) || address.equals(proxy.getBase().getPublicAddress()))) {
                     TimoCloudCore.getInstance().severe("Proxy connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
@@ -349,10 +349,16 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case SERVER_LOG_ENTRY: {
-                if (! (target instanceof Server)) break; // Don't process log entries of already offline servers
+                if (target instanceof Server) {
+                    target.onMessage(message, sender);
+                }
+                break;
             }
             case PROXY_LOG_ENTRY: {
-                if (! (target instanceof Proxy)) break; // Don't process log entries of already offline proxies
+                if (target instanceof Proxy) {
+                    target.onMessage(message, sender);
+                }
+                break;
             }
             default:
                 target.onMessage(message, sender);

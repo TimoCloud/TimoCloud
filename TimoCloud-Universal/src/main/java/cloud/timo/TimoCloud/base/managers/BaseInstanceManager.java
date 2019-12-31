@@ -252,12 +252,13 @@ public class BaseInstanceManager {
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + server.getId() +
+                                //" -L -Logfile " + logFile.getAbsolutePath() +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
+                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
                                 " -Xmx" + server.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                                 " -Dcom.mojang.eula.agree=true" +
                                 " -Dtimocloud-servername=" + server.getName() +
                                 " -Dtimocloud-serverid=" + server.getId() +
@@ -268,8 +269,7 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
                                 " -jar spigot.jar -o false -h 0.0.0.0 -p " + port +
-                                " | tee " + logFile.getAbsolutePath()
-                                + "'"
+                                "'"
                 ).start();
 
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
@@ -412,12 +412,13 @@ public class BaseInstanceManager {
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + proxy.getId() +
+                                //" -L -Logfile " + logFile.getAbsolutePath() +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                " -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
+                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
                                 " -Xmx" + proxy.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+AggressiveOpts -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
                                 " -Dcom.mojang.eula.agree=true" +
                                 " -Dtimocloud-proxyname=" + proxy.getName() +
                                 " -Dtimocloud-proxyid=" + proxy.getId() +
@@ -426,8 +427,7 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
                                 " -jar BungeeCord.jar" +
-                                " | tee " + logFile.getAbsolutePath()
-                                + "'"
+                                "'"
                 ).start();
 
                 TimoCloudBase.getInstance().info("Successfully started proxy screen session " + proxy.getName() + ".");
