@@ -153,7 +153,7 @@ public class APIRequestManager implements MessageListener {
                 case PROXY_GROUP: {
                     String proxyGroupName = request.getTarget();
                     validateNotNull(proxyGroupName, "ProxyGroupName");
-                    ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByName(proxyGroupName);
+                    ProxyGroup proxyGroup = TimoCloudCore.getInstance().getInstanceManager().getProxyGroupByIdentifier(proxyGroupName);
                     if (proxyGroup == null) {
                         throw new APIRequestError(String.format("ProxyGroup '%s' could not be found", proxyGroupName), 6, Collections.singleton(proxyGroupName));
                     }
@@ -256,7 +256,7 @@ public class APIRequestManager implements MessageListener {
                 case SERVER_GROUP: {
                     String serverGroupName = request.getTarget();
                     validateNotNull(serverGroupName, "ServerGroupName");
-                    ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByName(serverGroupName);
+                    ServerGroup serverGroup = TimoCloudCore.getInstance().getInstanceManager().getServerGroupByIdentifier(serverGroupName);
                     if (serverGroup == null) {
                         throw new APIRequestError(String.format("ServerGroup '%s' could not be found", serverGroupName), 7, Collections.singleton(serverGroupName));
                     }

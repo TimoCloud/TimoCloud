@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEventBasicImplementati
 import cloud.timo.TimoCloud.api.events.player.PlayerConnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyOnlinePlayerCountChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxyGroup.*;
@@ -45,6 +46,7 @@ public class EventUtil {
 
                 ProxyRegisterEventBasicImplementation.class,
                 ProxyUnregisterEventBasicImplementation.class,
+                ProxyOnlinePlayerCountChangeEventBasicImplementation.class,
 
                 ProxyGroupCreatedEventBasicImplementation.class,
                 ProxyGroupBaseChangeEventBasicImplementation.class,

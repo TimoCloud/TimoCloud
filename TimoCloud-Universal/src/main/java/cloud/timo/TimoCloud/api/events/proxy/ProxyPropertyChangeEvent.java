@@ -14,6 +14,9 @@ public abstract class ProxyPropertyChangeEvent<T> extends PropertyChangeEvent<Pr
         super(instanceId, oldValue, newValue);
     }
 
+    protected ProxyPropertyChangeEvent() {
+    }
+
     @Override
     public ProxyObject getInstance() {
         return TimoCloudAPI.getUniversalAPI().getProxy(getInstanceId());

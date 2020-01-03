@@ -56,7 +56,9 @@ public class APIRequestManagerTest extends TimoCloudTest {
         when(coreInstanceManager.getServerGroupByName(anyString())).thenReturn(serverGroup);
         when(coreInstanceManager.getProxyByIdentifier(anyString())).thenReturn(proxy);
         when(coreInstanceManager.getServerByIdentifier(anyString())).thenReturn(server);
-    }
+        when(coreInstanceManager.getServerGroupByIdentifier(anyString())).thenReturn(serverGroup);
+        when(coreInstanceManager.getProxyGroupByIdentifier(anyString())).thenReturn(proxyGroup);
+     }
 
     @Test
     public void processRequestGCreateServerGroupValid() {
@@ -138,7 +140,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestSGNotFound() {
         String groupName = "NotExisting";
-        when(coreInstanceManager.getServerGroupByName(eq(groupName))).thenReturn(null);
+        when(coreInstanceManager.getServerGroupByIdentifier(eq(groupName))).thenReturn(null);
         assertFalse(apiRequestManager.processRequest(new APIRequestImplementation<>(
                         APIRequestType.SG_DELETE,
                         groupName
@@ -358,7 +360,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestPGNotFound() {
         String groupName = "NotExisting";
-        when(coreInstanceManager.getProxyGroupByName(eq(groupName))).thenReturn(null);
+        when(coreInstanceManager.getProxyGroupByIdentifier(eq(groupName))).thenReturn(null);
         assertFalse(apiRequestManager.processRequest(new APIRequestImplementation<>(
                         APIRequestType.PG_DELETE,
                         groupName

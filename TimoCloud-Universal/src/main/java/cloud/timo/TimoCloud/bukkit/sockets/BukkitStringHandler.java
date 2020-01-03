@@ -15,6 +15,7 @@ import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import io.netty.channel.Channel;
+import org.bukkit.Bukkit;
 
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class BukkitStringHandler extends BasicStringHandler {
                 }
                 break;
             case SERVER_EXECUTE_COMMAND:
-                TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data);
+                Bukkit.getScheduler().runTask(TimoCloudBukkit.getInstance(), () -> TimoCloudBukkit.getInstance().getServer().dispatchCommand(TimoCloudBukkit.getInstance().getServer().getConsoleSender(), (String) data));
                 break;
             case ON_PLUGIN_MESSAGE: {
                 AddressedPluginMessage addressedPluginMessage = PluginMessageSerializer.deserialize((Map) data);

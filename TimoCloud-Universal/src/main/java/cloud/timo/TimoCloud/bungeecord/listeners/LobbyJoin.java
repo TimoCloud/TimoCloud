@@ -52,4 +52,5 @@ public class LobbyJoin implements Listener {
         event.setCancelled(true);
         event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
     }
+
 }

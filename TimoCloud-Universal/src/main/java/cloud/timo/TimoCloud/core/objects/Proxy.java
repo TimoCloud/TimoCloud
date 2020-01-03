@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.core.objects;
 
+import cloud.timo.TimoCloud.api.events.proxy.ProxyOnlinePlayerCountChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
@@ -7,6 +8,7 @@ import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
+import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.common.json.JsonConverter;
 import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.common.log.LogStorage;
@@ -182,7 +184,7 @@ public class Proxy implements Instance, Communicatable {
                 executeCommand((String) data);
                 break;
             case PROXY_SET_PLAYER_COUNT:
-                this.onlinePlayerCount = ((Number) data).intValue();
+                setOnlinePlayerCount(((Number) data).intValue());
                 break;
             case PROXY_TRANSFER_FINISHED:
                 getTemplateUpdate().addOne();
@@ -308,6 +310,14 @@ public class Proxy implements Instance, Communicatable {
 
     public LogStorage getLogStorage() {
         return logStorage;
+    }
+
+    public void setOnlinePlayerCount(int onlinePlayerCount) {
+        int oldValue = getOnlinePlayerCount();
+        this.onlinePlayerCount = onlinePlayerCount;
+        if (onlinePlayerCount != oldValue) {
+            EventTransmitter.sendEvent(new ProxyOnlinePlayerCountChangeEventBasicImplementation(toProxyObject(), oldValue, onlinePlayerCount));
+        }
     }
 
     @Override

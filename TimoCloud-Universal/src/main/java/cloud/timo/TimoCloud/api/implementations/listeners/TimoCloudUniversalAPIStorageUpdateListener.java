@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerConnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.player.PlayerServerChangeEvent;
+import cloud.timo.TimoCloud.api.events.proxy.ProxyOnlinePlayerCountChangeEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
 import cloud.timo.TimoCloud.api.events.proxyGroup.*;
@@ -16,8 +17,11 @@ import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+
+import java.util.HashMap;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -125,7 +129,16 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     }
 
-    //ProxyGroup Events
+    //Proxy Events
+    @EventHandler
+    public void onProxyOnlinePlayerCountChangeEvent(ProxyOnlinePlayerCountChangeEvent event){
+        ((ProxyObjectBasicImplementation) event.getProxy()).setOnlinePlayerCountInternally(event.getNewValue());
+        System.out.println(event.getProxy().getOnlinePlayerCount() + " EVENT");
+        System.out.println(event.getProxy().getId() + " EVENT");
+        System.out.println(event.getProxy().getName() + " EVENT");
+
+    }
+
     @EventHandler
     public void onProxyRegisterEvent(ProxyRegisterEvent event) {
         ProxyObject proxy = event.getProxy();
@@ -140,6 +153,7 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
         ((ProxyGroupObjectBasicImplementation) proxy.getGroup()).removeProxyInternally(((ProxyObjectBasicImplementation) proxy).toLink());
     }
 
+    //ProxyGroup Events
     @EventHandler
     public void onProxyGroupCreatedEvent(ProxyGroupCreatedEvent event) {
         api.getProxyGroupStorage().add(event.getProxyGroup());

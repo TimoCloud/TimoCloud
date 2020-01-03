@@ -151,6 +151,10 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
         this.onlinePlayers.add(playerObjectLink);
     }
 
+    public void setOnlinePlayerCountInternally(int i){
+        this.onlinePlayerCount = i;
+    }
+
     public void removePlayer(PlayerObjectLink playerObjectLink) {
         this.onlinePlayers.remove(playerObjectLink);
     }
