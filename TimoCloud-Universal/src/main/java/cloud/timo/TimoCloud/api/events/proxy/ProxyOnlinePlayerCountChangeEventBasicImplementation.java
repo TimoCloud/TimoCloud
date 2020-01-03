@@ -24,4 +24,5 @@ public class ProxyOnlinePlayerCountChangeEventBasicImplementation extends ProxyP
     public EventType getType() {
         return EventType.P_ONLINE_PLAYER_COUNT_CHANGE;
     }
+
 }

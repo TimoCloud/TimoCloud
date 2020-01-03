@@ -17,11 +17,8 @@ import cloud.timo.TimoCloud.api.events.serverGroup.*;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.*;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
-import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-
-import java.util.HashMap;
 
 public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
@@ -133,10 +130,6 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     @EventHandler
     public void onProxyOnlinePlayerCountChangeEvent(ProxyOnlinePlayerCountChangeEvent event){
         ((ProxyObjectBasicImplementation) event.getProxy()).setOnlinePlayerCountInternally(event.getNewValue());
-        System.out.println(event.getProxy().getOnlinePlayerCount() + " EVENT");
-        System.out.println(event.getProxy().getId() + " EVENT");
-        System.out.println(event.getProxy().getName() + " EVENT");
-
     }
 
     @EventHandler
