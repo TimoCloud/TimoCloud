@@ -295,6 +295,7 @@ public class SignManager {
                 .replace("%state%", server.getState())
                 .replace("%extra%", server.getExtra())
                 .replace("%motd%", server.getMotd())
+                .replace("%group%", server.getGroup().getName())
                 .replace("%map%", server.getMap()));
     }
 
