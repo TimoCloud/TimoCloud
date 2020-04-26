@@ -87,7 +87,7 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
 
     @Override
     public APIRequestFuture<Void> sendToServer(ServerObject serverObject) {
-        return getProxy().executeCommand(String.format("send %s %s", getName(), getProxy().getName()));
+        return getProxy().executeCommand(String.format("send %s %s", getName(), serverObject.getName()));
     }
 
     public void setOnline(boolean online) {

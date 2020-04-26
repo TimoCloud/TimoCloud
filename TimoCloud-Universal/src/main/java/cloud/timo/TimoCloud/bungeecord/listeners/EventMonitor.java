@@ -55,7 +55,6 @@ public class EventMonitor implements Listener {
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
         EventTransmitter.sendEvent(new PlayerDisconnectEventBasicImplementation(getPlayer(event.getPlayer())));
-
     }
 
     private PlayerObject getPlayer(ProxiedPlayer proxiedPlayer) {

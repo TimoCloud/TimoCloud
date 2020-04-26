@@ -143,7 +143,7 @@ public class Proxy implements Instance, Communicatable {
     public void unregisterServer(Server server) {
         sendMessage(Message.create()
                 .setType(MessageType.PROXY_REMOVE_SERVER)
-                .setData(server.getName()));
+                .set("name", server.getName()));
         registeredServers.remove(server);
     }
 

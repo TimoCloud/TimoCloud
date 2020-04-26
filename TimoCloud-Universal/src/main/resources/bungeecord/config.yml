@@ -2,7 +2,6 @@ prefix: '&6[&bTimo&fCloud&6]'
 fallbackGroup: 'Lobby'
 useFallback: true
 useGlobalMotd: true
-sendLobbyCommandMessage: true
 emergencyFallback: 'Economy'
 LobbyChooseStrategy: "RANDOM"
 lobbyCommands:
