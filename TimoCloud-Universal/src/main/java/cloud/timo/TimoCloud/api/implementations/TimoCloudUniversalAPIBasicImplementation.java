@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.util.*;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_PROXY_GROUP;
-import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_SERVER_GROUP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
 
@@ -166,6 +165,11 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     @Override
     public Collection<PlayerObject> getPlayers() {
         return players.values();
+    }
+
+    @Override
+    public APIRequestFuture<Void> registerBase(String publickey) {
+        return new APIRequestImplementation<Void>(G_ADD_BASE, "core", publickey).submit();
     }
 
     @Override

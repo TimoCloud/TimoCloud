@@ -99,6 +99,12 @@ public interface TimoCloudUniversalAPI {
      * @return A collection of all players in the network
      */
     Collection<PlayerObject> getPlayers();
+    /**
+     * Give a base the permission to connect to the core.
+     * @param publickey The publickey that should get permission to connect to the core
+     * @return A future being completed when the value was changed
+     */
+    APIRequestFuture<Void> registerBase(String publickey);
 
     /**
      * @param properties The group's properties

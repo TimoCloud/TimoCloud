@@ -14,6 +14,8 @@ public enum APIRequestType {
 
     G_CREATE_SERVER_GROUP               (GENERAL),
     G_CREATE_PROXY_GROUP                (GENERAL),
+    G_ADD_BASE                          (GENERAL),
+
 
     PG_SET_MAX_PLAYER_COUNT             (PROXY_GROUP),
     PG_SET_MAX_PLAYER_COUNT_PER_PROXY   (PROXY_GROUP),
@@ -47,7 +49,8 @@ public enum APIRequestType {
     S_STOP                              (SERVER),
     S_SET_STATE                         (SERVER),
     S_SET_EXTRA                         (SERVER),
-    S_GET_LOG_FRACTION                  (SERVER)
+    S_GET_LOG_FRACTION                  (SERVER),
+
     ;
 
     private TargetType targetType;
