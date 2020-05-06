@@ -21,6 +21,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.net.ServerSocket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.PublicKey;
 import java.util.*;
@@ -249,10 +251,32 @@ public class BaseInstanceManager {
             this.logTailers.put(server.getId(), logTailer);
 
             try {
+                String logString = "";
+                Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+                StringBuilder textBuilder = new StringBuilder();
+                try (Reader reader = new BufferedReader(new InputStreamReader
+                        (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        textBuilder.append((char) c);
+                    }
+                }
+                String[] log = textBuilder.toString().split(" ");
+                if(log.length > 2) {
+                    String version = log[2].replace(".", "");
+                    try {
+                        Integer versionnumber = Integer.valueOf(version);
+                        if(versionnumber >= 40502) {
+                            logString =  " -L -Logfile " + logFile.getAbsolutePath();
+                        }
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + server.getId() +
-                                //" -L -Logfile " + logFile.getAbsolutePath() +
+                                logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
@@ -409,10 +433,32 @@ public class BaseInstanceManager {
             this.logTailers.put(proxy.getId(), logTailer);
 
             try {
+                String logString = "";
+                Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+                StringBuilder textBuilder = new StringBuilder();
+                try (Reader reader = new BufferedReader(new InputStreamReader
+                        (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        textBuilder.append((char) c);
+                    }
+                }
+                String[] log = textBuilder.toString().split(" ");
+                if(log.length > 2) {
+                    String version = log[2].replace(".", "");
+                    try {
+                        Integer versionnumber = Integer.valueOf(version);
+                        if(versionnumber >= 40502) {
+                            logString =  " -L -Logfile " + logFile.getAbsolutePath();
+                        }
+                    } catch (NumberFormatException ignored) {
+
+                    }
+                }
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + proxy.getId() +
-                                //" -L -Logfile " + logFile.getAbsolutePath() +
+                               logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
