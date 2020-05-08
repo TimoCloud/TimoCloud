@@ -484,7 +484,6 @@ public class BaseInstanceManager {
             }
             String[] log = textBuilder.toString().split(" ");
             if (log.length > 2) {
-                System.out.println(log[2]);
                 String version = log[2].replace(".", "");
                 try {
                     return Integer.parseInt(version);
