@@ -203,7 +203,7 @@ public class BaseInstanceManager {
             }
 
             File spigotJar = new File(temporaryDirectory, "spigot.jar");
-            if (! spigotJar.exists()) {
+            if (!spigotJar.exists()) {
                 TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. " + (
                         server.isStatic() ? "Please make sure the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'spigot.jar' in your template."));
@@ -252,28 +252,11 @@ public class BaseInstanceManager {
 
             try {
                 String logString = "";
-                Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
-                StringBuilder textBuilder = new StringBuilder();
-                try (Reader reader = new BufferedReader(new InputStreamReader
-                        (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
-                    int c = 0;
-                    while ((c = reader.read()) != -1) {
-                        textBuilder.append((char) c);
-                    }
+                if (getScreenVersion() >= 40602) {
+                    logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
-                String[] log = textBuilder.toString().split(" ");
-                if(log.length > 2) {
-                    String version = log[2].replace(".", "");
-                    try {
-                        Integer versionnumber = Integer.valueOf(version);
-                        if(versionnumber >= 40502) {
-                            logString =  " -L -Logfile " + logFile.getAbsolutePath();
-                        }
-                    } catch (NumberFormatException ignored) {
 
-                    }
-                }
-                Process p = new ProcessBuilder(
+                Process process = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + server.getId() +
                                 logString +
@@ -434,31 +417,14 @@ public class BaseInstanceManager {
 
             try {
                 String logString = "";
-                Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
-                StringBuilder textBuilder = new StringBuilder();
-                try (Reader reader = new BufferedReader(new InputStreamReader
-                        (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
-                    int c = 0;
-                    while ((c = reader.read()) != -1) {
-                        textBuilder.append((char) c);
-                    }
+                if (getScreenVersion() >= 40602) {
+                    logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
-                String[] log = textBuilder.toString().split(" ");
-                if(log.length > 2) {
-                    String version = log[2].replace(".", "");
-                    try {
-                        Integer versionnumber = Integer.valueOf(version);
-                        if(versionnumber >= 40502) {
-                            logString =  " -L -Logfile " + logFile.getAbsolutePath();
-                        }
-                    } catch (NumberFormatException ignored) {
 
-                    }
-                }
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + proxy.getId() +
-                               logString +
+                                logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
@@ -503,6 +469,32 @@ public class BaseInstanceManager {
 
     private void blockPort(int port) {
         recentlyUsedPorts.put(port, 60);
+    }
+
+    private int getScreenVersion() {
+        try {
+            Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+            StringBuilder textBuilder = new StringBuilder();
+            try (Reader reader = new BufferedReader(new InputStreamReader
+                    (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
+                int c = 0;
+                while ((c = reader.read()) != -1) {
+                    textBuilder.append((char) c);
+                }
+            }
+            String[] log = textBuilder.toString().split(" ");
+            if (log.length > 2) {
+                System.out.println(log[2]);
+                String version = log[2].replace(".", "");
+                try {
+                    return Integer.parseInt(version);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        } catch (Exception exception) {
+
+        }
+        return 0;
     }
 
     private boolean portIsFree(int port) {
