@@ -149,13 +149,13 @@ public class APIRequestManager implements MessageListener {
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
                             break;
                         }
-                        case G_ADD_BASE: {
+                        case G_REGISTER_PUBLICKEY: {
                             String publicKeyString = data.getString("value");
                             try {
                                 PublicKey publicKey = RSAKeyUtil.publicKeyFromBase64(publicKeyString);
                                 TimoCloudCore.getInstance().getCorePublicKeyManager().addPermittedBaseKey(publicKey);
                             } catch (Exception e) {
-                                throw new APIRequestError("Invalid public key", 15, Arrays.asList(publicKeyString));
+                                throw new APIRequestError("Invalid public key", 15, Collections.singleton(publicKeyString));
                             }
                             break;
                         }

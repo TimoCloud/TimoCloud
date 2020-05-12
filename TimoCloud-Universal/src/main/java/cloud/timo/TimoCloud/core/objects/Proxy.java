@@ -25,10 +25,7 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -45,7 +42,7 @@ public class Proxy implements Instance, Communicatable {
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private ArrayList<DnsRecord> dnsRecords = new ArrayList<>();
+    private Collection<DnsRecord> dnsRecords;
     private Set<Server> registeredServers;
     private LogStorage logStorage;
     private PublicKey publicKey;
@@ -61,6 +58,7 @@ public class Proxy implements Instance, Communicatable {
         this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();
+        dnsRecords = new ArrayList<>();
     }
 
     @Override
@@ -296,13 +294,12 @@ public class Proxy implements Instance, Communicatable {
         return connected;
     }
 
-    public ArrayList<DnsRecord> getDnsRecord() {
+    public Collection<DnsRecord> getDnsRecord() {
         return dnsRecords;
     }
 
     public void addDnsRecord(DnsRecord dnsRecord) {
         this.dnsRecords.add(dnsRecord);
-        //TODO Work for Timo. Object "DnsRecord" does not exist in TimoCloudAPI Project
     }
 
     public Set<Server> getRegisteredServers() {

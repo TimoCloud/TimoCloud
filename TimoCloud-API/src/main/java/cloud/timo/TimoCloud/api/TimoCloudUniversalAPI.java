@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 
+import java.util.Base64;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -104,7 +105,7 @@ public interface TimoCloudUniversalAPI {
      * @param publickey The publickey that should get permission to connect to the core
      * @return A future being completed when the value was changed
      */
-    APIRequestFuture<Void> registerBase(String publickey);
+    APIRequestFuture<Void> registerBase(Base64 publickey);
 
     /**
      * @param properties The group's properties

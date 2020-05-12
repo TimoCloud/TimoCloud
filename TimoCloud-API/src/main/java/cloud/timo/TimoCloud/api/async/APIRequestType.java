@@ -14,7 +14,7 @@ public enum APIRequestType {
 
     G_CREATE_SERVER_GROUP               (GENERAL),
     G_CREATE_PROXY_GROUP                (GENERAL),
-    G_ADD_BASE                          (GENERAL),
+    G_REGISTER_PUBLICKEY                (GENERAL),
 
 
     PG_SET_MAX_PLAYER_COUNT             (PROXY_GROUP),

@@ -21,7 +21,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.net.ServerSocket;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.PublicKey;
@@ -474,26 +473,22 @@ public class BaseInstanceManager {
     private int getScreenVersion() {
         try {
             Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder textBuilder = new StringBuilder();
-            try (Reader reader = new BufferedReader(new InputStreamReader
-                    (getversion.getInputStream(), Charset.forName(StandardCharsets.UTF_8.name())))) {
-                int c = 0;
-                while ((c = reader.read()) != -1) {
-                    textBuilder.append((char) c);
-                }
+            String line = "";
+            while((line = reader.readLine()) != null){
+                textBuilder.append(line);
             }
             String[] log = textBuilder.toString().split(" ");
             if (log.length > 2) {
                 String version = log[2].replace(".", "");
-                try {
                     return Integer.parseInt(version);
-                } catch (NumberFormatException ignored) {
-                }
             }
         } catch (Exception exception) {
-
+            TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
+            TimoCloudBase.getInstance().warning(exception.getMessage());
         }
-        return 0;
+        return Integer.MAX_VALUE;
     }
 
     private boolean portIsFree(int port) {
