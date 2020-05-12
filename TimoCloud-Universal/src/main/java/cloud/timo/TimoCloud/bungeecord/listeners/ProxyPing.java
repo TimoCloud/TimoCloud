@@ -13,7 +13,7 @@ import net.md_5.bungee.event.EventPriority;
 
 public class ProxyPing implements Listener {
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onProxyPingEvent(ProxyPingEvent event) {
         ProxyObject proxyObject = TimoCloudAPI.getBungeeAPI().getThisProxy();
 
@@ -26,4 +26,5 @@ public class ProxyPing implements Listener {
         if (TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useGlobalMotd"))
             serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', proxyObject.getGroup().getMotd())));
     }
+
 }

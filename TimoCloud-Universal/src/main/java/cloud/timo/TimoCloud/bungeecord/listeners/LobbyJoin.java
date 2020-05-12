@@ -26,15 +26,15 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
-        if (! TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) {
+        if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback"))
             return;
-        }
+
         pending.add(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if (! isPending(event.getPlayer().getUniqueId())) {
+        if (!isPending(event.getPlayer().getUniqueId())) {
             return;
         }
         ProxiedPlayer player = event.getPlayer();
@@ -49,6 +49,8 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
+        if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback"))
+            return;
         event.setCancelled(true);
         event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
     }
