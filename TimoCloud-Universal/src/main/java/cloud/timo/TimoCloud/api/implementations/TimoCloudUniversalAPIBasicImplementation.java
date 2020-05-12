@@ -168,7 +168,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public APIRequestFuture<Void> registerBase(Base64 publickey) {
+    public APIRequestFuture<Void> registerBase(String publickey) {
         return new APIRequestImplementation<Void>(G_REGISTER_PUBLICKEY, "core", publickey).submit();
     }
 

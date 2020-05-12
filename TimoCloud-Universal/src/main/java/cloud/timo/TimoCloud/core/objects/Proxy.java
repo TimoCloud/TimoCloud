@@ -25,7 +25,10 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -58,7 +61,7 @@ public class Proxy implements Instance, Communicatable {
         this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();
-        dnsRecords = new ArrayList<>();
+        this.dnsRecords = new HashSet<>();
     }
 
     @Override
