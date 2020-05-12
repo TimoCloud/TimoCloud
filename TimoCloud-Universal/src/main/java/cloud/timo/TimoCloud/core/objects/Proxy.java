@@ -294,7 +294,7 @@ public class Proxy implements Instance, Communicatable {
         return connected;
     }
 
-    public Collection<DnsRecord> getDnsRecord() {
+    public Collection<DnsRecord> getDnsRecords() {
         return dnsRecords;
     }
 
