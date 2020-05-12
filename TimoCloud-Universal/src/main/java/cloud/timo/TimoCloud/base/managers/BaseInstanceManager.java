@@ -21,6 +21,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.net.ServerSocket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.PublicKey;
 import java.util.*;
@@ -201,7 +202,7 @@ public class BaseInstanceManager {
             }
 
             File spigotJar = new File(temporaryDirectory, "spigot.jar");
-            if (! spigotJar.exists()) {
+            if (!spigotJar.exists()) {
                 TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. " + (
                         server.isStatic() ? "Please make sure the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'spigot.jar' in your template."));
@@ -249,10 +250,15 @@ public class BaseInstanceManager {
             this.logTailers.put(server.getId(), logTailer);
 
             try {
-                Process p = new ProcessBuilder(
+                String logString = "";
+                if (getScreenVersion() >= 40602) {
+                    logString = " -L -Logfile " + logFile.getAbsolutePath();
+                }
+
+                Process process = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + server.getId() +
-                                //" -L -Logfile " + logFile.getAbsolutePath() +
+                                logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
@@ -409,10 +415,15 @@ public class BaseInstanceManager {
             this.logTailers.put(proxy.getId(), logTailer);
 
             try {
+                String logString = "";
+                if (getScreenVersion() >= 40602) {
+                    logString = " -L -Logfile " + logFile.getAbsolutePath();
+                }
+
                 Process p = new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + proxy.getId() +
-                                //" -L -Logfile " + logFile.getAbsolutePath() +
+                                logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
@@ -457,6 +468,27 @@ public class BaseInstanceManager {
 
     private void blockPort(int port) {
         recentlyUsedPorts.put(port, 60);
+    }
+
+    private int getScreenVersion() {
+        try {
+            Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
+            StringBuilder textBuilder = new StringBuilder();
+            String line = "";
+            while((line = reader.readLine()) != null){
+                textBuilder.append(line);
+            }
+            String[] log = textBuilder.toString().split(" ");
+            if (log.length > 2) {
+                String version = log[2].replace(".", "");
+                    return Integer.parseInt(version);
+            }
+        } catch (Exception exception) {
+            TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
+            TimoCloudBase.getInstance().warning(exception.getMessage());
+        }
+        return Integer.MAX_VALUE;
     }
 
     private boolean portIsFree(int port) {

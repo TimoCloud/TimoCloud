@@ -136,7 +136,6 @@ public class TimoCloudCore implements TimoCloudModule {
 
     @Override
     public void unload() {
-        getCloudFlareManager().unload();
         for (TimoCloudPlugin plugin : getPluginManager().getPlugins()) {
             plugin.onUnload();
         }

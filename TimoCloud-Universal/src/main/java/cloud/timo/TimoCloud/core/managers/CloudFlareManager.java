@@ -42,14 +42,11 @@ public class CloudFlareManager implements Listener {
     }
 
     public void load() {
-        if (! enabled()) return;
+        if (!enabled()) return;
         createdRecords = new HashSet<>();
         deleteExistingRecords();
     }
 
-    public void unload() {
-        if (!enabled()) return;
-    }
 
     @EventHandler
     public void onProxyRegisterEvent(ProxyRegisterEvent event) {
@@ -59,7 +56,7 @@ public class CloudFlareManager implements Listener {
             getActiveHostnames().parallelStream().forEach(hostName -> {
                 for (String hostName1 : proxy.getGroup().getHostNames()) {
                     if (!nameMatches(hostName, hostName1)) continue;
-                    proxy.setDnsRecord(addRecord(new SrvRecord(
+                    proxy.addDnsRecord(addRecord(new SrvRecord(
                             null,
                             "SRV",
                             hostName,
@@ -81,16 +78,14 @@ public class CloudFlareManager implements Listener {
     public void onProxyUnregisterEvent(ProxyUnregisterEvent event) {
         if (!enabled()) return;
         Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
-        if (proxy.getDnsRecord() == null) return;
-        executorService.submit(() -> {
-            deleteRecord(proxy.getDnsRecord());
-        });
+        if (proxy.getDnsRecords() == null) return;
+        executorService.submit(() -> proxy.getDnsRecords().forEach(this::deleteRecord));
     }
 
 
     @EventHandler
     public void onBaseRegisterEvent(BaseConnectEvent event) {
-        if (! enabled()) return;
+        if (!enabled()) return;
         BaseObject base = event.getBase();
         executorService.submit(() -> {
             getZones().parallelStream().forEach(zone -> {
@@ -101,7 +96,7 @@ public class CloudFlareManager implements Listener {
 
     @EventHandler
     public void onBaseUnregisterEvent(BaseDisconnectEvent event) {
-        if (! enabled()) return;
+        if (!enabled()) return;
         BaseObject base = event.getBase();
         executorService.submit(() -> {
             getZones().parallelStream().forEach(zone -> {
@@ -119,7 +114,7 @@ public class CloudFlareManager implements Listener {
             getZones().parallelStream().forEach(zone -> {
                 getRecords(zone).parallelStream().forEach(record -> {
                     if (record.getName().contains(".base.")) {
-                        if (! createdRecords.contains(record)) {
+                        if (!createdRecords.contains(record)) {
                             deleteRecord(record);
                         }
                     }
@@ -129,7 +124,7 @@ public class CloudFlareManager implements Listener {
         executorService.submit(() -> {
             getActiveHostnames().parallelStream().forEach(hostname -> { // Delete SRV records
                 getMatchingSrvRecords(hostname, "SRV").parallelStream().forEach(record -> {
-                    if (! createdRecords.contains(record)) {
+                    if (!createdRecords.contains(record)) {
                         deleteRecord(record);
                     }
                 });
@@ -143,7 +138,8 @@ public class CloudFlareManager implements Listener {
             this.createdRecords.add(createdRecord);
             return createdRecord;
         } catch (Exception e) {
-            if (e.getMessage().contains("The record already exists.")) return null; // This happens when a base connects while we are deleting old records
+            if (e.getMessage().contains("The record already exists."))
+                return null; // This happens when a base connects while we are deleting old records
             TimoCloudCore.getInstance().severe(e);
             return null;
         }
@@ -213,7 +209,7 @@ public class CloudFlareManager implements Listener {
         try {
             JsonElement response = HttpRequestUtil.requestJson(url, method, data, ArrayUtil.concatArrays(getRequestProperties(), additionalProperties));
             JsonObject jsonObject = response.getAsJsonObject();
-            if (! jsonObject.get("success").getAsBoolean()) {
+            if (!jsonObject.get("success").getAsBoolean()) {
                 throw new CloudFlareException("CloudFlare API returned an error: " + jsonObject.get("errors").getAsJsonArray().get(0).toString());
             }
             return jsonObject.get("result");

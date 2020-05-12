@@ -11,17 +11,19 @@ import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
+import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.common.json.JsonConverter;
 import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 
+import java.security.PublicKey;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-// Next free error code: 15
+// Next free error code: 16
 public class APIRequestManager implements MessageListener {
 
     @Override
@@ -145,6 +147,16 @@ public class APIRequestManager implements MessageListener {
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
+                            break;
+                        }
+                        case G_REGISTER_PUBLICKEY: {
+                            String publicKeyString = data.getString("value");
+                            try {
+                                PublicKey publicKey = RSAKeyUtil.publicKeyFromBase64(publicKeyString);
+                                TimoCloudCore.getInstance().getCorePublicKeyManager().addPermittedBaseKey(publicKey);
+                            } catch (Exception e) {
+                                throw new APIRequestError("Invalid public key", 15, Collections.singleton(publicKeyString));
+                            }
                             break;
                         }
                     }
