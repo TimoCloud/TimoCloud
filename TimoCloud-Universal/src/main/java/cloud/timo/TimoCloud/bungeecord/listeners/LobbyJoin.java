@@ -41,6 +41,7 @@ public class LobbyJoin implements Listener {
         ServerInfo info = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
         if (info == null) {
             TimoCloudBungee.getInstance().severe("No lobby server found.");
+            pending.remove(player.getUniqueId());
             return;
         }
         event.setTarget(info);
