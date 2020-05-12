@@ -7,7 +7,6 @@
     <groupId>cloud.timo.TimoCloud</groupId>
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
-
     <version>6.0-beta-1.5</version>
 
     <modules>

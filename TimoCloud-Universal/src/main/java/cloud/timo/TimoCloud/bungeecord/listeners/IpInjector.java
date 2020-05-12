@@ -7,17 +7,18 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
 import java.lang.reflect.Field;
 
 public class IpInjector implements Listener {
 
-    @EventHandler (priority = -128)
+    @EventHandler (priority = EventPriority.LOW)
     public void onPreLoginEvent(PreLoginEvent event) {
         injectConnection(event.getConnection());
     }
 
-    @EventHandler (priority = -128)
+    @EventHandler (priority = EventPriority.LOW)
     public void onProxyPingEvent(ProxyPingEvent event) {
         injectConnection(event.getConnection());
     }
