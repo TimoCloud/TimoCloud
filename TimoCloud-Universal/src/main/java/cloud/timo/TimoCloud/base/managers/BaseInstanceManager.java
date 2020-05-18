@@ -486,6 +486,7 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
             TimoCloudBase.getInstance().warning(exception.getMessage());
         }
+
         return Integer.MAX_VALUE;
     }
 
