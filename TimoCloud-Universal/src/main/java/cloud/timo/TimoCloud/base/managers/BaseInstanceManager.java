@@ -476,18 +476,17 @@ public class BaseInstanceManager {
             BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder textBuilder = new StringBuilder();
             String line = "";
-            while((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 textBuilder.append(line);
             }
-            String[] log = textBuilder.toString().split(" ");
-            if (log.length > 2) {
-                String version = log[2].replace(".", "");
-                    return Integer.parseInt(version);
-            }
+            String log = textBuilder.toString().toLowerCase().trim().replace("screen version ", "").split(" ")[0].replaceAll("[^0-9]+", "");
+            String version = log.replace(".", "");
+            return Integer.parseInt(version);
         } catch (Exception exception) {
             TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
             TimoCloudBase.getInstance().warning(exception.getMessage());
         }
+
         return Integer.MAX_VALUE;
     }
 
