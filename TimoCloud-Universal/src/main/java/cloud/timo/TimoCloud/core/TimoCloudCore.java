@@ -164,7 +164,7 @@ public class TimoCloudCore implements TimoCloudModule {
                 node("listbases"),
                 node("sendcommand", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList())),
                 node("addbase")
-        );
+                );
         Parser parser = new DefaultParser();
         String prompt = "> ";
         String rightPrompt = null;
@@ -181,7 +181,6 @@ public class TimoCloudCore implements TimoCloudModule {
                 line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
             } catch (UserInterruptException e) {
                 System.exit(0);
-            } catch (EndOfFileException ignore) {
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -312,7 +311,7 @@ public class TimoCloudCore implements TimoCloudModule {
     public CloudFlareManager getCloudFlareManager() {
         return cloudFlareManager;
     }
-
+    
     public PluginManager getPluginManager() {
         return pluginManager;
     }
