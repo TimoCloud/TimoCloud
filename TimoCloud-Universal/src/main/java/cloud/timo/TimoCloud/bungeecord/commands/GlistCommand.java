@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.bungeecord.commands;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import net.md_5.bungee.api.ChatColor;
@@ -27,6 +28,6 @@ public class GlistCommand extends Command {
                 );
             }
         }
-        sender.sendMessage(new TextComponent(ChatColor.RESET + "Total players online: " + TimoCloudAPI.getBungeeAPI().getThisProxy().getGroup().getOnlinePlayerCount()));
+        sender.sendMessage(new TextComponent(ChatColor.RESET + "Total players online: " + TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().mapToInt(ProxyGroupObject::getOnlinePlayerCount).sum()));
     }
 }
