@@ -102,7 +102,7 @@ public class BukkitFileManager {
         signTemplates.addDefault("Default.layouts.STARTING.lines.1", "[&3%name%&0]");
         signTemplates.addDefault("Default.layouts.STARTING.lines.2", "&eServer is");
         signTemplates.addDefault("Default.layouts.STARTING.lines.3", "&estarting...");
-        signTemplates.addDefault("Default.layouts.STARTING.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
+        signTemplates.addDefault("Default.layouts.STARTING.lines.4", "&2ooo;&2Ooo;&2oOo;&2ooO");
         signTemplates.addDefault("Default.layouts.STARTING.updateSpeed", 5L);
 
         signTemplates.addDefault("Default.layouts.ONLINE.lines.1", "[&3%name%&0]");
@@ -114,7 +114,7 @@ public class BukkitFileManager {
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.1", "&cWaiting");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.2", "&cfor");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.3", "&cserver");
-        signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.4", "&2▲▲▲;&2▶▲▲;&2▶▶▲;&2▶▶▶;&2▲▶▶;&2▲▲▶;&2▲▲▲;&2▲▲◀;&2▲◀◀;&2◀◀◀;&2◀◀▲;&2◀▲▲");
+        signTemplates.addDefault("NoFreeServerFound.layouts.Default.lines.4", "&2ooo;&2Ooo;&2oOo;&2ooO");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.updateSpeed", 5L);
 
         if (TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
