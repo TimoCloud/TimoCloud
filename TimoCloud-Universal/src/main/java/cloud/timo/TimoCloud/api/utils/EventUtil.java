@@ -78,7 +78,9 @@ public class EventUtil {
                 ServerGroupPriorityChangeEventBasicImplementation.class,
                 ServerGroupRamChangeEventBasicImplementation.class,
                 ServerGroupStaticChangeEventBasicImplementation.class,
-                ServerGroupDeletedEventBasicImplementation.class
+                ServerGroupDeletedEventBasicImplementation.class,
+                ServerGroupJavaParametersChangeEventBasicImplementation.class,
+                ServerGroupSpigotParametersChangeEventBasicImplementation.class
         };
 
         for (Class<? extends Event> clazz : events) {

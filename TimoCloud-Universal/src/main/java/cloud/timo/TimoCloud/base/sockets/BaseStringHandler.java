@@ -13,8 +13,7 @@ import org.apache.commons.io.FileDeleteStrategy;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
@@ -37,7 +36,9 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> mapHash = message.containsKey("mapHash") ? (Map<String, Object>) message.get("mapHash") : null;
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
-                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash));
+                Set<String> javaParameters = (Set<String>) message.get("javaParameters");
+                Set<String> spigotParameters = (Set<String>) message.get("spigotParameters");
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, new HashSet<>(javaParameters), new HashSet<>(spigotParameters)));
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }

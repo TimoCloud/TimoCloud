@@ -262,11 +262,10 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
-                                " -Xmx" + server.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Xmx" + server.getRam() + "M " +
+                                buildStartParameters(server.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
-                                " -Dtimocloud-servername=" + server.getName() +
+                                " -Dtimocloud-servernme=" + server.getName() +
                                 " -Dtimocloud-serverid=" + server.getId() +
                                 " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
                                 " -Dtimocloud-randommap=" + randomMap +
@@ -274,10 +273,9 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + server.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " -jar spigot.jar -o false -h 0.0.0.0 -p " + port +
+                                " -jar spigot.jar -o false -h 0.0.0.0 -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
-
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ":");
@@ -439,6 +437,7 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
                                 " -jar BungeeCord.jar" +
                                 "'"
+
                 ).start();
 
                 TimoCloudBase.getInstance().info("Successfully started proxy screen session " + proxy.getName() + ".");
@@ -476,13 +475,13 @@ public class BaseInstanceManager {
             BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder textBuilder = new StringBuilder();
             String line = "";
-            while((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 textBuilder.append(line);
             }
             String[] log = textBuilder.toString().split(" ");
             if (log.length > 2) {
                 String version = log[2].replace(".", "");
-                    return Integer.parseInt(version);
+                return Integer.parseInt(version);
             }
         } catch (Exception exception) {
             TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
@@ -590,4 +589,11 @@ public class BaseInstanceManager {
     public void setDownloadingTemplate(boolean downloadingTemplate) {
         this.downloadingTemplate = downloadingTemplate;
     }
+
+    private String buildStartParameters(Set<String> parameters) {
+        StringBuilder formattedParameters = new StringBuilder();
+        parameters.forEach(s -> formattedParameters.append(s).append(" "));
+        return formattedParameters.toString().trim();
+    }
+
 }

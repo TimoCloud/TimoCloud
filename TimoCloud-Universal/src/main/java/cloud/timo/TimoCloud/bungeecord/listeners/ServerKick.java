@@ -7,6 +7,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 public class ServerKick implements Listener {
+
     @EventHandler (priority = 65)
     public void onServerKickEvent(ServerKickEvent event) {
         if (! TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;

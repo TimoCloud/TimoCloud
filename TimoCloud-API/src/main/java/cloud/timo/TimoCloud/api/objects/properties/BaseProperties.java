@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.api.objects.properties;
 
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
+import java.net.InetAddress;
 import java.security.PublicKey;
 
 public class BaseProperties {
@@ -14,7 +15,7 @@ public class BaseProperties {
     private Double maxCpuLoad;
 
     private BaseProperties() {
-        this.maxRam  = getDefaultPropertiesProvider().getMaxRam();
+        this.maxRam = getDefaultPropertiesProvider().getMaxRam();
         this.keepFreeRam = getDefaultPropertiesProvider().getKeepFreeRam();
         this.maxCpuLoad = getDefaultPropertiesProvider().getMaxCpuLoad();
     }
@@ -93,4 +94,5 @@ public class BaseProperties {
         Double getMaxCpuLoad();
 
     }
+
 }

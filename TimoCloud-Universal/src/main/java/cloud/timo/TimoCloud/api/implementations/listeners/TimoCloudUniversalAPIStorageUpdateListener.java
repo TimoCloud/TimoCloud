@@ -128,7 +128,7 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     //Proxy Events
     @EventHandler
-    public void onProxyOnlinePlayerCountChangeEvent(ProxyOnlinePlayerCountChangeEvent event){
+    public void onProxyOnlinePlayerCountChangeEvent(ProxyOnlinePlayerCountChangeEvent event) {
         ((ProxyObjectBasicImplementation) event.getProxy()).setOnlinePlayerCountInternally(event.getNewValue());
     }
 
@@ -296,6 +296,16 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
     @EventHandler
     public void onServerGroupStaticChangeEvent(ServerGroupStaticChangeEvent event) {
         ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setStaticInternally(event.getNewValue());
+    }
+
+    @EventHandler
+    public void onServerGroupJavaParametersChangeEvent(ServerGroupJavaParametersChangeEvent event) {
+        ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setJavaParametersInternally(event.getNewValue());
+    }
+
+    @EventHandler
+    public void onServerGroupSpigotParametersChangeEvent(ServerGroupSpigotParametersChangeEvent event) {
+        ((ServerGroupObjectBasicImplementation) event.getServerGroup()).setSpigotParametersInternally(event.getNewValue());
     }
 
 }

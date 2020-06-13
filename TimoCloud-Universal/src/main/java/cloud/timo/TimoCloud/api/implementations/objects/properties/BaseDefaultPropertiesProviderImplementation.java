@@ -6,7 +6,7 @@ public class BaseDefaultPropertiesProviderImplementation implements BaseProperti
 
     @Override
     public Integer getMaxRam() {
-        return 64*1024;
+        return 64 * 1024;
     }
 
     @Override
@@ -18,4 +18,5 @@ public class BaseDefaultPropertiesProviderImplementation implements BaseProperti
     public Double getMaxCpuLoad() {
         return 90.0;
     }
+
 }

@@ -15,6 +15,8 @@ public class ServerGroupProperties {
     private Integer priority;
     private String baseIdentifier;
     private Collection<String> sortOutStates;
+    private Collection<String> javaParameters;
+    private Collection<String> spigotParameters;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -26,6 +28,8 @@ public class ServerGroupProperties {
         this.priority = getDefaultPropertiesProvider().getPriority();
         this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
+        this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
+        this.spigotParameters = getDefaultPropertiesProvider().getSpigotParameters();
     }
 
     public ServerGroupProperties(String name) {
@@ -108,6 +112,24 @@ public class ServerGroupProperties {
         return this;
     }
 
+    public Collection<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public ServerGroupProperties setJavaParameters(Collection<String> javaParameters) {
+        this.javaParameters = javaParameters;
+        return this;
+    }
+
+    public Collection<String> getSpigotParameters() {
+        return spigotParameters;
+    }
+
+    public ServerGroupProperties setSpigotParameters(Collection<String> spigotParameters) {
+        this.spigotParameters = spigotParameters;
+        return this;
+    }
+
     private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
         return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
     }
@@ -132,8 +154,11 @@ public class ServerGroupProperties {
 
         Collection<String> getSortOutStates();
 
-
         String generateId();
+
+        Collection<String> getJavaParameters();
+
+        Collection<String> getSpigotParameters();
 
     }
 }

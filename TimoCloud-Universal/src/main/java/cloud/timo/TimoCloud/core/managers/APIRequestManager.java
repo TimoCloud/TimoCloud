@@ -65,6 +65,10 @@ public class APIRequestManager implements MessageListener {
                             }
                             Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
+                            Collection<String> javaParameters = serverGroupProperties.getJavaParameters();
+                            validateNotNull(javaParameters, "JavaParameters");
+                            Collection<String> spigotParameters = serverGroupProperties.getSpigotParameters();
+                            validateNotNull(spigotParameters, "SpigotParameters");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
@@ -79,7 +83,9 @@ public class APIRequestManager implements MessageListener {
                                     isStatic,
                                     priority,
                                     baseIdentifier,
-                                    sortOutStates
+                                    sortOutStates,
+                                    javaParameters,
+                                    spigotParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -323,6 +329,14 @@ public class APIRequestManager implements MessageListener {
                             Collection<String> value = (Collection<String>) data.get("value");
                             validateNotNull(value, "SortOutStates");
                             serverGroup.setSortOutStates(value);
+                        }
+                        case SG_SET_JAVA_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "JavaParameters");
+                        }
+                        case SG_SET_SPIGOT_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "SpigotParameters");
                         }
                         case SG_DELETE: {
                             TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);

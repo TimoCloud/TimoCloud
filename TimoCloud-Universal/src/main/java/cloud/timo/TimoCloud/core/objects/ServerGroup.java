@@ -23,6 +23,8 @@ public class ServerGroup implements Group {
     private int priority;
     private Base base;
     private Set<String> sortOutStates;
+    private Set<String> javaParameters;
+    private Set<String> spigotParameters;
 
     private Map<String, Server> servers = new HashMap<>();
 
@@ -34,8 +36,8 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
-        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
+    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, Collection<String> javaParameters, Collection<String> spigotParameters) {
+        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters);
     }
 
     public void construct(Map<String, Object> properties) {
@@ -51,7 +53,9 @@ public class ServerGroup implements Group {
                     (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
                     ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
                     (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
-                    (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()));
+                    (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()),
+                    (Collection<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
+                    (Collection<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -68,14 +72,16 @@ public class ServerGroup implements Group {
         properties.put("priority", getPriority());
         if (getBase() != null) properties.put("base", getBase().getId());
         properties.put("sort-out-states", getSortOutStates());
+        properties.put("javaParameters", getJavaParameters());
+        properties.put("spigotParameters", getSpigotParameters());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters());
     }
 
-    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, Collection<String> javaParameters, Collection<String> spigotParameters) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
@@ -89,6 +95,8 @@ public class ServerGroup implements Group {
         this.priority = priority;
         if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
         this.sortOutStates = new HashSet<>(sortOutStates);
+        this.spigotParameters = new HashSet<>(spigotParameters);
+        this.javaParameters = new HashSet<>(javaParameters);
         if (isStatic() && getBase() == null) {
             TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to enable starting of servers.");
         }
@@ -196,6 +204,26 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupPriorityChangeEventBasicImplementation(toGroupObject(), oldValue, priority));
     }
 
+    public Set<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public void setJavaParameters(Collection<String> javaParameters) {
+        Set<String> oldValue = getJavaParameters();
+        this.javaParameters = new HashSet<>(javaParameters);
+        EventTransmitter.sendEvent(new ServerGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
+    }
+
+    public Set<String> getSpigotParameters() {
+        return spigotParameters;
+    }
+
+    public void setSpigotParameters(Collection<String> spigotParameters) {
+        Set<String> oldValue = getSpigotParameters();
+        this.spigotParameters = new HashSet<>(spigotParameters);
+        EventTransmitter.sendEvent(new ServerGroupSpigotParametersChangeEventBasicImplementation(toGroupObject(), oldValue, spigotParameters));
+    }
+
     public void setBase(Base base) {
         Base oldValue = getBase();
         this.base = base;
@@ -213,7 +241,6 @@ public class ServerGroup implements Group {
 
     public void setSortOutStates(Collection<String> sortOutStates) {
         this.sortOutStates = new HashSet<>(sortOutStates);
-        //TODO Work for Timo?
     }
 
     public ServerGroupObject toGroupObject() {
@@ -227,7 +254,9 @@ public class ServerGroup implements Group {
                 isStatic(),
                 getBase() == null ? null : getBase().toLink(),
                 getPriority(),
-                getSortOutStates()
+                getSortOutStates(),
+                getJavaParameters(),
+                getSpigotParameters()
         );
     }
 

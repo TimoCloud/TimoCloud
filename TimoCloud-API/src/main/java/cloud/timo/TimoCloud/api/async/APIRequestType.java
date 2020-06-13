@@ -40,6 +40,8 @@ public enum APIRequestType {
     SG_SET_ONLINE_AMOUNT                (SERVER_GROUP),
     SG_SET_SORT_OUT_STATES              (SERVER_GROUP),
     SG_DELETE                           (SERVER_GROUP),
+    SG_SET_JAVA_START_PARAMETERS        (SERVER_GROUP),
+    SG_SET_SPIGOT_START_PARAMETERS      (SERVER_GROUP),
 
     P_EXECUTE_COMMAND                   (PROXY),
     P_STOP                              (PROXY),
