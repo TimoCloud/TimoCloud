@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base.objects;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class BaseServerObject {
     private String name;
@@ -13,10 +13,10 @@ public class BaseServerObject {
     private Map<String, Object> templateHash;
     private Map<String, Object> mapHash;
     private Map<String, Object> globalHash;
-    private Set<String> javaParameters;
-    private Set<String> spigotParameters;
+    private List<String> javaParameters;
+    private List<String> spigotParameters;
 
-    public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash, Set<String> javaParameters, Set<String> spigotParameters) {
+    public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash, List<String> javaParameters, List<String> spigotParameters) {
         this.name = name;
         this.id = id;
         this.group = group;
@@ -66,11 +66,11 @@ public class BaseServerObject {
         return globalHash;
     }
 
-    public Set<String> getJavaParameters() {
+    public List<String> getJavaParameters() {
         return javaParameters;
     }
 
-    public Set<String> getSpigotParameters() {
+    public List<String> getSpigotParameters() {
         return spigotParameters;
     }
 

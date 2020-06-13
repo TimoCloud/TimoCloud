@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.objects.properties;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
 import java.util.Collection;
+import java.util.List;
 
 public class ServerGroupProperties {
 
@@ -15,8 +16,8 @@ public class ServerGroupProperties {
     private Integer priority;
     private String baseIdentifier;
     private Collection<String> sortOutStates;
-    private Collection<String> javaParameters;
-    private Collection<String> spigotParameters;
+    private List<String> javaParameters;
+    private List<String> spigotParameters;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -112,20 +113,20 @@ public class ServerGroupProperties {
         return this;
     }
 
-    public Collection<String> getJavaParameters() {
+    public List<String> getJavaParameters() {
         return javaParameters;
     }
 
-    public ServerGroupProperties setJavaParameters(Collection<String> javaParameters) {
+    public ServerGroupProperties setJavaParameters(List<String> javaParameters) {
         this.javaParameters = javaParameters;
         return this;
     }
 
-    public Collection<String> getSpigotParameters() {
+    public List<String> getSpigotParameters() {
         return spigotParameters;
     }
 
-    public ServerGroupProperties setSpigotParameters(Collection<String> spigotParameters) {
+    public ServerGroupProperties setSpigotParameters(List<String> spigotParameters) {
         this.spigotParameters = spigotParameters;
         return this;
     }
@@ -156,9 +157,9 @@ public class ServerGroupProperties {
 
         String generateId();
 
-        Collection<String> getJavaParameters();
+        List<String> getJavaParameters();
 
-        Collection<String> getSpigotParameters();
+        List<String> getSpigotParameters();
 
     }
 }

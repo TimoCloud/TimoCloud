@@ -668,7 +668,6 @@ public class CoreInstanceManager {
         return Stream.concat(
                 Stream.concat(getProxies().stream(), getServers().stream()),
                 Stream.concat(getCords().stream(), getBases().stream()
-
                 )).collect(Collectors.toList());
     }
 

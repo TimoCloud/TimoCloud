@@ -18,10 +18,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 
 import java.security.PublicKey;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 // Next free error code: 16
 public class APIRequestManager implements MessageListener {
@@ -65,9 +62,9 @@ public class APIRequestManager implements MessageListener {
                             }
                             Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
-                            Collection<String> javaParameters = serverGroupProperties.getJavaParameters();
+                            List<String> javaParameters = serverGroupProperties.getJavaParameters();
                             validateNotNull(javaParameters, "JavaParameters");
-                            Collection<String> spigotParameters = serverGroupProperties.getSpigotParameters();
+                            List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
                             validateNotNull(spigotParameters, "SpigotParameters");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {

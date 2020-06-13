@@ -5,11 +5,12 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.List;
 
 @NoArgsConstructor
-public class ServerGroupSpigotParametersChangeEventBasicImplementation  extends ServerGroupPropertyChangeEvent<Collection<String>> implements ServerGroupSpigotParametersChangeEvent {
+public class ServerGroupSpigotParametersChangeEventBasicImplementation  extends ServerGroupPropertyChangeEvent<List<String>> implements ServerGroupSpigotParametersChangeEvent {
 
-    public ServerGroupSpigotParametersChangeEventBasicImplementation(ServerGroupObject instance, Collection<String> oldValue, Collection<String> newValue) {
+    public ServerGroupSpigotParametersChangeEventBasicImplementation(ServerGroupObject instance, List<String> oldValue, List<String> newValue) {
         super(instance, oldValue, newValue);
     }
 

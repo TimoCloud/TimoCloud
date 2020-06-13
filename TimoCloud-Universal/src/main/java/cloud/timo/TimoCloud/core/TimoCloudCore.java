@@ -181,7 +181,6 @@ public class TimoCloudCore implements TimoCloudModule {
                 line = reader.readLine(prompt, rightPrompt, (MaskingCallback) null, null);
             } catch (UserInterruptException e) {
                 System.exit(0);
-            } catch (EndOfFileException ignore) {
             } catch (Exception e) {
                 e.printStackTrace();
             }

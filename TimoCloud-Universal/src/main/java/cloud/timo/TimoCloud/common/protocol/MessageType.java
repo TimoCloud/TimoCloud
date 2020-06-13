@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.common.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-// NEXT FREE ID: 49
+// NEXT FREE ID: 51
 
 public enum MessageType {
     CORE_PARSE_COMMAND                          (1),
