@@ -36,6 +36,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
@@ -192,10 +193,11 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     public void stop() {
-        getProxy().stop();
+        ProxyServer.getInstance().stop();
     }
 
     private void everySecond() {
+        if(isShuttingDown()) return;
         sendEverything();
     }
 

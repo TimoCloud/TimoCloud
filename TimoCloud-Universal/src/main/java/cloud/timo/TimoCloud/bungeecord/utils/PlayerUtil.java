@@ -24,10 +24,7 @@ public class PlayerUtil {
             if (server != null) serverObjectLink = server.toLink();
         }
 
-        //This should be here, because when the proxy is stopping getThisProxy() is null
-        if (TimoCloudAPI.getBungeeAPI().getThisProxy() != null) {
-            proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getBungeeAPI().getThisProxy()).toLink();
-        }
+        proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getBungeeAPI().getThisProxy()).toLink();
 
         return new PlayerObjectBungeeImplementation(
                 player.getName(),
