@@ -129,7 +129,6 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void stop() {
-        unregister();
         sendMessage(Message.create().setType(MessageType.PROXY_STOP));
     }
 

@@ -112,7 +112,6 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void stop() {
-        unregister();
         sendMessage(Message.create().setType(MessageType.SERVER_STOP));
     }
 

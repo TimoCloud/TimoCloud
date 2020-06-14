@@ -54,9 +54,6 @@ public class EventMonitor implements Listener {
     @EventHandler
     public void onPlayerQuitEvent(net.md_5.bungee.api.event.PlayerDisconnectEvent event) {
         TimoCloudBungee.getInstance().sendPlayerCount();
-
-        //PlayerUtil.playerToObject is using getThisProxy method. this is returning null when server stops
-        if (!TimoCloudBungee.getInstance().isShuttingDown()) return;
         EventTransmitter.sendEvent(new PlayerDisconnectEventBasicImplementation(getPlayer(event.getPlayer())));
     }
 
