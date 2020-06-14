@@ -1,6 +1,8 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -15,9 +17,11 @@ import java.util.UUID;
 
 public class LobbyJoin implements Listener {
     private Set<UUID> pending;
+    private Boolean useFallback;
 
     public LobbyJoin() {
         pending = new HashSet<>();
+        useFallback = TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback");
     }
 
     private boolean isPending(UUID uuid) {
@@ -26,22 +30,23 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
-        if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback"))
-            return;
-
+        if (!useFallback) return;
         pending.add(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if (!isPending(event.getPlayer().getUniqueId())) {
-            return;
-        }
+        if (!useFallback) return;
+        if (!isPending(event.getPlayer().getUniqueId())) return;
+
         ProxiedPlayer player = event.getPlayer();
         ServerInfo info = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
         if (info == null) {
             TimoCloudBungee.getInstance().severe("No lobby server found.");
             pending.remove(player.getUniqueId());
+
+            kickPlayer(player);
+            event.setCancelled(true);
             return;
         }
         event.setTarget(info);
@@ -50,10 +55,15 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
-        if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback"))
-            return;
+        if (!useFallback) return;
         event.setCancelled(true);
         event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
+    }
+
+    private void kickPlayer(ProxiedPlayer proxiedPlayer) {
+        String fallBackMessage = TimoCloudBungee.getInstance().getFileManager().getMessages().getString("NoFallBackGroupFound");
+        fallBackMessage = ChatColor.translateAlternateColorCodes('&', fallBackMessage);
+        proxiedPlayer.disconnect(TextComponent.fromLegacyText(fallBackMessage));
     }
 
 }

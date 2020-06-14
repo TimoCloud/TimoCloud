@@ -27,7 +27,7 @@ public class LobbyManager {
     private List<String> getVisitedLobbies(UUID uuid) {
         lobbyHistory.putIfAbsent(uuid, new ArrayList<>());
         lastUpdate.putIfAbsent(uuid, 0L);
-        if (new Date().getTime()-lastUpdate.get(uuid) >= INVALIDATE_CACHE_TIME) {
+        if (new Date().getTime() - lastUpdate.get(uuid) >= INVALIDATE_CACHE_TIME) {
             lobbyHistory.put(uuid, new ArrayList<>());
         }
         lastUpdate.put(uuid, new Date().getTime());
@@ -60,7 +60,7 @@ public class LobbyManager {
         List<String> history = getVisitedLobbies(uuid);
 
         for (ServerObject server : servers) {
-            if (history.contains(server.getName()) && ! removeServers.contains(server)) removeServers.add(server);
+            if (history.contains(server.getName()) && !removeServers.contains(server)) removeServers.add(server);
         }
         servers.removeAll(removeServers);
         if (servers.size() == 0) {
@@ -74,7 +74,7 @@ public class LobbyManager {
                 target = servers.get(new Random().nextInt(servers.size()));
                 break;
             case FILL:
-                for (int i = servers.size()-1; i>= 0; i--) {
+                for (int i = servers.size() - 1; i >= 0; i--) {
                     ServerObject server = servers.get(i);
                     if (server.getOnlinePlayerCount() < server.getMaxPlayerCount()) {
                         target = server;
@@ -92,12 +92,16 @@ public class LobbyManager {
     public ServerInfo getFreeLobby(UUID uuid, boolean kicked) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
         ServerInfo notThis = null;
+        ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getServer(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
+
         if (proxiedPlayer != null && proxiedPlayer.getServer() != null) notThis = proxiedPlayer.getServer().getInfo();
 
         ServerInfo serverInfo = searchFreeLobby(uuid, notThis);
         if (serverInfo == null) {
-            return TimoCloudBungee.getInstance().getProxy().getServerInfo(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
+            if (serverObject == null) return null;
+            return TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject.getName());
         }
+
 
         if (kicked) addToHistory(uuid, serverInfo.getName());
 
