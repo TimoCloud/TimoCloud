@@ -276,7 +276,6 @@ public class BaseInstanceManager {
                                 " -jar spigot.jar -o false -h 0.0.0.0 -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
-
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ":");
@@ -475,13 +474,13 @@ public class BaseInstanceManager {
             BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder textBuilder = new StringBuilder();
             String line = "";
-            while((line = reader.readLine()) != null){
+            while ((line = reader.readLine()) != null) {
                 textBuilder.append(line);
             }
             String[] log = textBuilder.toString().split(" ");
             if (log.length > 2) {
                 String version = log[2].replace(".", "");
-                    return Integer.parseInt(version);
+                return Integer.parseInt(version);
             }
         } catch (Exception exception) {
             TimoCloudBase.getInstance().warning("Error while getting Screen Version:");
@@ -592,8 +591,11 @@ public class BaseInstanceManager {
 
     private String buildStartParameters(List<String> parameters) {
         StringBuilder formattedParameters = new StringBuilder();
-        parameters.forEach(s -> formattedParameters.append(s).append(" "));
+        parameters.forEach(s -> {
+            if (s == null)
+                TimoCloudBase.getInstance().severe("Please check your server/proxyGroups.json. There is a bug in the Spigot/JavaStart parameters.");
+            else formattedParameters.append(s).append(" ");
+        });
         return formattedParameters.toString().trim();
     }
-
 }
