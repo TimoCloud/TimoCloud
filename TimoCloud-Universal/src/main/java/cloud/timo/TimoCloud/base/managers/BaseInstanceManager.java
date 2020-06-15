@@ -488,7 +488,6 @@ public class BaseInstanceManager {
         return Integer.MAX_VALUE;
     }
 
-
     private boolean portIsFree(int port) {
         if (recentlyUsedPorts.containsKey(port)) return false;
         ServerSocket serverSocket = null;
