@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,8 @@ public class ServerGroup implements Group {
     private int priority;
     private Base base;
     private Set<String> sortOutStates;
+    private List<String> javaParameters;
+    private List<String> spigotParameters;
 
     private Map<String, Server> servers = new HashMap<>();
 
@@ -34,8 +37,8 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates) {
-        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates);
+    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
+        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters);
     }
 
     public void construct(Map<String, Object> properties) {
@@ -51,7 +54,9 @@ public class ServerGroup implements Group {
                     (Boolean) properties.getOrDefault("static", defaultProperties.isStatic()),
                     ((Number) properties.getOrDefault("priority", defaultProperties.getPriority())).intValue(),
                     (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
-                    (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()));
+                    (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()),
+                    (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
+                    (List<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -68,14 +73,16 @@ public class ServerGroup implements Group {
         properties.put("priority", getPriority());
         if (getBase() != null) properties.put("base", getBase().getId());
         properties.put("sort-out-states", getSortOutStates());
+        properties.put("javaParameters", getJavaParameters());
+        properties.put("spigotParameters", getSpigotParameters());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters());
     }
 
-    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
@@ -89,6 +96,8 @@ public class ServerGroup implements Group {
         this.priority = priority;
         if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
         this.sortOutStates = new HashSet<>(sortOutStates);
+        this.spigotParameters = spigotParameters;
+        this.javaParameters = javaParameters;
         if (isStatic() && getBase() == null) {
             TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to enable starting of servers.");
         }
@@ -196,6 +205,26 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupPriorityChangeEventBasicImplementation(toGroupObject(), oldValue, priority));
     }
 
+    public List<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public void setJavaParameters(List<String> javaParameters) {
+        List<String> oldValue = getJavaParameters();
+        this.javaParameters = new ArrayList<>(javaParameters);
+        EventTransmitter.sendEvent(new ServerGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
+    }
+
+    public List<String> getSpigotParameters() {
+        return spigotParameters;
+    }
+
+    public void setSpigotParameters(List<String> spigotParameters) {
+        List<String> oldValue = getSpigotParameters();
+        this.spigotParameters = new ArrayList<>(spigotParameters);
+        EventTransmitter.sendEvent(new ServerGroupSpigotParametersChangeEventBasicImplementation(toGroupObject(), oldValue, spigotParameters));
+    }
+
     public void setBase(Base base) {
         Base oldValue = getBase();
         this.base = base;
@@ -213,7 +242,6 @@ public class ServerGroup implements Group {
 
     public void setSortOutStates(Collection<String> sortOutStates) {
         this.sortOutStates = new HashSet<>(sortOutStates);
-        //TODO Work for Timo?
     }
 
     public ServerGroupObject toGroupObject() {
@@ -227,7 +255,9 @@ public class ServerGroup implements Group {
                 isStatic(),
                 getBase() == null ? null : getBase().toLink(),
                 getPriority(),
-                getSortOutStates()
+                getSortOutStates(),
+                getJavaParameters(),
+                getSpigotParameters()
         );
     }
 

@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class ServerGroupDefaultPropertiesProviderImplementation implements ServerGroupProperties.ServerGroupDefaultPropertiesProvider {
 
@@ -47,4 +48,25 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
     public String generateId() {
         return RandomIdGenerator.generateId();
     }
+
+    @Override
+    public List<String> getJavaParameters() {
+        return Arrays.asList(
+                "-Dfile.encoding=UTF8",
+                "-XX:+UseG1GC",
+                "-XX:+UnlockExperimentalVMOptions",
+                "-XX:+DoEscapeAnalysis",
+                "-XX:+UseCompressedOops",
+                "-XX:MaxGCPauseMillis=10",
+                "-XX:GCPauseIntervalMillis=100",
+                "-XX:+UseAdaptiveSizePolicy",
+                "-XX:ParallelGCThreads=2",
+                "-XX:UseSSE=3");
+    }
+
+    @Override
+    public List<String> getSpigotParameters() {
+        return Arrays.asList("--nogui", "-o false", "-h 0.0.0.0");
+    }
+
 }

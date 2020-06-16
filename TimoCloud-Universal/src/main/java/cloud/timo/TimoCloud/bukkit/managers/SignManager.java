@@ -174,6 +174,7 @@ public class SignManager {
     public void updateSigns() {
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         Collection<SignInstance> dynamicInstances = new ArrayList<>();
+        if(signInstances.isEmpty()) return;
         for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);

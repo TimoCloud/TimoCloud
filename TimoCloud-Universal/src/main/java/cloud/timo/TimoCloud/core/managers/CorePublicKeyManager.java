@@ -27,7 +27,7 @@ public class CorePublicKeyManager {
     }
 
     public boolean redeemBaseKeyIfPermitted(PublicKey publicKey) {
-        if (! isBaseKeyPermitted(publicKey)) return false;
+        if (!isBaseKeyPermitted(publicKey)) return false;
         permittedBaseKeys.remove(publicKey);
         return true;
     }
@@ -45,8 +45,9 @@ public class CorePublicKeyManager {
     }
 
     public boolean redeemKeyIfPermitted(PublicKey publicKey) {
-        if (! isKeyPermitted(publicKey)) return false;
+        if (!isKeyPermitted(publicKey)) return false;
         permittedBaseKeys.remove(publicKey);
         return true;
     }
+
 }

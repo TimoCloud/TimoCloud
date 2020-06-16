@@ -99,6 +99,7 @@ public interface TimoCloudUniversalAPI {
      * @return A collection of all players in the network
      */
     Collection<PlayerObject> getPlayers();
+
     /**
      * Give a base the permission to connect to the core.
      * @param publickey The publickey that should get permission to connect to the core (Base64 encoding)

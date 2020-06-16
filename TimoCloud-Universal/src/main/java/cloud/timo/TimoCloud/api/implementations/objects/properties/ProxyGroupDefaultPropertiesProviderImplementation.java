@@ -4,8 +4,10 @@ import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyGroupProperties.ProxyGroupDefaultPropertiesProvider {
 
@@ -72,6 +74,11 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     @Override
     public Collection<String> getHostNames() {
         return Collections.emptySet();
+    }
+
+    @Override
+    public List<String> getJavaParameters() {
+        return Arrays.asList("-Dfile.encoding=UTF8", "-XX:+UnlockExperimentalVMOptions", "-XX:+DoEscapeAnalysis", "-XX:+UseCompressedOops", "-XX:MaxGCPauseMillis=10", "-XX:GCPauseIntervalMillis=100", "-XX:+UseAdaptiveSizePolicy", "-XX:ParallelGCThreads=2", "-XX:UseSSE=3");
     }
 
     @Override

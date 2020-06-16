@@ -80,7 +80,9 @@ public class Server implements Instance, Communicatable {
                     .set("ram", getGroup().getRam())
                     .set("static", getGroup().isStatic())
                     .setIfNotNull("map", getMap())
-                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()));
+                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()))
+                    .set("spigotParameters", getGroup().getSpigotParameters())
+                    .set("javaParameters", getGroup().getJavaParameters());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
                 File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
@@ -110,7 +112,6 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void stop() {
-        unregister();
         sendMessage(Message.create().setType(MessageType.SERVER_STOP));
     }
 

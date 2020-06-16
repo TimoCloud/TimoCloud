@@ -13,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,13 +42,17 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     private BaseObjectLink base;
     @JsonProperty("so")
     private Set<String> sortOutStates;
+    @JsonProperty("jp")
+    private List<String> javaParameters;
+    @JsonProperty("sp")
+    private List<String> spigotParameters;
     @JsonProperty("se")
     private Set<ServerObjectLink> servers;
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, BaseObjectLink base, Set<String> sortOutStates) {
+    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, BaseObjectLink base, Set<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
         this.id = id;
         this.name = name;
         this.servers = servers;
@@ -149,6 +155,26 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     }
 
     @Override
+    public Collection<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    @Override
+    public APIRequestFuture<Void> setJavaParameters(Collection<String> value) {
+        return new APIRequestImplementation<Void>(SG_SET_JAVA_START_PARAMETERS, getId(), value).submit();
+    }
+
+    @Override
+    public Collection<String> getSpigotParameters() {
+        return spigotParameters;
+    }
+
+    @Override
+    public APIRequestFuture<Void> setSpigotParameters(Collection<String> value) {
+        return new APIRequestImplementation<Void>(SG_SET_SPIGOT_START_PARAMETERS, getId(), value).submit();
+    }
+
+    @Override
     public ServerGroupObjectLink toLink() {
         return new ServerGroupObjectLink(this);
     }
@@ -187,6 +213,14 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
 
     public void removeServerInternally(ServerObjectLink server) {
         this.servers.remove(server);
+    }
+
+    public void setJavaParametersInternally(List<String> javaParameters) {
+        this.javaParameters = javaParameters;
+    }
+
+    public void setSpigotParametersInternally(List<String> spigotParameters) {
+        this.spigotParameters = spigotParameters;
     }
 
     @Override

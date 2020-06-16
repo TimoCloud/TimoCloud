@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 
 import java.util.Collection;
+import java.util.List;
 
 public class ProxyGroupProperties {
 
@@ -22,6 +23,7 @@ public class ProxyGroupProperties {
     private String baseIdentifier;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
+    private List<String> javaParameters;
 
     public ProxyGroupProperties(String id, String name) {
         this.id = id;
@@ -39,6 +41,7 @@ public class ProxyGroupProperties {
         this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
         this.hostNames = getDefaultPropertiesProvider().getHostNames();
+        this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
     }
 
     public ProxyGroupProperties(String name) {
@@ -175,6 +178,15 @@ public class ProxyGroupProperties {
         return this;
     }
 
+    public List<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public ProxyGroupProperties setJavaParameters(List<String> javaParameters) {
+        this.javaParameters = javaParameters;
+        return this;
+    }
+
     private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
         return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
     }
@@ -211,6 +223,7 @@ public class ProxyGroupProperties {
 
         Collection<String> getHostNames();
 
+        List<String> getJavaParameters();
 
         String generateId();
 

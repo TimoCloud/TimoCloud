@@ -18,10 +18,7 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 
 import java.security.PublicKey;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 // Next free error code: 16
 public class APIRequestManager implements MessageListener {
@@ -65,6 +62,10 @@ public class APIRequestManager implements MessageListener {
                             }
                             Collection<String> sortOutStates = serverGroupProperties.getSortOutStates();
                             validateNotNull(sortOutStates, "SortOutStates");
+                            List<String> javaParameters = serverGroupProperties.getJavaParameters();
+                            validateNotNull(javaParameters, "JavaParameters");
+                            List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
+                            validateNotNull(spigotParameters, "SpigotParameters");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
@@ -79,7 +80,9 @@ public class APIRequestManager implements MessageListener {
                                     isStatic,
                                     priority,
                                     baseIdentifier,
-                                    sortOutStates
+                                    sortOutStates,
+                                    javaParameters,
+                                    spigotParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -114,6 +117,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(priority, "Priority");
                             Collection<String> serverGroups = proxyGroupProperties.getServerGroups();
                             validateNotNull(serverGroups, "ServerGroups");
+                            List<String> javaParameters = proxyGroupProperties.getJavaParameters();
+                            validateNotNull(javaParameters, "JavaParameters");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -143,7 +148,8 @@ public class APIRequestManager implements MessageListener {
                                     serverGroups,
                                     baseIdentifier,
                                     proxyChooseStrategy.name(),
-                                    hostNames
+                                    hostNames,
+                                    javaParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
@@ -261,6 +267,11 @@ public class APIRequestManager implements MessageListener {
                             TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
                             break;
                         }
+                        case PG_SET_JAVA_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "JavaParameters");
+                            break;
+                        }
                     }
                     TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                     break;
@@ -324,6 +335,14 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(value, "SortOutStates");
                             serverGroup.setSortOutStates(value);
                         }
+                        case SG_SET_JAVA_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "JavaParameters");
+                        }
+                        case SG_SET_SPIGOT_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "SpigotParameters");
+                        }
                         case SG_DELETE: {
                             TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
                             break;
@@ -366,7 +385,6 @@ public class APIRequestManager implements MessageListener {
                             Long startTime = data.getLong("startTime");
                             Long endTime = data.getLong("endTime");
                             Collection<LogEntry> entries = server.getLogStorage().queryEntries(startTime, endTime);
-
                         }
                     }
                     break;

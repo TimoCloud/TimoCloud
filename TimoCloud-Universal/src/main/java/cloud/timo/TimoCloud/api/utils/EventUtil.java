@@ -61,6 +61,7 @@ public class EventUtil {
                 ProxyGroupRamChangeEventBasicImplementation.class,
                 ProxyGroupStaticChangeEventBasicImplementation.class,
                 ProxyGroupDeletedEventBasicImplementation.class,
+                ProxyGroupJavaParametersChangeEventBasicImplementation.class,
 
                 ServerExtraChangeEventBasicImplementation.class,
                 ServerMapChangeEventBasicImplementation.class,
@@ -78,7 +79,9 @@ public class EventUtil {
                 ServerGroupPriorityChangeEventBasicImplementation.class,
                 ServerGroupRamChangeEventBasicImplementation.class,
                 ServerGroupStaticChangeEventBasicImplementation.class,
-                ServerGroupDeletedEventBasicImplementation.class
+                ServerGroupDeletedEventBasicImplementation.class,
+                ServerGroupJavaParametersChangeEventBasicImplementation.class,
+                ServerGroupSpigotParametersChangeEventBasicImplementation.class
         };
 
         for (Class<? extends Event> clazz : events) {

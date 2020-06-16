@@ -102,7 +102,8 @@ public class Proxy implements Instance, Communicatable {
                     .set("motd", getGroup().getMotd())
                     .set("maxplayers", getGroup().getMaxPlayerCount())
                     .set("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy())
-                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()));
+                    .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()))
+                    .set("javaParameters", getGroup().getJavaParameters());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
                 try {
@@ -129,7 +130,6 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void stop() {
-        unregister();
         sendMessage(Message.create().setType(MessageType.PROXY_STOP));
     }
 

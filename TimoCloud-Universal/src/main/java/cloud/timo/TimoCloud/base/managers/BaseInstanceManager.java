@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class BaseInstanceManager {
 
@@ -262,9 +263,8 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
-                                " -Xmx" + server.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Xmx" + server.getRam() + "M " +
+                                buildStartParameters(server.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
                                 " -Dtimocloud-servername=" + server.getName() +
                                 " -Dtimocloud-serverid=" + server.getId() +
@@ -274,10 +274,9 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + server.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " -jar spigot.jar -o false -h 0.0.0.0 -p " + port +
+                                " -jar spigot.jar -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
-
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ":");
@@ -390,7 +389,6 @@ public class BaseInstanceManager {
             map.put("force_default_server", false);
             map.put("host", "0.0.0.0:" + port);
             map.put("max_players", proxy.getMaxPlayers());
-            map.put("force_default_server", false);
             if (!proxy.isStatic()) map.put("query_enabled", false);
             if (listeners.size() == 0) listeners.add(map);
             FileWriter writer = new FileWriter(configFile);
@@ -427,9 +425,8 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
-                                " -Xmx" + proxy.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Xmx" + proxy.getRam() + "M " +
+                                buildStartParameters(proxy.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
                                 " -Dtimocloud-proxyname=" + proxy.getName() +
                                 " -Dtimocloud-proxyid=" + proxy.getId() +
@@ -589,4 +586,9 @@ public class BaseInstanceManager {
     public void setDownloadingTemplate(boolean downloadingTemplate) {
         this.downloadingTemplate = downloadingTemplate;
     }
+
+    private String buildStartParameters(List<String> parameters) {
+        return parameters.stream().filter(Objects::nonNull).collect(Collectors.joining(" "));
+    }
+
 }

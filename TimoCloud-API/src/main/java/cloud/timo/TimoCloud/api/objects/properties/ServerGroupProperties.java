@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.objects.properties;
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
 import java.util.Collection;
+import java.util.List;
 
 public class ServerGroupProperties {
 
@@ -15,6 +16,8 @@ public class ServerGroupProperties {
     private Integer priority;
     private String baseIdentifier;
     private Collection<String> sortOutStates;
+    private List<String> javaParameters;
+    private List<String> spigotParameters;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -26,6 +29,8 @@ public class ServerGroupProperties {
         this.priority = getDefaultPropertiesProvider().getPriority();
         this.baseIdentifier = getDefaultPropertiesProvider().getBaseIdentifier();
         this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
+        this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
+        this.spigotParameters = getDefaultPropertiesProvider().getSpigotParameters();
     }
 
     public ServerGroupProperties(String name) {
@@ -108,6 +113,24 @@ public class ServerGroupProperties {
         return this;
     }
 
+    public List<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public ServerGroupProperties setJavaParameters(List<String> javaParameters) {
+        this.javaParameters = javaParameters;
+        return this;
+    }
+
+    public List<String> getSpigotParameters() {
+        return spigotParameters;
+    }
+
+    public ServerGroupProperties setSpigotParameters(List<String> spigotParameters) {
+        this.spigotParameters = spigotParameters;
+        return this;
+    }
+
     private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
         return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
     }
@@ -132,8 +155,11 @@ public class ServerGroupProperties {
 
         Collection<String> getSortOutStates();
 
-
         String generateId();
+
+        List<String> getJavaParameters();
+
+        List<String> getSpigotParameters();
 
     }
 }

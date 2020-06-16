@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.base.objects;
 
+import java.util.List;
 import java.util.Map;
 
 public class BaseProxyObject {
@@ -14,8 +15,9 @@ public class BaseProxyObject {
     private int maxPlayersPerProxy;
     private Map<String, Object> templateHash;
     private Map<String, Object> globalHash;
+    private List<String> javaParameters;
 
-    public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash) {
+    public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash, List<String> javaParameters) {
         this.name = name;
         this.id = id;
         this.group = group;
@@ -26,6 +28,7 @@ public class BaseProxyObject {
         this.maxPlayersPerProxy = maxPlayersPerProxy;
         this.templateHash = templateHash;
         this.globalHash = globalHash;
+        this.javaParameters = javaParameters;
     }
 
     public String getName() {
@@ -67,4 +70,9 @@ public class BaseProxyObject {
     public Map<String, Object> getGlobalHash() {
         return globalHash;
     }
+
+    public List<String> getJavaParameters() {
+        return javaParameters;
+    }
+
 }

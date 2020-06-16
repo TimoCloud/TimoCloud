@@ -104,4 +104,27 @@ public interface ServerGroupObject extends IdentifiableObject {
      * @return A future being completed when the group was deleted
      */
     APIRequestFuture<Void> delete();
+
+    /**
+     * @return A String of all changeable java start parameters
+     */
+    Collection<String> getJavaParameters();
+
+    /**
+     * Changes the java start parameters
+     * @return A future being completed when the parameters was changed
+     */
+    APIRequestFuture<Void> setJavaParameters(Collection<String> value);
+
+    /**
+     * @return A String of all changeable spigot start parameters
+     */
+    Collection<String> getSpigotParameters();
+
+    /**
+     * Changes the spigot start parameters
+     * @return A future being completed when the parameters was changed
+     */
+    APIRequestFuture<Void> setSpigotParameters(Collection<String> value);
+
 }

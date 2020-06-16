@@ -33,13 +33,14 @@ public class ProxyGroup implements Group {
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
     private Map<String, Proxy> proxies = new HashMap<>();
+    private List<String> javaParameters;
 
     public ProxyGroup(ProxyGroupProperties properties) {
         construct(properties);
     }
 
-    public ProxyGroup(String id, String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames) {
-        construct(id, name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames);
+    public ProxyGroup(String id, String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters) {
+        construct(id, name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames, javaParameters);
     }
 
     public ProxyGroup(Map<String, Object> properties) {
@@ -65,7 +66,8 @@ public class ProxyGroup implements Group {
                     (Collection<String>) properties.getOrDefault("serverGroups", defaultProperties.getServerGroups()),
                     (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
                     (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
-                    (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()));
+                    (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()),
+                    (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -73,10 +75,10 @@ public class ProxyGroup implements Group {
     }
 
     public void construct(ProxyGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames());
+        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames(), properties.getJavaParameters());
     }
 
-    public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames) {
+    public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters) {
         this.id = id;
         this.name = name;
         this.maxPlayerCountPerProxy = playersPerProxy;
@@ -88,7 +90,7 @@ public class ProxyGroup implements Group {
         this.motd = motd;
         this.isStatic = isStatic;
         this.priority = priority;
-
+        this.javaParameters = javaParameters;
         setServerGroups(serverGroups);
 
         if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
@@ -117,6 +119,7 @@ public class ProxyGroup implements Group {
         properties.put("priority", getPriority());
         properties.put("serverGroups", allServerGroups ? Collections.singletonList("*") : getServerGroups());
         properties.put("hostNames", getHostNames());
+        properties.put("javaParameters", getJavaParameters());
         if (getBase() != null) properties.put("base", getBase().getId());
         return properties;
     }
@@ -233,6 +236,16 @@ public class ProxyGroup implements Group {
         int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
         EventTransmitter.sendEvent(new ProxyGroupMaxAmountChangeEventBasicImplementation(toGroupObject(), oldValue, maxAmount));
+    }
+
+    public List<String> getJavaParameters() {
+        return javaParameters;
+    }
+
+    public void setJavaParameters(List<String> javaParameters) {
+        List<String> oldValue = getJavaParameters();
+        this.javaParameters = javaParameters;
+        EventTransmitter.sendEvent(new ProxyGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
     }
 
     @Override
@@ -370,7 +383,8 @@ public class ProxyGroup implements Group {
                 getServerGroups().stream().map(ServerGroup::toLink).collect(Collectors.toSet()),
                 getBase() == null ? null : getBase().toLink(),
                 getProxyChooseStrategy().name(),
-                Collections.unmodifiableSet(getHostNames())
+                Collections.unmodifiableSet(getHostNames()),
+                getJavaParameters()
         );
     }
 

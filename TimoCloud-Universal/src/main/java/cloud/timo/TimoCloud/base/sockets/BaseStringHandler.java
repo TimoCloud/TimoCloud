@@ -13,8 +13,7 @@ import org.apache.commons.io.FileDeleteStrategy;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
@@ -37,7 +36,9 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> mapHash = message.containsKey("mapHash") ? (Map<String, Object>) message.get("mapHash") : null;
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
-                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash));
+                List<String> javaParameters = (List<String>) message.get("javaParameters");
+                List<String> spigotParameters = (List<String>) message.get("spigotParameters");
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters));
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }
@@ -52,7 +53,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 int maxPlayersPerProxy = ((Number) message.get("maxplayersperproxy")).intValue();
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
-                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));
+                List<String> javaParameters = (List<String>) message.get("javaParameters");
+                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash, javaParameters));
                 TimoCloudBase.getInstance().info("Added proxy " + proxyName + " to queue.");
                 break;
             }

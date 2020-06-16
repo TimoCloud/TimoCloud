@@ -28,7 +28,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class) // We need that in order to mock static methods
 @PrepareForTest({
-        HashUtil.class
+      HashUtil.class
 })
 public class ServerTest extends CommunicationTest {
 
@@ -117,6 +117,7 @@ public class ServerTest extends CommunicationTest {
     }
 
     private ServerGroup anyGroup() {
-        return new ServerGroup(RandomIdGenerator.generateId(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"));
+        return new ServerGroup(RandomIdGenerator.generateId(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"), Arrays.asList("--Dfile.encoding=UTF8", "--AABC"), Arrays.asList("-nogui", "-true"));
     }
+
 }

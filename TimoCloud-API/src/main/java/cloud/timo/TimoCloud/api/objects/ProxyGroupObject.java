@@ -167,4 +167,15 @@ public interface ProxyGroupObject extends IdentifiableObject {
      * @return A future being completed when the group was deleted
      */
     APIRequestFuture<Void> delete();
+
+    /**
+     * @return A String of all changeable java start parameters
+     */
+    Collection<String> getJavaParameters();
+
+    /**
+     * Changes the java start parameters
+     * @return A future being completed when the parameters was changed
+     */
+    APIRequestFuture<Void> setJavaParameters(Collection<String> value);
 }
