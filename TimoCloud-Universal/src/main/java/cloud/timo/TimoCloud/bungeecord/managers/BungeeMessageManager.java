@@ -8,7 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class BungeeMessageManager {
 
     public static void sendMessage(CommandSender sender, String message) {
-        if (message.equals("")) return;
+        if (message.isEmpty()) return;
         sender.sendMessage(TextComponent.fromLegacyText(TimoCloudBungee.getInstance().getPrefix() + ChatColor.translateAlternateColorCodes('&', message)));
     }
 

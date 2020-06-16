@@ -117,6 +117,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(priority, "Priority");
                             Collection<String> serverGroups = proxyGroupProperties.getServerGroups();
                             validateNotNull(serverGroups, "ServerGroups");
+                            List<String> javaParameters = proxyGroupProperties.getJavaParameters();
+                            validateNotNull(javaParameters, "JavaParameters");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -146,7 +148,8 @@ public class APIRequestManager implements MessageListener {
                                     serverGroups,
                                     baseIdentifier,
                                     proxyChooseStrategy.name(),
-                                    hostNames
+                                    hostNames,
+                                    javaParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
@@ -264,6 +267,11 @@ public class APIRequestManager implements MessageListener {
                             TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
                             break;
                         }
+                        case PG_SET_JAVA_START_PARAMETERS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "JavaParameters");
+                            break;
+                        }
                     }
                     TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();
                     break;
@@ -377,7 +385,6 @@ public class APIRequestManager implements MessageListener {
                             Long startTime = data.getLong("startTime");
                             Long endTime = data.getLong("endTime");
                             Collection<LogEntry> entries = server.getLogStorage().queryEntries(startTime, endTime);
-
                         }
                     }
                     break;

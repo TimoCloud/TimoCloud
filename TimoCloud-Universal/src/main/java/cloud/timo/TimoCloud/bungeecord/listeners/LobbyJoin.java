@@ -17,11 +17,9 @@ import java.util.UUID;
 
 public class LobbyJoin implements Listener {
     private Set<UUID> pending;
-    private Boolean useFallback;
 
     public LobbyJoin() {
         pending = new HashSet<>();
-        useFallback = TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback");
     }
 
     private boolean isPending(UUID uuid) {
@@ -30,13 +28,13 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onPlayerConnect(PostLoginEvent event) {
-        if (!useFallback) return;
+        if (!useFallback()) return;
         pending.add(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
-        if (!useFallback) return;
+        if (!useFallback()) return;
         if (!isPending(event.getPlayer().getUniqueId())) return;
 
         ProxiedPlayer player = event.getPlayer();
@@ -55,7 +53,7 @@ public class LobbyJoin implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
-        if (!useFallback) return;
+        if (!useFallback()) return;
         event.setCancelled(true);
         event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
     }
@@ -64,6 +62,10 @@ public class LobbyJoin implements Listener {
         String fallBackMessage = TimoCloudBungee.getInstance().getFileManager().getMessages().getString("NoFallBackGroupFound");
         fallBackMessage = ChatColor.translateAlternateColorCodes('&', fallBackMessage);
         proxiedPlayer.disconnect(TextComponent.fromLegacyText(fallBackMessage));
+    }
+
+    private boolean useFallback() {
+        return TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback");
     }
 
 }

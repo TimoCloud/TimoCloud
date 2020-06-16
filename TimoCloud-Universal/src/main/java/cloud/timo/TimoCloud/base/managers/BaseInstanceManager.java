@@ -29,6 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class BaseInstanceManager {
 
@@ -273,7 +274,7 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + server.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " -jar spigot.jar -o false -h 0.0.0.0 -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
+                                " -jar spigot.jar -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
@@ -388,7 +389,6 @@ public class BaseInstanceManager {
             map.put("force_default_server", false);
             map.put("host", "0.0.0.0:" + port);
             map.put("max_players", proxy.getMaxPlayers());
-            map.put("force_default_server", false);
             if (!proxy.isStatic()) map.put("query_enabled", false);
             if (listeners.size() == 0) listeners.add(map);
             FileWriter writer = new FileWriter(configFile);
@@ -425,9 +425,8 @@ public class BaseInstanceManager {
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
                                 " java -server" +
-                                //" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + (port + 100) + // TODO Remove
-                                " -Xmx" + proxy.getRam() + "M" +
-                                " -Dfile.encoding=UTF8 -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DoEscapeAnalysis -XX:+UseCompressedOops -XX:MaxGCPauseMillis=10 -XX:GCPauseIntervalMillis=100 -XX:+UseAdaptiveSizePolicy -XX:ParallelGCThreads=2 -XX:UseSSE=3 " +
+                                " -Xmx" + proxy.getRam() + "M " +
+                                buildStartParameters(proxy.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
                                 " -Dtimocloud-proxyname=" + proxy.getName() +
                                 " -Dtimocloud-proxyid=" + proxy.getId() +
@@ -589,12 +588,7 @@ public class BaseInstanceManager {
     }
 
     private String buildStartParameters(List<String> parameters) {
-        StringBuilder formattedParameters = new StringBuilder();
-        parameters.forEach(s -> {
-            if (s == null)
-                TimoCloudBase.getInstance().severe("Please check your server/proxyGroups.json. There is a bug in the Spigot/JavaStart parameters.");
-            else formattedParameters.append(s).append(" ");
-        });
-        return formattedParameters.toString().trim();
+        return parameters.stream().filter(Objects::nonNull).collect(Collectors.joining(" "));
     }
+
 }

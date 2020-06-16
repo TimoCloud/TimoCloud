@@ -53,7 +53,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 int maxPlayersPerProxy = ((Number) message.get("maxplayersperproxy")).intValue();
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
-                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash));
+                List<String> javaParameters = (List<String>) message.get("javaParameters");
+                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash, javaParameters));
                 TimoCloudBase.getInstance().info("Added proxy " + proxyName + " to queue.");
                 break;
             }

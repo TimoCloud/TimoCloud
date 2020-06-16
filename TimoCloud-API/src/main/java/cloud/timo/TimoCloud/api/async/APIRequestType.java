@@ -30,6 +30,7 @@ public enum APIRequestType {
     PG_SET_PROXY_CHOOSE_STRATEGY        (PROXY_GROUP),
     PG_SET_HOST_NAMES                   (PROXY_GROUP),
     PG_DELETE                           (PROXY_GROUP),
+    PG_SET_JAVA_START_PARAMETERS        (PROXY_GROUP),
 
     SG_SET_MIN_AMOUNT                   (SERVER_GROUP),
     SG_SET_MAX_AMOUNT                   (SERVER_GROUP),

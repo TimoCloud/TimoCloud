@@ -1,3 +1,4 @@
 LobbyConnect: '&7Successfully connected to &b{server_name}'
 NoFreeLobbyFound: '&cNo Lobby server found!'
-NoFallBackGroupFound: '&cWe currently not found a suitable Server to connect.'
+NoFallBackGroupFound: '&cWe are sorry, but we could not find a suitable server to connect you to.'
+

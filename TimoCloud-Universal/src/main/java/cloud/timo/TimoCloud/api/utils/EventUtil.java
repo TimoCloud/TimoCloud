@@ -61,6 +61,7 @@ public class EventUtil {
                 ProxyGroupRamChangeEventBasicImplementation.class,
                 ProxyGroupStaticChangeEventBasicImplementation.class,
                 ProxyGroupDeletedEventBasicImplementation.class,
+                ProxyGroupJavaParametersChangeEventBasicImplementation.class,
 
                 ServerExtraChangeEventBasicImplementation.class,
                 ServerMapChangeEventBasicImplementation.class,
