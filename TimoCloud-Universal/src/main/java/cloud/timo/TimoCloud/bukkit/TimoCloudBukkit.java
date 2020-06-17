@@ -205,9 +205,13 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void registerCommands() {
         getCommand("signs").setExecutor(new SignsCommand());
+        getCommand("signs").setPermission("timocloud.command.signs");
         final TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
         getCommand("timocloudbukkit").setExecutor(timoCloudBukkitCommand);
+        getCommand("timocloudbukkit").setPermission("timocloud.command.bukkit");
         getCommand("tcb").setExecutor(timoCloudBukkitCommand);
+        getCommand("tcb").setPermission("timocloud.command.bukkit");
+
     }
 
     private void registerListeners() {
