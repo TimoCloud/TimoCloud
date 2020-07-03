@@ -19,10 +19,11 @@ public class BlockEvents implements Listener {
     }
     @EventHandler
     public void onBlockBreakEvent(BlockBreakEvent event) {
-        if(event.getBlock().getState() instanceof Sign) {
+        if (event.getBlock().getState() instanceof Sign) {
             if (TimoCloudBukkit.getInstance().getSignManager().signExists(event.getBlock().getLocation())) {
                 TimoCloudBukkit.getInstance().getSignManager().removeSign(TimoCloudBukkit.getInstance().getSignManager().getSignInstanceByLocation(event.getBlock().getLocation()));
             }
+
         }
     }
 }
