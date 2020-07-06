@@ -1,9 +1,6 @@
 package cloud.timo.TimoCloud.bukkit;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.events.EventHandler;
-import cloud.timo.TimoCloud.api.events.Listener;
-import cloud.timo.TimoCloud.api.events.server.ServerRegisterEvent;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplementationAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
@@ -38,6 +35,7 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -50,7 +48,7 @@ import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger, Listener {
+public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private static TimoCloudBukkit instance;
     private BukkitFileManager fileManager;
@@ -62,6 +60,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger, List
     private String prefix = "[TimoCloud] ";
     private boolean enabled = false;
     private boolean disabling = false;
+    @Setter
     private boolean serverRegistered = false;
 
 
@@ -103,7 +102,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger, List
                     } catch (Exception e) {
                     }
                 }
-                TimoCloudAPI.getEventAPI().registerListener(this);
+                TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
@@ -332,11 +331,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger, List
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
     }
 
-    @EventHandler
-    public void onServerRegister(ServerRegisterEvent event) {
-        if (!event.getServer().getId().equals(getServerId())) return;
-        this.serverRegistered = true;
-    }
 
     public static TimoCloudBukkit getInstance() {
         return instance;
