@@ -111,6 +111,14 @@ public class CoreStringHandler extends BasicStringHandler {
                 if (base == null) { // First connection
                     base = TimoCloudCore.getInstance().getInstanceManager().createBase(publicKey);
                 }
+                String ipUsage = base.getIpUsage();
+                if(!ipUsage.equalsIgnoreCase("AUTO")) {
+                    try {
+                        publicAddress = InetAddress.getByName(ipUsage);
+                    } catch (Exception e) {
+                        TimoCloudCore.getInstance().severe("Unable to resolve public ip address from bases.yml '" + ipUsage + "' for base " + baseName + ". Please make sure the base's hostname is configured correctly in your bases.yml.");
+                    }
+                }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel, address, publicAddress);
                 base.onHandshakeSuccess();

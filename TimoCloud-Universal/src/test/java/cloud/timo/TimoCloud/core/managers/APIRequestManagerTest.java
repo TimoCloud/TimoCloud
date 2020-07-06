@@ -256,7 +256,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestSGSetBaseValid() {
         String baseIdentifier = RandomIdGenerator.generateId();
-        Base value = new Base(baseIdentifier, "BASE-24", 10000, 1000, 91.0, mock(PublicKey.class));
+        Base value = new Base(baseIdentifier, "BASE-24", 10000, 1000, 91.0, "AUTO", mock(PublicKey.class));
         when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
         ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
         assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
@@ -606,7 +606,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
     @Test
     public void processRequestPGSetBaseValid() {
         String baseIdentifier = RandomIdGenerator.generateId();
-        Base value = new Base(baseIdentifier, "BASE-5", 1000000, 100, 94.0, mock(PublicKey.class));
+        Base value = new Base(baseIdentifier, "BASE-5", 1000000, 100, 94.0, "AUTO", mock(PublicKey.class));
         when(coreInstanceManager.getBaseByIdentifier(eq(baseIdentifier))).thenReturn(value);
         ArgumentCaptor<Base> argumentCaptor = ArgumentCaptor.forClass(Base.class);
         assertTrue(apiRequestManager.processRequest(new APIRequestImplementation<>(
@@ -745,6 +745,6 @@ public class APIRequestManagerTest extends TimoCloudTest {
     }
 
     private void setBaseExisting(String identifier) {
-        when(coreInstanceManager.getBaseByIdentifier(eq(identifier))).thenReturn(new Base(identifier, identifier, 0, 0, 0, mock(PublicKey.class)));
+        when(coreInstanceManager.getBaseByIdentifier(eq(identifier))).thenReturn(new Base(identifier, identifier, 0, 0, 0, "AUTO", mock(PublicKey.class)));
     }
 }
