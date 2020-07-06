@@ -35,13 +35,14 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     private boolean ready;
     private Set<Server> servers;
     private Set<Proxy> proxies;
+    private String ipUsage;
 
     public Base(BaseProperties properties) {
         construct(properties);
     }
 
-    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, PublicKey publicKey) {
-        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, publicKey);
+    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String ipUsage, PublicKey publicKey) {
+        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, ipUsage, publicKey);
     }
 
     public Base(Map<String, Object> properties) throws Exception {
@@ -49,15 +50,16 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     }
 
     public void construct(BaseProperties baseProperties) {
-        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(), baseProperties.getPublicKey());
+        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(),baseProperties.getIpUsage(), baseProperties.getPublicKey());
     }
 
-    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, PublicKey publicKey) {
+    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String ipUsage, PublicKey publicKey) {
         this.id = id;
         this.name = name;
         this.maxRam = maxRam;
         this.keepFreeRam = keepFreeRam;
         this.maxCpuLoad = maxCpuLoad;
+        this.ipUsage = ipUsage;
         this.publicKey = publicKey;
         this.servers = new HashSet<>();
         this.proxies = new HashSet<>();
@@ -82,6 +84,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                     ((Number) properties.getOrDefault("maxRam", defaultProperties.getMaxRam())).intValue(),
                     ((Number) properties.getOrDefault("keepFreeRam", defaultProperties.getKeepFreeRam())).intValue(),
                     ((Number) properties.getOrDefault("maxCpuLoad", defaultProperties.getMaxCpuLoad())).doubleValue(),
+                    (String) properties.getOrDefault("publicAddress", "AUTO"),
                     publicKey
             );
 
@@ -98,6 +101,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         properties.put("maxRam", getMaxRam());
         properties.put("keepFreeRam", getKeepFreeRam());
         properties.put("maxCpuLoad", getMaxCpuLoad());
+        properties.put("publicAddress", getIpUsage());
         properties.put("publicKey", Base64.getEncoder().encodeToString(getPublicKey().getEncoded()));
         return properties;
     }
@@ -181,6 +185,15 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         InetAddress oldValue = getAddress();
         this.address = address;
         EventTransmitter.sendEvent(new BaseAddressChangeEventBasicImplementation(toBaseObject(), oldValue, address));
+    }
+
+    public String getIpUsage() {
+        return this.ipUsage;
+    }
+
+    public Base setIpUsage(String ipUsage) {
+        this.ipUsage = ipUsage;
+        return this;
     }
 
     public InetAddress getPublicAddress() {
