@@ -1,6 +1,9 @@
 package cloud.timo.TimoCloud.bukkit;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.events.EventHandler;
+import cloud.timo.TimoCloud.api.events.Listener;
+import cloud.timo.TimoCloud.api.events.server.ServerRegisterEvent;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplementationAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
@@ -47,7 +50,7 @@ import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
+public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger, Listener {
 
     private static TimoCloudBukkit instance;
     private BukkitFileManager fileManager;
@@ -59,6 +62,8 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private String prefix = "[TimoCloud] ";
     private boolean enabled = false;
     private boolean disabling = false;
+    private boolean serverRegistered = false;
+
 
     @Override
     public void info(String message) {
@@ -98,6 +103,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                     } catch (Exception e) {
                     }
                 }
+                TimoCloudAPI.getEventAPI().registerListener(this);
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
@@ -264,11 +270,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         if (this.disabling) return;
+        if (!this.serverRegistered) return;
         sendEverything();
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
+        Bukkit.getScheduler().runTask(this, this::registerAtCore);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
@@ -323,6 +330,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
      */
     public void sendPlayers() {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
+    }
+
+    @EventHandler
+    public void onServerRegister(ServerRegisterEvent event) {
+        if (!event.getServer().getId().equals(getServerId())) return;
+        this.serverRegistered = true;
     }
 
     public static TimoCloudBukkit getInstance() {
