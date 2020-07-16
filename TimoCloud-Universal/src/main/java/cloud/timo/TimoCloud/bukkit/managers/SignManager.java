@@ -197,7 +197,13 @@ public class SignManager {
     }
 
     private boolean isSignActive(SignInstance signInstance) {
-        return signInstance.isActive() && signInstance.getLocation().getBlock().getState() instanceof Sign;
+        if (signInstance.getLocation() == null) {
+            return false;
+            
+        } else {
+            return signInstance.isActive() && signInstance.getLocation().getBlock().getState() instanceof Sign;
+            
+        }
     }
 
     private void processDynamicSignsPerGroup(ServerGroupObject group, Collection<SignInstance> signInstances) {
