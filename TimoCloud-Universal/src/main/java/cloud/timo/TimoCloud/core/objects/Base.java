@@ -44,8 +44,8 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         construct(properties);
     }
 
-    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String ipUsage, PublicKey publicKey) {
-        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, ipUsage, publicKey);
+    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String publicIpConfig, PublicKey publicKey) {
+        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, publicIpConfig, publicKey);
     }
 
     public Base(Map<String, Object> properties) throws Exception {
@@ -104,7 +104,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         properties.put("maxRam", getMaxRam());
         properties.put("keepFreeRam", getKeepFreeRam());
         properties.put("maxCpuLoad", getMaxCpuLoad());
-        properties.put("publicAddress", getIpUsage());
+        properties.put("publicAddress", getPublicIpConfig());
         properties.put("publicKey", Base64.getEncoder().encodeToString(getPublicKey().getEncoded()));
         return properties;
     }
@@ -190,11 +190,11 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         EventTransmitter.sendEvent(new BaseAddressChangeEventBasicImplementation(toBaseObject(), oldValue, address));
     }
 
-    public String getIpUsage() {
+    public String getPublicIpConfig() {
         return this.publicIpConfig;
     }
 
-    public Base setIpUsage(String ipUsage) {
+    public Base setPublicIpConfig(String ipUsage) {
         this.publicIpConfig = ipUsage;
         return this;
     }
