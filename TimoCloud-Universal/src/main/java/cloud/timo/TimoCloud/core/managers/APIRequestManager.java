@@ -66,6 +66,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(javaParameters, "JavaParameters");
                             List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
                             validateNotNull(spigotParameters, "SpigotParameters");
+                            List<String> inheritedServerGroups = serverGroupProperties.getInheritedServerGroups();
+                            validateNotNull(inheritedServerGroups, "InheritedServerGroups");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
@@ -82,7 +84,8 @@ public class APIRequestManager implements MessageListener {
                                     baseIdentifier,
                                     sortOutStates,
                                     javaParameters,
-                                    spigotParameters
+                                    spigotParameters,
+                                    inheritedServerGroups
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -342,6 +345,10 @@ public class APIRequestManager implements MessageListener {
                         case SG_SET_SPIGOT_START_PARAMETERS: {
                             Collection<String> value = (Collection<String>) data.get("value");
                             validateNotNull(value, "SpigotParameters");
+                        }
+                        case SG_SET_INHERITED_SERVER_GROUPS: {
+                            Collection<String> value = (Collection<String>) data.get("value");
+                            validateNotNull(value, "InheritedServerGroups");
                         }
                         case SG_DELETE: {
                             TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);

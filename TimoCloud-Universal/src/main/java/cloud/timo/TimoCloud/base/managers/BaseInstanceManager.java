@@ -144,6 +144,11 @@ public class BaseInstanceManager {
         TimoCloudBase.getInstance().info("Starting server " + server.getName() + "...");
         double millisBefore = System.currentTimeMillis();
         try {
+            System.out.println("Templates downloaded:");
+            for (File file : TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory().listFiles()) {
+                System.out.println("- " + file.getName());
+            }
+
             File templateDirectory = new File((server.isStatic() ? TimoCloudBase.getInstance().getFileManager().getServerStaticDirectory() : TimoCloudBase.getInstance().getFileManager().getServerTemplatesDirectory()), server.getGroup());
             if (!templateDirectory.exists()) templateDirectory.mkdirs();
 

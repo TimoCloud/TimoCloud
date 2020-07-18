@@ -18,6 +18,7 @@ public class ServerGroupProperties {
     private Collection<String> sortOutStates;
     private List<String> javaParameters;
     private List<String> spigotParameters;
+    private List<String> inheritedServerGroups;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -31,6 +32,7 @@ public class ServerGroupProperties {
         this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
         this.spigotParameters = getDefaultPropertiesProvider().getSpigotParameters();
+        this.inheritedServerGroups = getDefaultPropertiesProvider().getInheritedServerGroups();
     }
 
     public ServerGroupProperties(String name) {
@@ -131,6 +133,15 @@ public class ServerGroupProperties {
         return this;
     }
 
+    public List<String> getInheritedServerGroups() {
+        return inheritedServerGroups;
+    }
+
+    public ServerGroupProperties setInheritedServerGroups(List<String> inheritedServerGroups) {
+        this.inheritedServerGroups = inheritedServerGroups;
+        return this;
+    }
+
     private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
         return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
     }
@@ -161,5 +172,6 @@ public class ServerGroupProperties {
 
         List<String> getSpigotParameters();
 
+        List<String> getInheritedServerGroups();
     }
 }

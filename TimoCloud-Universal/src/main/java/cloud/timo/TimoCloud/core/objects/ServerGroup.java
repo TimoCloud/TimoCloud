@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +25,7 @@ public class ServerGroup implements Group {
     private Set<String> sortOutStates;
     private List<String> javaParameters;
     private List<String> spigotParameters;
+    private List<String> inheritedServerGroups;
 
     private Map<String, Server> servers = new HashMap<>();
 
@@ -37,8 +37,8 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
-        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters);
+    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, List<String> inheritedServerGroups) {
+        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters, inheritedServerGroups);
     }
 
     public void construct(Map<String, Object> properties) {
@@ -56,7 +56,9 @@ public class ServerGroup implements Group {
                     (String) properties.getOrDefault("base", defaultProperties.getBaseIdentifier()),
                     (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
-                    (List<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()));
+                    (List<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()),
+                    (List<String>) properties.getOrDefault("inheritedServerGroups", defaultProperties.getInheritedServerGroups())
+            );
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -75,14 +77,15 @@ public class ServerGroup implements Group {
         properties.put("sort-out-states", getSortOutStates());
         properties.put("javaParameters", getJavaParameters());
         properties.put("spigotParameters", getSpigotParameters());
+        properties.put("inheritedServerGroups", getInheritedServerGroups());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters(), properties.getInheritedServerGroups());
     }
 
-    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, List<String> inheritedServerGroups) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
@@ -94,7 +97,9 @@ public class ServerGroup implements Group {
         this.ram = ram;
         this.isStatic = isStatic;
         this.priority = priority;
-        if (baseIdentifier != null) this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
+        this.inheritedServerGroups = inheritedServerGroups;
+        if (baseIdentifier != null)
+            this.base = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier);
         this.sortOutStates = new HashSet<>(sortOutStates);
         this.spigotParameters = spigotParameters;
         this.javaParameters = javaParameters;
@@ -231,6 +236,14 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupBaseChangeEventBasicImplementation(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
     }
 
+    public List<String> getInheritedServerGroups() {
+        return inheritedServerGroups;
+    }
+
+    public void setInheritedServerGroups(List<String> inheritedServerGroups) {
+        this.inheritedServerGroups = inheritedServerGroups;
+    }
+
     @Override
     public Base getBase() {
         return base;
@@ -257,7 +270,8 @@ public class ServerGroup implements Group {
                 getPriority(),
                 getSortOutStates(),
                 getJavaParameters(),
-                getSpigotParameters()
+                getSpigotParameters(),
+                getInheritedServerGroups()
         );
     }
 

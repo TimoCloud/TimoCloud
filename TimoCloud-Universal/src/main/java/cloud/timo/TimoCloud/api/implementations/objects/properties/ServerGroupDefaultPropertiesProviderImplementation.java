@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.api.implementations.objects.properties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -67,6 +68,11 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
     @Override
     public List<String> getSpigotParameters() {
         return Arrays.asList("--nogui", "-o false", "-h 0.0.0.0");
+    }
+
+    @Override
+    public List<String> getInheritedServerGroups() {
+        return new ArrayList<>(); // Here should be for example "Lobby" or "BedWars_Base" or "AntiCheat"
     }
 
 }

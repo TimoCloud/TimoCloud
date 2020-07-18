@@ -44,7 +44,8 @@ public class CoreStringHandler extends BasicStringHandler {
         Communicatable target = null;
         if (server != null) target = server;
         else if (proxy != null) target = proxy;
-        else if (baseName != null) target = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseName);
+        else if (baseName != null)
+            target = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseName);
         else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
@@ -56,11 +57,11 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (! (address.equals(server.getBase().getAddress()) || address.equals(server.getBase().getPublicAddress()))) {
+                if (!(address.equals(server.getBase().getAddress()) || address.equals(server.getBase().getPublicAddress()))) {
                     TimoCloudCore.getInstance().severe("Server connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
-                if (! channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(server.getPublicKey())) {
+                if (!channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(server.getPublicKey())) {
                     TimoCloudCore.getInstance().severe(String.format("Server %s connected with wrong public key. Please report this.", server.getName()));
                     return;
                 }
@@ -75,11 +76,11 @@ public class CoreStringHandler extends BasicStringHandler {
                     closeChannel(channel);
                     return;
                 }
-                if (! (address.equals(proxy.getBase().getAddress()) || address.equals(proxy.getBase().getPublicAddress()))) {
+                if (!(address.equals(proxy.getBase().getAddress()) || address.equals(proxy.getBase().getPublicAddress()))) {
                     TimoCloudCore.getInstance().severe("Proxy connected with different InetAddress than its base. Refusing connection.");
                     return;
                 }
-                if (! channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(proxy.getPublicKey())) {
+                if (!channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get().equals(proxy.getPublicKey())) {
                     TimoCloudCore.getInstance().severe(String.format("Proxy %s connected with wrong public key. Please report this.", proxy.getName()));
                     return;
                 }
@@ -102,7 +103,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 }
                 PublicKey publicKey = channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get();
 
-                if (! TimoCloudCore.getInstance().getCorePublicKeyManager().redeemBaseKeyIfPermitted(publicKey)) {
+                if (!TimoCloudCore.getInstance().getCorePublicKeyManager().redeemBaseKeyIfPermitted(publicKey)) {
                     channel.close();
                     return;
                 }
@@ -242,6 +243,11 @@ public class CoreStringHandler extends BasicStringHandler {
                 if (globalDifferences != null) amount++;
                 DoAfterAmount doAfterAmount = new DoAfterAmount(amount, server::start);
                 server.setTemplateUpdate(doAfterAmount);
+
+                for (String inheritedServerGroup : server.getGroup().getInheritedServerGroups()) {
+                    // Check for changed content?
+                }
+
                 try {
                     if (templateDifferences != null) {
                         File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), template);

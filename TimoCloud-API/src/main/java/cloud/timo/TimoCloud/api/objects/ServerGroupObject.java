@@ -127,4 +127,15 @@ public interface ServerGroupObject extends IdentifiableObject {
      */
     APIRequestFuture<Void> setSpigotParameters(Collection<String> value);
 
+    /**
+     * @return A String of all inherited ServerGroups
+     */
+    Collection<String> getInheritedServerGroups();
+
+    /**
+     * Changes the inherited ServerGroups
+     * @return A future being completed when the inheritedServerGroups was changed
+     */
+    APIRequestFuture<Void> setInheritedServerGroups(Collection<String> value);
+
 }

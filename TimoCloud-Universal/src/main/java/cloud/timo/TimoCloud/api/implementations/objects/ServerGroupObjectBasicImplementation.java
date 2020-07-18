@@ -46,13 +46,15 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     private List<String> javaParameters;
     @JsonProperty("sp")
     private List<String> spigotParameters;
+    @JsonProperty("isg")
+    private List<String> inheritedServerGroups;
     @JsonProperty("se")
     private Set<ServerObjectLink> servers;
 
     /**
      * Do not use this - this will be done by TimoCloud
      */
-    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, BaseObjectLink base, Set<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters) {
+    public ServerGroupObjectBasicImplementation(String id, String name, Set<ServerObjectLink> servers, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, BaseObjectLink base, Set<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, List<String> inheritedServerGroups) {
         this.id = id;
         this.name = name;
         this.servers = servers;
@@ -62,6 +64,7 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
         this.isStatic = isStatic;
         this.base = base;
         this.sortOutStates = sortOutStates;
+        this.inheritedServerGroups = inheritedServerGroups;
     }
 
     @Override
@@ -172,6 +175,16 @@ public class ServerGroupObjectBasicImplementation implements ServerGroupObject, 
     @Override
     public APIRequestFuture<Void> setSpigotParameters(Collection<String> value) {
         return new APIRequestImplementation<Void>(SG_SET_SPIGOT_START_PARAMETERS, getId(), value).submit();
+    }
+
+    @Override
+    public Collection<String> getInheritedServerGroups() {
+        return inheritedServerGroups;
+    }
+
+    @Override
+    public APIRequestFuture<Void> setInheritedServerGroups(Collection<String> value) {
+        return new APIRequestImplementation<Void>(SG_SET_INHERITED_SERVER_GROUPS, getId(), value).submit();
     }
 
     @Override

@@ -38,7 +38,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
                 List<String> javaParameters = (List<String>) message.get("javaParameters");
                 List<String> spigotParameters = (List<String>) message.get("spigotParameters");
-                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters));
+                List<String> inheritedServerGroups = (List<String>) message.get("inheritedServerGroups");
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters, inheritedServerGroups));
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }

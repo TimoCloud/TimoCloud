@@ -18,5 +18,4 @@ public class MessageTypeTest extends CommunicationTest {
             used.add(messageType.getId());
         }
     }
-
 }
