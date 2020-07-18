@@ -35,7 +35,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     private boolean ready;
     private Set<Server> servers;
     private Set<Proxy> proxies;
-    private String ipUsage;
+    private String publicIpConfig;
 
     public Base(BaseProperties properties) {
         construct(properties);
@@ -50,16 +50,16 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     }
 
     public void construct(BaseProperties baseProperties) {
-        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(),baseProperties.getIpUsage(), baseProperties.getPublicKey());
+        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(),baseProperties.getPublicIpConfig(), baseProperties.getPublicKey());
     }
 
-    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String ipUsage, PublicKey publicKey) {
+    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String publicIpConfig, PublicKey publicKey) {
         this.id = id;
         this.name = name;
         this.maxRam = maxRam;
         this.keepFreeRam = keepFreeRam;
         this.maxCpuLoad = maxCpuLoad;
-        this.ipUsage = ipUsage;
+        this.publicIpConfig = publicIpConfig;
         this.publicKey = publicKey;
         this.servers = new HashSet<>();
         this.proxies = new HashSet<>();
@@ -188,11 +188,11 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     }
 
     public String getIpUsage() {
-        return this.ipUsage;
+        return this.publicIpConfig;
     }
 
     public Base setIpUsage(String ipUsage) {
-        this.ipUsage = ipUsage;
+        this.publicIpConfig = ipUsage;
         return this;
     }
 

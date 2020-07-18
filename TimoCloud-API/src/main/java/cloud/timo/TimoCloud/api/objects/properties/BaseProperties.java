@@ -12,13 +12,13 @@ public class BaseProperties {
     private Integer maxRam;
     private Integer keepFreeRam;
     private Double maxCpuLoad;
-    private String ipUsage;
+    private String publicIpConfig;
 
     private BaseProperties() {
         this.maxRam = getDefaultPropertiesProvider().getMaxRam();
         this.keepFreeRam = getDefaultPropertiesProvider().getKeepFreeRam();
         this.maxCpuLoad = getDefaultPropertiesProvider().getMaxCpuLoad();
-        this.ipUsage = "AUTO";
+        this.publicIpConfig = "AUTO";
     }
 
     public BaseProperties(String id, String name, PublicKey publicKey) {
@@ -26,15 +26,15 @@ public class BaseProperties {
         this.id = id;
         this.name = name;
         this.publicKey = publicKey;
-        this.ipUsage = "AUTO";
+        this.publicIpConfig = "AUTO";
     }
 
-    public String getIpUsage() {
-        return this.ipUsage;
+    public String getPublicIpConfig() {
+        return this.publicIpConfig;
     }
 
-    public BaseProperties setIpUsage(String ipUsage) {
-        this.ipUsage = ipUsage;
+    public BaseProperties setIpUsage(String publicIpConfig) {
+        this.publicIpConfig = publicIpConfig;
         return this;
     }
 
