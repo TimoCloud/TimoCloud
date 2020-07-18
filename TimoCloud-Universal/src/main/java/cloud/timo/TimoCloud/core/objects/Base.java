@@ -35,6 +35,9 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     private boolean ready;
     private Set<Server> servers;
     private Set<Proxy> proxies;
+    /**
+     When set to "AUTO", the base's public IP address (which is being passed on to servers and proxies running on this base and thereby used by players to connect) will be determined automatically. Otherwise, the given value will be used.
+     */
     private String publicIpConfig;
 
     public Base(BaseProperties properties) {
