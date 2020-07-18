@@ -194,8 +194,8 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         return this.publicIpConfig;
     }
 
-    public Base setPublicIpConfig(String ipUsage) {
-        this.publicIpConfig = ipUsage;
+    public Base setPublicIpConfig(String publicIpConfig) {
+        this.publicIpConfig = publicIpConfig;
         return this;
     }
 
