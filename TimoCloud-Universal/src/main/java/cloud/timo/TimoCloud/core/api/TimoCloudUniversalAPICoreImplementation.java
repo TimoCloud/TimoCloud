@@ -103,4 +103,5 @@ public class TimoCloudUniversalAPICoreImplementation extends TimoCloudUniversalA
     public Collection<PlayerObject> getPlayers() {
         return TimoCloudCore.getInstance().getInstanceManager().getProxies().stream().flatMap(proxy -> proxy.getOnlinePlayers().stream()).collect(Collectors.toSet());
     }
+
 }

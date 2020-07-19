@@ -92,14 +92,14 @@ public class LobbyManager {
     public ServerInfo getFreeLobby(UUID uuid, boolean kicked) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
         ServerInfo notThis = null;
-        ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getServer(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
+        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
 
         if (proxiedPlayer != null && proxiedPlayer.getServer() != null) notThis = proxiedPlayer.getServer().getInfo();
 
         ServerInfo serverInfo = searchFreeLobby(uuid, notThis);
         if (serverInfo == null) {
-            if (serverObject == null) return null;
-            return TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject.getName());
+            if (serverGroupObject == null) return null;
+            return TimoCloudBungee.getInstance().getProxy().getServerInfo(serverGroupObject.getServers().stream().findFirst().get().getName());
         }
 
 
