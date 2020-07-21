@@ -416,7 +416,7 @@ public class Server implements Instance, Communicatable {
                 getExtra(),
                 getMap(),
                 getMotd(),
-                new HashSet<>(getOnlinePlayers()).stream().map(player -> ((PlayerObjectBasicImplementation) player).toLink()).collect(Collectors.toSet()),
+                getOnlinePlayers().stream().map(player -> ((PlayerObjectBasicImplementation) player).toLink()).collect(Collectors.toSet()),
                 getOnlinePlayerCount(),
                 getMaxPlayers(),
                 getBase().toLink(),

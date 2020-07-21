@@ -102,7 +102,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                     } catch (Exception e) {
                     }
                 }
-                TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
@@ -225,6 +224,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
         Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
+        TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
     }
 
     private void registerChannel() {
