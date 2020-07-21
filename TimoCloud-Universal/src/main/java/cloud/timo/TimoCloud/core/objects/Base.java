@@ -87,7 +87,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                     ((Number) properties.getOrDefault("maxRam", defaultProperties.getMaxRam())).intValue(),
                     ((Number) properties.getOrDefault("keepFreeRam", defaultProperties.getKeepFreeRam())).intValue(),
                     ((Number) properties.getOrDefault("maxCpuLoad", defaultProperties.getMaxCpuLoad())).doubleValue(),
-                    (String) properties.getOrDefault("publicAddress", "AUTO"),
+                    (String) properties.getOrDefault("publicAddress", defaultProperties.getPublicIpConfig()),
                     publicKey
             );
 

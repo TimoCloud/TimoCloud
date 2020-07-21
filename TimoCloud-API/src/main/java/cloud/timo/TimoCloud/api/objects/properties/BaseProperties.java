@@ -18,22 +18,25 @@ public class BaseProperties {
         this.maxRam = getDefaultPropertiesProvider().getMaxRam();
         this.keepFreeRam = getDefaultPropertiesProvider().getKeepFreeRam();
         this.maxCpuLoad = getDefaultPropertiesProvider().getMaxCpuLoad();
-        this.publicIpConfig = "AUTO";
+        this.publicIpConfig = getDefaultPropertiesProvider().getPublicIpConfig();
     }
 
-    public BaseProperties(String id, String name, PublicKey publicKey) {
+    public BaseProperties(String id, String name, PublicKey publicKey, String publicIpConfig) {
         this();
         this.id = id;
         this.name = name;
         this.publicKey = publicKey;
-        this.publicIpConfig = "AUTO";
+        this.publicIpConfig = publicIpConfig;
+    }
+    public BaseProperties(String id, String name, PublicKey publicKey) {
+        this(id, name, publicKey, getDefaultPropertiesProvider().getPublicIpConfig());
     }
 
     public String getPublicIpConfig() {
         return this.publicIpConfig;
     }
 
-    public BaseProperties setPublicIpConfig(String publicIpConfig) {
+    public BaseProperties setIpUsage(String publicIpConfig) {
         this.publicIpConfig = publicIpConfig;
         return this;
     }
@@ -103,6 +106,8 @@ public class BaseProperties {
         Integer getKeepFreeRam();
 
         Double getMaxCpuLoad();
+
+        String getPublicIpConfig();
 
     }
 
