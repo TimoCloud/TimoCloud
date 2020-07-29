@@ -35,7 +35,6 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,8 +59,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private String prefix = "[TimoCloud] ";
     private boolean enabled = false;
     private boolean disabling = false;
-    @Setter
-    private boolean serverRegistered = false;
 
 
     @Override
@@ -224,7 +221,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
         Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
-        TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
     }
 
     private void registerChannel() {
