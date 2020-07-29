@@ -93,7 +93,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 registerCommands();
                 registerListeners();
                 registerTasks();
-                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 registerChannel();
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
@@ -117,6 +116,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         info("&chas been disabled!");
     }
 
+    // Run asynchronously because this thread will stay alive until the connection is closed
     private void connectToCore() {
         try {
             info("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
@@ -269,12 +269,14 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         if (this.disabling) return;
-        if (!this.serverRegistered) return;
         sendEverything();
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().runTask(this, this::registerAtCore);
+        Bukkit.getScheduler().runTask(this, () -> {
+            registerAtCore();
+            Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
+        });
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
