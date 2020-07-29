@@ -36,7 +36,7 @@ public class BaseProperties {
         return this.publicIpConfig;
     }
 
-    public BaseProperties setIpUsage(String publicIpConfig) {
+    public BaseProperties setPublicIpConfig(String publicIpConfig) {
         this.publicIpConfig = publicIpConfig;
         return this;
     }
