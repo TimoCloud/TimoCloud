@@ -197,6 +197,10 @@ public class SignManager {
     }
 
     private boolean isSignActive(SignInstance signInstance) {
+        if (signInstance.getLocation() == null) {
+            TimoCloudBukkit.getInstance().info("Sign could not load: Location not found!");
+            return false;
+        }
         return signInstance.isActive() && signInstance.getLocation().getBlock().getState() instanceof Sign;
     }
 
