@@ -60,6 +60,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private boolean enabled = false;
     private boolean disabling = false;
 
+
     @Override
     public void info(String message) {
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
@@ -89,7 +90,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 registerCommands();
                 registerListeners();
                 registerTasks();
-                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 registerChannel();
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
@@ -113,6 +113,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         info("&chas been disabled!");
     }
 
+    // Run asynchronously because this thread will stay alive until the connection is closed
     private void connectToCore() {
         try {
             info("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
@@ -205,9 +206,13 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void registerCommands() {
         getCommand("signs").setExecutor(new SignsCommand());
+        getCommand("signs").setPermission("timocloud.command.signs");
         final TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
         getCommand("timocloudbukkit").setExecutor(timoCloudBukkitCommand);
+        getCommand("timocloudbukkit").setPermission("timocloud.command.bukkit");
         getCommand("tcb").setExecutor(timoCloudBukkitCommand);
+        getCommand("tcb").setPermission("timocloud.command.bukkit");
+
     }
 
     private void registerListeners() {
@@ -215,7 +220,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
-        Bukkit.getPluginManager().registerEvents(new BlockPlace(), this);
+        Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
     }
 
     private void registerChannel() {
@@ -264,7 +269,10 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, this::registerAtCore, 0L);
+        Bukkit.getScheduler().runTask(this, () -> {
+            registerAtCore();
+            Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
+        });
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
@@ -320,6 +328,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     public void sendPlayers() {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
     }
+
 
     public static TimoCloudBukkit getInstance() {
         return instance;

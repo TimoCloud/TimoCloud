@@ -2,7 +2,6 @@ package cloud.timo.TimoCloud.api.objects.properties;
 
 import cloud.timo.TimoCloud.api.internal.TimoCloudInternalAPI;
 
-import java.net.InetAddress;
 import java.security.PublicKey;
 
 public class BaseProperties {
@@ -13,18 +12,33 @@ public class BaseProperties {
     private Integer maxRam;
     private Integer keepFreeRam;
     private Double maxCpuLoad;
+    private String publicIpConfig;
 
     private BaseProperties() {
         this.maxRam = getDefaultPropertiesProvider().getMaxRam();
         this.keepFreeRam = getDefaultPropertiesProvider().getKeepFreeRam();
         this.maxCpuLoad = getDefaultPropertiesProvider().getMaxCpuLoad();
+        this.publicIpConfig = getDefaultPropertiesProvider().getPublicIpConfig();
     }
 
-    public BaseProperties(String id, String name, PublicKey publicKey) {
+    public BaseProperties(String id, String name, PublicKey publicKey, String publicIpConfig) {
         this();
         this.id = id;
         this.name = name;
         this.publicKey = publicKey;
+        this.publicIpConfig = publicIpConfig;
+    }
+    public BaseProperties(String id, String name, PublicKey publicKey) {
+        this(id, name, publicKey, getDefaultPropertiesProvider().getPublicIpConfig());
+    }
+
+    public String getPublicIpConfig() {
+        return this.publicIpConfig;
+    }
+
+    public BaseProperties setPublicIpConfig(String publicIpConfig) {
+        this.publicIpConfig = publicIpConfig;
+        return this;
     }
 
     public String getId() {
@@ -92,6 +106,8 @@ public class BaseProperties {
         Integer getKeepFreeRam();
 
         Double getMaxCpuLoad();
+
+        String getPublicIpConfig();
 
     }
 

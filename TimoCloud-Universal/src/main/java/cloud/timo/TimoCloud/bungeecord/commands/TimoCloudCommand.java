@@ -20,7 +20,7 @@ public class TimoCloudCommand extends Command {
     private Map<String, CommandSender> senders;
 
     public TimoCloudCommand() {
-        super("TimoCloud");
+        super("TimoCloud", "timocloud.admin");
         senders = new HashMap<>();
     }
 
