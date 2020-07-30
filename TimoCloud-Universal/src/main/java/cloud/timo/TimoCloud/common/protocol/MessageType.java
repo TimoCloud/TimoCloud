@@ -9,7 +9,7 @@ public enum MessageType {
     CORE_PARSE_COMMAND                          (1),
     CORE_SEND_MESSAGE_TO_COMMAND_SENDER         (2),
 
-    PROXY_HANDSHAE                              (3),
+    PROXY_HANDSHAKE                             (3),
     PROXY_HANDSHAKE_SUCCESS                     (4),
     PROXY_EXECUTE_COMMAND                       (5),
     PROXY_STOP                                  (6),

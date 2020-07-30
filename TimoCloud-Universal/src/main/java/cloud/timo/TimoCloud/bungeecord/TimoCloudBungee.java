@@ -168,7 +168,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
                 channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
                 channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAE).setTarget(getProxyId()));
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAKE).setTarget(getProxyId()));
             })).startHandshake();
         } catch (Exception e) {
             severe("Error during public key authentification, please report this!");

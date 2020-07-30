@@ -59,7 +59,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private String prefix = "[TimoCloud] ";
     private boolean enabled = false;
     private boolean disabling = false;
-
+    private boolean serverRegistered = false;
 
     @Override
     public void info(String message) {
@@ -91,6 +91,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 registerListeners();
                 registerTasks();
                 registerChannel();
+                Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                     try {
@@ -221,6 +222,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
         Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
+        TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
     }
 
     private void registerChannel() {
@@ -265,14 +267,12 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         if (this.disabling) return;
+        if(!this.serverRegistered) return;
         sendEverything();
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().runTask(this, () -> {
-            registerAtCore();
-            Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
-        });
+        Bukkit.getScheduler().runTask(this, () -> registerAtCore());
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
@@ -379,5 +379,9 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
             return System.getProperty("timocloud-mapname");
         }
         return getFileManager().getConfig().getString("defaultMapName");
+    }
+
+    public void setServerRegistered(boolean serverRegistered) {
+        this.serverRegistered = serverRegistered;
     }
 }
