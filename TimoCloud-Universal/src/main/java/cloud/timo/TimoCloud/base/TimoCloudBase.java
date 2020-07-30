@@ -72,6 +72,7 @@ public class TimoCloudBase implements TimoCloudModule {
     private boolean handshakePerformed = false;
     private boolean publicKeyPrinted;
 
+
     public static String getTime() {
         return "[" + format.format(new Date()) + "] ";
     }
