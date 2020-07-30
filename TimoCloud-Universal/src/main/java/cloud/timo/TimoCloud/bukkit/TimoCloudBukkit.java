@@ -222,6 +222,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
         Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
         Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
+        TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
     }
 
     private void registerChannel() {
