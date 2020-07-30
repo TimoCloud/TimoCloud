@@ -451,11 +451,13 @@ public class BaseInstanceManager {
 
     private Integer getFreePortServer(BaseServerObject baseServerObject) throws ServerStartException {
         Integer serverPort = getFreePortCommon(currentServerPort);
+
         if (serverPort == null) {
             TimoCloudBase.getInstance().severe("Error while starting server " + baseServerObject.getName() + ": No free port found. Please report this!");
             throw new ServerStartException("No free port found");
         }
-        currentServerPort = serverPort++;
+        serverPort++;
+        currentServerPort = serverPort;
         if (currentServerPort.equals(maxServerPort)) currentServerPort = startPortServer;
         return serverPort;
     }
@@ -466,7 +468,8 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + baseProxyObject.getName() + ": No free port found. Please report this!");
             throw new ProxyStartException("No free port found");
         }
-        currentProxyPort = proxyPort++;
+        proxyPort++;
+        currentProxyPort = proxyPort;
         if (currentProxyPort.equals(maxProxyPort)) currentProxyPort = startPortProxy;
         return proxyPort;
     }
