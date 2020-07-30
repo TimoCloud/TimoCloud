@@ -70,7 +70,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
-            case PROXY_HANDSHAE: {
+            case PROXY_HANDSHAKE: {
                 if (proxy == null) {
                     closeChannel(channel);
                     return;
