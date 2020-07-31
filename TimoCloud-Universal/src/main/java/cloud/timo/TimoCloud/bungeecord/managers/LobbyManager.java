@@ -99,6 +99,7 @@ public class LobbyManager {
         ServerInfo serverInfo = searchFreeLobby(uuid, notThis);
         if (serverInfo == null) {
             if (serverGroupObject == null) return null;
+            if (serverGroupObject.getServers().isEmpty()) return null;
             return TimoCloudBungee.getInstance().getProxy().getServerInfo(serverGroupObject.getServers().stream().findFirst().get().getName());
         }
 

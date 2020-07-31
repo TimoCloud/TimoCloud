@@ -194,7 +194,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     public void stop() {
         ProxyServer.getInstance().stop();
-        System.exit(0);
     }
 
     private void everySecond() {

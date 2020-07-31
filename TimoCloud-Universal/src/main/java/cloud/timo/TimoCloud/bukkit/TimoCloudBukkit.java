@@ -170,10 +170,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     public void stop() {
-        Bukkit.getScheduler().runTask(this, () -> {
-            Bukkit.getServer().shutdown();
-            System.exit(0);
-        });
+        Bukkit.getScheduler().runTask(this, () -> Bukkit.getServer().shutdown());
     }
 
     private void makeInstances() throws Exception {

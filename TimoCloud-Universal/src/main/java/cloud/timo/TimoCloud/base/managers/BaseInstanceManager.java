@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.base.exceptions.CommonStartException;
 import cloud.timo.TimoCloud.base.exceptions.ProxyStartException;
 import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
@@ -34,6 +35,10 @@ import java.util.stream.Collectors;
 public class BaseInstanceManager {
 
     private static final long STATIC_CREATE_TIME = 1482773874000L; // This is the exact time the project TimoCloud has come to life at
+    private static final Integer SERVER_PORT_START = 41000;
+    private static final Integer SERVER_PORT_MAX = 42000;
+    private static final Integer PROXY_PORT_START = 40000;
+    private static final Integer PROXY_PORT_MAX = 40300;
 
     private LinkedList<BaseServerObject> serverQueue;
     private LinkedList<BaseProxyObject> proxyQueue;
@@ -43,14 +48,10 @@ public class BaseInstanceManager {
     private Map<String, FileTailer> logTailers;
 
     private boolean startingServer = false;
-    private final Integer startPortServer = 41000;
-    private Integer currentServerPort = startPortServer;
-    private Integer maxServerPort = 41999;
+    private Integer currentServerPort = SERVER_PORT_START;
 
     private boolean startingProxy = false;
-    private final Integer startPortProxy = 40000;
-    private Integer currentProxyPort = startPortProxy;
-    private Integer maxProxyPort = 40999;
+    private Integer currentProxyPort = PROXY_PORT_START;
 
     private boolean downloadingTemplate = false;
 
@@ -225,7 +226,8 @@ public class BaseInstanceManager {
                 throw new ServerStartException("Could not copy TimoCloud.jar into template");
             }
 
-            Integer serverPort = getFreePortServer(server);
+            Integer serverPort = getFreePortCommon(SERVER_PORT_START, currentServerPort, SERVER_PORT_MAX);
+            currentServerPort = ++serverPort;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
@@ -362,7 +364,8 @@ public class BaseInstanceManager {
                 throw new ProxyStartException("Could not copy TimoCloud.jar into template");
             }
 
-            Integer proxyPort = getFreePortProxy(proxy);
+            Integer proxyPort = getFreePortCommon(PROXY_PORT_START, currentProxyPort, PROXY_PORT_MAX);
+            currentProxyPort = ++proxyPort;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
@@ -449,36 +452,17 @@ public class BaseInstanceManager {
         }
     }
 
-    private Integer getFreePortServer(BaseServerObject baseServerObject) throws ServerStartException {
-        Integer serverPort = getFreePortCommon(currentServerPort);
+    private Integer getFreePortCommon(int start, int current, int max) throws CommonStartException {
+        Integer freePort = null;
 
-        if (serverPort == null) {
-            TimoCloudBase.getInstance().severe("Error while starting server " + baseServerObject.getName() + ": No free port found. Please report this!");
-            throw new ServerStartException("No free port found");
-        }
-        serverPort++;
-        currentServerPort = serverPort;
-        if (currentServerPort.equals(maxServerPort)) currentServerPort = startPortServer;
-        return serverPort;
-    }
+        for (int p = current; p <= max; p++)
+            if (portIsFree(p)) freePort = p;
 
-    private Integer getFreePortProxy(BaseProxyObject baseProxyObject) throws ProxyStartException {
-        Integer proxyPort = getFreePortCommon(currentProxyPort);
-        if (proxyPort == null) {
-            TimoCloudBase.getInstance().severe("Error while starting proxy " + baseProxyObject.getName() + ": No free port found. Please report this!");
-            throw new ProxyStartException("No free port found");
-        }
-        proxyPort++;
-        currentProxyPort = proxyPort;
-        if (currentProxyPort.equals(maxProxyPort)) currentProxyPort = startPortProxy;
-        return proxyPort;
-    }
+        if (freePort == null)
+            throw new CommonStartException("No free port found. Please report this!");
 
-    private Integer getFreePortCommon(int offset) {
-        for (int p = offset; p <= offset + 1000; p++) {
-            if (portIsFree(p)) return p;
-        }
-        return null;
+        if (current == max) current = start;
+        return current;
     }
 
     private int getScreenVersion() {
