@@ -13,7 +13,9 @@ import org.apache.commons.io.FileDeleteStrategy;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
