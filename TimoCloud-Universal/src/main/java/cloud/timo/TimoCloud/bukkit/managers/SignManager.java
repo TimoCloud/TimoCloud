@@ -197,6 +197,10 @@ public class SignManager {
     }
 
     private boolean isSignActive(SignInstance signInstance) {
+        if (signInstance.getLocation() == null) {
+            TimoCloudBukkit.getInstance().info("Sign could not load: Location not found!");
+            return false;
+        }
         return signInstance.isActive() && signInstance.getLocation().getBlock().getState() instanceof Sign;
     }
 
@@ -305,7 +309,7 @@ public class SignManager {
     }
 
     public boolean signExists(Location location) {
-        return getSignInstanceByLocation(location) != null;
+        return signInstances.containsKey(location);
     }
 
     public void onSignClick(Player player, Location location) {
@@ -341,7 +345,8 @@ public class SignManager {
     }
 
     public void removeSign(SignInstance signInstance) {
-        signInstances.remove(signInstance);
+        signInstances.remove(signInstance.getLocation());
+        saveSignInstances();
     }
 
     public void lockSign(Location location) {

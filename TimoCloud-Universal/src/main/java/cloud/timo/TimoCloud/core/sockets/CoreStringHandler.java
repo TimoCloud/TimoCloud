@@ -70,7 +70,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 channel.attr(CoreRSAHandshakeHandler.HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).set(true);
                 return;
             }
-            case PROXY_HANDSHAE: {
+            case PROXY_HANDSHAKE: {
                 if (proxy == null) {
                     closeChannel(channel);
                     return;
@@ -110,6 +110,14 @@ public class CoreStringHandler extends BasicStringHandler {
                 Base base = TimoCloudCore.getInstance().getInstanceManager().getBaseByPublicKey(publicKey);
                 if (base == null) { // First connection
                     base = TimoCloudCore.getInstance().getInstanceManager().createBase(publicKey);
+                }
+                String publicIpConfig = base.getPublicIpConfig();
+                if(!publicIpConfig.equalsIgnoreCase("AUTO")) {
+                    try {
+                        publicAddress = InetAddress.getByName(publicIpConfig);
+                    } catch (Exception e) {
+                        TimoCloudCore.getInstance().severe("Unable to resolve public ip address from bases.yml '" + publicIpConfig + "' for base " + baseName + ". Please make sure the base's hostname is configured correctly in your bases.yml.");
+                    }
                 }
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, base);
                 base.onConnect(channel, address, publicAddress);

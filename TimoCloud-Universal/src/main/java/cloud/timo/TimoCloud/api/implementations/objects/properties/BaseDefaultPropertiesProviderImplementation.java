@@ -19,4 +19,9 @@ public class BaseDefaultPropertiesProviderImplementation implements BaseProperti
         return 90.0;
     }
 
+    @Override
+    public String getPublicIpConfig() {
+        return "AUTO";
+    }
+
 }
