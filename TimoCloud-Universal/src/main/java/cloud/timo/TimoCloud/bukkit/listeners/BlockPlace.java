@@ -16,5 +16,4 @@ public class BlockPlace implements Listener {
             }
         }
     }
-
 }
