@@ -452,17 +452,17 @@ public class BaseInstanceManager {
         }
     }
 
-    private Integer getFreePortCommon(int start, int current, int max) throws CommonStartException {
+    private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws CommonStartException {
         Integer freePort = null;
 
-        for (int p = current; p <= max; p++)
+        for (int p = currentPort; p <= maxPort; p++)
             if (portIsFree(p)) freePort = p;
 
         if (freePort == null)
             throw new CommonStartException("No free port found. Please report this!");
 
-        if (current == max) current = start;
-        return current;
+        if (currentPort == maxPort) currentPort = startPort;
+        return currentPort;
     }
 
     private int getScreenVersion() {
