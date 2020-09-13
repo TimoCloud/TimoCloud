@@ -422,6 +422,12 @@ public class CoreInstanceManager {
     public Base getFreeBase(Group group) {
         if (group.isStatic() && group.getBase() == null)
             return null; // A static group has to have a base specified statically
+
+        if (!group.isStatic() && group.getBase() != null){
+            // Start on the specified base if defined
+            return group.getBase();
+        }
+
         return getBases().stream()
                 .filter(Base::isConnected)
                 .filter(Base::isReady)
