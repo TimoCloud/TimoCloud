@@ -425,6 +425,13 @@ public class CoreInstanceManager {
 
         if (!group.isStatic() && group.getBase() != null){
             // Start on the specified base if defined
+            Base base = group.getBase();
+
+            // Dont start if not enough memory is available
+            if(base.getAvailableRam() < group.getRam()){
+                return null;
+            }
+
             return group.getBase();
         }
 
