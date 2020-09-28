@@ -39,7 +39,7 @@ public class BukkitStringHandler extends BasicStringHandler {
         }
         MessageType type = message.getType();
 
-        getMessageHandlers(type).forEach(messageHandler -> messageHandler.execute(message));
+        getMessageHandlers(type).forEach(messageHandler -> messageHandler.execute(message, channel));
     }
 
     private void addBasicHandlers() {

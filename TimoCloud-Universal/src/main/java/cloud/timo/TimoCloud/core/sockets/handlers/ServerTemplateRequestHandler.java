@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class ServerTemplateRequestHandler extends MessageHandler {
     public ServerTemplateRequestHandler() {
-        super(MessageType.API_DATA);
+        super(MessageType.BASE_SERVER_TEMPLATE_REQUEST);
     }
 
     @Override

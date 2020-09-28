@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class CoreParseCommandHandler extends MessageHandler {
     public CoreParseCommandHandler() {
-        super(MessageType.API_DATA);
+        super(MessageType.CORE_PARSE_COMMAND);
     }
 
     @Override

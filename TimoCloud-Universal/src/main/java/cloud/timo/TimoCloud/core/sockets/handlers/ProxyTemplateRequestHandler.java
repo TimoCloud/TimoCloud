@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class ProxyTemplateRequestHandler extends MessageHandler {
     public ProxyTemplateRequestHandler() {
-        super(MessageType.API_DATA);
+        super(MessageType.BASE_PROXY_TEMPLATE_REQUEST);
     }
 
     @Override

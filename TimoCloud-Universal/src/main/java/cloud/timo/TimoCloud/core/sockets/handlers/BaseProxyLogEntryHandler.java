@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class BaseProxyLogEntryHandler extends MessageHandler {
     public BaseProxyLogEntryHandler() {
-        super(MessageType.API_DATA);
+        super(MessageType.PROXY_LOG_ENTRY);
     }
 
     @Override
