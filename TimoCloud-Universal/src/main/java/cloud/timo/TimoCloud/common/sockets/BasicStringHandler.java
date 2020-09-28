@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BasicStringHandler extends SimpleChannelInboundHandler<String> {
-    private List<MessageHandler> messageHandlers;
+    protected List<MessageHandler> messageHandlers;
 
     public BasicStringHandler() {
         messageHandlers = new ArrayList<>();

@@ -1,37 +1,16 @@
 package cloud.timo.TimoCloud.core.sockets;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
-import cloud.timo.TimoCloud.api.core.commands.CommandSender;
-import cloud.timo.TimoCloud.api.events.EventType;
-import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
-import cloud.timo.TimoCloud.api.objects.*;
-import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
-import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
-import cloud.timo.TimoCloud.common.utils.EnumUtil;
-import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
+import cloud.timo.TimoCloud.common.sockets.MessageTypeNotFoundExcpetion;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.Base;
-import cloud.timo.TimoCloud.core.objects.Cord;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.handlers.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.security.PublicKey;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @ChannelHandler.Sharable
 public class CoreStringHandler extends BasicStringHandler {
@@ -41,17 +20,32 @@ public class CoreStringHandler extends BasicStringHandler {
 
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
-        Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
-
-        List<MessageHandler> messageHandlers  = getMessageHandlers(type);
+        Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
+        String targetId = message.getTarget();
+        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetId);
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(targetId);
+        String baseName = (String) message.get("base");
+        String cordName = (String) message.get("cord");
+        Communicatable target = null;
+        if (server != null) target = server;
+        else if (proxy != null) target = proxy;
+        else if (baseName != null)
+            target = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseName);
+        else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
+        if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
 
         boolean handshake = false;
-        for(MessageHandler messageHandler : messageHandlers){
-            if(messageHandler.getMessageType().toString().contains("HANDSHAKE")) {
-                handshake = true;
-                messageHandler.execute(message, channel);
+
+        try {
+            for (MessageHandler messageHandler : getMessageHandlers(type)) {
+                if (messageHandler.getMessageType().toString().contains("HANDSHAKE")) {
+                    handshake = true;
+                    messageHandler.execute(message, channel);
+                }
             }
+        } catch (MessageTypeNotFoundExcpetion e) {
+            target.onMessage(message, sender);
         }
 
         // No Handshake, so we have to check if the channel is registered
@@ -60,6 +54,7 @@ public class CoreStringHandler extends BasicStringHandler {
             TimoCloudCore.getInstance().severe("Unknown connection from " + channel.remoteAddress() + ", blocking. Please make sure to block the TimoCloudCore socket port (" + TimoCloudCore.getInstance().getSocketPort() + ") in your firewall to avoid this.");
             return;
         }
+
     }
 
 
