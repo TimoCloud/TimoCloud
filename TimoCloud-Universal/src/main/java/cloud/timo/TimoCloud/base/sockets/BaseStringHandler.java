@@ -17,7 +17,6 @@ public class BaseStringHandler extends BasicStringHandler {
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         MessageType type = message.getType();
-        System.out.println(type.getId() + " | " + type.toString());
         getMessageHandlers(type).forEach(messageHandler -> messageHandler.execute(message, channel));
     }
 
