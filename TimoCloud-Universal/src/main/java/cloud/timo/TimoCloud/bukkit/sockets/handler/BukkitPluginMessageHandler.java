@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.bukkit.sockets.handler;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudMessageAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
-import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;

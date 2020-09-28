@@ -7,7 +7,6 @@ import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
-import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import io.netty.channel.Channel;
 
 import java.util.Map;

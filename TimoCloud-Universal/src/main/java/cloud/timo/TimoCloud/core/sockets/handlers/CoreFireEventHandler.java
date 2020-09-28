@@ -4,15 +4,12 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
-import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
 import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import io.netty.channel.Channel;
-
-import java.util.Map;
 
 public class CoreFireEventHandler extends MessageHandler {
     public CoreFireEventHandler() {

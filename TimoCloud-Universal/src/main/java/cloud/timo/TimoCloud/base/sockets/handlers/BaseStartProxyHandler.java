@@ -2,7 +2,6 @@ package cloud.timo.TimoCloud.base.sockets.handlers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
-import cloud.timo.TimoCloud.base.objects.BaseServerObject;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;

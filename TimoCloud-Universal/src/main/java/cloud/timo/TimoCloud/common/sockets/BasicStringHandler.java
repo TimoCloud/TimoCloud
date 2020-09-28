@@ -1,6 +1,5 @@
 package cloud.timo.TimoCloud.common.sockets;
 
-import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
