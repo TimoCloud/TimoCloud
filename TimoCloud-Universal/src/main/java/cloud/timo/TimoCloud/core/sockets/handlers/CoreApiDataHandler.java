@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.core.sockets.handlers;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.objects.*;
-import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class CoreApiDataHandler extends MessageHandler {

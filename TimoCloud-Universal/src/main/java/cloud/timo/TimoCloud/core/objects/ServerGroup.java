@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,7 @@ public class ServerGroup implements Group {
     private List<String> javaParameters;
     private List<String> spigotParameters;
 
-    private Map<String, Server> servers = new HashMap<>();
+    private final Map<String, Server> servers = new HashMap<>();
 
     public ServerGroup(ServerGroupProperties properties) {
         construct(properties);

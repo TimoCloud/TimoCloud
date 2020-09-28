@@ -11,7 +11,6 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ProxyGroup implements Group {
@@ -32,7 +31,7 @@ public class ProxyGroup implements Group {
     private Base base;
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
-    private Map<String, Proxy> proxies = new HashMap<>();
+    private final Map<String, Proxy> proxies = new HashMap<>();
     private List<String> javaParameters;
 
     public ProxyGroup(ProxyGroupProperties properties) {

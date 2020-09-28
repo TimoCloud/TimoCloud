@@ -1,19 +1,15 @@
 package cloud.timo.TimoCloud.core.sockets.handlers;
 
-import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
-import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.sockets.CoreRSAHandshakeHandler;
 import io.netty.channel.Channel;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Map;
 
 public class CoreProxyHandshakeHandler extends MessageHandler {
     public CoreProxyHandshakeHandler() {

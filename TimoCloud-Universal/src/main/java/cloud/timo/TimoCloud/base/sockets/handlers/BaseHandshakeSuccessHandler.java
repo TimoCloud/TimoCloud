@@ -6,8 +6,6 @@ import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
 import io.netty.channel.Channel;
 
-import java.awt.*;
-
 public class BaseHandshakeSuccessHandler extends MessageHandler {
     public BaseHandshakeSuccessHandler() {
         super(MessageType.BASE_HANDSHAKE_SUCCESS);

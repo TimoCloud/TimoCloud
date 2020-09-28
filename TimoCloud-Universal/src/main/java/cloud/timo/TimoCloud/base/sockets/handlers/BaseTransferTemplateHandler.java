@@ -1,7 +1,6 @@
 package cloud.timo.TimoCloud.base.sockets.handlers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
-import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.MessageHandler;
@@ -11,8 +10,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 
 public class BaseTransferTemplateHandler extends MessageHandler {
     public BaseTransferTemplateHandler() {
