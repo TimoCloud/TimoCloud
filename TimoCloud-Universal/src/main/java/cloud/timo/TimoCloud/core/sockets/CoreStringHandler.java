@@ -55,8 +55,6 @@ public class CoreStringHandler extends BasicStringHandler {
         else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
         if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
 
-        List<MessageHandler> messageHandlers  = getMessageHandlers(type);
-
         boolean handshake = false;
         for(MessageHandler messageHandler : messageHandlers){
             if(messageHandler.getMessageType().toString().contains("HANDSHAKE")) {
