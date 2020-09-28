@@ -37,6 +37,7 @@ public class CoreStringHandler extends BasicStringHandler {
 
         boolean handshake = false;
         try {
+            System.out.println("Messages");
             for (MessageHandler messageHandler : messageHandlers) {
                 if (messageHandler.getMessageType().toString().contains("HANDSHAKE")) {
                     handshake = true;
@@ -45,6 +46,7 @@ public class CoreStringHandler extends BasicStringHandler {
             }
         } catch (MessageTypeNotFoundExcpetion e) {
             target.onMessage(message, sender);
+            System.out.println("Error hung up");
         }
 
         // No Handshake, so we have to check if the channel is registered
