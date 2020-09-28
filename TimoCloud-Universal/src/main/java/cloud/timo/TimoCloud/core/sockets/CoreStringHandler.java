@@ -41,8 +41,19 @@ public class CoreStringHandler extends BasicStringHandler {
 
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
-        Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         MessageType type = message.getType();
+        Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
+        String targetId = message.getTarget();
+        Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetId);
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByIdentifier(targetId);
+        String baseName = (String) message.get("base");
+        String cordName = (String) message.get("cord");
+        Communicatable target = null;
+        if (server != null) target = server;
+        else if (proxy != null) target = proxy;
+        else if (baseName != null) target = TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseName);
+        else if (cordName != null) target = TimoCloudCore.getInstance().getInstanceManager().getCord(cordName);
+        if (target == null) target = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
 
         List<MessageHandler> messageHandlers  = getMessageHandlers(type);
 
@@ -60,6 +71,8 @@ public class CoreStringHandler extends BasicStringHandler {
             TimoCloudCore.getInstance().severe("Unknown connection from " + channel.remoteAddress() + ", blocking. Please make sure to block the TimoCloudCore socket port (" + TimoCloudCore.getInstance().getSocketPort() + ") in your firewall to avoid this.");
             return;
         }
+
+        target.onMessage(message, sender);
     }
 
 
