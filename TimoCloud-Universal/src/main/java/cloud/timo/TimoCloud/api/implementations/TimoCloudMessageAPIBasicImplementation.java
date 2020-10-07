@@ -26,7 +26,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
 
     @Override
     public void sendMessage(AddressedPluginMessage message) {
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
+               TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType(MessageType.SEND_PLUGIN_MESSAGE)
                 .setData(message)
                 .toString());

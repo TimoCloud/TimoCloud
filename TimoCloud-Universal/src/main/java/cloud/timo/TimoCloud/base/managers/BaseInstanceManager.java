@@ -1,7 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
-import cloud.timo.TimoCloud.base.exceptions.CommonStartException;
+import cloud.timo.TimoCloud.base.exceptions.InstanceStartException;
 import cloud.timo.TimoCloud.base.exceptions.ProxyStartException;
 import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
@@ -452,17 +452,15 @@ public class BaseInstanceManager {
         }
     }
 
-    private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws CommonStartException {
-        Integer freePort = null;
+    private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws InstanceStartException {
+        if(currentPort == maxPort) currentPort = startPort;
 
-        for (int p = currentPort; p <= maxPort; p++)
-            if (portIsFree(p)) freePort = p;
-
-        if (freePort == null)
-            throw new CommonStartException("No free port found. Please report this!");
-
-        if (currentPort == maxPort) currentPort = startPort;
-        return currentPort;
+        for (int i = 0; i<=maxPort-startPort; i++) {
+            int port = (currentPort + i) % maxPort;
+            if (port < startPort) port += startPort;
+            if (isPortFree(port)) return port;
+        }
+        throw new InstanceStartException("No free port found. Please report this!");
     }
 
     private int getScreenVersion() {
@@ -485,7 +483,7 @@ public class BaseInstanceManager {
         return Integer.MAX_VALUE;
     }
 
-    private boolean portIsFree(int port) {
+    private boolean isPortFree(int port) {
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(port);
