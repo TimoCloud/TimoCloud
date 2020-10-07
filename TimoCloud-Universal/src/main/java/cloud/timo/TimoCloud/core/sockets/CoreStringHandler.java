@@ -35,6 +35,7 @@ public class CoreStringHandler extends BasicStringHandler {
 
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
+        TimoCloudCore.getInstance().info("HandelMessage: " + originalMessage);
         Communicatable sender = TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel);
         String targetId = message.getTarget();
         Server server = TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetId);
@@ -231,6 +232,7 @@ public class CoreStringHandler extends BasicStringHandler {
                 break;
             }
             case SEND_PLUGIN_MESSAGE: {
+                TimoCloudCore.getInstance().info("Entpfange Pluginmessage:  " + Collections.singletonList((Map) data));
                 AddressedPluginMessage addressedPluginMessage = PluginMessageSerializer.deserialize((Map) data);
                 TimoCloudCore.getInstance().getPluginMessageManager().onMessage(addressedPluginMessage);
                 break;
