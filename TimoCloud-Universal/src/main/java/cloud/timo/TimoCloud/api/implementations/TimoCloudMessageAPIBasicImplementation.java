@@ -13,7 +13,6 @@ import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +26,7 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
 
     @Override
     public void sendMessage(AddressedPluginMessage message) {
-        if(message.getRecipient().getType().equals(MessageClientAddressType.PROXY))
-            System.out.println("Send Pluginmessage to: " + message.getRecipient().getName() + " Message: " + Collections.singletonList(message.getMessage().getData()));
-
-        TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
+               TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                 .setType(MessageType.SEND_PLUGIN_MESSAGE)
                 .setData(message)
                 .toString());
