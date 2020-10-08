@@ -13,7 +13,7 @@ import java.net.InetSocketAddress;
 
 public class CoreProxyHandshakeHandler extends MessageHandler {
     public CoreProxyHandshakeHandler() {
-        super(MessageType.PROXY_HANDSHAKE);
+        super(MessageType.PROXY_HANDSHAKE, true);
     }
 
     @Override

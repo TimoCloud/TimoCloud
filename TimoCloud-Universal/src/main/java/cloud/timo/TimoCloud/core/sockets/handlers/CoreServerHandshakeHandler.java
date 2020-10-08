@@ -13,7 +13,7 @@ import java.net.InetSocketAddress;
 
 public class CoreServerHandshakeHandler extends MessageHandler {
     public CoreServerHandshakeHandler() {
-        super(MessageType.SERVER_HANDSHAKE);
+        super(MessageType.SERVER_HANDSHAKE, true);
     }
 
     @Override
