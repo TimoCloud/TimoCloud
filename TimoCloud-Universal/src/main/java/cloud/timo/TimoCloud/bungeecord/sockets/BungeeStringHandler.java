@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.bungeecord.sockets.handler.*;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.common.sockets.MessageTypeNotFoundExcpetion;
 import io.netty.channel.Channel;
 
 public class BungeeStringHandler extends BasicStringHandler {
@@ -20,7 +21,19 @@ public class BungeeStringHandler extends BasicStringHandler {
             return;
         }
         MessageType type = message.getType();
-        getMessageHandlers(type).forEach(messageHandler -> messageHandler.execute(message, channel));
+        try {
+            getMessageHandlers(type).forEach(messageHandler -> {
+                try {
+                    messageHandler.execute(message, channel);
+                } catch (Exception e) {
+                    TimoCloudBungee.getInstance().severe("Messagehandler " + messageHandler.getClass().getSimpleName() + " threw an exception: ");
+                    TimoCloudBungee.getInstance().severe(e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        } catch (MessageTypeNotFoundExcpetion messageTypeNotFoundExcpetion) {
+            TimoCloudBungee.getInstance().severe(messageTypeNotFoundExcpetion.getMessage());
+        }
     }
 
     private void addBasicHandlers() {

@@ -14,7 +14,7 @@ import java.security.PublicKey;
 
 public class CoreBaseHandshakeHandler extends MessageHandler {
     public CoreBaseHandshakeHandler() {
-        super(MessageType.BASE_HANDSHAKE);
+        super(MessageType.BASE_HANDSHAKE, true);
     }
 
     @Override

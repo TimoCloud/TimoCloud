@@ -7,14 +7,16 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class BasicStringHandler extends SimpleChannelInboundHandler<String> {
-    protected List<MessageHandler> messageHandlers;
+    protected Map<MessageType, Set<MessageHandler>> messageHandlers;
 
     public BasicStringHandler() {
-        messageHandlers = new ArrayList<>();
+        messageHandlers = new HashMap<>();
     }
 
     @Override
@@ -30,26 +32,28 @@ public abstract class BasicStringHandler extends SimpleChannelInboundHandler<Str
 
     public abstract void handleMessage(Message message, String originalMessage, Channel channel);
 
-    public List<MessageHandler> getMessageHandlers(MessageType messageType) {
-        List<MessageHandler> returnedMessageHandlers = new ArrayList<>();
+    public Set<MessageHandler> getMessageHandlers(MessageType messageType) throws MessageTypeNotFoundExcpetion {
+        Set<MessageHandler> returnedMessageHandlers = messageHandlers.getOrDefault(messageType, new HashSet<MessageHandler>());
 
-        for(MessageHandler messageHandler : messageHandlers) {
-            if(messageHandler.getMessageType().equals(messageType))
-                returnedMessageHandlers.add(messageHandler);
-        }
-
-        if(returnedMessageHandlers.isEmpty())
+        if (returnedMessageHandlers.isEmpty())
             throw new MessageTypeNotFoundExcpetion(messageType);
 
         return returnedMessageHandlers;
     }
 
     public void addHandler(MessageHandler messageHandler) {
-        messageHandlers.add(messageHandler);
+        Set<MessageHandler> existingMessageHandlers;
+
+        existingMessageHandlers = messageHandlers.getOrDefault(messageHandler.getMessageType(), new HashSet<>());
+
+        existingMessageHandlers.add(messageHandler);
+        messageHandlers.put(messageHandler.getMessageType(), existingMessageHandlers);
     }
 
     public void removeHandler(MessageHandler messageHandler) {
-        messageHandlers.remove(messageHandler);
+        Set<MessageHandler> existingMessageHandlers = messageHandlers.get(messageHandler.getMessageType());
+        existingMessageHandlers.remove(messageHandler);
+        messageHandlers.put(messageHandler.getMessageType(), existingMessageHandlers);
     }
 
     public void closeChannel(Channel channel) {

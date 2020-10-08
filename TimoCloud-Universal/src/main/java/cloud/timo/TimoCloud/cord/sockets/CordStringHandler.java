@@ -3,6 +3,8 @@ package cloud.timo.TimoCloud.cord.sockets;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
+import cloud.timo.TimoCloud.common.sockets.MessageTypeNotFoundExcpetion;
+import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.sockets.handler.CordApiDataHandler;
 import cloud.timo.TimoCloud.cord.sockets.handler.CordEventFiredHandler;
 import cloud.timo.TimoCloud.cord.sockets.handler.CordHandshakeSuccessHandler;
@@ -20,7 +22,19 @@ public class CordStringHandler extends BasicStringHandler {
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         MessageType type = message.getType();
-        getMessageHandlers(type).forEach(messageHandler -> messageHandler.execute(message, channel));
+        try {
+            getMessageHandlers(type).forEach(messageHandler -> {
+                try {
+                    messageHandler.execute(message, channel);
+                } catch (Exception e) {
+                    TimoCloudCord.getInstance().severe("Messagehandler " + messageHandler.getClass().getSimpleName() + " threw an exception: ");
+                    TimoCloudCord.getInstance().severe(e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+        } catch (MessageTypeNotFoundExcpetion messageTypeNotFoundExcpetion) {
+            TimoCloudCord.getInstance().severe(messageTypeNotFoundExcpetion.getMessage());
+        }
     }
 
     private void addBasicHandlers() {
