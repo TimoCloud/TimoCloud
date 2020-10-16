@@ -227,7 +227,9 @@ public class BaseInstanceManager {
             }
 
             Integer serverPort = getFreePortCommon(SERVER_PORT_START, currentServerPort, SERVER_PORT_MAX);
-            currentServerPort = ++serverPort;
+            currentServerPort = serverPort;
+            currentServerPort++;
+            System.out.println(serverPort);
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
@@ -458,7 +460,9 @@ public class BaseInstanceManager {
         for (int i = 0; i<=maxPort-startPort; i++) {
             int port = (currentPort + i) % maxPort;
             if (port < startPort) port += startPort;
-            if (isPortFree(port)) return port;
+            if (isPortFree(port)){
+                return port;
+            }
         }
         throw new InstanceStartException("No free port found. Please report this!");
     }
