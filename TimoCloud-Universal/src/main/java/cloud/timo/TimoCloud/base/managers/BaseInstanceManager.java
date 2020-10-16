@@ -229,7 +229,6 @@ public class BaseInstanceManager {
             Integer serverPort = getFreePortCommon(SERVER_PORT_START, currentServerPort, SERVER_PORT_MAX);
             currentServerPort = serverPort;
             currentServerPort++;
-            System.out.println(serverPort);
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
