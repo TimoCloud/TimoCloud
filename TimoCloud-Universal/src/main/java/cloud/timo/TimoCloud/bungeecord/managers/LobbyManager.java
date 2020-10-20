@@ -58,6 +58,7 @@ public class LobbyManager {
         ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis.getName());
         if (notThisServer != null) removeServers.add(notThisServer);
         List<String> history = getVisitedLobbies(uuid);
+
         for (ServerObject server : servers) {
             if (history.contains(server.getName()) && !removeServers.contains(server)) removeServers.add(server);
         }
@@ -85,7 +86,6 @@ public class LobbyManager {
                 target = servers.get(0);
                 break;
         }
-
         return TimoCloudBungee.getInstance().getProxy().getServers().get(target.getName());
     }
 
