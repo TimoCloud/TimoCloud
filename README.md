@@ -1,4 +1,4 @@
-[![Build Status](http://jenkins.timo.cloud/job/TimoCloud/job/master/badge/icon)](http://jenkins.timo.cloud/job/TimoCloud/job/master/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b341b86dc4704d59b54f059d0cf6d5d1)](https://www.codacy.com/project/TimoCrafter/TimoCloud/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TimoCloud/TimoCloud&amp;utm_campaign=Badge_Grade_Dashboard)
+[![Build Status](http://jenkins.timo.cloud/job/TimoCloud%206.x/job/master/badge/icon)](http://jenkins.timo.cloud/job/TimoCloud%206.x/job/master/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b341b86dc4704d59b54f059d0cf6d5d1)](https://www.codacy.com/project/TimoCrafter/TimoCloud/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=TimoCloud/TimoCloud&amp;utm_campaign=Badge_Grade_Dashboard)
 # TimoCloud
 TimoCloud is a Minecraft server/proxy management system ("Cloud System"). It will care about keeping online enough servers/proxies of every kind. But it's more than that. Thank to its algorithms, you'll never have to care again about servers or resources. TimoCloud automatically chooses servers with low CPU usage and enough available RAM to start your instances. And its integrated *Flow*-System makes updating templates easier than ever before: Edit one file in a server template, and the update will automatically be deployed to all bases (a.k.a. "Wrapper"). But of course, only the changed files will get updated.
 
@@ -15,14 +15,14 @@ TimoCloud is full of innovative features. Here is a list of the most important o
  - **Included proxy**: Use the included proxy, *TimoCloudCord*, to spread your players over your BungeeCord proxies.
  
  ## Download
- You can download the latest version [here](https://jenkins.timo.cloud/job/TimoCloud/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar)
+ You can download the latest version [here](https://jenkins.timo.cloud/job/TimoCloud%206.x/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar)
  
  ## Setup
  See the [Wiki](https://github.com/TimoCrafter/TimoCloud/wiki)
 
  ## Building from source
  ```
- git clone https://github.com/TimoCrafter/TimoCloud
+ git clone https://github.com/TimoCloud/TimoCloud-6.0
  cd TimoCloud
  mvn clean package
  ```
