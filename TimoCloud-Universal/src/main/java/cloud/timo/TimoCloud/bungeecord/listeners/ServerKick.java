@@ -11,6 +11,7 @@ public class ServerKick implements Listener {
     @EventHandler(priority = 65)
     public void onServerKickEvent(ServerKickEvent event) {
         if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;
+        if (!event.getPlayer().isConnected()) return;
         ServerInfo server = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true);
         if (server == null) {
             TimoCloudBungee.getInstance().info("No fallback server found");
