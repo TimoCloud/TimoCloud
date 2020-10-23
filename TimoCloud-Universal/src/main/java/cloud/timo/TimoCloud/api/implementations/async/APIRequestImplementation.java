@@ -48,7 +48,6 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
 
     public APIRequestImplementation(APIRequestType type, Object value) {
         this(type, new TypeMap().put("value", value));
-        this.data = new HashMap();
     }
 
     @Override
