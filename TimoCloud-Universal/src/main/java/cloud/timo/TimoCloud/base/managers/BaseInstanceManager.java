@@ -365,7 +365,7 @@ public class BaseInstanceManager {
             }
 
             Integer proxyPort = getFreePortCommon(PROXY_PORT_START, currentProxyPort, PROXY_PORT_MAX);
-            currentProxyPort = ++proxyPort;
+            currentProxyPort = proxyPort + 1;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
