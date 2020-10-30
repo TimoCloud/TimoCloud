@@ -30,7 +30,7 @@ public class PluginMessageManager {
             TimoCloudCore.getInstance().severe("Unknown plugin message recipient: " + message.getRecipient());
             return;
         }
-         communicatable.sendMessage(Message.create()
+        communicatable.sendMessage(Message.create()
                 .setType(MessageType.ON_PLUGIN_MESSAGE)
                 .setData(message));
     }
