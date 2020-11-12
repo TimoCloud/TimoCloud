@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.common.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-// NEXT FREE ID: 51
+// NEXT FREE ID: 52
 
 public enum MessageType {
     CORE_PARSE_COMMAND                          (1),
@@ -12,6 +12,7 @@ public enum MessageType {
     PROXY_HANDSHAKE                             (3),
     PROXY_HANDSHAKE_SUCCESS                     (4),
     PROXY_EXECUTE_COMMAND                       (5),
+    PROXY_SEND_PLAYER                           (51),
     PROXY_STOP                                  (6),
 
     PROXY_SET_PLAYER_COUNT                      (7),

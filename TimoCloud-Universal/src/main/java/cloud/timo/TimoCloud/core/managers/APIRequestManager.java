@@ -403,6 +403,14 @@ public class APIRequestManager implements MessageListener {
                             proxy.executeCommand(value);
                             break;
                         }
+                        case P_SEND_PLAYER:{
+                            String playerUUID = data.getString("playerUUID");
+                            String targetServer = data.getString("targetServer");
+                            validateNotNull(playerUUID, "UUID");
+                            validateNotNull(targetServer, "targetServer");
+                            proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
+                            break;
+                        }
                         case P_STOP: {
                             break;
                         }

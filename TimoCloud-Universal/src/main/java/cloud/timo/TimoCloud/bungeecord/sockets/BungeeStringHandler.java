@@ -19,6 +19,7 @@ import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.UUID;
 
 public class BungeeStringHandler extends BasicStringHandler {
 
@@ -53,6 +54,14 @@ public class BungeeStringHandler extends BasicStringHandler {
             case PROXY_EXECUTE_COMMAND:
                 TimoCloudBungee.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloudBungee.getInstance().getProxy().getConsole(), (String) data);
                 break;
+            case PROXY_SEND_PLAYER: {
+                Map<String, Object> information = (Map<String, Object>) data;
+                String playerUUID, serverObject;
+                playerUUID = (String) information.get("playerUUID");
+                serverObject = (String) information.get("serverObject");
+                TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID)).connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));
+                break;
+            }
             case PROXY_ADD_SERVER:
                 TimoCloudBungee.getInstance().getProxy().getServers().put(server, TimoCloudBungee.getInstance().getProxy().constructServerInfo(server, new InetSocketAddress((String) message.get("address"), ((Number) message.get("port")).intValue()), "", false));
                 break;
