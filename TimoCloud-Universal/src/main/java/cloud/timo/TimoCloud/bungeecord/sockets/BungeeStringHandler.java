@@ -9,15 +9,18 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
+import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
+import com.google.gson.internal.LinkedTreeMap;
 import io.netty.channel.Channel;
 
 import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -56,9 +59,8 @@ public class BungeeStringHandler extends BasicStringHandler {
                 break;
             case PROXY_SEND_PLAYER: {
                 Map<String, Object> information = (Map<String, Object>) data;
-                String playerUUID, serverObject;
-                playerUUID = (String) information.get("playerUUID");
-                serverObject = (String) information.get("serverObject");
+                String playerUUID = (String) information.get("playerUUID");
+                String serverObject = (String) information.get("serverObject");
                 TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID)).connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));
                 break;
             }
