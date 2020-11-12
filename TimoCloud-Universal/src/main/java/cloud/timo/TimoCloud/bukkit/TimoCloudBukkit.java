@@ -44,7 +44,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.security.KeyPair;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -64,9 +63,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     @Override
     public void info(String message) {
-        System.out.println("Message: " + Objects.isNull(message));
-        System.out.println("Prefix: " + getPrefix());
-        System.out.println("Send Message: " + ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
     }
 
@@ -156,7 +152,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     public void onSocketDisconnect(boolean connectionFailed) {
         LogInjectionUtil.restoreSystemOutAndErr();
-       // info("Disconnected from TimoCloudCore. Stopping server.");
+        info("Disconnected from TimoCloudCore. Stopping server.");
         if (connectionFailed) {
             System.exit(0);
         } else {
