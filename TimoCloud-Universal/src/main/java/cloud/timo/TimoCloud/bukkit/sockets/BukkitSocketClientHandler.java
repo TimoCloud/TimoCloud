@@ -1,9 +1,12 @@
 package cloud.timo.TimoCloud.bukkit.sockets;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.Objects;
 
 public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
 
@@ -46,6 +49,9 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         // Close the connection when an exception is raised.
         //causTimoCloudBukkit.getInstance().severe(e);
+        if(Objects.isNull(ctx)) {
+            TimoCloudBukkit.getInstance().info("ChannelHandlerContext is null");
+        } else
         ctx.close();
         TimoCloudBukkit.getInstance().onSocketDisconnect(false);
     }
