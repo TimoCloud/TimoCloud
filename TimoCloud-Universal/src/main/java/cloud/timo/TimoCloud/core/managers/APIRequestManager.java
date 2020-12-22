@@ -7,7 +7,6 @@ import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.implementations.async.APIResponse;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
-import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
