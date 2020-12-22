@@ -1,6 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea for TimoCloud
+title: ''
+labels: enhancement
+assignees: ''
 
 ---
 
