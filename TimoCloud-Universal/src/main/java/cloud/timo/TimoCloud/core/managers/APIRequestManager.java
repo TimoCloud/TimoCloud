@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.implementations.async.APIResponse;
 import cloud.timo.TimoCloud.api.messages.listeners.MessageListener;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
@@ -408,6 +409,7 @@ public class APIRequestManager implements MessageListener {
                             String targetServer = data.getString("targetServer");
                             validateNotNull(playerUUID, "UUID");
                             validateNotNull(targetServer, "targetServer");
+                            responseData = (T) Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
                             proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
                             break;
                         }

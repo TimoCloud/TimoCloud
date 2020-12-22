@@ -16,9 +16,11 @@ import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
 import io.netty.channel.Channel;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BungeeStringHandler extends BasicStringHandler {
@@ -58,7 +60,11 @@ public class BungeeStringHandler extends BasicStringHandler {
                 Map<String, Object> information = (Map<String, Object>) data;
                 String playerUUID = (String) information.get("playerUUID");
                 String serverObject = (String) information.get("serverObject");
-                TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID)).connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));
+                ProxiedPlayer proxiedPlayer = TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID));
+                if(Objects.isNull(proxiedPlayer))
+                    return;
+
+                proxiedPlayer.connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));
                 break;
             }
             case PROXY_ADD_SERVER:

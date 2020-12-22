@@ -89,8 +89,8 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     }
 
     @Override
-    public APIRequestFuture<Void> sendToServer(ServerObject serverObject) {
-        return new APIRequestImplementation<Void>(APIRequestType.P_SEND_PLAYER, getProxy().getId(),  new TypeMap()
+    public APIRequestFuture<Boolean> sendToServer(ServerObject serverObject) {
+        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_PLAYER, getProxy().getId(),  new TypeMap()
                 .put("playerUUID", getId())
                 .put("targetServer", serverObject.getId())).submit();
     }
