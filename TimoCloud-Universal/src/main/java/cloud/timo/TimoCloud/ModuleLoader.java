@@ -48,12 +48,21 @@ public class ModuleLoader {
         info(asciiArt);
         info("\033[1;38;5;117mTimo\u001B[1;38;5;188mCloud\u001B[0m version \u001B[1;33m" + getVersion() + "\u001B[0m by \u001B[1;32mTimoCrafter\u001B[0m.");
 
+        if(hasWindows()) {
+            severe("TimoCloud does not support this OS. Please use another one.");
+            return;
+        }
+
         parseOptions(args);
 
         ModuleType moduleType = getModuleType();
         info("Loading module " + moduleType + "...");
         if (! moduleInParam) info("To automatically load this module, start TimoCloud with the parameter '--module=" + moduleType + "' at the end of your java -jar command.");
         loadModule(moduleType);
+    }
+
+    private static boolean hasWindows() {
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     private static void parseOptions(String[] args) {
