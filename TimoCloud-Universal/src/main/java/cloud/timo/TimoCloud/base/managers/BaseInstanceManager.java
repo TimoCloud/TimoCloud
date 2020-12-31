@@ -1,6 +1,7 @@
 package cloud.timo.TimoCloud.base.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
+import cloud.timo.TimoCloud.base.exceptions.InstanceStartException;
 import cloud.timo.TimoCloud.base.exceptions.ProxyStartException;
 import cloud.timo.TimoCloud.base.exceptions.ServerStartException;
 import cloud.timo.TimoCloud.base.objects.BaseProxyObject;
@@ -34,25 +35,29 @@ import java.util.stream.Collectors;
 public class BaseInstanceManager {
 
     private static final long STATIC_CREATE_TIME = 1482773874000L; // This is the exact time the project TimoCloud has come to life at
+    private static final Integer SERVER_PORT_START = 41000;
+    private static final Integer SERVER_PORT_MAX = 42000;
+    private static final Integer PROXY_PORT_START = 40000;
+    private static final Integer PROXY_PORT_MAX = 40300;
 
     private LinkedList<BaseServerObject> serverQueue;
     private LinkedList<BaseProxyObject> proxyQueue;
-
-    private Map<Integer, Integer> recentlyUsedPorts;
 
     private final ScheduledExecutorService scheduler;
 
     private Map<String, FileTailer> logTailers;
 
     private boolean startingServer = false;
+    private Integer currentServerPort = SERVER_PORT_START;
+
     private boolean startingProxy = false;
+    private Integer currentProxyPort = PROXY_PORT_START;
 
     private boolean downloadingTemplate = false;
 
     public BaseInstanceManager(long millis) {
         serverQueue = new LinkedList<>();
         proxyQueue = new LinkedList<>();
-        recentlyUsedPorts = new HashMap<>();
         scheduler = Executors.newScheduledThreadPool(1);
         logTailers = new HashMap<>();
         scheduler.scheduleAtFixedRate(this::everySecond, millis, millis, TimeUnit.MILLISECONDS);
@@ -81,7 +86,6 @@ public class BaseInstanceManager {
 
     private void everySecond() {
         try {
-            countDownPorts();
             startNext();
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe(e);
@@ -207,7 +211,7 @@ public class BaseInstanceManager {
                 TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. " + (
                         server.isStatic() ? "Please make sure the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'spigot.jar' in your template."));
-                throw new ProxyStartException("spigot.jar does not exist");
+                throw new ServerStartException("spigot.jar does not exist");
             }
 
             File plugins = new File(temporaryDirectory, "/plugins/");
@@ -222,12 +226,8 @@ public class BaseInstanceManager {
                 throw new ServerStartException("Could not copy TimoCloud.jar into template");
             }
 
-            Integer port = getFreePort(41000);
-            if (port == null) {
-                TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": No free port found. Please report this!");
-                throw new ServerStartException("No free port found");
-            }
-            blockPort(port);
+            Integer serverPort = getFreePortCommon(SERVER_PORT_START, currentServerPort, SERVER_PORT_MAX);
+            currentServerPort = serverPort + 1;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
@@ -274,7 +274,7 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + server.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " -jar spigot.jar -p " + port + " " + buildStartParameters(server.getSpigotParameters()) +
+                                " -jar spigot.jar -p " + serverPort + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
                 TimoCloudBase.getInstance().info("Successfully started server screen session " + server.getName() + ".");
@@ -287,7 +287,7 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
                     .setType(MessageType.BASE_SERVER_STARTED)
                     .setTarget(server.getId())
-                    .set("port", port)
+                    .set("port", serverPort)
                     .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
             );
 
@@ -364,12 +364,8 @@ public class BaseInstanceManager {
                 throw new ProxyStartException("Could not copy TimoCloud.jar into template");
             }
 
-            Integer port = getFreePort(40000);
-            if (port == null) {
-                TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": No free port found. Please report this!");
-                throw new ProxyStartException("No free port found");
-            }
-            blockPort(port);
+            Integer proxyPort = getFreePortCommon(PROXY_PORT_START, currentProxyPort, PROXY_PORT_MAX);
+            currentProxyPort = proxyPort + 1;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
 
@@ -384,10 +380,10 @@ public class BaseInstanceManager {
             Map<String, Object> map = listeners.size() == 0 ? new LinkedHashMap<>() : listeners.get(0);
             map.put("motd", proxy.getMotd());
             if (proxy.isStatic() && map.containsKey("host")) {
-                port = Integer.parseInt(((String) map.get("host")).split(":")[1]);
+                proxyPort = Integer.parseInt(((String) map.get("host")).split(":")[1]);
             }
             map.put("force_default_server", false);
-            map.put("host", "0.0.0.0:" + port);
+            map.put("host", "0.0.0.0:" + proxyPort);
             map.put("max_players", proxy.getMaxPlayers());
             if (!proxy.isStatic()) map.put("query_enabled", false);
             if (listeners.size() == 0) listeners.add(map);
@@ -446,7 +442,7 @@ public class BaseInstanceManager {
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
                     .setType(MessageType.BASE_PROXY_STARTED)
                     .setTarget(proxy.getId())
-                    .set("port", port)
+                    .set("port", proxyPort)
                     .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
             );
 
@@ -456,21 +452,23 @@ public class BaseInstanceManager {
         }
     }
 
-    private Integer getFreePort(int offset) {
-        for (int p = offset; p <= offset + 1000; p++) {
-            if (portIsFree(p)) return p;
-        }
-        return null;
-    }
+    private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws InstanceStartException {
+        if(currentPort == maxPort) currentPort = startPort;
 
-    private void blockPort(int port) {
-        recentlyUsedPorts.put(port, 60);
+        for (int i = 0; i<=maxPort-startPort; i++) {
+            int port = (currentPort + i) % maxPort;
+            if (port < startPort) port += startPort;
+            if (isPortFree(port)){
+                return port;
+            }
+        }
+        throw new InstanceStartException("No free port found. Please report this!");
     }
 
     private int getScreenVersion() {
         try {
-            Process getversion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getversion.getInputStream(), StandardCharsets.UTF_8));
+            Process getVersion = new ProcessBuilder("/bin/sh", "-c", "screen -v").start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getVersion.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder textBuilder = new StringBuilder();
             String line = "";
             while ((line = reader.readLine()) != null) {
@@ -487,8 +485,7 @@ public class BaseInstanceManager {
         return Integer.MAX_VALUE;
     }
 
-    private boolean portIsFree(int port) {
-        if (recentlyUsedPorts.containsKey(port)) return false;
+    private boolean isPortFree(int port) {
         ServerSocket serverSocket = null;
         try {
             serverSocket = new ServerSocket(port);
@@ -502,15 +499,6 @@ public class BaseInstanceManager {
                 TimoCloudBase.getInstance().severe(e);
             }
         }
-    }
-
-    private void countDownPorts() {
-        List<Integer> remove = new ArrayList<>();
-        for (Integer port : recentlyUsedPorts.keySet()) {
-            recentlyUsedPorts.put(port, recentlyUsedPorts.get(port) - 1);
-            if (recentlyUsedPorts.get(port) <= 0) remove.add(port);
-        }
-        for (Integer port : remove) recentlyUsedPorts.remove(port);
     }
 
     private void setProperty(File file, String property, String value) {
