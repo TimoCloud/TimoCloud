@@ -408,7 +408,9 @@ public class APIRequestManager implements MessageListener {
                             String targetServer = data.getString("targetServer");
                             validateNotNull(playerUUID, "UUID");
                             validateNotNull(targetServer, "targetServer");
-                            responseData = (T) Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
+                            Boolean isOnGivenProxy = Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
+                            responseData = (T) isOnGivenProxy;
+                            if(isOnGivenProxy)
                             proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
                             break;
                         }
