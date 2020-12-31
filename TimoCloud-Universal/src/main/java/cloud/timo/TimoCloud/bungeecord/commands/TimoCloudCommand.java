@@ -94,39 +94,24 @@ public class TimoCloudCommand extends Command implements TabExecutor {
             ArrayList<String> tabCompletions = new ArrayList<>();
 
             if (strings.length == 1) {
-                if ("help".startsWith(strings[0]))
-                    tabCompletions.add("help");
-                if ("version".startsWith(strings[0]))
-                    tabCompletions.add("version");
-                if ("reload".startsWith(strings[0]))
-                    tabCompletions.add("reload");
-                if ("addbase".startsWith(strings[0]))
-                    tabCompletions.add("addbase");
-                if ("addgroup".startsWith(strings[0]))
-                    tabCompletions.add("addgroup");
-                if ("removegroup".startsWith(strings[0]))
-                    tabCompletions.add("removegroup");
-                if ("editgroup".startsWith(strings[0]))
-                    tabCompletions.add("editgroup");
-                if ("restart".startsWith(strings[0]))
-                    tabCompletions.add("restart");
-                if ("groupinfo".startsWith(strings[0]))
-                    tabCompletions.add("groupinfo");
-                if ("listgroups".startsWith(strings[0]))
-                    tabCompletions.add("listgroups");
-                if ("baseinfo".startsWith(strings[0]))
-                    tabCompletions.add("baseinfo");
-                if ("listbases".startsWith(strings[0]))
-                    tabCompletions.add("listbases");
-                if ("sendcommand".startsWith(strings[0]))
-                    tabCompletions.add("sendcommand");
+                addCompletionToList(tabCompletions, "help", strings[0]);
+                addCompletionToList(tabCompletions, "version", strings[0]);
+                addCompletionToList(tabCompletions, "reload", strings[0]);
+                addCompletionToList(tabCompletions, "addbase", strings[0]);
+                addCompletionToList(tabCompletions, "addgroup", strings[0]);
+                addCompletionToList(tabCompletions, "removegroup", strings[0]);
+                addCompletionToList(tabCompletions, "editgroup", strings[0]);
+                addCompletionToList(tabCompletions, "restart", strings[0]);
+                addCompletionToList(tabCompletions, "groupinfo", strings[0]);
+                addCompletionToList(tabCompletions, "listgroups", strings[0]);
+                addCompletionToList(tabCompletions, "baseinfo", strings[0]);
+                addCompletionToList(tabCompletions, "listbases", strings[0]);
+                addCompletionToList(tabCompletions, "sendcommand", strings[0]);
             }
             if (strings.length == 2) {
                 if (strings[0].equalsIgnoreCase("addgroup")) {
-                    if ("server".startsWith(strings[1]))
-                        tabCompletions.add("server");
-                    if ("proxy".startsWith(strings[1]))
-                        tabCompletions.add("proxy");
+                    addCompletionToList(tabCompletions, "server", strings[1]);
+                    addCompletionToList(tabCompletions, "proxy", strings[1]);
                 }
                 if (strings[0].equalsIgnoreCase("removegroup") ||
                         strings[0].equalsIgnoreCase("editgroup") ||
@@ -142,8 +127,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                 }
                 if (strings[0].equalsIgnoreCase("baseinfo")) {
                     for (BaseObject bases : TimoCloudAPI.getUniversalAPI().getBases()) {
-                        if (bases.getName().startsWith(strings[1]))
-                            tabCompletions.add(bases.getName());
+                        addCompletionToList(tabCompletions, bases.getName(), strings[1]);
                     }
                 }
                 if (strings[0].equalsIgnoreCase("sendcommand")) {
@@ -157,30 +141,27 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     }
 
     private void addServerGroupCompletions(String s, ArrayList<String> list) {
-        for (ServerGroupObject serverGroupObjects : TimoCloudAPI.getUniversalAPI().getServerGroups()) {
-            if (serverGroupObjects.getName().startsWith(s))
-                list.add(serverGroupObjects.getName());
-        }
+        for (ServerGroupObject serverGroupObjects : TimoCloudAPI.getUniversalAPI().getServerGroups())
+            addCompletionToList(list, serverGroupObjects.getName(), s);
     }
 
     private void addServerCompletions(String s, ArrayList<String> list) {
-        for (ServerObject serverObjects : TimoCloudAPI.getUniversalAPI().getServers()) {
-            if (serverObjects.getName().startsWith(s))
-                list.add(serverObjects.getName());
-        }
+        for (ServerObject serverObjects : TimoCloudAPI.getUniversalAPI().getServers())
+            addCompletionToList(list, serverObjects.getName(), s);
     }
 
     private void addProxyGroupCompletions(String s, ArrayList<String> list) {
-        for (ProxyGroupObject proxyGroupObjects : TimoCloudAPI.getUniversalAPI().getProxyGroups()) {
-            if (proxyGroupObjects.getName().startsWith(s))
-                list.add(proxyGroupObjects.getName());
-        }
+        for (ProxyGroupObject proxyGroupObjects : TimoCloudAPI.getUniversalAPI().getProxyGroups())
+            addCompletionToList(list, proxyGroupObjects.getName(), s);
     }
 
     private void addProxyCompletions(String s, ArrayList<String> list) {
-        for (ProxyObject proxyObjects : TimoCloudAPI.getUniversalAPI().getProxies()) {
-            if (proxyObjects.getName().startsWith(s))
-                list.add(proxyObjects.getName());
-        }
+        for (ProxyObject proxyObjects : TimoCloudAPI.getUniversalAPI().getProxies())
+            addCompletionToList(list, proxyObjects.getName(), s);
+    }
+
+    private void addCompletionToList(ArrayList<String> list, String completion, String s) {
+        if (!list.contains(completion) && completion.startsWith(s))
+            list.add(completion);
     }
 }
