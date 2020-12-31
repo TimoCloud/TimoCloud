@@ -357,15 +357,12 @@ public class CoreInstanceManager {
                     continue;
                 occurrences.put(server.getMap(), occurrences.get(server.getMap()) + 1);
             }
-            int bestScore = -1;
-            String best = null;
-            for (String map1 : maps) {
-                if (bestScore == -1 || occurrences.get(map1) < bestScore) {
-                    best = map1;
-                    bestScore = occurrences.get(map1);
-                }
-            }
-            map = best;
+            int bestScore = occurrences.entrySet().stream().min(Comparator.comparingInt(Map.Entry::getValue)).get().getValue();
+            List<String> best = occurrences.entrySet().stream()
+                    .filter(m -> m.getValue() == bestScore)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            map = best.get(new Random().nextInt(best.size()));
         }
 
         Server server = new Server(name, id, base, map, group);
