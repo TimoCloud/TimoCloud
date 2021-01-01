@@ -17,6 +17,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,7 +96,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
         if (commandSender.hasPermission("timocloud.admin")) {
-            ArrayList<String> tabCompletions = new ArrayList<>();
+            List<String> tabCompletions = new ArrayList<>();
 
             if (strings.length == 1) {
                 addCompletionToList(tabCompletions, "help", strings[0]);
@@ -139,46 +140,32 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     addProxyCompletions(strings[1], tabCompletions);
                 }
             }
-            if (strings.length == 3) {
-                if (strings[0].equalsIgnoreCase("editgroup")) {
-                    addCompletionToList(tabCompletions, "onlineAmount", strings[2]);
-                    addCompletionToList(tabCompletions, "maxAmount", strings[2]);
-                    addCompletionToList(tabCompletions, "base", strings[2]);
-                    addCompletionToList(tabCompletions, "ram", strings[2]);
-                    addCompletionToList(tabCompletions, "static", strings[2]);
-                    addCompletionToList(tabCompletions, "priority", strings[2]);
-                    addCompletionToList(tabCompletions, "playersPerProxy", strings[2]);
-                    addCompletionToList(tabCompletions, "maxPlayers", strings[2]);
-                    addCompletionToList(tabCompletions, "keepFreeSlots", strings[2]);
-                    addCompletionToList(tabCompletions, "minAmount", strings[2]);
-                }
-            }
             return tabCompletions;
         }
         return null;
     }
 
-    private void addServerGroupCompletions(String s, ArrayList<String> list) {
+    private void addServerGroupCompletions(String s, List<String> list) {
         for (ServerGroupObject serverGroupObjects : TimoCloudAPI.getUniversalAPI().getServerGroups())
             addCompletionToList(list, serverGroupObjects.getName(), s);
     }
 
-    private void addServerCompletions(String s, ArrayList<String> list) {
+    private void addServerCompletions(String s, List<String> list) {
         for (ServerObject serverObjects : TimoCloudAPI.getUniversalAPI().getServers())
             addCompletionToList(list, serverObjects.getName(), s);
     }
 
-    private void addProxyGroupCompletions(String s, ArrayList<String> list) {
+    private void addProxyGroupCompletions(String s, List<String> list) {
         for (ProxyGroupObject proxyGroupObjects : TimoCloudAPI.getUniversalAPI().getProxyGroups())
             addCompletionToList(list, proxyGroupObjects.getName(), s);
     }
 
-    private void addProxyCompletions(String s, ArrayList<String> list) {
+    private void addProxyCompletions(String s, List<String> list) {
         for (ProxyObject proxyObjects : TimoCloudAPI.getUniversalAPI().getProxies())
             addCompletionToList(list, proxyObjects.getName(), s);
     }
 
-    private void addCompletionToList(ArrayList<String> list, String completion, String s) {
+    private void addCompletionToList(List<String> list, String completion, String s) {
         if (!list.contains(completion) && completion.startsWith(s))
             list.add(completion);
     }
