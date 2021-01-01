@@ -139,6 +139,20 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     addProxyCompletions(strings[1], tabCompletions);
                 }
             }
+            if (strings.length == 3) {
+                if (strings[0].equalsIgnoreCase("editgroup")) {
+                    addCompletionToList(tabCompletions, "onlineAmount", strings[2]);
+                    addCompletionToList(tabCompletions, "maxAmount", strings[2]);
+                    addCompletionToList(tabCompletions, "base", strings[2]);
+                    addCompletionToList(tabCompletions, "ram", strings[2]);
+                    addCompletionToList(tabCompletions, "static", strings[2]);
+                    addCompletionToList(tabCompletions, "priority", strings[2]);
+                    addCompletionToList(tabCompletions, "playersPerProxy", strings[2]);
+                    addCompletionToList(tabCompletions, "maxPlayers", strings[2]);
+                    addCompletionToList(tabCompletions, "keepFreeSlots", strings[2]);
+                    addCompletionToList(tabCompletions, "minAmount", strings[2]);
+                }
+            }
             return tabCompletions;
         }
         return null;
