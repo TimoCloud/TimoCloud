@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 
-public class ProxyRegister implements Listener {
+public class ProxyRegisterListener implements Listener {
 
     @EventHandler
     public void onProxyRegister(ProxyRegisterEvent event) {

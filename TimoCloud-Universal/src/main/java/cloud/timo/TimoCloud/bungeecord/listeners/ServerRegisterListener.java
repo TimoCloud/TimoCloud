@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.server.ServerRegisterEvent;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 
-public class ServerRegister implements Listener {
+public class ServerRegisterListener implements Listener {
 
     @EventHandler
     public void onServerRegister(ServerRegisterEvent event) {

@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.server.ServerUnregisterEvent;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 
-public class ServerUnregister implements Listener {
+public class ServerUnregisterListener implements Listener {
 
     @EventHandler
     public void onServerUnregister(ServerUnregisterEvent event) {
