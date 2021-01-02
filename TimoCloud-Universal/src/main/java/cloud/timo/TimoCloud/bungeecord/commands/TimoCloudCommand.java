@@ -17,20 +17,31 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TimoCloudCommand extends Command implements TabExecutor {
 
     private final Map<String, CommandSender> senders;
+    private Set<String> serverGroupNames;
+    private Set<String> serverNames;
+    private Set<String> proxyGroupNames;
+    private Set<String> proxyNames;
 
     public TimoCloudCommand() {
         super("TimoCloud", "timocloud.admin");
         senders = new HashMap<>();
+    }
+
+    public void loadNames() {
+        serverGroupNames = TimoCloudAPI.getUniversalAPI().getServerGroups().stream().map(ServerGroupObject::getName).collect(Collectors.toSet());
+        serverNames = TimoCloudAPI.getUniversalAPI().getServers().stream().map(ServerObject::getName).collect(Collectors.toSet());
+        proxyGroupNames = TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().map(ProxyGroupObject::getName).collect(Collectors.toSet());
+        proxyNames = TimoCloudAPI.getUniversalAPI().getProxies().stream().map(ProxyObject::getName).collect(Collectors.toSet());
     }
 
     @Override
@@ -96,7 +107,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
         if (commandSender.hasPermission("timocloud.admin")) {
-            List<String> tabCompletions = new ArrayList<>();
+            Set<String> tabCompletions = Collections.emptySet();
 
             if (strings.length == 1) {
                 addCompletionToList(tabCompletions, "help", strings[0]);
@@ -145,28 +156,40 @@ public class TimoCloudCommand extends Command implements TabExecutor {
         return null;
     }
 
-    private void addServerGroupCompletions(String s, List<String> list) {
-        for (ServerGroupObject serverGroupObjects : TimoCloudAPI.getUniversalAPI().getServerGroups())
-            addCompletionToList(list, serverGroupObjects.getName(), s);
+    private void addServerGroupCompletions(String s, Set<String> list) {
+        serverGroupNames.forEach(serverGroupName -> addCompletionToList(list, serverGroupName, s));
     }
 
-    private void addServerCompletions(String s, List<String> list) {
-        for (ServerObject serverObjects : TimoCloudAPI.getUniversalAPI().getServers())
-            addCompletionToList(list, serverObjects.getName(), s);
+    private void addServerCompletions(String s, Set<String> list) {
+        serverNames.forEach(serverName -> addCompletionToList(list, serverName, s));
     }
 
-    private void addProxyGroupCompletions(String s, List<String> list) {
-        for (ProxyGroupObject proxyGroupObjects : TimoCloudAPI.getUniversalAPI().getProxyGroups())
-            addCompletionToList(list, proxyGroupObjects.getName(), s);
+    private void addProxyGroupCompletions(String s, Set<String> list) {
+        proxyGroupNames.forEach(proxyGroupName -> addCompletionToList(list, proxyGroupName, s));
     }
 
-    private void addProxyCompletions(String s, List<String> list) {
-        for (ProxyObject proxyObjects : TimoCloudAPI.getUniversalAPI().getProxies())
-            addCompletionToList(list, proxyObjects.getName(), s);
+    private void addProxyCompletions(String s, Set<String> list) {
+        proxyNames.forEach(proxyName -> addCompletionToList(list, proxyName, s));
     }
 
-    private void addCompletionToList(List<String> list, String completion, String s) {
-        if (!list.contains(completion) && completion.startsWith(s))
-            list.add(completion);
+    private void addCompletionToList(Set<String> set, String completion, String s) {
+        if (completion.startsWith(s))
+            set.add(completion);
+    }
+
+    public void addServerName(String name) {
+        serverNames.add(name);
+    }
+
+    public void addProxyName(String name) {
+        proxyNames.add(name);
+    }
+
+    public void removeServerName(String name) {
+        serverNames.remove(name);
+    }
+
+    public void removeProxyName(String name) {
+        proxyNames.remove(name);
     }
 }
