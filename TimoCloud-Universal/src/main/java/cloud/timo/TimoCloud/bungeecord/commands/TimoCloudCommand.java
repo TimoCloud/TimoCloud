@@ -18,8 +18,8 @@ import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -107,7 +107,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     @Override
     public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
         if (commandSender.hasPermission("timocloud.admin")) {
-            Set<String> tabCompletions = Collections.emptySet();
+            Set<String> tabCompletions = new HashSet<>();
 
             if (strings.length == 1) {
                 addCompletionToList(tabCompletions, "help", strings[0]);
@@ -177,16 +177,33 @@ public class TimoCloudCommand extends Command implements TabExecutor {
             set.add(completion);
     }
 
+    public void addServerGroupName(String name) {
+        serverGroupNames.add(name);
+    }
+
     public void addServerName(String name) {
-        serverNames.add(name);
+        if (name != null)
+            serverNames.add(name);
+    }
+
+    public void addProxyGroupName(String name) {
+        proxyGroupNames.add(name);
     }
 
     public void addProxyName(String name) {
         proxyNames.add(name);
     }
 
+    public void removeServerGroupName(String name) {
+        serverGroupNames.remove(name);
+    }
+
     public void removeServerName(String name) {
         serverNames.remove(name);
+    }
+
+    public void removeProxyGroupName(String name) {
+        proxyGroupNames.remove(name);
     }
 
     public void removeProxyName(String name) {
