@@ -229,7 +229,8 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         TimoCloudAPI.getEventAPI().registerListener(new ProxyGroupDeletedListener());
         TimoCloudAPI.getEventAPI().registerListener(new ProxyRegisterListener());
         TimoCloudAPI.getEventAPI().registerListener(new ProxyUnregisterListener());
-
+        TimoCloudAPI.getEventAPI().registerListener(new BaseConnectListener());
+        TimoCloudAPI.getEventAPI().registerListener(new BaseDisconnectListener());
     }
 
     public String getProxyName() {

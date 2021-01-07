@@ -31,6 +31,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     private Set<String> serverNames;
     private Set<String> proxyGroupNames;
     private Set<String> proxyNames;
+    private Set<String> baseNames;
 
     public TimoCloudCommand() {
         super("TimoCloud", "timocloud.admin");
@@ -42,6 +43,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
         serverNames = TimoCloudAPI.getUniversalAPI().getServers().stream().map(ServerObject::getName).collect(Collectors.toSet());
         proxyGroupNames = TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().map(ProxyGroupObject::getName).collect(Collectors.toSet());
         proxyNames = TimoCloudAPI.getUniversalAPI().getProxies().stream().map(ProxyObject::getName).collect(Collectors.toSet());
+        baseNames = TimoCloudAPI.getUniversalAPI().getBases().stream().map(BaseObject::getName).collect(Collectors.toSet());
     }
 
     @Override
@@ -123,6 +125,8 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                 addCompletionToList(tabCompletions, "baseinfo", strings[0]);
                 addCompletionToList(tabCompletions, "listbases", strings[0]);
                 addCompletionToList(tabCompletions, "sendcommand", strings[0]);
+                addCompletionToList(tabCompletions, "check", strings[0]);
+                addCompletionToList(tabCompletions, "shutdown", strings[0]);
             }
             if (strings.length == 2) {
                 if (strings[0].equalsIgnoreCase("addgroup")) {
@@ -140,15 +144,28 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     addServerCompletions(strings[1], tabCompletions);
                     addProxyGroupCompletions(strings[1], tabCompletions);
                     addProxyCompletions(strings[1], tabCompletions);
+                    addBaseCompletions(strings[1], tabCompletions);
                 }
                 if (strings[0].equalsIgnoreCase("baseinfo")) {
-                    for (BaseObject bases : TimoCloudAPI.getUniversalAPI().getBases()) {
-                        addCompletionToList(tabCompletions, bases.getName(), strings[1]);
-                    }
+                    addBaseCompletions(strings[1], tabCompletions);
                 }
                 if (strings[0].equalsIgnoreCase("sendcommand")) {
                     addServerCompletions(strings[1], tabCompletions);
                     addProxyCompletions(strings[1], tabCompletions);
+                }
+            }
+            if (strings.length == 3) {
+                if (strings[0].equalsIgnoreCase("editgroup")) {
+                    addCompletionToList(tabCompletions, "onlineamount", strings[2]);
+                    addCompletionToList(tabCompletions, "maxamount", strings[2]);
+                    addCompletionToList(tabCompletions, "ram", strings[2]);
+                    addCompletionToList(tabCompletions, "static", strings[2]);
+                    addCompletionToList(tabCompletions, "priority", strings[2]);
+                    addCompletionToList(tabCompletions, "base", strings[2]);
+                    addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
+                    addCompletionToList(tabCompletions, "maxplayers", strings[2]);
+                    addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
+                    addCompletionToList(tabCompletions, "minamount", strings[2]);
                 }
             }
             return tabCompletions;
@@ -170,6 +187,10 @@ public class TimoCloudCommand extends Command implements TabExecutor {
 
     private void addProxyCompletions(String s, Set<String> list) {
         proxyNames.forEach(proxyName -> addCompletionToList(list, proxyName, s));
+    }
+
+    private void addBaseCompletions(String s, Set<String> list) {
+        baseNames.forEach(baseName -> addCompletionToList(list, baseName, s));
     }
 
     private void addCompletionToList(Set<String> set, String completion, String s) {
@@ -194,6 +215,10 @@ public class TimoCloudCommand extends Command implements TabExecutor {
         proxyNames.add(name);
     }
 
+    public void addBaseName(String name) {
+        baseNames.add(name);
+    }
+
     public void removeServerGroupName(String name) {
         serverGroupNames.remove(name);
     }
@@ -208,5 +233,9 @@ public class TimoCloudCommand extends Command implements TabExecutor {
 
     public void removeProxyName(String name) {
         proxyNames.remove(name);
+    }
+
+    public void removeBaseName(String name) {
+        baseNames.remove(name);
     }
 }
