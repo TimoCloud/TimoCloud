@@ -73,6 +73,7 @@ public class CommandFormatUtil {
     }
 
     public static String formatIp(InetAddress ip) {
+        if(Objects.isNull(ip)) return "null";
         String s = ip.toString();
         if (s.startsWith("/")) s = s.substring(1);
         return s;
