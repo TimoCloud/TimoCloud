@@ -83,6 +83,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
             registerCommands();
             registerListeners();
             registerTasks();
+            timoCloudCommand.loadNames();
             Executors.newSingleThreadExecutor().submit(this::connectToCore);
             while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                 try {
@@ -91,7 +92,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
                 }
             }
             info("&aSuccessfully started TimoCloudBungee!");
-            timoCloudCommand.loadNames();
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBungee: ");
             TimoCloudBungee.getInstance().severe(e);

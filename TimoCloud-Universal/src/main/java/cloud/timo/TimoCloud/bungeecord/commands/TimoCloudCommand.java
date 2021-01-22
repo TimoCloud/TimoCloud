@@ -203,8 +203,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
     }
 
     public void addServerName(String name) {
-        if (name != null)
-            serverNames.add(name);
+        serverNames.add(name);
     }
 
     public void addProxyGroupName(String name) {
