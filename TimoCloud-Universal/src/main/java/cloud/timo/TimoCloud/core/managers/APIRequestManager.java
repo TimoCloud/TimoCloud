@@ -67,6 +67,9 @@ public class APIRequestManager implements MessageListener {
                             List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
                             validateNotNull(spigotParameters, "SpigotParameters");
 
+                            String jdkPath = serverGroupProperties.getJdkPath();
+                            validateNotNull(jdkPath, "jdkPath");
+
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
                             }
@@ -82,7 +85,8 @@ public class APIRequestManager implements MessageListener {
                                     baseIdentifier,
                                     sortOutStates,
                                     javaParameters,
-                                    spigotParameters
+                                    spigotParameters,
+                                    jdkPath
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -119,6 +123,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(serverGroups, "ServerGroups");
                             List<String> javaParameters = proxyGroupProperties.getJavaParameters();
                             validateNotNull(javaParameters, "JavaParameters");
+                            String jdkPath = proxyGroupProperties.getJdkPath();
+                            validateNotNull(jdkPath, "jdkPath");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -149,7 +155,8 @@ public class APIRequestManager implements MessageListener {
                                     baseIdentifier,
                                     proxyChooseStrategy.name(),
                                     hostNames,
-                                    javaParameters
+                                    javaParameters,
+                                    jdkPath
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);

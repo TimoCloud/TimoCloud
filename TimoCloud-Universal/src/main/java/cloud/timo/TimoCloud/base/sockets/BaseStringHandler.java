@@ -40,7 +40,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
                 List<String> javaParameters = (List<String>) message.get("javaParameters");
                 List<String> spigotParameters = (List<String>) message.get("spigotParameters");
-                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters));
+                String jdkPath = (String) message.get("jdkPath");
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters, jdkPath));
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }
@@ -56,7 +57,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 Map<String, Object> templateHash = (Map<String, Object>) message.get("templateHash");
                 Map<String, Object> globalHash = (Map<String, Object>) message.get("globalHash");
                 List<String> javaParameters = (List<String>) message.get("javaParameters");
-                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash, javaParameters));
+                String jdkPath = (String) message.get("jdkPath");
+                TimoCloudBase.getInstance().getInstanceManager().addToProxyQueue(new BaseProxyObject(proxyName, id, ram, isStatic, group, motd, maxPlayers, maxPlayersPerProxy, templateHash, globalHash, javaParameters, jdkPath));
                 TimoCloudBase.getInstance().info("Added proxy " + proxyName + " to queue.");
                 break;
             }

@@ -82,6 +82,11 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     }
 
     @Override
+    public String getJdkPath() {
+        return "java";
+    }
+
+    @Override
     public String generateId() {
         return RandomIdGenerator.generateId();
     }

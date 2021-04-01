@@ -262,7 +262,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " java -server" +
+                                " " + server.getJdkPath() + " -server" +
                                 " -Xmx" + server.getRam() + "M " +
                                 buildStartParameters(server.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
@@ -420,7 +420,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " java -server" +
+                                " " + proxy.getJdkPath() + " -server" +
                                 " -Xmx" + proxy.getRam() + "M " +
                                 buildStartParameters(proxy.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
@@ -453,12 +453,12 @@ public class BaseInstanceManager {
     }
 
     private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws InstanceStartException {
-        if(currentPort == maxPort) currentPort = startPort;
+        if (currentPort == maxPort) currentPort = startPort;
 
-        for (int i = 0; i<=maxPort-startPort; i++) {
+        for (int i = 0; i <= maxPort - startPort; i++) {
             int port = (currentPort + i) % maxPort;
             if (port < startPort) port += startPort;
-            if (isPortFree(port)){
+            if (isPortFree(port)) {
                 return port;
             }
         }

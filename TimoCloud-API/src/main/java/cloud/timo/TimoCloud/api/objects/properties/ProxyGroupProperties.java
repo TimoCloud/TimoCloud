@@ -24,6 +24,7 @@ public class ProxyGroupProperties {
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
     private List<String> javaParameters;
+    private String jdkPath;
 
     public ProxyGroupProperties(String id, String name) {
         this.id = id;
@@ -42,6 +43,7 @@ public class ProxyGroupProperties {
         this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
         this.hostNames = getDefaultPropertiesProvider().getHostNames();
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
+        this.jdkPath = getDefaultPropertiesProvider().getJdkPath();
     }
 
     public ProxyGroupProperties(String name) {
@@ -187,6 +189,15 @@ public class ProxyGroupProperties {
         return this;
     }
 
+    public String getJdkPath() {
+        return jdkPath;
+    }
+
+    public ProxyGroupProperties setJdkPath(String jdkPath) {
+        this.jdkPath = jdkPath;
+        return this;
+    }
+
     private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
         return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
     }
@@ -224,6 +235,8 @@ public class ProxyGroupProperties {
         Collection<String> getHostNames();
 
         List<String> getJavaParameters();
+
+        String getJdkPath();
 
         String generateId();
 
