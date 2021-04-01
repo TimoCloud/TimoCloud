@@ -234,6 +234,19 @@ public class BaseInstanceManager {
             File serverProperties = new File(temporaryDirectory, "server.properties");
             setProperty(serverProperties, "online-mode", "false");
             setProperty(serverProperties, "server-name", server.getName());
+            File configFile = new File(temporaryDirectory, "spigot.yml");
+            configFile.createNewFile();
+            Yaml yaml = new Yaml();
+            Map<String, Object> config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+            if (config == null) config = new LinkedHashMap<>();
+            Map<String, Object> settings = (Map<String, Object>) config.get("settings");
+            if (settings == null) settings = new LinkedHashMap<>();
+            settings.put("bungeecord", true);
+            FileWriter writer = new FileWriter(configFile);
+            config.put("settings", settings);
+            DumperOptions dumperOptions = new DumperOptions();
+            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            new Yaml(dumperOptions).dump(config, writer);
 
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
