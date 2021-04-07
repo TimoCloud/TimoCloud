@@ -18,7 +18,7 @@ public class ServerGroupProperties {
     private Collection<String> sortOutStates;
     private List<String> javaParameters;
     private List<String> spigotParameters;
-    private String jdkPath;
+    private String jrePath;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -32,7 +32,7 @@ public class ServerGroupProperties {
         this.sortOutStates = getDefaultPropertiesProvider().getSortOutStates();
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
         this.spigotParameters = getDefaultPropertiesProvider().getSpigotParameters();
-        this.jdkPath = getDefaultPropertiesProvider().getJdkPath();
+        this.jrePath = getDefaultPropertiesProvider().getJrePath();
     }
 
     public ServerGroupProperties(String name) {
@@ -133,12 +133,12 @@ public class ServerGroupProperties {
         return this;
     }
 
-    public String getJdkPath() {
-        return jdkPath;
+    public String getJrePath() {
+        return jrePath;
     }
 
-    public ServerGroupProperties setJdkPath(String jdkPath) {
-        this.jdkPath = jdkPath;
+    public ServerGroupProperties setJrePath(String jrePath) {
+        this.jrePath = jrePath;
         return this;
     }
 
@@ -172,7 +172,7 @@ public class ServerGroupProperties {
 
         List<String> getSpigotParameters();
 
-        String getJdkPath();
+        String getJrePath();
 
     }
 }

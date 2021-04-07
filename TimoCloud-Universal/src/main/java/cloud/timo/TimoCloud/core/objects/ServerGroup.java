@@ -25,7 +25,7 @@ public class ServerGroup implements Group {
     private Set<String> sortOutStates;
     private List<String> javaParameters;
     private List<String> spigotParameters;
-    private String jdkPath;
+    private String jrePath;
 
     private Map<String, Server> servers = new HashMap<>();
 
@@ -57,7 +57,7 @@ public class ServerGroup implements Group {
                     (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
                     (List<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()),
-                    ((String) properties.getOrDefault("jdkPath", defaultProperties.getJdkPath())));
+                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -76,15 +76,15 @@ public class ServerGroup implements Group {
         properties.put("sort-out-states", getSortOutStates());
         properties.put("javaParameters", getJavaParameters());
         properties.put("spigotParameters", getSpigotParameters());
-        properties.put("jdkPath", getJdkPath());
+        properties.put("jrePath", getJrePath());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters(), properties.getJdkPath());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters(), properties.getJrePath());
     }
 
-    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jdkPath) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jrePath) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
@@ -101,7 +101,7 @@ public class ServerGroup implements Group {
         this.sortOutStates = new HashSet<>(sortOutStates);
         this.spigotParameters = spigotParameters;
         this.javaParameters = javaParameters;
-        this.jdkPath = jdkPath;
+        this.jrePath = jrePath;
         if (isStatic() && getBase() == null) {
             TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to enable starting of servers.");
         }
@@ -229,12 +229,12 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupSpigotParametersChangeEventBasicImplementation(toGroupObject(), oldValue, spigotParameters));
     }
 
-    public String getJdkPath() {
-        return jdkPath;
+    public String getJrePath() {
+        return jrePath;
     }
 
-    public void setJdkPath(String jdkPath) {
-        this.jdkPath = jdkPath;
+    public void setJrePath(String jrePath) {
+        this.jrePath = jrePath;
     }
 
     public void setBase(Base base) {

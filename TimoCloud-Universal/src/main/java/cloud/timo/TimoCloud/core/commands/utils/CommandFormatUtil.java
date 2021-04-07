@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.commands.utils;
 
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.core.objects.*;
+
 import java.util.Objects;
 
 import java.net.InetAddress;
@@ -74,7 +75,7 @@ public class CommandFormatUtil {
     }
 
     public static String formatIp(InetAddress ip) {
-        if(Objects.isNull(ip)) return "null";
+        if (ip == null) return "null";
         String s = ip.toString();
         if (s.startsWith("/")) s = s.substring(1);
         return s;

@@ -24,7 +24,7 @@ public class ProxyGroupProperties {
     private ProxyChooseStrategy proxyChooseStrategy;
     private Collection<String> hostNames;
     private List<String> javaParameters;
-    private String jdkPath;
+    private String jrePath;
 
     public ProxyGroupProperties(String id, String name) {
         this.id = id;
@@ -43,7 +43,7 @@ public class ProxyGroupProperties {
         this.proxyChooseStrategy = getDefaultPropertiesProvider().getProxyChooseStrategy();
         this.hostNames = getDefaultPropertiesProvider().getHostNames();
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
-        this.jdkPath = getDefaultPropertiesProvider().getJdkPath();
+        this.jrePath = getDefaultPropertiesProvider().getJrePath();
     }
 
     public ProxyGroupProperties(String name) {
@@ -189,12 +189,12 @@ public class ProxyGroupProperties {
         return this;
     }
 
-    public String getJdkPath() {
-        return jdkPath;
+    public String getJrePath() {
+        return jrePath;
     }
 
-    public ProxyGroupProperties setJdkPath(String jdkPath) {
-        this.jdkPath = jdkPath;
+    public ProxyGroupProperties setJrePath(String jrePath) {
+        this.jrePath = jrePath;
         return this;
     }
 
@@ -236,7 +236,7 @@ public class ProxyGroupProperties {
 
         List<String> getJavaParameters();
 
-        String getJdkPath();
+        String getJrePath();
 
         String generateId();
 

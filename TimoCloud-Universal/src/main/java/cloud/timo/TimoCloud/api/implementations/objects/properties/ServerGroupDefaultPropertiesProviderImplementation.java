@@ -70,7 +70,7 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
     }
 
     @Override
-    public String getJdkPath() {
+    public String getJrePath() {
         return "java";
     }
 }

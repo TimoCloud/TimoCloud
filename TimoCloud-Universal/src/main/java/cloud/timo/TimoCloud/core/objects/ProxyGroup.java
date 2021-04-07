@@ -33,7 +33,7 @@ public class ProxyGroup implements Group {
     private ProxyChooseStrategy proxyChooseStrategy;
     private Map<String, Proxy> proxies = new HashMap<>();
     private List<String> javaParameters;
-    private String jdkPath;
+    private String jrePath;
 
     public ProxyGroup(ProxyGroupProperties properties) {
         construct(properties);
@@ -68,7 +68,7 @@ public class ProxyGroup implements Group {
                     (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
                     (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
-                    ((String) properties.getOrDefault("jdkPath", defaultProperties.getJdkPath())));
+                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJdkPath())));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -92,7 +92,7 @@ public class ProxyGroup implements Group {
         this.isStatic = isStatic;
         this.priority = priority;
         this.javaParameters = javaParameters;
-        this.jdkPath = jdkPath;
+        this.jrePath = jdkPath;
         setServerGroups(serverGroups);
 
         if (baseIdentifier != null)
@@ -123,7 +123,7 @@ public class ProxyGroup implements Group {
         properties.put("serverGroups", allServerGroups ? Collections.singletonList("*") : getServerGroups());
         properties.put("hostNames", getHostNames());
         properties.put("javaParameters", getJavaParameters());
-        properties.put("jdkPath", getJdkPath());
+        properties.put("jrePath", getJrePath());
         if (getBase() != null) properties.put("base", getBase().getId());
         return properties;
     }
@@ -252,12 +252,12 @@ public class ProxyGroup implements Group {
         EventTransmitter.sendEvent(new ProxyGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
     }
 
-    public void setJdkPath(String jdkPath) {
-        this.jdkPath = jdkPath;
+    public void setJrePath(String jrePath) {
+        this.jrePath = jrePath;
     }
 
-    public String getJdkPath() {
-        return jdkPath;
+    public String getJrePath() {
+        return jrePath;
     }
 
     @Override
@@ -397,7 +397,7 @@ public class ProxyGroup implements Group {
                 getProxyChooseStrategy().name(),
                 Collections.unmodifiableSet(getHostNames()),
                 getJavaParameters(),
-                getJdkPath()
+                getJrePath()
         );
     }
 

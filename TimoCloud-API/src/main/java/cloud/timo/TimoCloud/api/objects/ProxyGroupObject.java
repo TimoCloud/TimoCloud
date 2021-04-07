@@ -197,5 +197,5 @@ public interface ProxyGroupObject extends IdentifiableObject {
     /**
      * @return A String of The JDKPath using to Start the Proxy
      */
-    String getJdkPath();
+    String getJrePath();
 }

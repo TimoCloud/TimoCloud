@@ -67,8 +67,8 @@ public class APIRequestManager implements MessageListener {
                             List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
                             validateNotNull(spigotParameters, "SpigotParameters");
 
-                            String jdkPath = serverGroupProperties.getJdkPath();
-                            validateNotNull(jdkPath, "jdkPath");
+                            String jrePath = serverGroupProperties.getJrePath();
+                            validateNotNull(jrePath, "jrePath");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
@@ -86,7 +86,7 @@ public class APIRequestManager implements MessageListener {
                                     sortOutStates,
                                     javaParameters,
                                     spigotParameters,
-                                    jdkPath
+                                    jrePath
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);

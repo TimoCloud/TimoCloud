@@ -18,7 +18,7 @@ public class ServerKick implements Listener {
             TimoCloudBungee.getInstance().info("No fallback server found");
             return;
         }
-        TimoCloudBungee.getInstance().info(event.getCancelServer().getName() + " kicked player " + event.getPlayer().getName() + " because of: " + TextComponent.toLegacyText(event.getKickReasonComponent()));
+
         if (server.getName().equals(event.getCancelServer().getName()))
             return;
         TimoCloudBungee.getInstance().info("Connecting to fallback server: " + server.getName());

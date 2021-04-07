@@ -52,10 +52,10 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     private Collection<String> hostNames;
     @JsonProperty("jp")
     private List<String> javaParameters;
-    @JsonProperty("jdkp")
-    private String jdkPath;
+    @JsonProperty("jdrp")
+    private String jrePath;
 
-    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath) {
+    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jrePath) {
         this.id = id;
         this.name = name;
         this.proxies = proxies;
@@ -73,7 +73,7 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
         this.proxyChooseStrategy = ProxyChooseStrategy.valueOf(proxyChooseStrategy);
         this.hostNames = hostNames;
         this.javaParameters = javaParameters;
-        this.jdkPath = jdkPath;
+        this.jrePath = jrePath;
     }
 
     @Override
@@ -237,8 +237,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     }
 
     @Override
-    public String getJdkPath() {
-        return jdkPath;
+    public String getJrePath() {
+        return jrePath;
     }
 
     @Override

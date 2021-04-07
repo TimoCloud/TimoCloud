@@ -82,7 +82,7 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     }
 
     @Override
-    public String getJdkPath() {
+    public String getJrePath() {
         return "java";
     }
 

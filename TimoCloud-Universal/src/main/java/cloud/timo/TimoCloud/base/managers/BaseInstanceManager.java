@@ -241,12 +241,11 @@ public class BaseInstanceManager {
             if (config == null) config = new LinkedHashMap<>();
             Map<String, Object> settings = (Map<String, Object>) config.get("settings");
             if (settings == null) settings = new LinkedHashMap<>();
-            settings.put("bungeecord", true);
-            FileWriter writer = new FileWriter(configFile);
-            config.put("settings", settings);
-            DumperOptions dumperOptions = new DumperOptions();
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            new Yaml(dumperOptions).dump(config, writer);
+            final Boolean bungeeCordMode = (Boolean) settings.getOrDefault("bungeecord", false);
+
+            if (!bungeeCordMode) {
+                TimoCloudBase.getInstance().warning(server.getName() + " is not in BungeeCord mode");
+            }
 
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
@@ -433,7 +432,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " " + proxy.getJdkPath() + " -server" +
+                                " " + proxy.getJrePath() + " -server" +
                                 " -Xmx" + proxy.getRam() + "M " +
                                 buildStartParameters(proxy.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
