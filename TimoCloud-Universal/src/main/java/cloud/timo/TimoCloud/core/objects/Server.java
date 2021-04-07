@@ -83,7 +83,7 @@ public class Server implements Instance, Communicatable {
                     .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()))
                     .set("spigotParameters", getGroup().getSpigotParameters())
                     .set("javaParameters", getGroup().getJavaParameters())
-                    .set("jdkPath", getGroup().getJrePath());
+                    .set("jrePath", getGroup().getJrePath());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
                 File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());

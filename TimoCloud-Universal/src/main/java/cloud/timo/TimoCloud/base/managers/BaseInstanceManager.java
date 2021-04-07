@@ -244,7 +244,8 @@ public class BaseInstanceManager {
             final Boolean bungeeCordMode = (Boolean) settings.getOrDefault("bungeecord", false);
 
             if (!bungeeCordMode) {
-                TimoCloudBase.getInstance().warning(server.getName() + " is not in BungeeCord mode");
+                TimoCloudBase.getInstance().warning(server.getName() + " is not in BungeeCord mode \n" +
+                        "To fix this, change bungeecord to true in spigot.yml");
             }
 
             double millisNow = System.currentTimeMillis();
