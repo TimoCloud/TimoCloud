@@ -69,4 +69,8 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
         return Arrays.asList("-o false", "-h 0.0.0.0");
     }
 
+    @Override
+    public String getJrePath() {
+        return "java";
+    }
 }

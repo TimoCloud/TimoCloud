@@ -100,7 +100,8 @@ public class Proxy implements Instance, Communicatable {
                     .set("maxplayers", getGroup().getMaxPlayerCount())
                     .set("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy())
                     .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()))
-                    .set("javaParameters", getGroup().getJavaParameters());
+                    .set("javaParameters", getGroup().getJavaParameters())
+                    .set("jrePath", getGroup().getJrePath());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
                 try {
