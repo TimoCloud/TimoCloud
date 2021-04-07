@@ -123,8 +123,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(serverGroups, "ServerGroups");
                             List<String> javaParameters = proxyGroupProperties.getJavaParameters();
                             validateNotNull(javaParameters, "JavaParameters");
-                            String jdkPath = proxyGroupProperties.getJdkPath();
-                            validateNotNull(jdkPath, "jdkPath");
+                            String jrePath = proxyGroupProperties.getJrePath();
+                            validateNotNull(jrePath, "jrePath");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -156,7 +156,7 @@ public class APIRequestManager implements MessageListener {
                                     proxyChooseStrategy.name(),
                                     hostNames,
                                     javaParameters,
-                                    jdkPath
+                                    jrePath
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);

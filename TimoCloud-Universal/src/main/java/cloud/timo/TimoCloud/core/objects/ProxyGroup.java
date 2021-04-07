@@ -68,7 +68,7 @@ public class ProxyGroup implements Group {
                     (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
                     (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
-                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJdkPath())));
+                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())));
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -76,7 +76,7 @@ public class ProxyGroup implements Group {
     }
 
     public void construct(ProxyGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames(), properties.getJavaParameters(), properties.getJdkPath());
+        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames(), properties.getJavaParameters(), properties.getJrePath());
     }
 
     public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath) {

@@ -274,7 +274,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " " + server.getJdkPath() + " -server" +
+                                " " + server.getJrePath() + " -server" +
                                 " -Xmx" + server.getRam() + "M " +
                                 buildStartParameters(server.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
