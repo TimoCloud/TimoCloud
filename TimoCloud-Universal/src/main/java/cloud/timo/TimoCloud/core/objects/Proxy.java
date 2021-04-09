@@ -81,7 +81,7 @@ public class Proxy implements Instance, Communicatable {
     private void onShutdown() {
         getGroup().removeProxy(this);
         getBase().removeProxy(this);
-
+        TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
         getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
     }
 
@@ -129,6 +129,7 @@ public class Proxy implements Instance, Communicatable {
     @Override
     public void stop() {
         sendMessage(Message.create().setType(MessageType.PROXY_STOP));
+        TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
     }
 
     public void registerServer(Server server) {
