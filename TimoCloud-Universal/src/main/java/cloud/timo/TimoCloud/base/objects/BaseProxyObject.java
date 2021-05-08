@@ -16,8 +16,9 @@ public class BaseProxyObject {
     private Map<String, Object> templateHash;
     private Map<String, Object> globalHash;
     private List<String> javaParameters;
+    private String jrePath;
 
-    public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash, List<String> javaParameters) {
+    public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash, List<String> javaParameters, String jrePath) {
         this.name = name;
         this.id = id;
         this.group = group;
@@ -29,6 +30,7 @@ public class BaseProxyObject {
         this.templateHash = templateHash;
         this.globalHash = globalHash;
         this.javaParameters = javaParameters;
+        this.jrePath = jrePath;
     }
 
     public String getName() {
@@ -75,4 +77,7 @@ public class BaseProxyObject {
         return javaParameters;
     }
 
+    public String getJrePath() {
+        return jrePath;
+    }
 }
