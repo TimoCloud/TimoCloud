@@ -7,10 +7,7 @@ import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplem
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
-import cloud.timo.TimoCloud.bungeecord.api.TimoCloudBungeeAPIImplementation;
-import cloud.timo.TimoCloud.bungeecord.api.TimoCloudInternalMessageAPIBungeeImplementation;
-import cloud.timo.TimoCloud.bungeecord.api.TimoCloudMessageAPIBungeeImplementation;
-import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.*;
 import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
@@ -119,6 +116,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBungeeImplementation());
         APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
+        APIInstanceUtil.setProxyInstance(new TimoCloudProxyAPIImplementation());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBungeeImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

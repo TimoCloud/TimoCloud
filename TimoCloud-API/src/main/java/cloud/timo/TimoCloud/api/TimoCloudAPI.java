@@ -5,6 +5,7 @@ public class TimoCloudAPI {
     private static TimoCloudUniversalAPI universalAPI;
     private static TimoCloudBukkitAPI bukkitAPI;
     private static TimoCloudBungeeAPI bungeeAPI;
+    private static TimoCloudProxyAPI proxyAPI;
     private static TimoCloudCoreAPI coreAPI;
     private static TimoCloudEventAPI eventAPI;
     private static TimoCloudMessageAPI messageAPI;
@@ -44,7 +45,7 @@ public class TimoCloudAPI {
      * This API is for BungeeCord plugins
      *
      * @return Bungee API instance
-     * @deprecated Use {@link #getBungeeAPI()} instead
+     * @deprecated Use {@link #getProxyAPI()} instead
      */
     @Deprecated
     public static TimoCloudBungeeAPI getBungeeInstance() {
@@ -83,9 +84,20 @@ public class TimoCloudAPI {
      * This API is for BungeeCord plugins
      *
      * @return Bungee API instance
+     * @deprecated Use {@link #getProxyAPI()} instead
      */
+    @Deprecated
     public static TimoCloudBungeeAPI getBungeeAPI() {
         return bungeeAPI;
+    }
+
+    /**
+     * This API is for Proxy plugins
+     *
+     * @return Proxy API instance
+     */
+    public static TimoCloudProxyAPI getProxyAPI() {
+        return proxyAPI;
     }
 
     /**

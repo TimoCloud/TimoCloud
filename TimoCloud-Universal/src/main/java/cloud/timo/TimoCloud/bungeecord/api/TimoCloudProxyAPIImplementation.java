@@ -1,11 +1,11 @@
-package cloud.timo.TimoCloud.velocity.api;
+package cloud.timo.TimoCloud.bungeecord.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.TimoCloudBungeeAPI;
+import cloud.timo.TimoCloud.api.TimoCloudProxyAPI;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 
-public class TimoCloudBungeeAPIImplementation implements TimoCloudBungeeAPI {
+public class TimoCloudProxyAPIImplementation implements TimoCloudProxyAPI {
 
     @Override
     public ProxyObject getThisProxy() {
