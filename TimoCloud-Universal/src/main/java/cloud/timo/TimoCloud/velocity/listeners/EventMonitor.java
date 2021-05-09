@@ -13,8 +13,6 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.proxy.Player;
 
-import java.util.*;
-
 public class EventMonitor {
 
     @Subscribe
