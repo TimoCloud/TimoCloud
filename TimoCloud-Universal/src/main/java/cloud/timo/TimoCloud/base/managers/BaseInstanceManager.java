@@ -16,6 +16,7 @@ import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailer;
 import cloud.timo.TimoCloud.cord.utils.MathUtil;
+import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -448,6 +449,10 @@ public class BaseInstanceManager {
                     writer.append(fileContents);
                     writer.flush();
                 }
+                break;
+                default: {
+                    TimoCloudBase.getInstance().warning("The proxytype could not be found.");
+                }
             }
 
 
@@ -471,9 +476,8 @@ public class BaseInstanceManager {
                 if (getScreenVersion() >= 40602) {
                     logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
-                Process p;
                 if (bungeeJar.exists()) {
-                     p = new ProcessBuilder(
+                     new ProcessBuilder(
                             "/bin/sh", "-c",
                             "screen -mdS " + proxy.getId() +
                                     logString +
@@ -493,7 +497,7 @@ public class BaseInstanceManager {
                                     "'"
                     ).start();
                 } else {
-                    p = new ProcessBuilder(
+                    new ProcessBuilder(
                             "/bin/sh", "-c",
                             "screen -mdS " + proxy.getId() +
                                     logString +

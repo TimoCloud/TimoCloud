@@ -17,18 +17,6 @@ import java.util.*;
 
 public class EventMonitor {
 
-    private final Set<UUID> pending;
-    private final Map<UUID, String> previousServer;
-
-    public EventMonitor() {
-        pending = new HashSet<>();
-        previousServer = new HashMap<>();
-    }
-
-    private boolean isPending(UUID uuid) {
-        return pending.contains(uuid);
-    }
-
     @Subscribe
     public void onPlayerConnect(PostLoginEvent event) {
         TimoCloudVelocity.getInstance().sendPlayerCount();

@@ -32,7 +32,8 @@ public class TimoCloudCommand implements SimpleCommand {
             }
 
             if (args[0].equalsIgnoreCase("check")) {
-                String user = "%%__USER__%%", nonce = "%%__NONCE__%%";
+                String user = "%%__USER__%%",
+                        nonce = "%%__NONCE__%%";
                 if (user.startsWith("%%")) {
                     VelocityMessageManager.sendMessage(invocation, "&cNot downloaded from spigotmc.org.");
                     return;

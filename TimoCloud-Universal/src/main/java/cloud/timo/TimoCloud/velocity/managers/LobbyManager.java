@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.velocity.managers;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
 import com.velocitypowered.api.proxy.Player;
@@ -85,6 +86,9 @@ public class LobbyManager {
                 break;
             case BALANCE:
                 target = servers.get(0);
+                break;
+            default:
+                TimoCloudBase.getInstance().warning("LobbyChooseStrategy error");
                 break;
         }
         return TimoCloudVelocity.getInstance().getServer().getServer(target.getName()).get();
