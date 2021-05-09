@@ -12,14 +12,19 @@ import java.util.Map;
 
 public class CommandManager {
 
-    private Map<String, CommandHandler> commandHandlers;
+    private final Map<String, CommandHandler> commandHandlers;
+    private final Map<String, CommandHandler> pluginCommandHandlers;
 
     public CommandManager() {
         commandHandlers = new HashMap<>();
+        pluginCommandHandlers = new HashMap<>();
         registerDefaultCommands();
     }
 
-    public void registerCommandHandler(String command, CommandHandler commandHandler) {
+    public void registerCommandHandler(boolean pluginCommand, String command, CommandHandler commandHandler) {
+        if (pluginCommand) {
+            pluginCommandHandlers.put(command.toLowerCase(), commandHandler);
+        }
         commandHandlers.put(command.toLowerCase(), commandHandler);
     }
 
@@ -33,7 +38,7 @@ public class CommandManager {
 
     private void registerCommand(CommandHandler commandHandler, String ... commands) {
         for (String command : commands) {
-            registerCommandHandler(command, commandHandler);
+            registerCommandHandler(false, command, commandHandler);
         }
     }
 
@@ -103,4 +108,7 @@ public class CommandManager {
         }
     }
 
+    public Map<String, CommandHandler> getPluginCommandHandlers() {
+        return pluginCommandHandlers;
+    }
 }
