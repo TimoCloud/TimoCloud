@@ -16,7 +16,6 @@ import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailer;
 import cloud.timo.TimoCloud.cord.utils.MathUtil;
-import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -42,12 +41,9 @@ public class BaseInstanceManager {
     private static final Integer SERVER_PORT_MAX = 42000;
     private static final Integer PROXY_PORT_START = 40000;
     private static final Integer PROXY_PORT_MAX = 40300;
-
+    private final ScheduledExecutorService scheduler;
     private LinkedList<BaseServerObject> serverQueue;
     private LinkedList<BaseProxyObject> proxyQueue;
-
-    private final ScheduledExecutorService scheduler;
-
     private Map<String, FileTailer> logTailers;
 
     private boolean startingServer = false;
@@ -64,6 +60,14 @@ public class BaseInstanceManager {
         scheduler = Executors.newScheduledThreadPool(1);
         logTailers = new HashMap<>();
         scheduler.scheduleAtFixedRate(this::everySecond, millis, millis, TimeUnit.MILLISECONDS);
+    }
+
+    private static File getServerLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getServerLogsDirectory(), id + ".log");
+    }
+
+    private static File getProxyLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getProxyLogsDirectory(), id + ".log");
     }
 
     public void updateResources() {
@@ -313,7 +317,6 @@ public class BaseInstanceManager {
         }
     }
 
-
     private void startProxy(BaseProxyObject proxy) {
         TimoCloudBase.getInstance().info("Starting proxy " + proxy.getName() + "...");
         double millisBefore = System.currentTimeMillis();
@@ -439,7 +442,7 @@ public class BaseInstanceManager {
                     Scanner sc = new Scanner(configFile);
                     StringBuffer buffer = new StringBuffer();
                     while (sc.hasNextLine()) {
-                        buffer.append(sc.nextLine()+System.lineSeparator());
+                        buffer.append(sc.nextLine() + System.lineSeparator());
                     }
                     String fileContents = buffer.toString();
                     sc.close();
@@ -450,9 +453,9 @@ public class BaseInstanceManager {
                     writer.flush();
                 }
                 break;
-                default: {
+                default:
                     TimoCloudBase.getInstance().warning("The proxytype could not be found.");
-                }
+                    break;
             }
 
 
@@ -477,7 +480,7 @@ public class BaseInstanceManager {
                     logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
                 if (bungeeJar.exists()) {
-                     new ProcessBuilder(
+                    new ProcessBuilder(
                             "/bin/sh", "-c",
                             "screen -mdS " + proxy.getId() +
                                     logString +
@@ -641,14 +644,6 @@ public class BaseInstanceManager {
                 getProxyLogFile(id).delete();
             }
         }, 5 * 60 * 1000);
-    }
-
-    private static File getServerLogFile(String id) {
-        return new File(TimoCloudBase.getInstance().getFileManager().getServerLogsDirectory(), id + ".log");
-    }
-
-    private static File getProxyLogFile(String id) {
-        return new File(TimoCloudBase.getInstance().getFileManager().getProxyLogsDirectory(), id + ".log");
     }
 
     public boolean isDownloadingTemplate() {
