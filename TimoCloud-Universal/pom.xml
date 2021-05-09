@@ -9,7 +9,7 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.TimoCloud</groupId>
-        <version>6.2.1</version>
+        <version>6.3.0</version>
     </parent>
 
     <repositories>
@@ -36,6 +36,10 @@
         <repository>
             <id>snakeyaml</id>
             <url>https://mvnrepository.com/artifact/org.yaml/snakeyaml</url>
+        </repository>
+        <repository>
+            <id>velocity</id>
+            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -112,6 +116,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.velocitypowered</groupId>
+            <artifactId>velocity-api</artifactId>
+            <version>1.1.5</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
