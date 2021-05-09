@@ -363,7 +363,7 @@ public class BaseInstanceManager {
             File proxyJarFile = new File(temporaryDirectory, "proxy.jar");
             if (!bungeeJar.exists() && !proxyJarFile.exists()) {
                 TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because proxy.jar does not exist. " + (
-                        proxy.isStatic() ? "Please make sure the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!)."
+                        proxy.isStatic() ? "Please make sure the file " + proxyJarFile.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'proxy.jar' in your template."));
                 throw new ProxyStartException("proxy.jar does not exist");
             }
