@@ -1,7 +1,10 @@
 package cloud.timo.TimoCloud.core.managers;
 
+import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
+import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.common.utils.ChatColorUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.commands.*;
@@ -24,12 +27,21 @@ public class CommandManager {
     public void registerCommandHandler(boolean pluginCommand, String command, CommandHandler commandHandler) {
         if (pluginCommand) {
             pluginCommandHandlers.put(command.toLowerCase(), commandHandler);
+
+            for (ProxyObject proxyObject : TimoCloudAPI.getUniversalAPI().getProxies()) {
+                proxyObject.sendPluginMessage(new PluginMessage("SubCommandRegister")
+                        .set("Command", command));
+            }
         }
         commandHandlers.put(command.toLowerCase(), commandHandler);
     }
 
     public void unregisterCommandHandler(String command) {
         commandHandlers.remove(command.toLowerCase());
+        for (ProxyObject proxyObject : TimoCloudAPI.getUniversalAPI().getProxies()) {
+            proxyObject.sendPluginMessage(new PluginMessage("SubCommandUnregister")
+                    .set("Command", command));
+        }
     }
 
     private CommandHandler getHandlerByCommand(String command) {
@@ -106,6 +118,10 @@ public class CommandManager {
             TimoCloudCore.getInstance().severe(e);
             sendHelp(commandSender);
         }
+    }
+
+    public Map<String, CommandHandler> getCommandHandlers() {
+        return commandHandlers;
     }
 
     public Map<String, CommandHandler> getPluginCommandHandlers() {
