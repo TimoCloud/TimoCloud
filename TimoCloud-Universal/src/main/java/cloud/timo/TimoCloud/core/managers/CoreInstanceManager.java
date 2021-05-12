@@ -439,25 +439,21 @@ public class CoreInstanceManager {
         stopUnneededProxies();
 
         Queue<GroupInstanceDemand> demands = new PriorityQueue<>();
-        Queue<GroupInstanceDemand> staticDemands = new PriorityQueue<>();
 
         for (Group group : getGroups()) {
             int amount = needed(group);
             if (amount <= 0) continue;
-            if (group.isStatic()) staticDemands.add(new GroupInstanceDemand(group, 1));
+            if (group.isStatic()) demands.add(new GroupInstanceDemand(group, 1));
             else demands.add(new GroupInstanceDemand(group, amount));
         }
-
-        while (!staticDemands.isEmpty()) { // Start static instances first
-            GroupInstanceDemand demand = staticDemands.poll();
-            startInstance(demand.getGroup());
-        }
-
-        while (!demands.isEmpty()) { // Start non-static instances
+        while (!demands.isEmpty()) {
             GroupInstanceDemand demand = demands.poll();
             startInstance(demand.getGroup());
-            demand.changeAmount(-1);
-            if (demand.getAmount() > 0) demands.add(demand);
+
+            if (!demand.getGroup().isStatic()) {
+                demand.changeAmount(-1);
+                if (demand.getAmount() > 0) demands.add(demand);
+            }
         }
     }
 

@@ -152,6 +152,23 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                         addCompletionToList(tabCompletions, "minamount", strings[2]);
                     }
                     break;
+                case 4:
+                    switch (strings[2].toLowerCase()) {
+                        case "ram":
+                            addCompletionToList(tabCompletions, "512", strings[3]);
+                            addCompletionToList(tabCompletions, "1024", strings[3]);
+                            addCompletionToList(tabCompletions, "2048", strings[3]);
+                            addCompletionToList(tabCompletions, "4096", strings[3]);
+                            addCompletionToList(tabCompletions, "8192", strings[3]);
+                            break;
+                        case "base":
+                            for (BaseObject baseObject : TimoCloudAPI.getUniversalAPI().getBases()) {
+                                addCompletionToList(tabCompletions, baseObject.getName(), strings[3]);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 default:
                     break;
             }
