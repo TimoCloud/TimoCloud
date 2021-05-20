@@ -423,6 +423,7 @@ public class APIRequestManager implements MessageListener {
                             break;
                         }
                         case P_STOP: {
+                            proxy.stop();
                             break;
                         }
                     }
