@@ -479,48 +479,31 @@ public class BaseInstanceManager {
                 if (getScreenVersion() >= 40602) {
                     logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
+                String fileName = "";
                 if (bungeeJar.exists()) {
-                    new ProcessBuilder(
-                            "/bin/sh", "-c",
-                            "screen -mdS " + proxy.getId() +
-                                    logString +
-                                    " /bin/sh -c '" +
-                                    "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                    " " + proxy.getJrePath() + " -server" +
-                                    " -Xmx" + proxy.getRam() + "M " +
-                                    buildStartParameters(proxy.getJavaParameters()) +
-                                    " -Dcom.mojang.eula.agree=true" +
-                                    " -Dtimocloud-proxyname=" + proxy.getName() +
-                                    " -Dtimocloud-proxyid=" + proxy.getId() +
-                                    " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
-                                    " -Dtimocloud-static=" + proxy.isStatic() +
-                                    " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
-                                    " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                    " -jar BungeeCord.jar" +
-                                    "'"
-                    ).start();
+                    fileName = "BungeeCord.jar";
                 } else {
-                    new ProcessBuilder(
-                            "/bin/sh", "-c",
-                            "screen -mdS " + proxy.getId() +
-                                    logString +
-                                    " /bin/sh -c '" +
-                                    "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                    " " + proxy.getJrePath() + " -server" +
-                                    " -Xmx" + proxy.getRam() + "M " +
-                                    buildStartParameters(proxy.getJavaParameters()) +
-                                    " -Dcom.mojang.eula.agree=true" +
-                                    " -Dtimocloud-proxyname=" + proxy.getName() +
-                                    " -Dtimocloud-proxyid=" + proxy.getId() +
-                                    " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
-                                    " -Dtimocloud-static=" + proxy.isStatic() +
-                                    " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
-                                    " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                    " -jar proxy.jar" +
-                                    "'"
-                    ).start();
+                    fileName = "proxy.jar";
                 }
-
+                new ProcessBuilder(
+                        "/bin/sh", "-c",
+                        "screen -mdS " + proxy.getId() +
+                                logString +
+                                " /bin/sh -c '" +
+                                "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
+                                " " + proxy.getJrePath() + " -server" +
+                                " -Xmx" + proxy.getRam() + "M " +
+                                buildStartParameters(proxy.getJavaParameters()) +
+                                " -Dcom.mojang.eula.agree=true" +
+                                " -Dtimocloud-proxyname=" + proxy.getName() +
+                                " -Dtimocloud-proxyid=" + proxy.getId() +
+                                " -Dtimocloud-corehost=" + TimoCloudBase.getInstance().getCoreSocketIP() + ":" + TimoCloudBase.getInstance().getCoreSocketPort() +
+                                " -Dtimocloud-static=" + proxy.isStatic() +
+                                " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
+                                " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
+                                " -jar " + fileName +
+                                "'"
+                ).start();
                 TimoCloudBase.getInstance().info("Successfully started proxy screen session " + proxy.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ":");
