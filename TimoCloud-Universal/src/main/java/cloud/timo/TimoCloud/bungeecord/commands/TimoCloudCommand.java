@@ -108,69 +108,93 @@ public class TimoCloudCommand extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender commandSender, String[] strings) {
-        if (commandSender.hasPermission("timocloud.admin")) {
-            Set<String> tabCompletions = new HashSet<>();
+        Set<String> tabCompletions = new HashSet<>();
 
-            if (strings.length == 1) {
-                addCompletionToList(tabCompletions, "help", strings[0]);
-                addCompletionToList(tabCompletions, "version", strings[0]);
-                addCompletionToList(tabCompletions, "reload", strings[0]);
-                addCompletionToList(tabCompletions, "addbase", strings[0]);
-                addCompletionToList(tabCompletions, "addgroup", strings[0]);
-                addCompletionToList(tabCompletions, "removegroup", strings[0]);
-                addCompletionToList(tabCompletions, "editgroup", strings[0]);
-                addCompletionToList(tabCompletions, "restart", strings[0]);
-                addCompletionToList(tabCompletions, "groupinfo", strings[0]);
-                addCompletionToList(tabCompletions, "listgroups", strings[0]);
-                addCompletionToList(tabCompletions, "baseinfo", strings[0]);
-                addCompletionToList(tabCompletions, "listbases", strings[0]);
-                addCompletionToList(tabCompletions, "sendcommand", strings[0]);
-                addCompletionToList(tabCompletions, "check", strings[0]);
-                addCompletionToList(tabCompletions, "shutdown", strings[0]);
+        if (commandSender.hasPermission("timocloud.admin")) {
+            switch (strings.length) {
+                case 1:
+                    addCompletionToList(tabCompletions, "help", strings[0]);
+                    addCompletionToList(tabCompletions, "version", strings[0]);
+                    addCompletionToList(tabCompletions, "reload", strings[0]);
+                    addCompletionToList(tabCompletions, "addbase", strings[0]);
+                    addCompletionToList(tabCompletions, "addgroup", strings[0]);
+                    addCompletionToList(tabCompletions, "removegroup", strings[0]);
+                    addCompletionToList(tabCompletions, "editgroup", strings[0]);
+                    addCompletionToList(tabCompletions, "restart", strings[0]);
+                    addCompletionToList(tabCompletions, "groupinfo", strings[0]);
+                    addCompletionToList(tabCompletions, "listgroups", strings[0]);
+                    addCompletionToList(tabCompletions, "baseinfo", strings[0]);
+                    addCompletionToList(tabCompletions, "listbases", strings[0]);
+                    addCompletionToList(tabCompletions, "sendcommand", strings[0]);
+                    addCompletionToList(tabCompletions, "check", strings[0]);
+                    addCompletionToList(tabCompletions, "shutdown", strings[0]);
+                    break;
+                case 2:
+                    switch (strings[0].toLowerCase()) {
+                        case "addgroup":
+                            addCompletionToList(tabCompletions, "server", strings[1]);
+                            addCompletionToList(tabCompletions, "proxy", strings[1]);
+                            break;
+                        case "removegroup":
+                        case "editgroup":
+                        case "groupinfo":
+                            addServerGroupCompletions(strings[1], tabCompletions);
+                            addProxyGroupCompletions(strings[1], tabCompletions);
+                            break;
+                        case "restart":
+                            addServerGroupCompletions(strings[1], tabCompletions);
+                            addServerCompletions(strings[1], tabCompletions);
+                            addProxyGroupCompletions(strings[1], tabCompletions);
+                            addProxyCompletions(strings[1], tabCompletions);
+                            addBaseCompletions(strings[1], tabCompletions);
+                            break;
+                        case "baseinfo":
+                            addBaseCompletions(strings[1], tabCompletions);
+                            break;
+                        case "sendcommand":
+                            addServerCompletions(strings[1], tabCompletions);
+                            addProxyCompletions(strings[1], tabCompletions);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    if (strings[0].equalsIgnoreCase("editgroup")) {
+                        addCompletionToList(tabCompletions, "onlineamount", strings[2]);
+                        addCompletionToList(tabCompletions, "maxamount", strings[2]);
+                        addCompletionToList(tabCompletions, "ram", strings[2]);
+                        addCompletionToList(tabCompletions, "static", strings[2]);
+                        addCompletionToList(tabCompletions, "priority", strings[2]);
+                        addCompletionToList(tabCompletions, "base", strings[2]);
+                        addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
+                        addCompletionToList(tabCompletions, "maxplayers", strings[2]);
+                        addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
+                        addCompletionToList(tabCompletions, "minamount", strings[2]);
+                    }
+                    break;
+                case 4:
+                    switch (strings[2].toLowerCase()) {
+                        case "ram":
+                            addCompletionToList(tabCompletions, "512", strings[3]);
+                            addCompletionToList(tabCompletions, "1024", strings[3]);
+                            addCompletionToList(tabCompletions, "2048", strings[3]);
+                            addCompletionToList(tabCompletions, "4096", strings[3]);
+                            addCompletionToList(tabCompletions, "8192", strings[3]);
+                            break;
+                        case "base":
+                            for (BaseObject baseObject : TimoCloudAPI.getUniversalAPI().getBases()) {
+                                addCompletionToList(tabCompletions, baseObject.getName(), strings[3]);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                default:
+                    break;
             }
-            if (strings.length == 2) {
-                if (strings[0].equalsIgnoreCase("addgroup")) {
-                    addCompletionToList(tabCompletions, "server", strings[1]);
-                    addCompletionToList(tabCompletions, "proxy", strings[1]);
-                }
-                if (strings[0].equalsIgnoreCase("removegroup") ||
-                        strings[0].equalsIgnoreCase("editgroup") ||
-                        strings[0].equalsIgnoreCase("groupinfo")) {
-                    addServerGroupCompletions(strings[1], tabCompletions);
-                    addProxyGroupCompletions(strings[1], tabCompletions);
-                }
-                if (strings[0].equalsIgnoreCase("restart")) {
-                    addServerGroupCompletions(strings[1], tabCompletions);
-                    addServerCompletions(strings[1], tabCompletions);
-                    addProxyGroupCompletions(strings[1], tabCompletions);
-                    addProxyCompletions(strings[1], tabCompletions);
-                    addBaseCompletions(strings[1], tabCompletions);
-                }
-                if (strings[0].equalsIgnoreCase("baseinfo")) {
-                    addBaseCompletions(strings[1], tabCompletions);
-                }
-                if (strings[0].equalsIgnoreCase("sendcommand")) {
-                    addServerCompletions(strings[1], tabCompletions);
-                    addProxyCompletions(strings[1], tabCompletions);
-                }
-            }
-            if (strings.length == 3) {
-                if (strings[0].equalsIgnoreCase("editgroup")) {
-                    addCompletionToList(tabCompletions, "onlineamount", strings[2]);
-                    addCompletionToList(tabCompletions, "maxamount", strings[2]);
-                    addCompletionToList(tabCompletions, "ram", strings[2]);
-                    addCompletionToList(tabCompletions, "static", strings[2]);
-                    addCompletionToList(tabCompletions, "priority", strings[2]);
-                    addCompletionToList(tabCompletions, "base", strings[2]);
-                    addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
-                    addCompletionToList(tabCompletions, "maxplayers", strings[2]);
-                    addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
-                    addCompletionToList(tabCompletions, "minamount", strings[2]);
-                }
-            }
-            return tabCompletions;
         }
-        return null;
+        return tabCompletions;
     }
 
     private void addServerGroupCompletions(String s, Set<String> list) {
