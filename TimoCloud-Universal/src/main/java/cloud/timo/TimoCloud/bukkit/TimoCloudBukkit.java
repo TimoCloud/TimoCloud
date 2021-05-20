@@ -56,7 +56,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private BukkitStringHandler stringHandler;
     private SignManager signManager;
     private StateByEventManager stateByEventManager;
-    private String prefix = "[TimoCloudReloaded] ";
+    private String prefix = "[TimoCloud] ";
     private boolean enabled = false;
     private boolean disabling = false;
     private boolean serverRegistered = false;

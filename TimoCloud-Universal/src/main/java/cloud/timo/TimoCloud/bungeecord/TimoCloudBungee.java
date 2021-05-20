@@ -221,8 +221,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         getProxy().getPluginManager().registerListener(this, new EventMonitor());
         getProxy().getPluginManager().registerListener(this, new IpInjector());
 
-        TimoCloudAPI.getMessageAPI().registerMessageListener(new PluginMessageListener());
-
         TimoCloudAPI.getEventAPI().registerListener(new ServerGroupCreatedListener());
         TimoCloudAPI.getEventAPI().registerListener(new ServerGroupDeletedListener());
         TimoCloudAPI.getEventAPI().registerListener(new ServerRegisterListener());

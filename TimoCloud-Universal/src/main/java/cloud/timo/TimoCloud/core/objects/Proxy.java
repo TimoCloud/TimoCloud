@@ -5,7 +5,6 @@ import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEventBasicImplementati
 import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
-import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
@@ -26,10 +25,7 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -71,9 +67,6 @@ public class Proxy implements Instance, Communicatable {
         getGroup().onProxyConnect(this);
         this.starting = false;
         this.registered = true;
-        for (String subCommand : TimoCloudCore.getInstance().getCommandManager().getCommandHandlers().keySet())
-            toProxyObject().sendPluginMessage(new PluginMessage("SubCommandRegister")
-                    .set("Command", subCommand));
         for (Server server : getGroup().getRegisteredServers()) registerServer(server);
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ProxyRegisterEventBasicImplementation(toProxyObject()));
     }
