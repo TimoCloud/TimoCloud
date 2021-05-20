@@ -1,15 +1,12 @@
-package cloud.timo.TimoCloud.velocity.managers;
+package cloud.timo.TimoCloud.common.manager;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
-import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.proxy.server.ServerInfo;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,19 +42,18 @@ public class LobbyManager {
         return LobbyChooseStrategy.valueOf(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("LobbyChooseStrategy"));
     }
 
-    public RegisteredServer searchFreeLobby(UUID uuid, ServerInfo notThis) {
+    public ServerObject searchFreeLobby(UUID uuid, String notThis) {
         ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
         if (group == null) {
             TimoCloudVelocity.getInstance().severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
             return null;
         }
-        String notThisName = notThis == null ? "" : notThis.getName();
         List<ServerObject> servers = group.getServers().stream()
-                .filter(server -> !server.getName().equals(notThisName))
+                .filter(server -> !server.getName().equals(notThis))
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
                 .collect(Collectors.toList());
         List<ServerObject> removeServers = new ArrayList<>();
-        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis.getName());
+        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis);
         if (notThisServer != null) removeServers.add(notThisServer);
         List<String> history = getVisitedLobbies(uuid);
 
@@ -91,34 +87,34 @@ public class LobbyManager {
                 TimoCloudBase.getInstance().warning("LobbyChooseStrategy error");
                 break;
         }
-        return TimoCloudVelocity.getInstance().getServer().getServer(target.getName()).get();
+        return target;
     }
 
-    public RegisteredServer getFreeLobby(UUID uuid, boolean kicked) {
-        ServerInfo notThis = null;
+    public ServerObject getFreeLobby(UUID uuid, boolean kicked) {
+        String notThis = null;
         if (!TimoCloudVelocity.getInstance().getServer().getPlayer(uuid).isPresent()) {
-            ServerConnection serverConnection = TimoCloudVelocity.getInstance().getServer().getPlayer(uuid).get().getCurrentServer().get();
-            notThis = serverConnection.getServerInfo();
+            ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getPlayer(uuid).getServer();
+            notThis = serverObject.getName();
         }
-        Player player = TimoCloudVelocity.getInstance().getServer().getPlayer(uuid).get();
+        PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(uuid);
         ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
 
-        if (player != null && player.getCurrentServer().isPresent())
-            notThis = player.getCurrentServer().get().getServerInfo();
+        if (player != null && player.getServer() != null)
+            notThis = player.getServer().getName();
 
-        RegisteredServer registeredServer = searchFreeLobby(uuid, notThis);
-        if (registeredServer == null) {
+        ServerObject serverObject = searchFreeLobby(uuid, notThis);
+        if (serverObject == null) {
             if (serverGroupObject == null) return null;
             if (serverGroupObject.getServers().isEmpty()) return null;
-            return TimoCloudVelocity.getInstance().getServer().getServer(serverGroupObject.getServers().stream().findFirst().get().getName()).get();
+            return serverGroupObject.getServers().stream().findFirst().get();
         }
 
-        if (kicked) addToHistory(uuid, registeredServer.getServerInfo().getName());
+        if (kicked) addToHistory(uuid, serverObject.getName());
 
-        return registeredServer;
+        return serverObject;
     }
 
-    public RegisteredServer getFreeLobby(UUID uuid) {
+    public ServerObject getFreeLobby(UUID uuid) {
         return getFreeLobby(uuid, false);
     }
 

@@ -12,7 +12,8 @@ public class ServerKick {
     public void onServerKickEvent(KickedFromServerEvent event) {
         if (!TimoCloudVelocity.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;
         if (!event.getPlayer().getCurrentServer().isPresent()) return;
-        RegisteredServer server = TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true);
+        RegisteredServer server = TimoCloudVelocity.getInstance().getServer().getServer(
+                TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true).getName()).get();
         if (server == null) {
             TimoCloudVelocity.getInstance().info("No fallback server found");
             return;

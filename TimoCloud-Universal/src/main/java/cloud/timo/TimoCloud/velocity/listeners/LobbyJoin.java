@@ -37,7 +37,7 @@ public class LobbyJoin {
         if (!isPending(event.getPlayer().getUniqueId())) return;
 
         Player player = event.getPlayer();
-        RegisteredServer info = TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
+        RegisteredServer info = TimoCloudVelocity.getInstance().getServer().getServer(TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId()).getName()).get();
         if (info == null) {
             TimoCloudVelocity.getInstance().severe("No lobby server found.");
             pending.remove(player.getUniqueId());
@@ -51,7 +51,7 @@ public class LobbyJoin {
     @Subscribe
     public void onServerKick(KickedFromServerEvent event) {
         if (!useFallback()) return;
-        RegisteredServer freeLobby = TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId());
+        RegisteredServer freeLobby = TimoCloudVelocity.getInstance().getServer().getServer(TimoCloudVelocity.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()).getName()).get();
         if (freeLobby == null) return;
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(freeLobby));
     }

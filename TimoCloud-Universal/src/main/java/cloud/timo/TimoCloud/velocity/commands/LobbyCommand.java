@@ -15,7 +15,9 @@ public class LobbyCommand implements SimpleCommand {
             return;
         }
         Player player = (Player) invocation.source();
-        RegisteredServer serverInfo = TimoCloudVelocity.getInstance().getLobbyManager().searchFreeLobby(player.getUniqueId(), player.getCurrentServer().get().getServer().getServerInfo());
+        RegisteredServer serverInfo = TimoCloudVelocity.getInstance().getServer().getServer(
+                TimoCloudVelocity.getInstance().getLobbyManager().searchFreeLobby(player.getUniqueId(),
+                        player.getCurrentServer().get().getServer().getServerInfo().getName()).getName()).get();
 
         if (serverInfo == null) {
             VelocityMessageManager.sendMessage(invocation, TimoCloudVelocity.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));

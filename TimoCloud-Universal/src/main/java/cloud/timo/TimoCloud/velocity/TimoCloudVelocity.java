@@ -26,7 +26,7 @@ import cloud.timo.TimoCloud.velocity.commands.LobbyCommand;
 import cloud.timo.TimoCloud.velocity.commands.TimoCloudCommand;
 import cloud.timo.TimoCloud.velocity.listeners.*;
 import cloud.timo.TimoCloud.velocity.managers.IpManager;
-import cloud.timo.TimoCloud.velocity.managers.LobbyManager;
+import cloud.timo.TimoCloud.common.manager.LobbyManager;
 import cloud.timo.TimoCloud.velocity.managers.VelocityFileManager;
 import cloud.timo.TimoCloud.velocity.sockets.VelocitySocketClient;
 import cloud.timo.TimoCloud.velocity.sockets.VelocitySocketClientHandler;
