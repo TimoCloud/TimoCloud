@@ -30,19 +30,6 @@ public class TimoCloudCommand implements SimpleCommand {
                 sendVersion(invocation);
                 return;
             }
-
-            if (args[0].equalsIgnoreCase("check")) {
-                String user = "%%__USER__%%",
-                        nonce = "%%__NONCE__%%";
-                if (user.startsWith("%%")) {
-                    VelocityMessageManager.sendMessage(invocation, "&cNot downloaded from spigotmc.org.");
-                    return;
-                }
-                VelocityMessageManager.sendMessage(invocation, "&6Downloaded by &ehttps://www.spigotmc.org/members/" + user + "/");
-                VelocityMessageManager.sendMessage(invocation, "&b" + nonce);
-                return;
-            }
-
             if (!invocation.source().hasPermission("timocloud.admin")) {
                 VelocityMessageManager.noPermission(invocation);
                 return;
