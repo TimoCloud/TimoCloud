@@ -234,19 +234,6 @@ public class BaseInstanceManager {
             File serverProperties = new File(temporaryDirectory, "server.properties");
             setProperty(serverProperties, "online-mode", "false");
             setProperty(serverProperties, "server-name", server.getName());
-            File configFile = new File(temporaryDirectory, "spigot.yml");
-            configFile.createNewFile();
-            Yaml yaml = new Yaml();
-            Map<String, Object> config = (Map<String, Object>) yaml.load(new FileReader(configFile));
-            if (config == null) config = new LinkedHashMap<>();
-            Map<String, Object> settings = (Map<String, Object>) config.get("settings");
-            if (settings == null) settings = new LinkedHashMap<>();
-            final Boolean bungeeCordMode = (Boolean) settings.getOrDefault("bungeecord", false);
-
-            if (!bungeeCordMode) {
-                TimoCloudBase.getInstance().warning(server.getName() + " is not in BungeeCord mode \n" +
-                        "To fix this, change bungeecord to true in spigot.yml");
-            }
 
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting server " + server.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
@@ -275,7 +262,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " " + server.getJrePath() + " -server" +
+                                " java -server" +
                                 " -Xmx" + server.getRam() + "M " +
                                 buildStartParameters(server.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
@@ -433,7 +420,7 @@ public class BaseInstanceManager {
                                 logString +
                                 " /bin/sh -c '" +
                                 "cd " + temporaryDirectory.getAbsolutePath() + " &&" +
-                                " " + proxy.getJrePath() + " -server" +
+                                " java -server" +
                                 " -Xmx" + proxy.getRam() + "M " +
                                 buildStartParameters(proxy.getJavaParameters()) +
                                 " -Dcom.mojang.eula.agree=true" +
@@ -466,12 +453,12 @@ public class BaseInstanceManager {
     }
 
     private Integer getFreePortCommon(int startPort, int currentPort, int maxPort) throws InstanceStartException {
-        if (currentPort == maxPort) currentPort = startPort;
+        if(currentPort == maxPort) currentPort = startPort;
 
-        for (int i = 0; i <= maxPort - startPort; i++) {
+        for (int i = 0; i<=maxPort-startPort; i++) {
             int port = (currentPort + i) % maxPort;
             if (port < startPort) port += startPort;
-            if (isPortFree(port)) {
+            if (isPortFree(port)){
                 return port;
             }
         }

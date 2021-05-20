@@ -25,7 +25,10 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -81,7 +84,7 @@ public class Proxy implements Instance, Communicatable {
     private void onShutdown() {
         getGroup().removeProxy(this);
         getBase().removeProxy(this);
-        TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
+
         getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
     }
 
@@ -100,8 +103,7 @@ public class Proxy implements Instance, Communicatable {
                     .set("maxplayers", getGroup().getMaxPlayerCount())
                     .set("maxplayersperproxy", getGroup().getMaxPlayerCountPerProxy())
                     .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getProxyGlobalDirectory()))
-                    .set("javaParameters", getGroup().getJavaParameters())
-                    .set("jrePath", getGroup().getJrePath());
+                    .set("javaParameters", getGroup().getJavaParameters());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getProxyTemplatesDirectory(), getGroup().getName());
                 try {
@@ -129,7 +131,6 @@ public class Proxy implements Instance, Communicatable {
     @Override
     public void stop() {
         sendMessage(Message.create().setType(MessageType.PROXY_STOP));
-        TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
     }
 
     public void registerServer(Server server) {
@@ -232,15 +233,6 @@ public class Proxy implements Instance, Communicatable {
         sendMessage(Message.create()
                 .setType(MessageType.PROXY_EXECUTE_COMMAND)
                 .setData(command));
-    }
-
-    public void sendPlayer(String playerUUID, Server serverObject) {
-        sendMessage(Message.create()
-                .setType(MessageType.PROXY_SEND_PLAYER)
-                .setData(Message.create()
-                        .set("playerUUID", playerUUID)
-                        .set("serverObject", serverObject.getName())
-                ));
     }
 
     @Override

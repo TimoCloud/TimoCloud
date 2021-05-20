@@ -74,8 +74,10 @@ public class CloudFlareManager implements Listener {
         });
     }
 
-    public void unregisterProxy(Proxy proxy) {
+    @EventHandler
+    public void onProxyUnregisterEvent(ProxyUnregisterEvent event) {
         if (!enabled()) return;
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
         if (proxy.getDnsRecords() == null) return;
         executorService.submit(() -> proxy.getDnsRecords().forEach(this::deleteRecord));
     }

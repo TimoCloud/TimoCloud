@@ -52,10 +52,8 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     private Collection<String> hostNames;
     @JsonProperty("jp")
     private List<String> javaParameters;
-    @JsonProperty("jdrp")
-    private String jrePath;
 
-    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jrePath) {
+    public ProxyGroupObjectBasicImplementation(String id, String name, Collection<ProxyObjectLink> proxies, int maxPlayerCount, int maxPlayerCountPerProxy, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<ServerGroupObjectLink> serverGroups, BaseObjectLink base, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters) {
         this.id = id;
         this.name = name;
         this.proxies = proxies;
@@ -73,7 +71,6 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
         this.proxyChooseStrategy = ProxyChooseStrategy.valueOf(proxyChooseStrategy);
         this.hostNames = hostNames;
         this.javaParameters = javaParameters;
-        this.jrePath = jrePath;
     }
 
     @Override
@@ -234,11 +231,6 @@ public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, Li
     @Override
     public APIRequestFuture<Void> setJavaParameters(Collection<String> value) {
         return new APIRequestImplementation<Void>(PG_SET_JAVA_START_PARAMETERS, getId(), value).submit();
-    }
-
-    @Override
-    public String getJrePath() {
-        return jrePath;
     }
 
     @Override

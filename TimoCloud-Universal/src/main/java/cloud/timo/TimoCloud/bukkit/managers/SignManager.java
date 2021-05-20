@@ -60,15 +60,10 @@ public class SignManager {
     }
 
     public void load() {
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                loadSignTemplates();
-                loadSignInstances();
+        loadSignTemplates();
+        loadSignInstances();
 
-                TimoCloudBukkit.getInstance().info("Successfully loaded signs!");
-            }
-        }, 5000);
+        TimoCloudBukkit.getInstance().info("Successfully loaded signs!");
     }
 
     private void loadSignTemplates() {
@@ -177,10 +172,9 @@ public class SignManager {
     }
 
     public void updateSigns() {
-        if (signInstances == null) return;
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         Collection<SignInstance> dynamicInstances = new ArrayList<>();
-        if (signInstances.isEmpty()) return;
+        if(signInstances.isEmpty()) return;
         for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);

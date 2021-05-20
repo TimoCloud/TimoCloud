@@ -1,7 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,9 +17,6 @@ public class ServerKick implements Listener {
             TimoCloudBungee.getInstance().info("No fallback server found");
             return;
         }
-
-        if (server.getName().equals(event.getCancelServer().getName()))
-            return;
         TimoCloudBungee.getInstance().info("Connecting to fallback server: " + server.getName());
         event.setCancelled(true);
         event.setCancelServer(server);

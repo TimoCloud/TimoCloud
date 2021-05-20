@@ -66,11 +66,7 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
 
     @Override
     public List<String> getSpigotParameters() {
-        return Arrays.asList("-o false", "-h 0.0.0.0");
+        return Arrays.asList("--nogui", "-o false", "-h 0.0.0.0");
     }
 
-    @Override
-    public String getJrePath() {
-        return "java";
-    }
 }

@@ -4,7 +4,6 @@ useFallback: true
 useGlobalMotd: true
 emergencyFallback: 'Economy'
 LobbyChooseStrategy: "RANDOM"
-sendLobbyCommandMessage: false
 lobbyCommands:
 - lobby
 - hub

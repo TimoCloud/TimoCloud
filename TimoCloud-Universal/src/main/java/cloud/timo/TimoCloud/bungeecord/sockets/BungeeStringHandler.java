@@ -16,12 +16,9 @@ import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
 import io.netty.channel.Channel;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 
 public class BungeeStringHandler extends BasicStringHandler {
 
@@ -56,17 +53,6 @@ public class BungeeStringHandler extends BasicStringHandler {
             case PROXY_EXECUTE_COMMAND:
                 TimoCloudBungee.getInstance().getProxy().getPluginManager().dispatchCommand(TimoCloudBungee.getInstance().getProxy().getConsole(), (String) data);
                 break;
-            case PROXY_SEND_PLAYER: {
-                Map<String, Object> information = (Map<String, Object>) data;
-                String playerUUID = (String) information.get("playerUUID");
-                String serverObject = (String) information.get("serverObject");
-                ProxiedPlayer proxiedPlayer = TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID));
-                if(Objects.isNull(proxiedPlayer))
-                    return;
-
-                proxiedPlayer.connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));
-                break;
-            }
             case PROXY_ADD_SERVER:
                 TimoCloudBungee.getInstance().getProxy().getServers().put(server, TimoCloudBungee.getInstance().getProxy().constructServerInfo(server, new InetSocketAddress((String) message.get("address"), ((Number) message.get("port")).intValue()), "", false));
                 break;

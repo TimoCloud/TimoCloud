@@ -1,8 +1,6 @@
 package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
-import cloud.timo.TimoCloud.api.async.APIRequestType;
-import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
 import cloud.timo.TimoCloud.api.internal.links.PlayerObjectLink;
 import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
@@ -10,7 +8,6 @@ import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import lombok.NoArgsConstructor;
 
 import java.net.InetAddress;
@@ -89,10 +86,8 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     }
 
     @Override
-    public APIRequestFuture<Boolean> sendToServer(ServerObject serverObject) {
-        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_PLAYER, getProxy().getId(),  new TypeMap()
-                .put("playerUUID", getId())
-                .put("targetServer", serverObject.getId())).submit();
+    public APIRequestFuture<Void> sendToServer(ServerObject serverObject) {
+        return getProxy().executeCommand(String.format("send %s %s", getName(), serverObject.getName()));
     }
 
     public void setOnline(boolean online) {

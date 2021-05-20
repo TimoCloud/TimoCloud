@@ -67,9 +67,6 @@ public class APIRequestManager implements MessageListener {
                             List<String> spigotParameters = serverGroupProperties.getSpigotParameters();
                             validateNotNull(spigotParameters, "SpigotParameters");
 
-                            String jrePath = serverGroupProperties.getJrePath();
-                            validateNotNull(jrePath, "jrePath");
-
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
                             }
@@ -85,8 +82,7 @@ public class APIRequestManager implements MessageListener {
                                     baseIdentifier,
                                     sortOutStates,
                                     javaParameters,
-                                    spigotParameters,
-                                    jrePath
+                                    spigotParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -123,8 +119,6 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(serverGroups, "ServerGroups");
                             List<String> javaParameters = proxyGroupProperties.getJavaParameters();
                             validateNotNull(javaParameters, "JavaParameters");
-                            String jrePath = proxyGroupProperties.getJrePath();
-                            validateNotNull(jrePath, "jrePath");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -155,8 +149,7 @@ public class APIRequestManager implements MessageListener {
                                     baseIdentifier,
                                     proxyChooseStrategy.name(),
                                     hostNames,
-                                    javaParameters,
-                                    jrePath
+                                    javaParameters
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
@@ -408,18 +401,6 @@ public class APIRequestManager implements MessageListener {
                             String value = data.getString("value");
                             validateNotNull(value, "Command");
                             proxy.executeCommand(value);
-                            break;
-                        }
-                        case P_SEND_PLAYER: {
-                            String playerUUID = data.getString("playerUUID");
-                            String targetServer = data.getString("targetServer");
-                            validateNotNull(playerUUID, "UUID");
-                            validateNotNull(targetServer, "targetServer");
-                            Boolean isOnGivenProxy = Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
-                            responseData = (T) isOnGivenProxy;
-                            if (isOnGivenProxy) {
-                                proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
-                            }
                             break;
                         }
                         case P_STOP: {

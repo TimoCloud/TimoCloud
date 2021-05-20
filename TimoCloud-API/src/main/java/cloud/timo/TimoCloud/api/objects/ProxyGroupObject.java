@@ -28,7 +28,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's maximum player count
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMaxPlayerCount(int value);
@@ -40,7 +39,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's maximum player count per proxy
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMaxPlayerCountPerProxy(int value);
@@ -52,7 +50,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's amount of slots which should be kept free
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setKeepFreeSlots(int value);
@@ -64,7 +61,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's minimum instance amount
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMinAmount(int value);
@@ -76,7 +72,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's maximum instance amount
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMaxAmount(int value);
@@ -88,7 +83,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's ram
-     *
      * @param value The maximum amount of ram a proxy of this group may use
      * @return A future being completed when the value was changed
      */
@@ -101,7 +95,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's motd
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMotd(String value);
@@ -114,7 +107,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
     /**
      * Changes whether the group is static or not.
      * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setStatic(boolean value);
@@ -126,7 +118,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's priority
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setPriority(int value);
@@ -143,7 +134,6 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the base proxies of this group shall be started by
-     *
      * @param value If null, a base will be selected dynamically whenever a new proxy gets started
      * @return A future being completed when the value was changed
      */
@@ -151,14 +141,12 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * The ProxyChooseStrategy tells TimoCloudCord what proxy it should choose when a player wants to join a proxy group
-     *
      * @return BALANCE, FILL or RANDOM
      */
     ProxyChooseStrategy getProxyChooseStrategy();
 
     /**
      * Changes the group's proxy choose strategy
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setProxyChooseStrategy(ProxyChooseStrategy value);
@@ -170,14 +158,12 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's hostnames
-     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setHostNames(Collection<String> value);
 
     /**
      * Attention: This permanently deletes the proxy group from the network
-     *
      * @return A future being completed when the group was deleted
      */
     APIRequestFuture<Void> delete();
@@ -189,13 +175,7 @@ public interface ProxyGroupObject extends IdentifiableObject {
 
     /**
      * Changes the java start parameters
-     *
      * @return A future being completed when the parameters was changed
      */
     APIRequestFuture<Void> setJavaParameters(Collection<String> value);
-
-    /**
-     * @return A String of The JDKPath using to Start the Proxy
-     */
-    String getJrePath();
 }
