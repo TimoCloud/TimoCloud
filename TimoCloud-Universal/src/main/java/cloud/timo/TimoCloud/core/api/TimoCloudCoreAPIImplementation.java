@@ -9,7 +9,7 @@ public class TimoCloudCoreAPIImplementation implements TimoCloudCoreAPI {
     @Override
     public void registerCommandHandler(CommandHandler commandHandler, String ... commands) {
         for (String command : commands) {
-            TimoCloudCore.getInstance().getCommandManager().registerCommandHandler(true, command, commandHandler);
+            TimoCloudCore.getInstance().getCommandManager().registerCommandHandler(command, commandHandler);
         }
     }
 

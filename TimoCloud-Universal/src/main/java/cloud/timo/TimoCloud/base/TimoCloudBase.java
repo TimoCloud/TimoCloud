@@ -57,7 +57,7 @@ public class TimoCloudBase implements TimoCloudModule {
 
     private static TimoCloudBase instance;
     private OptionSet options;
-    private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "CloudReloaded" + ANSI_YELLOW + "]" + ANSI_RESET;
+    private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
     private RSAKeyPairRetriever rsaKeyPairRetriever;
     private BaseInstanceManager instanceManager;
