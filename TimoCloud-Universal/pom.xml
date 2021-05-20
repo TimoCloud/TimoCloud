@@ -9,7 +9,7 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.TimoCloud</groupId>
-        <version>6.2.5</version>
+        <version>6.2.4</version>
     </parent>
 
     <repositories>
