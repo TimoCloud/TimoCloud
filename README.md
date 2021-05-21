@@ -7,18 +7,18 @@ TimoCloud is full of innovative features. Here is a list of the most important o
 
  - **Automatic and dynamic starting** of Minecraft servers and BungeeCord proxies - depending on the current online player amount.
  - **Automatic and dynamic selection** of a virtual machine (server) with **enough available resources** for an instance which is getting started.
- - **Powerful API**, synchronized over your whole network in real-time.
- - **High efficiency**: TimoCloud cares a lot about efficiency: While using powerful software such as *screen* and *Netty*, it is trying to keep your servers' resource usage as little as possible
+ - **Powerful API**, synchronized over your whole network in real-time, also offering async methods with callbacks. Everything that can be done via commands also has a corresponding API method.
+ - **Secure Communication**: TimoCloud uses RSA and AES encryption to securely communicate between Core, Bases, servers and proxies
+ - **High efficiency**: Efficiency is one of our major goals: While using powerful software such as *screen* and *Netty*, TimoCloud tries to keep your servers' resource usage as little as possible
  - **Multi-Root**: Use one *TimoCloudCore* instance in combination with as many bases (a.k.a. "Wrapper") as you want. 
  - **Multi-Proxy**: TimoCloud is standalone and does not only start Bukkit/Spigot servers for you, but also BungeeCord proxies
  - **Beautiful, live-updating sign system**: Use the integrated server join sign system to let players access all your servers. Signs are dynamic - that means only _free_ servers will be displayed - and can be animated.
- - **Included proxy**: Use the included proxy, *TimoCloudCord*, to spread your players over your BungeeCord proxies.
  
  ## Download
  You can download the latest version [here](https://jenkins.timo.cloud/job/TimoCloud/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar)
  
  ## Setup
- See the [Wiki](https://github.com/TimoCrafter/TimoCloud/wiki)
+ See the [Wiki](https://github.com/TimoCloud/TimoCloud/wiki)
 
  ## Building from source
  ```

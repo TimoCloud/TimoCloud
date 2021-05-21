@@ -15,8 +15,9 @@ public class BaseServerObject {
     private Map<String, Object> globalHash;
     private List<String> javaParameters;
     private List<String> spigotParameters;
+    private String jrePath;
 
-    public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash, List<String> javaParameters, List<String> spigotParameters) {
+    public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash, List<String> javaParameters, List<String> spigotParameters, String jrePath) {
         this.name = name;
         this.id = id;
         this.group = group;
@@ -28,6 +29,7 @@ public class BaseServerObject {
         this.globalHash = globalHash;
         this.javaParameters = javaParameters;
         this.spigotParameters = spigotParameters;
+        this.jrePath = jrePath;
     }
 
     public String getName() {
@@ -74,4 +76,7 @@ public class BaseServerObject {
         return spigotParameters;
     }
 
+    public String getJrePath() {
+        return jrePath;
+    }
 }

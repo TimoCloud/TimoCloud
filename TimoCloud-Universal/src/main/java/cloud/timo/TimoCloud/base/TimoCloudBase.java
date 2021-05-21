@@ -113,12 +113,12 @@ public class TimoCloudBase implements TimoCloudModule {
         instance = this;
         fileManager = new BaseFileManager();
         rsaKeyPairRetriever = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "keys/"));
+        resourceManager = new BaseResourceManager();
         instanceManager = new BaseInstanceManager(getServerManagerDelayMillis());
         templateManager = new BaseTemplateManager();
         socketClient = new BaseSocketClient();
         socketClientHandler = new BaseSocketClientHandler();
         socketMessageManager = new BaseSocketMessageManager();
-        resourceManager = new BaseResourceManager();
         stringHandler = new BaseStringHandler();
         scheduler = Executors.newScheduledThreadPool(1);
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBaseImplementation());

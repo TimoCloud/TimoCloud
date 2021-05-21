@@ -117,7 +117,7 @@ public class ServerTest extends CommunicationTest {
     }
 
     private ServerGroup anyGroup() {
-        return new ServerGroup(RandomIdGenerator.generateId(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"), Arrays.asList("--Dfile.encoding=UTF8", "--AABC"), Arrays.asList("-nogui", "-true"));
+        return new ServerGroup(RandomIdGenerator.generateId(), "Test", 3, 5, 1024, true, 2, null, Arrays.asList("OFFLINE", "STARTING", "INGAME"), Arrays.asList("--Dfile.encoding=UTF8", "--AABC"), Arrays.asList("-nogui", "-true"), "java");
     }
 
 }

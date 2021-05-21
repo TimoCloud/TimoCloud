@@ -47,6 +47,7 @@ public enum APIRequestType {
     P_EXECUTE_COMMAND                   (PROXY),
     P_STOP                              (PROXY),
     P_GET_LOG_FRACTION                  (PROXY),
+    P_SEND_PLAYER                       (PROXY),
 
     S_EXECUTE_COMMAND                   (SERVER),
     S_STOP                              (SERVER),
