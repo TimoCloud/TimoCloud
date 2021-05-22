@@ -1,4 +1,4 @@
-package cloud.timo.TimoCloud.bungeecord.api;
+package cloud.timo.TimoCloud.api.implementations;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.TimoCloudBungeeAPI;

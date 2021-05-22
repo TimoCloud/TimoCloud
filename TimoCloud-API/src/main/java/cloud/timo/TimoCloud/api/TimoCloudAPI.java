@@ -5,7 +5,6 @@ public class TimoCloudAPI {
     private static TimoCloudUniversalAPI universalAPI;
     private static TimoCloudBukkitAPI bukkitAPI;
     private static TimoCloudBungeeAPI bungeeAPI;
-    private static TimoCloudProxyAPI proxyAPI;
     private static TimoCloudCoreAPI coreAPI;
     private static TimoCloudEventAPI eventAPI;
     private static TimoCloudMessageAPI messageAPI;
@@ -97,7 +96,7 @@ public class TimoCloudAPI {
      * @return Proxy API instance
      */
     public static TimoCloudProxyAPI getProxyAPI() {
-        return proxyAPI;
+        return bungeeAPI;
     }
 
     /**

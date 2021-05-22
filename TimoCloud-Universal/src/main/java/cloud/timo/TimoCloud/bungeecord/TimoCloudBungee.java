@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.bungeecord;
 
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplementationAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
@@ -116,7 +117,6 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBungeeImplementation());
         APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
-        APIInstanceUtil.setProxyInstance(new TimoCloudProxyAPIImplementation());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBungeeImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");
