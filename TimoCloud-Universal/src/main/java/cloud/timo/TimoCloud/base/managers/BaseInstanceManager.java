@@ -14,6 +14,7 @@ import cloud.timo.TimoCloud.common.log.LogEntryReader;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailer;
 import cloud.timo.TimoCloud.cord.utils.MathUtil;
 import org.apache.commons.io.FileUtils;
@@ -447,6 +448,8 @@ public class BaseInstanceManager {
                     String fileContents = buffer.toString();
                     sc.close();
                     fileContents = fileContents.replaceAll("bind = \"0.0.0.0:.*", "bind = \"0.0.0.0:" + proxyPort + "\"")
+                            .replaceAll("id = \"replacewithrandomuuid\"", "id = \"" + UUID.randomUUID().toString() + "\"")
+                            .replaceAll("forwarding-secret = \"replacewithrandomsecret\"", "forwarding-secret = \"" + RandomIdGenerator.generateId(12) + "\"")
                             .replaceAll("show-max-players = .*", "show-max-players = " + proxy.getMaxPlayers());
                     FileWriter writer = new FileWriter(configFile);
                     writer.append(fileContents);

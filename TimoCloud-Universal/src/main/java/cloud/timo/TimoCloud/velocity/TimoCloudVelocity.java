@@ -7,6 +7,7 @@ import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplem
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.common.encryption.RSAKeyPairRetriever;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.log.utils.LogInjectionUtil;
@@ -18,7 +19,6 @@ import cloud.timo.TimoCloud.common.sockets.RSAHandshakeHandler;
 import cloud.timo.TimoCloud.common.utils.ChatColorUtil;
 import cloud.timo.TimoCloud.velocity.api.TimoCloudInternalMessageAPIVelocityImplementation;
 import cloud.timo.TimoCloud.velocity.api.TimoCloudMessageAPIVelocityImplementation;
-import cloud.timo.TimoCloud.velocity.api.TimoCloudProxyAPIImplementation;
 import cloud.timo.TimoCloud.velocity.api.TimoCloudUniversalAPIVelocityImplementation;
 import cloud.timo.TimoCloud.velocity.commands.FindCommand;
 import cloud.timo.TimoCloud.velocity.commands.GlistCommand;
@@ -137,7 +137,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIVelocityImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIVelocityImplementation());
-        APIInstanceUtil.setProxyInstance(new TimoCloudProxyAPIImplementation());
+        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIVelocityImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

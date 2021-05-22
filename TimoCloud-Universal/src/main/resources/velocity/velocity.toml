@@ -26,7 +26,7 @@ online-mode = true
 player-info-forwarding-mode = "LEGACY"
 
 # If you are using modern IP forwarding, configure an unique secret here.
-forwarding-secret = "CmlJNM3GzwNx"
+forwarding-secret = "replacewithrandomsecret"
 
 # Announce whether or not your server supports Forge. If you run a modded server, we
 # suggest turning this on.
@@ -89,6 +89,6 @@ show-plugins = false
 enabled = true
 
 # A unique, anonymous ID to identify this proxy with.
-id = "0a79a7d9-5700-4984-b4eb-d2fd2d8af2a6"
+id = "replacewithrandomuuid"
 
 log-failure = false
