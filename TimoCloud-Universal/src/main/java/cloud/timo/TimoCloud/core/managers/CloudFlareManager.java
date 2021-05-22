@@ -77,7 +77,10 @@ public class CloudFlareManager implements Listener {
     public void unregisterProxy(Proxy proxy) {
         if (!enabled()) return;
         if (proxy.getDnsRecords() == null) return;
-        executorService.submit(() -> proxy.getDnsRecords().forEach(this::deleteRecord));
+        executorService.submit(() -> {
+            proxy.getDnsRecords().forEach(this::deleteRecord);
+            proxy.getDnsRecords().clear();
+        });
     }
 
 
