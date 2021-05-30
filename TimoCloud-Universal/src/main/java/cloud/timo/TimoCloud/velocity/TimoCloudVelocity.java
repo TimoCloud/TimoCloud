@@ -2,15 +2,16 @@ package cloud.timo.TimoCloud.velocity;
 
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.implementations.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplementationAPIBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
-import cloud.timo.TimoCloud.api.implementations.TimoCloudBungeeAPIImplementation;
 import cloud.timo.TimoCloud.common.encryption.RSAKeyPairRetriever;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.log.utils.LogInjectionUtil;
+import cloud.timo.TimoCloud.common.manager.LobbyManager;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.AESDecrypter;
@@ -26,7 +27,6 @@ import cloud.timo.TimoCloud.velocity.commands.LobbyCommand;
 import cloud.timo.TimoCloud.velocity.commands.TimoCloudCommand;
 import cloud.timo.TimoCloud.velocity.listeners.*;
 import cloud.timo.TimoCloud.velocity.managers.IpManager;
-import cloud.timo.TimoCloud.common.manager.LobbyManager;
 import cloud.timo.TimoCloud.velocity.managers.VelocityFileManager;
 import cloud.timo.TimoCloud.velocity.sockets.VelocitySocketClient;
 import cloud.timo.TimoCloud.velocity.sockets.VelocitySocketClientHandler;
@@ -73,6 +73,16 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     private String prefix;
     private boolean shuttingDown = false;
 
+    @Inject
+    public TimoCloudVelocity(ProxyServer server, Logger logger) {
+        this.server = server;
+        this.logger = logger;
+    }
+
+    public static TimoCloudVelocity getInstance() {
+        return instance;
+    }
+
     @Override
     public void info(String message) {
         getLogger().info(ChatColorUtil.translateAlternateColorCodes('&', message));
@@ -86,12 +96,6 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     @Override
     public void severe(String message) {
         getLogger().error(ChatColorUtil.translateAlternateColorCodes('&', message));
-    }
-
-    @Inject
-    public TimoCloudVelocity(ProxyServer server, Logger logger) {
-        this.server = server;
-        this.logger = logger;
     }
 
     @Subscribe
@@ -246,10 +250,6 @@ public class TimoCloudVelocity implements TimoCloudLogger {
 
     public String getProxyId() {
         return System.getProperty("timocloud-proxyid");
-    }
-
-    public static TimoCloudVelocity getInstance() {
-        return instance;
     }
 
     public VelocityFileManager getFileManager() {
