@@ -87,7 +87,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
             while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                 try {
                     Thread.sleep(50); // Wait until we get the API data
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
             info("&aSuccessfully started TimoCloudBungee!");
