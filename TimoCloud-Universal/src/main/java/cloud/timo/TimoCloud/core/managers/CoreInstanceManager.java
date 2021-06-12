@@ -74,8 +74,10 @@ public class CoreInstanceManager {
                 }.getType());
                 String name = (String) properties.get("name");
                 ServerGroup serverGroup = getServerGroupByName(name);
-                if (serverGroup != null) serverGroup.construct(properties);
-                else serverGroup = new ServerGroup(properties);
+                if (serverGroup != null) {
+                    properties.put("id", serverGroup.getId());
+                    serverGroup.construct(properties);
+                } else serverGroup = new ServerGroup(properties);
                 serverGroups.add(serverGroup);
             }
             this.serverGroups = serverGroups;
@@ -97,8 +99,10 @@ public class CoreInstanceManager {
                 }.getType());
                 String name = (String) properties.get("name");
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
-                if (proxyGroup != null) proxyGroup.construct(properties);
-                else proxyGroup = new ProxyGroup(properties);
+                if (proxyGroup != null) {
+                    properties.put("id", proxyGroup.getId());
+                    proxyGroup.construct(properties);
+                } else proxyGroup = new ProxyGroup(properties);
                 proxyGroups.add(proxyGroup);
             }
             this.proxyGroups = proxyGroups;
