@@ -102,7 +102,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                     if (timeToTimeout < System.currentTimeMillis()) {
                         System.setOut(out); //I don't know exactly why, but if we don't do this System.out is null
                         severe("&Connection to the core could not be established");
-                        Bukkit.shutdown();
+                        System.exit(0);
                         return;
                     }
                     try {
