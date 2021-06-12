@@ -43,6 +43,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +87,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         } else {
             try {
                 info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+
                 makeInstances();
                 registerCommands();
                 registerListeners();
@@ -93,10 +95,19 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 registerChannel();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
+                long timeToTimeout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
+                final PrintStream out = System.out;
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
+                    //Timeout?
+                    if (timeToTimeout < System.currentTimeMillis()) {
+                        System.setOut(out); //I don't know exactly why, but if we don't do this System.out is null
+                        severe("&Connection to the core could not be established");
+                        Bukkit.shutdown();
+                        return;
+                    }
                     try {
                         Thread.sleep(50); // Wait until we get the API data
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
                 }
                 this.enabled = true;
@@ -267,7 +278,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         if (this.disabling) return;
-        if(!this.serverRegistered) return;
+        if (!this.serverRegistered) return;
         sendEverything();
     }
 
