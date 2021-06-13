@@ -348,6 +348,7 @@ public class CoreInstanceManager {
      */
     private Server startServer(ServerGroup group, Base base) {
         String name = getNotExistingName(group);
+        if (name == null) return null;
         String token = RandomIdGenerator.generateId();
         String id = name + "_" + token;
 
