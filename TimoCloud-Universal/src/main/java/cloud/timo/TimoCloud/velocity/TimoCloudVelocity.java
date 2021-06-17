@@ -124,7 +124,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     @Subscribe
     public void onProxyShutdown(ProxyShutdownEvent event) {
         setShuttingDown(true);
-        info("&cSuccessfully stopped TimoCloudVelocity!");
+        info("&cSuccessfully stopped &bTimoCloudVelocity!");
     }
 
     private void makeInstances() throws Exception {
