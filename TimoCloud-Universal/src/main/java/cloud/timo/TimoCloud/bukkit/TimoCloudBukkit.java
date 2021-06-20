@@ -41,6 +41,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jline.utils.Log;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -93,14 +94,14 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 registerListeners();
                 registerTasks();
                 registerChannel();
+                LogInjectionUtil.saveSystemOutAndErr();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
                 long timeToTimeout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
-                final PrintStream out = System.out;
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                     //Timeout?
                     if (timeToTimeout < System.currentTimeMillis()) {
-                        System.setOut(out); //I don't know exactly why, but if we don't do this System.out is null
+                        LogInjectionUtil.restoreSystemOutAndErr();
                         severe("&Connection to the core could not be established");
                         System.exit(0);
                         return;
@@ -110,6 +111,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                     } catch (Exception ignored) {
                     }
                 }
+                LogInjectionUtil.restoreSystemOutAndErr();
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
