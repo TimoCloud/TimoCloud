@@ -41,8 +41,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jline.utils.Log;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -86,19 +88,30 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         } else {
             try {
                 info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
+
                 makeInstances();
                 registerCommands();
                 registerListeners();
                 registerTasks();
                 registerChannel();
+                LogInjectionUtil.saveSystemOutAndErr();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
+                long timeToTimeout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
+                    //Timeout?
+                    if (timeToTimeout < System.currentTimeMillis()) {
+                        LogInjectionUtil.restoreSystemOutAndErr();
+                        severe("&Connection to the core could not be established");
+                        System.exit(0);
+                        return;
+                    }
                     try {
                         Thread.sleep(50); // Wait until we get the API data
-                    } catch (Exception e) {
+                    } catch (Exception ignored) {
                     }
                 }
+                LogInjectionUtil.restoreSystemOutAndErr();
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
@@ -267,7 +280,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void doEverySecond() {
         if (this.disabling) return;
-        if(!this.serverRegistered) return;
+        if (!this.serverRegistered) return;
         sendEverything();
     }
 
