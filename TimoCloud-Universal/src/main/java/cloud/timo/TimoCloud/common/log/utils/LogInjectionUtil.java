@@ -13,6 +13,11 @@ public class LogInjectionUtil {
     private static PrintStream formerSystemOut;
     private static PrintStream formerSystemErr;
 
+    public static void saveSystemOutAndErr() {
+        formerSystemOut = System.out;
+        formerSystemErr = System.err;
+    }
+
     public static void injectSystemOutAndErr(Consumer<LogEntry> sendLogEntry) {
         formerSystemOut = System.out;
         LogEntryReader outReader = new LogEntryReader(sendLogEntry, LogLevel.INFO);

@@ -20,23 +20,23 @@ public class BaseResourceManager {
     }
 
     public long getFreeMemory() {
-        return (getOperatingSystemMXBean().getFreePhysicalMemorySize())/(1024*1024) + getCache();
+        return (getOperatingSystemMXBean().getFreePhysicalMemorySize()) / (1024 * 1024) + getCache();
     }
 
     public double getCpuUsage() {
-        double cpuLoad = getOperatingSystemMXBean().getSystemCpuLoad()*100;
-        if (Double.isNaN(cpuLoad)) cpuLoad = lastCpuLoad;
+        double cpuLoad = getOperatingSystemMXBean().getSystemCpuLoad() * 100;
+        if (Double.isNaN(cpuLoad) || cpuLoad < 0) cpuLoad = lastCpuLoad;
         return this.lastCpuLoad = cpuLoad;
     }
 
     private long getCache() {
         File meminfo = new File("/proc/meminfo");
-        if (! meminfo.exists()) return 0;
+        if (!meminfo.exists()) return 0;
         try {
             FileReader fileReader = new FileReader(meminfo);
             BufferedReader reader = new BufferedReader(fileReader);
             String line;
-            while (! (line = reader.readLine()).startsWith("Cached:"));
+            while (!(line = reader.readLine()).startsWith("Cached:")) ;
             fileReader.close();
             reader.close();
             return Long.parseLong(line.replace("Cached:", "").replace("kB", "").trim()) / 1024;
