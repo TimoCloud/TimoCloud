@@ -130,7 +130,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     private void makeInstances() throws Exception {
         TimoCloudLogger.setLogger(this);
         fileManager = new VelocityFileManager();
-        lobbyManager = new LobbyManager();
+        lobbyManager = new LobbyManager(getFileManager().getConfig().getString("fallbackGroup"), getFileManager().getConfig().getString("LobbyChooseStrategy"), getFileManager().getConfig().getString("emergencyFallback"));
         ipManager = new IpManager();
         socketClient = new VelocitySocketClient();
         socketClientHandler = new VelocitySocketClientHandler();
@@ -141,7 +141,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIVelocityImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIVelocityImplementation());
-        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
+        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation(getProxyName()));
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIVelocityImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

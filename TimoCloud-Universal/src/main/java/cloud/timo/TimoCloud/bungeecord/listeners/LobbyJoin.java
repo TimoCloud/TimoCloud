@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.bungeecord.listeners;
 
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -38,7 +39,7 @@ public class LobbyJoin implements Listener {
         if (!isPending(event.getPlayer().getUniqueId())) return;
 
         ProxiedPlayer player = event.getPlayer();
-        ServerInfo info = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
+        ServerInfo info = ProxyServer.getInstance().getServerInfo(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId()).getName());
         if (info == null) {
             TimoCloudBungee.getInstance().severe("No lobby server found.");
             pending.remove(player.getUniqueId());
@@ -55,7 +56,7 @@ public class LobbyJoin implements Listener {
     public void onServerKick(ServerKickEvent event) {
         if (!useFallback()) return;
         event.setCancelled(true);
-        event.setCancelServer(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()));
+        event.setCancelServer(ProxyServer.getInstance().getServerInfo(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()).getName()));
     }
 
     private void kickPlayer(ProxiedPlayer proxiedPlayer) {

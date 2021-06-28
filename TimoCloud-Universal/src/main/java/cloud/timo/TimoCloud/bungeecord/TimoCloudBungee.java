@@ -16,7 +16,6 @@ import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
 import cloud.timo.TimoCloud.bungeecord.listeners.*;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
 import cloud.timo.TimoCloud.bungeecord.managers.IpManager;
-import cloud.timo.TimoCloud.bungeecord.managers.LobbyManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClientHandler;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketMessageManager;
@@ -24,6 +23,7 @@ import cloud.timo.TimoCloud.bungeecord.sockets.BungeeStringHandler;
 import cloud.timo.TimoCloud.common.encryption.RSAKeyPairRetriever;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.log.utils.LogInjectionUtil;
+import cloud.timo.TimoCloud.common.manager.LobbyManager;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.AESDecrypter;
@@ -105,7 +105,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         TimoCloudLogger.setLogger(this);
 
         fileManager = new BungeeFileManager();
-        lobbyManager = new LobbyManager();
+        lobbyManager = new LobbyManager(getFileManager().getConfig().getString("fallbackGroup"), getFileManager().getConfig().getString("LobbyChooseStrategy"), getFileManager().getConfig().getString("emergencyFallback"));
         ipManager = new IpManager();
         socketClient = new BungeeSocketClient();
         socketClientHandler = new BungeeSocketClientHandler();
@@ -116,7 +116,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         APIInstanceUtil.setInternalMessageInstance(new TimoCloudInternalMessageAPIBungeeImplementation());
         APIInstanceUtil.setEventInstance(new EventManager());
         APIInstanceUtil.setUniversalInstance(new TimoCloudUniversalAPIBungeeImplementation());
-        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation());
+        APIInstanceUtil.setBungeeInstance(new TimoCloudBungeeAPIImplementation(getProxyName()));
         APIInstanceUtil.setMessageInstance(new TimoCloudMessageAPIBungeeImplementation());
         APIInstanceUtil.setInternalImplementationAPIInstance(new TimoCloudInternalImplementationAPIBasicImplementation());
         TimoCloudAPI.getMessageAPI().registerMessageListener(new APIResponseManager(), "TIMOCLOUD_API_RESPONSE");

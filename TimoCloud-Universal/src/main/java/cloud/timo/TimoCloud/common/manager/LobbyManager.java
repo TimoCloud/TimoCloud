@@ -4,8 +4,7 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.base.TimoCloudBase;
-import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
 
 import java.util.*;
@@ -17,8 +16,14 @@ public class LobbyManager {
 
     private final Map<UUID, List<String>> lobbyHistory;
     private final Map<UUID, Long> lastUpdate;
+    private final String fallbackGroup;
+    private final String lobbyChooseStrategy;
+    private final String emergencyFallback;
 
-    public LobbyManager() {
+    public LobbyManager(String fallbackGroup, String lobbyChooseStrategy, String emergencyFallback) {
+        this.fallbackGroup = fallbackGroup;
+        this.lobbyChooseStrategy = lobbyChooseStrategy;
+        this.emergencyFallback = emergencyFallback;
         lobbyHistory = new HashMap<>();
         lastUpdate = new HashMap<>();
     }
@@ -39,13 +44,13 @@ public class LobbyManager {
     }
 
     private LobbyChooseStrategy getLobbyChooseStrategy() {
-        return LobbyChooseStrategy.valueOf(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("LobbyChooseStrategy"));
+        return LobbyChooseStrategy.valueOf(lobbyChooseStrategy);
     }
 
     public ServerObject searchFreeLobby(UUID uuid, String notThis) {
-        ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
+        ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(fallbackGroup);
         if (group == null) {
-            TimoCloudVelocity.getInstance().severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
+            TimoCloudLogger.getLogger().severe("Error while searching lobby: Could not find specified fallbackGroup '" + fallbackGroup + "'");
             return null;
         }
         List<ServerObject> servers = group.getServers().stream()
@@ -84,7 +89,7 @@ public class LobbyManager {
                 target = servers.get(0);
                 break;
             default:
-                TimoCloudBase.getInstance().warning("LobbyChooseStrategy error");
+                TimoCloudLogger.getLogger().warning("LobbyChooseStrategy error");
                 break;
         }
         return target;
@@ -92,12 +97,14 @@ public class LobbyManager {
 
     public ServerObject getFreeLobby(UUID uuid, boolean kicked) {
         String notThis = null;
-        if (!TimoCloudVelocity.getInstance().getServer().getPlayer(uuid).isPresent()) {
+        if (TimoCloudAPI.getUniversalAPI().getPlayer(uuid) != null) {
             ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getPlayer(uuid).getServer();
-            notThis = serverObject.getName();
+            if (serverObject != null) {
+                notThis = serverObject.getName();
+            }
         }
         PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(uuid);
-        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudVelocity.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
+        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(emergencyFallback);
 
         if (player != null && player.getServer() != null)
             notThis = player.getServer().getName();
