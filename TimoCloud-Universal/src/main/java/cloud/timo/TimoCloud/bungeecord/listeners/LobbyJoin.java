@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.bungeecord.listeners;
 
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,7 +40,16 @@ public class LobbyJoin implements Listener {
         if (!isPending(event.getPlayer().getUniqueId())) return;
 
         ProxiedPlayer player = event.getPlayer();
-        ServerInfo info = ProxyServer.getInstance().getServerInfo(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId()).getName());
+        final ServerObject freeLobby = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(player.getUniqueId());
+        if (freeLobby == null) {
+            TimoCloudBungee.getInstance().severe("No lobby server found.");
+            pending.remove(player.getUniqueId());
+
+            kickPlayer(player);
+            event.setCancelled(true);
+            return;
+        }
+        ServerInfo info = ProxyServer.getInstance().getServerInfo(freeLobby.getName());
         if (info == null) {
             TimoCloudBungee.getInstance().severe("No lobby server found.");
             pending.remove(player.getUniqueId());
@@ -56,7 +66,9 @@ public class LobbyJoin implements Listener {
     public void onServerKick(ServerKickEvent event) {
         if (!useFallback()) return;
         event.setCancelled(true);
-        event.setCancelServer(ProxyServer.getInstance().getServerInfo(TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId()).getName()));
+        final ServerObject freeLobby = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId());
+        if (freeLobby == null) return;
+        event.setCancelServer(ProxyServer.getInstance().getServerInfo(freeLobby.getName()));
     }
 
     private void kickPlayer(ProxiedPlayer proxiedPlayer) {
