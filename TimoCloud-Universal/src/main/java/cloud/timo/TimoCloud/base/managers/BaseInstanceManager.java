@@ -372,7 +372,7 @@ public class BaseInstanceManager {
                                 : "Please make sure to have a file called 'proxy.jar' in your template."));
                 throw new ProxyStartException("proxy.jar does not exist");
             }
-            JarFile proxyJar = new JarFile(proxyJarFile);
+            JarFile proxyJar = new JarFile(proxyJarFile.exists() ? proxyJarFile : bungeeJar);
             JarEntry velocityConfig = proxyJar.getJarEntry("default-velocity.toml");
             if (velocityConfig == null) {
                 JarEntry bungeeMessages = proxyJar.getJarEntry("messages.properties");
