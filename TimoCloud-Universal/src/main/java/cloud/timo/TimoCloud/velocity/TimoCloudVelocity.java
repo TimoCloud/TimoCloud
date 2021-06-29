@@ -51,11 +51,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@Plugin(id = "timocloud",
-        version = "6.3.1",
-        name = "TimoCloud",
-        authors = "TimoCrafter"
-)
 @Getter
 public class TimoCloudVelocity implements TimoCloudLogger {
 
