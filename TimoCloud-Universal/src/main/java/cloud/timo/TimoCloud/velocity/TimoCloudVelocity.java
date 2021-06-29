@@ -52,7 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Plugin(id = "timocloud",
-        version = "6.3.0",
+        version = "6.3.1",
         name = "TimoCloud",
         authors = "TimoCrafter"
 )
@@ -187,7 +187,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
             new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
                 channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
                 channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
-                channel.pipeline().addBefore("prepender", "handler", getBungeeStringHandler());
+                channel.pipeline().addBefore("prepender", "handler", getVelocityStringHandler());
                 channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
                 channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
@@ -252,49 +252,10 @@ public class TimoCloudVelocity implements TimoCloudLogger {
         return System.getProperty("timocloud-proxyid");
     }
 
-    public VelocityFileManager getFileManager() {
-        return fileManager;
-    }
-
-    public LobbyManager getLobbyManager() {
-        return lobbyManager;
-    }
-
-    public IpManager getIpManager() {
-        return ipManager;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
-    public VelocitySocketClient getSocketClient() {
-        return socketClient;
-    }
-
-    public VelocitySocketClientHandler getSocketClientHandler() {
-        return socketClientHandler;
-    }
-
-    public VelocitySocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
-    }
-
-    public VelocityStringHandler getBungeeStringHandler() {
-        return velocityStringHandler;
-    }
-
-    public TimoCloudCommand getTimoCloudCommand() {
-        return timoCloudCommand;
-    }
-
-    public boolean isShuttingDown() {
-        return shuttingDown;
-    }
 
     public void setShuttingDown(boolean shuttingDown) {
         this.shuttingDown = shuttingDown;
