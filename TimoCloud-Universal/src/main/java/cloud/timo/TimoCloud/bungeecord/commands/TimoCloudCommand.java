@@ -162,10 +162,10 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     break;
                 case 3:
                     if (strings[0].equalsIgnoreCase("editgroup")) {
-                        ProxyObject proxyObject = TimoCloudAPI.getUniversalAPI().getProxy(strings[1]);
+                        ProxyGroupObject proxyGroupObject = TimoCloudAPI.getUniversalAPI().getProxyGroup(strings[1]);
                         ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(strings[1]);
 
-                        if (proxyObject != null) {
+                        if (proxyGroupObject != null) {
                             addCompletionToList(tabCompletions, "minamount", strings[2]);
                             addCompletionToList(tabCompletions, "maxamount", strings[2]);
                             addCompletionToList(tabCompletions, "ram", strings[2]);
