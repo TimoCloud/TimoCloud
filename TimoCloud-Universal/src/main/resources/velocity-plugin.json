@@ -1,0 +1,10 @@
+{
+  "id": "timocloud",
+  "name": "TimoCloud",
+  "version": "${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}",
+  "authors": [
+    "TimoCrafter"
+  ],
+  "dependencies": [],
+  "main": "cloud.timo.TimoCloud.velocity.TimoCloudVelocity"
+}

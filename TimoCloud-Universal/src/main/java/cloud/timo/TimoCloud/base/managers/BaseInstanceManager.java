@@ -14,6 +14,7 @@ import cloud.timo.TimoCloud.common.log.LogEntryReader;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.utils.HashUtil;
+import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.common.utils.files.tailer.FileTailer;
 import cloud.timo.TimoCloud.cord.utils.MathUtil;
 import org.apache.commons.io.FileUtils;
@@ -30,6 +31,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class BaseInstanceManager {
@@ -39,12 +42,9 @@ public class BaseInstanceManager {
     private static final Integer SERVER_PORT_MAX = 42000;
     private static final Integer PROXY_PORT_START = 40000;
     private static final Integer PROXY_PORT_MAX = 40300;
-
+    private final ScheduledExecutorService scheduler;
     private LinkedList<BaseServerObject> serverQueue;
     private LinkedList<BaseProxyObject> proxyQueue;
-
-    private final ScheduledExecutorService scheduler;
-
     private Map<String, FileTailer> logTailers;
 
     private boolean startingServer = false;
@@ -61,6 +61,14 @@ public class BaseInstanceManager {
         scheduler = Executors.newScheduledThreadPool(1);
         logTailers = new HashMap<>();
         scheduler.scheduleAtFixedRate(this::everySecond, millis, millis, TimeUnit.MILLISECONDS);
+    }
+
+    private static File getServerLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getServerLogsDirectory(), id + ".log");
+    }
+
+    private static File getProxyLogFile(String id) {
+        return new File(TimoCloudBase.getInstance().getFileManager().getProxyLogsDirectory(), id + ".log");
     }
 
     public void updateResources() {
@@ -310,7 +318,6 @@ public class BaseInstanceManager {
         }
     }
 
-
     private void startProxy(BaseProxyObject proxy) {
         TimoCloudBase.getInstance().info("Starting proxy " + proxy.getName() + "...");
         double millisBefore = System.currentTimeMillis();
@@ -356,15 +363,27 @@ public class BaseInstanceManager {
             } else {
                 copyDirectory(templateDirectory, temporaryDirectory);
             }
-
+            ProxyType proxyType = ProxyType.BUNGEE;
             File bungeeJar = new File(temporaryDirectory, "BungeeCord.jar");
-            if (!bungeeJar.exists()) {
-                TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because BungeeCord.jar does not exist. " + (
-                        proxy.isStatic() ? "Please make sure the file " + bungeeJar.getAbsolutePath() + " exists (case sensitive!)."
-                                : "Please make sure to have a file called 'BungeeCord.jar' in your template."));
-                throw new ProxyStartException("BungeeCord.jar does not exist");
+            File proxyJarFile = new File(temporaryDirectory, "proxy.jar");
+            if (!bungeeJar.exists() && !proxyJarFile.exists()) {
+                TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because proxy.jar does not exist. " + (
+                        proxy.isStatic() ? "Please make sure the file " + proxyJarFile.getAbsolutePath() + " exists (case sensitive!)."
+                                : "Please make sure to have a file called 'proxy.jar' in your template."));
+                throw new ProxyStartException("proxy.jar does not exist");
             }
-
+            JarFile proxyJar = new JarFile(proxyJarFile.exists() ? proxyJarFile : bungeeJar);
+            JarEntry velocityConfig = proxyJar.getJarEntry("default-velocity.toml");
+            if (velocityConfig == null) {
+                JarEntry bungeeMessages = proxyJar.getJarEntry("messages.properties");
+                if (bungeeMessages == null) {
+                    throw new ProxyStartException("proxy.jar cannot be assigned to a proxy type");
+                } else {
+                    proxyType = ProxyType.BUNGEE;
+                }
+            } else {
+                proxyType = ProxyType.VELOCITY;
+            }
             File plugins = new File(temporaryDirectory, "/plugins/");
             plugins.mkdirs();
             File plugin = new File(plugins, "TimoCloud.jar");
@@ -381,30 +400,67 @@ public class BaseInstanceManager {
             currentProxyPort = proxyPort + 1;
 
             PublicKey publicKey = new RSAKeyPairRetriever(new File(temporaryDirectory, "plugins/TimoCloud/keys/")).generateKeyPair().getPublic();
-
-            File configFile = new File(temporaryDirectory, "config.yml");
-            configFile.createNewFile();
-            Yaml yaml = new Yaml();
-            Map<String, Object> config = (Map<String, Object>) yaml.load(new FileReader(configFile));
-            if (config == null) config = new LinkedHashMap<>();
-            config.put("player_limit", proxy.getMaxPlayersPerProxy());
-            List<Map<String, Object>> listeners = (List) config.get("listeners");
-            if (listeners == null) listeners = new ArrayList<>();
-            Map<String, Object> map = listeners.size() == 0 ? new LinkedHashMap<>() : listeners.get(0);
-            map.put("motd", proxy.getMotd());
-            if (proxy.isStatic() && map.containsKey("host")) {
-                proxyPort = Integer.parseInt(((String) map.get("host")).split(":")[1]);
+            switch (proxyType) {
+                case BUNGEE: {
+                    File configFile = new File(temporaryDirectory, "config.yml");
+                    configFile.createNewFile();
+                    Yaml yaml = new Yaml();
+                    Map<String, Object> config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+                    if (config == null) config = new LinkedHashMap<>();
+                    config.put("player_limit", proxy.getMaxPlayersPerProxy());
+                    List<Map<String, Object>> listeners = (List) config.get("listeners");
+                    if (listeners == null) listeners = new ArrayList<>();
+                    Map<String, Object> map = listeners.size() == 0 ? new LinkedHashMap<>() : listeners.get(0);
+                    map.put("motd", proxy.getMotd());
+                    if (proxy.isStatic() && map.containsKey("host")) {
+                        proxyPort = Integer.parseInt(((String) map.get("host")).split(":")[1]);
+                    }
+                    map.put("force_default_server", false);
+                    map.put("host", "0.0.0.0:" + proxyPort);
+                    map.put("max_players", proxy.getMaxPlayers());
+                    if (!proxy.isStatic()) map.put("query_enabled", false);
+                    if (listeners.size() == 0) listeners.add(map);
+                    FileWriter writer = new FileWriter(configFile);
+                    config.put("listeners", listeners);
+                    DumperOptions dumperOptions = new DumperOptions();
+                    dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+                    new Yaml(dumperOptions).dump(config, writer);
+                }
+                break;
+                case VELOCITY: {
+                    File configFile = new File(temporaryDirectory, "velocity.toml");
+                    if (!configFile.exists()) {
+                        try (InputStream input = getClass().getResourceAsStream("/velocity/velocity.toml")) {
+                            if (input != null) {
+                                Files.copy(input, configFile.toPath());
+                            } else {
+                                configFile.createNewFile();
+                            }
+                        } catch (IOException exception) {
+                            exception.printStackTrace();
+                        }
+                    }
+                    Scanner sc = new Scanner(configFile);
+                    StringBuffer buffer = new StringBuffer();
+                    while (sc.hasNextLine()) {
+                        buffer.append(sc.nextLine() + System.lineSeparator());
+                    }
+                    String fileContents = buffer.toString();
+                    sc.close();
+                    fileContents = fileContents.replaceAll("bind = \"0.0.0.0:.*", "bind = \"0.0.0.0:" + proxyPort + "\"")
+                            .replaceAll("id = \"replacewithrandomuuid\"", "id = \"" + UUID.randomUUID().toString() + "\"")
+                            .replaceAll("forwarding-secret = \"replacewithrandomsecret\"", "forwarding-secret = \"" + RandomIdGenerator.generateId(12) + "\"")
+                            .replaceAll("show-max-players = .*", "show-max-players = " + proxy.getMaxPlayers());
+                    FileWriter writer = new FileWriter(configFile);
+                    writer.append(fileContents);
+                    writer.flush();
+                }
+                break;
+                default:
+                    TimoCloudBase.getInstance().warning("The proxytype could not be found.");
+                    break;
             }
-            map.put("force_default_server", false);
-            map.put("host", "0.0.0.0:" + proxyPort);
-            map.put("max_players", proxy.getMaxPlayers());
-            if (!proxy.isStatic()) map.put("query_enabled", false);
-            if (listeners.size() == 0) listeners.add(map);
-            FileWriter writer = new FileWriter(configFile);
-            config.put("listeners", listeners);
-            DumperOptions dumperOptions = new DumperOptions();
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            new Yaml(dumperOptions).dump(config, writer);
+
 
             double millisNow = System.currentTimeMillis();
             TimoCloudBase.getInstance().info("Successfully prepared starting proxy " + proxy.getName() + " in " + (millisNow - millisBefore) / 1000 + " seconds.");
@@ -426,8 +482,13 @@ public class BaseInstanceManager {
                 if (getScreenVersion() >= 40602) {
                     logString = " -L -Logfile " + logFile.getAbsolutePath();
                 }
-
-                Process p = new ProcessBuilder(
+                String fileName = "";
+                if (bungeeJar.exists()) {
+                    fileName = "BungeeCord.jar";
+                } else {
+                    fileName = "proxy.jar";
+                }
+                new ProcessBuilder(
                         "/bin/sh", "-c",
                         "screen -mdS " + proxy.getId() +
                                 logString +
@@ -443,10 +504,9 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + proxy.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " -jar BungeeCord.jar" +
+                                " -jar " + fileName +
                                 "'"
                 ).start();
-
                 TimoCloudBase.getInstance().info("Successfully started proxy screen session " + proxy.getName() + ".");
             } catch (Exception e) {
                 TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ":");
@@ -572,14 +632,6 @@ public class BaseInstanceManager {
         }, 5 * 60 * 1000);
     }
 
-    private static File getServerLogFile(String id) {
-        return new File(TimoCloudBase.getInstance().getFileManager().getServerLogsDirectory(), id + ".log");
-    }
-
-    private static File getProxyLogFile(String id) {
-        return new File(TimoCloudBase.getInstance().getFileManager().getProxyLogsDirectory(), id + ".log");
-    }
-
     public boolean isDownloadingTemplate() {
         return downloadingTemplate;
     }
@@ -590,6 +642,11 @@ public class BaseInstanceManager {
 
     private String buildStartParameters(List<String> parameters) {
         return parameters.stream().filter(Objects::nonNull).collect(Collectors.joining(" "));
+    }
+
+    enum ProxyType {
+        BUNGEE,
+        VELOCITY;
     }
 
 }

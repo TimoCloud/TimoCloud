@@ -1,13 +1,11 @@
-package cloud.timo.TimoCloud.bungeecord.managers;
+package cloud.timo.TimoCloud.common.manager;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
-import cloud.timo.TimoCloud.bungeecord.objects.LobbyChooseStrategy;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
+import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,10 +14,16 @@ public class LobbyManager {
 
     private static final long INVALIDATE_CACHE_TIME = 2000;
 
-    private Map<UUID, List<String>> lobbyHistory;
-    private Map<UUID, Long> lastUpdate;
+    private final Map<UUID, List<String>> lobbyHistory;
+    private final Map<UUID, Long> lastUpdate;
+    private final String fallbackGroup;
+    private final String lobbyChooseStrategy;
+    private final String emergencyFallback;
 
-    public LobbyManager() {
+    public LobbyManager(String fallbackGroup, String lobbyChooseStrategy, String emergencyFallback) {
+        this.fallbackGroup = fallbackGroup;
+        this.lobbyChooseStrategy = lobbyChooseStrategy;
+        this.emergencyFallback = emergencyFallback;
         lobbyHistory = new HashMap<>();
         lastUpdate = new HashMap<>();
     }
@@ -40,22 +44,21 @@ public class LobbyManager {
     }
 
     private LobbyChooseStrategy getLobbyChooseStrategy() {
-        return LobbyChooseStrategy.valueOf(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("LobbyChooseStrategy"));
+        return LobbyChooseStrategy.valueOf(lobbyChooseStrategy);
     }
 
-    public ServerInfo searchFreeLobby(UUID uuid, ServerInfo notThis) {
-        ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup"));
+    public ServerObject searchFreeLobby(UUID uuid, String notThis) {
+        ServerGroupObject group = TimoCloudAPI.getUniversalAPI().getServerGroup(fallbackGroup);
         if (group == null) {
-            TimoCloudBungee.getInstance().severe("Error while searching lobby: Could not find specified fallbackGroup '" + TimoCloudBungee.getInstance().getFileManager().getConfig().getString("fallbackGroup") + "'");
+            TimoCloudLogger.getLogger().severe("Error while searching lobby: Could not find specified fallbackGroup '" + fallbackGroup + "'");
             return null;
         }
-        String notThisName = notThis == null ? "" : notThis.getName();
         List<ServerObject> servers = group.getServers().stream()
-                .filter(server -> !server.getName().equals(notThisName))
+                .filter(server -> !server.getName().equals(notThis))
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
                 .collect(Collectors.toList());
         List<ServerObject> removeServers = new ArrayList<>();
-        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis.getName());
+        ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis);
         if (notThisServer != null) removeServers.add(notThisServer);
         List<String> history = getVisitedLobbies(uuid);
 
@@ -85,31 +88,40 @@ public class LobbyManager {
             case BALANCE:
                 target = servers.get(0);
                 break;
+            default:
+                TimoCloudLogger.getLogger().warning("LobbyChooseStrategy error");
+                break;
         }
-        return TimoCloudBungee.getInstance().getProxy().getServers().get(target.getName());
+        return target;
     }
 
-    public ServerInfo getFreeLobby(UUID uuid, boolean kicked) {
-        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
-        ServerInfo notThis = null;
-        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(TimoCloudBungee.getInstance().getFileManager().getConfig().getString("emergencyFallback"));
+    public ServerObject getFreeLobby(UUID uuid, boolean kicked) {
+        String notThis = null;
+        if (TimoCloudAPI.getUniversalAPI().getPlayer(uuid) != null) {
+            ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getPlayer(uuid).getServer();
+            if (serverObject != null) {
+                notThis = serverObject.getName();
+            }
+        }
+        PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(uuid);
+        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(emergencyFallback);
 
-        if (proxiedPlayer != null && proxiedPlayer.getServer() != null) notThis = proxiedPlayer.getServer().getInfo();
+        if (player != null && player.getServer() != null)
+            notThis = player.getServer().getName();
 
-        ServerInfo serverInfo = searchFreeLobby(uuid, notThis);
-        if (serverInfo == null) {
+        ServerObject serverObject = searchFreeLobby(uuid, notThis);
+        if (serverObject == null) {
             if (serverGroupObject == null) return null;
             if (serverGroupObject.getServers().isEmpty()) return null;
-            return TimoCloudBungee.getInstance().getProxy().getServerInfo(serverGroupObject.getServers().stream().findFirst().get().getName());
+            return serverGroupObject.getServers().stream().findFirst().get();
         }
 
+        if (kicked) addToHistory(uuid, serverObject.getName());
 
-        if (kicked) addToHistory(uuid, serverInfo.getName());
-
-        return serverInfo;
+        return serverObject;
     }
 
-    public ServerInfo getFreeLobby(UUID uuid) {
+    public ServerObject getFreeLobby(UUID uuid) {
         return getFreeLobby(uuid, false);
     }
 

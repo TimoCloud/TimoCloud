@@ -174,7 +174,7 @@ public class SignManager {
     public void updateSigns() {
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         Collection<SignInstance> dynamicInstances = new ArrayList<>();
-        if(signInstances.isEmpty()) return;
+        if (signInstances.isEmpty()) return;
         for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);
@@ -210,14 +210,15 @@ public class SignManager {
             templates.putIfAbsent(signInstance.getTemplate(), new ArrayList<>());
             templates.get(signInstance.getTemplate()).add(signInstance);
         }
-        for (SignTemplate template : templates.keySet()) processDynamicSignsPerGroupAndTemplate(group, template, templates.get(template));
+        for (SignTemplate template : templates.keySet())
+            processDynamicSignsPerGroupAndTemplate(group, template, templates.get(template));
     }
 
     private void processDynamicSignsPerGroupAndTemplate(ServerGroupObject group, SignTemplate template, Collection<SignInstance> signInstances) {
         if (group == null) return;
         signInstances = signInstances.stream().filter(this::isSignActive).collect(Collectors.toList());
         Collection<String> sortOutStates = template.getSortOutStates() != null ? template.getSortOutStates() : group.getSortOutStates();
-        List<ServerObject> targets = group.getServers().stream().filter(serverObject -> ! sortOutStates.contains(serverObject.getState())).collect(Collectors.toList());
+        List<ServerObject> targets = group.getServers().stream().filter(serverObject -> !sortOutStates.contains(serverObject.getState())).collect(Collectors.toList());
         List<SignInstance> withPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() != 0).collect(Collectors.toList());
         List<SignInstance> withoutPriority = signInstances.stream().filter((signInstance) -> signInstance.getPriority() == 0).collect(Collectors.toList());
         withPriority.sort(Comparator.comparing(SignInstance::getPriority));
@@ -272,7 +273,7 @@ public class SignManager {
         Block attachedTo = getSignBlockAttached(signBlock);
         if (attachedTo == null) return;
         attachedTo.setType(material);
-        if (! TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
+        if (!TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
             try {
                 Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
             } catch (Exception e) {
@@ -281,11 +282,13 @@ public class SignManager {
     }
 
     private Block getSignBlockAttached(Block signBlock) {
-        if (! signBlock.getType().name().contains("WALL_SIGN")) return null;
+        if (!signBlock.getType().name().contains("SIGN")) return null;
 
         if (TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
+            if (!signBlock.getType().name().contains("WALL_SIGN")) return null;
             return signBlock.getRelative(((org.bukkit.block.data.type.WallSign) signBlock.getBlockData()).getFacing().getOppositeFace());
         } else {
+            if (signBlock.getType().name().contains("POST")) return null;
             return signBlock.getRelative(((org.bukkit.material.Sign) signBlock.getState().getData()).getAttachedFace());
         }
     }
