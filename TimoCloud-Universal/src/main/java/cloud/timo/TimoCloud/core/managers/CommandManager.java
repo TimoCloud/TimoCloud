@@ -20,7 +20,7 @@ public class CommandManager {
     }
 
     public void registerPluginCommandHandler(String command, CommandHandler commandHandler) {
-        pluginCommandHandlers.put(command, commandHandler);
+        pluginCommandHandlers.put(command.toLowerCase(), commandHandler);
     }
 
     public void registerCommandHandler(String command, CommandHandler commandHandler) {
@@ -109,10 +109,6 @@ public class CommandManager {
             TimoCloudCore.getInstance().severe(e);
             sendHelp(commandSender);
         }
-    }
-
-    public Map<String, CommandHandler> getCommandHandlers() {
-        return commandHandlers;
     }
 
     public Map<String, CommandHandler> getPluginCommandHandlers() {
