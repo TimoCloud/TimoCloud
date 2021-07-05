@@ -162,7 +162,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                 case 3:
                     if (strings[0].equalsIgnoreCase("editgroup")) {
                         ProxyObject proxyObject = TimoCloudAPI.getUniversalAPI().getProxy(strings[1]);
-                        ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getServer(strings[1]);
+                        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(strings[1]);
 
                         if (proxyObject != null) {
                             addCompletionToList(tabCompletions, "minamount", strings[2]);
@@ -175,7 +175,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                             addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
                             addCompletionToList(tabCompletions, "maxplayers", strings[2]);
                         }
-                        if (serverObject != null) {
+                        if (serverGroupObject != null) {
                             addCompletionToList(tabCompletions, "onlineamount", strings[2]);
                             addCompletionToList(tabCompletions, "ram", strings[2]);
                             addCompletionToList(tabCompletions, "static", strings[2]);
