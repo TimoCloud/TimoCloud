@@ -2,6 +2,9 @@ package cloud.timo.TimoCloud.core.commands;
 
 import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
+import cloud.timo.TimoCloud.core.TimoCloudCore;
+
+import java.util.Set;
 
 public class HelpCommandHandler implements CommandHandler {
 
@@ -23,6 +26,17 @@ public class HelpCommandHandler implements CommandHandler {
         sender.sendMessage("  &6baseinfo &7<&2baseName&7> - displays base info");
         sender.sendMessage("  &6listbases &7- &7lists all bases");
         sender.sendMessage("  &6sendcommand &7<&2groupName&7 | &2serverName&7 | &2proxyName&7> <&2command&7> - &7sends the given command to all server of a given group or the given server");
+
+        Set<String> pluginCommands = TimoCloudCore.getInstance().getCommandManager().getPluginCommandHandlers().keySet();
+
+        if (pluginCommands.size() != 0) {
+            sender.sendMessage(" ");
+            sender.sendMessage("&6Available Plugin commands&7:");
+
+            for (String pluginCommand : pluginCommands) {
+                sender.sendMessage("  &6" + pluginCommand);
+            }
+        }
     }
 
 }

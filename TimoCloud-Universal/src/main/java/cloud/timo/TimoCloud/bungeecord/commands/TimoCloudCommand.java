@@ -116,6 +116,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     addCompletionToList(tabCompletions, "help", strings[0]);
                     addCompletionToList(tabCompletions, "version", strings[0]);
                     addCompletionToList(tabCompletions, "reload", strings[0]);
+                    addCompletionToList(tabCompletions, "reloadplugins", strings[0]);
                     addCompletionToList(tabCompletions, "addbase", strings[0]);
                     addCompletionToList(tabCompletions, "addgroup", strings[0]);
                     addCompletionToList(tabCompletions, "removegroup", strings[0]);
