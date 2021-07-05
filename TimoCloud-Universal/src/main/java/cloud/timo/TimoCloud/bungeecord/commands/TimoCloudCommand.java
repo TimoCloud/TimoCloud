@@ -161,16 +161,27 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     break;
                 case 3:
                     if (strings[0].equalsIgnoreCase("editgroup")) {
-                        addCompletionToList(tabCompletions, "onlineamount", strings[2]);
-                        addCompletionToList(tabCompletions, "maxamount", strings[2]);
-                        addCompletionToList(tabCompletions, "ram", strings[2]);
-                        addCompletionToList(tabCompletions, "static", strings[2]);
-                        addCompletionToList(tabCompletions, "priority", strings[2]);
-                        addCompletionToList(tabCompletions, "base", strings[2]);
-                        addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
-                        addCompletionToList(tabCompletions, "maxplayers", strings[2]);
-                        addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
-                        addCompletionToList(tabCompletions, "minamount", strings[2]);
+                        ProxyObject proxyObject = TimoCloudAPI.getUniversalAPI().getProxy(strings[1]);
+                        ServerObject serverObject = TimoCloudAPI.getUniversalAPI().getServer(strings[1]);
+
+                        if (proxyObject != null) {
+                            addCompletionToList(tabCompletions, "minamount", strings[2]);
+                            addCompletionToList(tabCompletions, "maxamount", strings[2]);
+                            addCompletionToList(tabCompletions, "ram", strings[2]);
+                            addCompletionToList(tabCompletions, "static", strings[2]);
+                            addCompletionToList(tabCompletions, "base", strings[2]);
+                            addCompletionToList(tabCompletions, "priority", strings[2]);
+                            addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
+                            addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
+                            addCompletionToList(tabCompletions, "maxplayers", strings[2]);
+                        }
+                        if (serverObject != null) {
+                            addCompletionToList(tabCompletions, "onlineamount", strings[2]);
+                            addCompletionToList(tabCompletions, "ram", strings[2]);
+                            addCompletionToList(tabCompletions, "static", strings[2]);
+                            addCompletionToList(tabCompletions, "base", strings[2]);
+                            addCompletionToList(tabCompletions, "priority", strings[2]);
+                        }
                     }
                     break;
                 case 4:
