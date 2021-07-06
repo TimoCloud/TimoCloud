@@ -1,45 +1,21 @@
 package cloud.timo.TimoCloud.velocity.sockets;
 
+import cloud.timo.TimoCloud.common.sockets.BasicSocketClientHandler;
 import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class VelocitySocketClientHandler extends ChannelInboundHandlerAdapter {
-
-    private Channel channel;
-    private String queue;
+public class VelocitySocketClientHandler extends BasicSocketClientHandler {
 
     public VelocitySocketClientHandler() {
-        resetQueue();
+        super();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         TimoCloudVelocity.getInstance().info("&6Successfully connected to velocity socket!");
-        this.channel = ctx.channel();
+        setChannel(ctx.channel());
         TimoCloudVelocity.getInstance().onSocketConnect(ctx.channel());
         flush();
-    }
-
-    public void resetQueue() {
-        queue = "";
-    }
-
-    public void flush() {
-        if (channel == null) {
-            return;
-        }
-        channel.writeAndFlush(queue);
-        resetQueue();
-    }
-
-    public void sendMessage(String message) {
-        if (channel == null) {
-            queue += message;
-        } else {
-            channel.writeAndFlush(message);
-        }
     }
 
     @Override
@@ -50,11 +26,4 @@ public class VelocitySocketClientHandler extends ChannelInboundHandlerAdapter {
         TimoCloudVelocity.getInstance().onSocketDisconnect();
     }
 
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
 }

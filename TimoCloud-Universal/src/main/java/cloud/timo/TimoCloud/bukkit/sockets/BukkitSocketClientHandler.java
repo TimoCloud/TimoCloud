@@ -1,46 +1,23 @@
 package cloud.timo.TimoCloud.bukkit.sockets;
 
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
-import io.netty.channel.Channel;
+import cloud.timo.TimoCloud.common.sockets.BasicSocketClientHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 
-public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
-
-    private Channel channel;
-    private String queue;
+public class BukkitSocketClientHandler extends BasicSocketClientHandler {
 
     public BukkitSocketClientHandler() {
-        resetQueue();
+        super();
     }
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         TimoCloudBukkit.getInstance().info("Successfully connected to Core socket!");
-        this.channel = ctx.channel();
+        setChannel(ctx.channel());
         TimoCloudBukkit.getInstance().onSocketConnect(ctx.channel());
         flush();
     }
 
-    public void resetQueue() {
-        queue = "";
-    }
-
-    public void flush() {
-        if (channel == null) {
-            return;
-        }
-        channel.writeAndFlush(queue);
-        resetQueue();
-    }
-
-    public void sendMessage(String message) {
-        if (channel == null) {
-            queue += message;
-        } else {
-            channel.writeAndFlush(message);
-        }
-    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -50,11 +27,4 @@ public class BukkitSocketClientHandler extends ChannelInboundHandlerAdapter {
         TimoCloudBukkit.getInstance().onSocketDisconnect(false);
     }
 
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
 }
