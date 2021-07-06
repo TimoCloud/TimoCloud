@@ -6,10 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class BungeeSocketClientHandler extends BasicSocketClientHandler {
 
-    public BungeeSocketClientHandler() {
-        super();
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         TimoCloudBungee.getInstance().info("&6Successfully connected to bungee socket!");

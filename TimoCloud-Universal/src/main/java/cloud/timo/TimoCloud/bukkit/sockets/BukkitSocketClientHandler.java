@@ -6,10 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class BukkitSocketClientHandler extends BasicSocketClientHandler {
 
-    public BukkitSocketClientHandler() {
-        super();
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         TimoCloudBukkit.getInstance().info("Successfully connected to Core socket!");

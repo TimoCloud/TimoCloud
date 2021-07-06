@@ -6,10 +6,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class VelocitySocketClientHandler extends BasicSocketClientHandler {
 
-    public VelocitySocketClientHandler() {
-        super();
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         TimoCloudVelocity.getInstance().info("&6Successfully connected to velocity socket!");
