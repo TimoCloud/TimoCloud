@@ -415,10 +415,22 @@ public class APIRequestManager implements MessageListener {
                             String targetServer = data.getString("targetServer");
                             validateNotNull(playerUUID, "UUID");
                             validateNotNull(targetServer, "targetServer");
-                            Boolean isOnGivenProxy = Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
+                            Boolean isOnGivenProxy = proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID));
                             responseData = (T) isOnGivenProxy;
                             if (isOnGivenProxy) {
                                 proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
+                            }
+                            break;
+                        }
+                        case P_SEND_MESSAGE: {
+                            String playerUUID = data.getString("playerUUID");
+                            String message = data.getString("message");
+                            validateNotNull(playerUUID, "UUID");
+                            validateNotNull(message, "message");
+                            Boolean isOnGivenProxy = proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID));
+                            responseData = (T) isOnGivenProxy;
+                            if (isOnGivenProxy) {
+                                proxy.sendChatMessage(playerUUID, message);
                             }
                             break;
                         }

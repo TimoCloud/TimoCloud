@@ -25,7 +25,10 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -240,6 +243,15 @@ public class Proxy implements Instance, Communicatable {
                 .setData(Message.create()
                         .set("playerUUID", playerUUID)
                         .set("serverObject", serverObject.getName())
+                ));
+    }
+
+    public void sendChatMessage(String playerUUID, String chatMessage) {
+        sendMessage(Message.create()
+                .setType(MessageType.PROXY_SEND_MESSAGE)
+                .setData(Message.create()
+                        .set("playerUUID", playerUUID)
+                        .set("chatMessage", chatMessage)
                 ));
     }
 
