@@ -84,8 +84,11 @@ public class BukkitFileManager {
         config.addDefault("PlayersToState.percentages.100,0", "FULL");
         config.addDefault("PlayersToState.percentages.50,0", "HALF_FULL");
         TimoCloudBukkit.getInstance().setPrefix(config.getString("prefix"));
-
-        saveSignTemplates();
+        try {
+            config.save(configFile);
+        } catch (Exception e) {
+            TimoCloudBukkit.getInstance().severe(e);
+        }
     }
 
     private void addSignTemplatesDefaults() {
@@ -134,11 +137,7 @@ public class BukkitFileManager {
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.signColor", "NULL");
         signTemplates.addDefault("NoFreeServerFound.layouts.Default.signGlow", "false");
 
-        try {
-            signTemplates.save(signTemplatesFile);
-        } catch (Exception e) {
-            TimoCloudBukkit.getInstance().severe(e);
-        }
+        saveSignTemplates();
     }
 
     public File getBaseDirectory() {

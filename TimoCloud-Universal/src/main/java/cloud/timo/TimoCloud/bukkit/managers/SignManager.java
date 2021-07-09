@@ -119,7 +119,6 @@ public class SignManager {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
                         throw new SignParseException("Invalid signBlockMaterial, signColor, signGlow or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
                     }
                     layouts.put(layout, new SignLayout(
