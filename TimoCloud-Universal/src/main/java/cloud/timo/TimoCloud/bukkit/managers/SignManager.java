@@ -14,6 +14,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -83,20 +84,50 @@ public class SignManager {
                         lines[i] = Arrays.asList(line.split(";"));
                     }
                     Material signBlockMaterial = null;
+                    DyeColor signColor = null;
+                    boolean signGlow = false;
                     int signBlockData = 0;
                     try {
                         String materialString = config.getString(template + ".layouts." + layout + ".signBlockMaterial");
                         if (materialString != null) materialString = materialString.toUpperCase();
                         signBlockMaterial = Material.getMaterial(materialString);
                         signBlockData = config.getInt(template + ".layouts." + layout + ".signBlockData");
-                    } catch (Exception e) {
-                        throw new SignParseException("Invalid signBlockMaterial or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
-                    }
 
+                        if (TimoCloudBukkit.getInstance().isVersion117OrAbove()) {
+                            String colorString = config.getString(template + ".layouts." + layout + ".signColor");
+                            boolean saveTemplates = false;
+
+                            if (colorString != null) {
+                                if (!colorString.equalsIgnoreCase("null")) {
+                                    signColor = DyeColor.valueOf(colorString.toUpperCase());
+                                }
+
+                            } else {
+                                config.set(template + ".layouts." + layout + ".signColor", null);
+                                saveTemplates = true;
+                            }
+                            if (config.get(template + ".layouts." + layout + ".signGlow") != null) {
+                                signGlow = config.getBoolean(template + ".layouts." + layout + ".signGlow");
+
+                            } else {
+                                config.set(template + ".layouts." + layout + ".signGlow", false);
+                                saveTemplates = true;
+                            }
+                            if (saveTemplates) {
+                                TimoCloudBukkit.getInstance().getFileManager().saveSignTemplates();
+                            }
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new SignParseException("Invalid signBlockMaterial, signColor, signGlow or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
+                    }
                     layouts.put(layout, new SignLayout(
                             lines,
                             config.getLong(template + ".layouts." + layout + ".updateSpeed"),
                             signBlockMaterial,
+                            signColor,
+                            signGlow,
                             signBlockData
                     ));
                 }
@@ -167,7 +198,7 @@ public class SignManager {
                 Arrays.asList(name)
         };
         Map<String, SignLayout> layouts = new HashMap<>();
-        layouts.put("Default", new SignLayout(lines, -1, null, 0));
+        layouts.put("Default", new SignLayout(lines, -1, null, null, false, 0));
         return new SignTemplate("TemplateNotFound", layouts, null);
     }
 
@@ -278,6 +309,17 @@ public class SignManager {
                 Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
             } catch (Exception e) {
             }
+        }
+        if (TimoCloudBukkit.getInstance().isVersion117OrAbove()) {
+            Sign sign = (Sign) signBlock.getState();
+            DyeColor signColor = signLayout.getSignColor();
+            boolean signGlow = signLayout.isSignGlow();
+
+            if (signColor != null) {
+                sign.setColor(signColor);
+            }
+            sign.setGlowingText(signGlow);
+            sign.update();
         }
     }
 
