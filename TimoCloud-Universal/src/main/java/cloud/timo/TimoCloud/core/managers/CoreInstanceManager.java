@@ -7,12 +7,12 @@ import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
 import cloud.timo.TimoCloud.common.events.EventTransmitter;
+import cloud.timo.TimoCloud.common.json.GsonFactory;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.*;
 import cloud.timo.TimoCloud.core.objects.storage.IdentifiableStorage;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
@@ -70,7 +70,7 @@ public class CoreInstanceManager {
             IdentifiableStorage<ServerGroup> serverGroups = new IdentifiableStorage<>();
             JsonArray serverGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
             for (JsonElement jsonElement : serverGroupsList) {
-                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                Map<String, Object> properties = GsonFactory.getGson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
                 }.getType());
                 String name = (String) properties.get("name");
                 ServerGroup serverGroup = getServerGroupByName(name);
@@ -95,7 +95,7 @@ public class CoreInstanceManager {
             IdentifiableStorage<ProxyGroup> proxyGroups = new IdentifiableStorage<>();
             JsonArray proxyGroupsList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
             for (JsonElement jsonElement : proxyGroupsList) {
-                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                Map<String, Object> properties = GsonFactory.getGson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
                 }.getType());
                 String name = (String) properties.get("name");
                 ProxyGroup proxyGroup = getProxyGroupByName(name);
@@ -117,7 +117,7 @@ public class CoreInstanceManager {
             IdentifiableStorage<Base> bases = new IdentifiableStorage<>();
             JsonArray baseList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getBasesFile());
             for (JsonElement jsonElement : baseList) {
-                Map<String, Object> properties = new Gson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                Map<String, Object> properties = GsonFactory.getGson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
                 }.getType());
                 String id = (String) properties.get("id");
                 String name = (String) properties.get("name");
@@ -151,9 +151,9 @@ public class CoreInstanceManager {
      */
     public void saveServerGroups() {
         JsonArray serverGroups = new JsonArray();
-        getServerGroups().stream().map(ServerGroup::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(serverGroups::add);
+        getServerGroups().stream().map(ServerGroup::getProperties).map(map -> GsonFactory.getGson().toJsonTree(map)).forEach(serverGroups::add);
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(serverGroups), TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(serverGroups), TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving server groups: ");
             e.printStackTrace();
@@ -165,9 +165,9 @@ public class CoreInstanceManager {
      */
     public void saveProxyGroups() {
         JsonArray proxyGroups = new JsonArray();
-        getProxyGroups().stream().map(ProxyGroup::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(proxyGroups::add);
+        getProxyGroups().stream().map(ProxyGroup::getProperties).map(map -> GsonFactory.getGson().toJsonTree(map)).forEach(proxyGroups::add);
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
             e.printStackTrace();
@@ -179,9 +179,9 @@ public class CoreInstanceManager {
      */
     public void saveBases() {
         JsonArray bases = new JsonArray();
-        getBases().stream().map(Base::getProperties).map(map -> new Gson().toJsonTree(map)).forEach(bases::add);
+        getBases().stream().map(Base::getProperties).map(map -> GsonFactory.getGson().toJsonTree(map)).forEach(bases::add);
         try {
-            TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
+            TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving basess: ");
             e.printStackTrace();
