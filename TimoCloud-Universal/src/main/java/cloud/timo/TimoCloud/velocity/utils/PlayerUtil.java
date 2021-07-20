@@ -30,7 +30,7 @@ public class PlayerUtil {
         ServerObjectBasicImplementation server = (ServerObjectBasicImplementation) TimoCloudAPI.getUniversalAPI().getServer(registeredServer.getServerInfo().getName());
         if (server != null) serverObjectLink = server.toLink();
 
-        proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getBungeeAPI().getThisProxy()).toLink();
+        proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getProxyAPI().getThisProxy()).toLink();
 
         return new PlayerObjectVelocityImplementation(
                 player.getUsername(),

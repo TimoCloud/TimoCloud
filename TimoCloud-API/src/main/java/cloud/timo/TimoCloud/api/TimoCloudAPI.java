@@ -9,7 +9,7 @@ public class TimoCloudAPI {
     private static TimoCloudEventAPI eventAPI;
     private static TimoCloudMessageAPI messageAPI;
 
-    private TimoCloudAPI() {};
+    private TimoCloudAPI() {}
 
     /**
      * @return Whether the TimoCloud API is available

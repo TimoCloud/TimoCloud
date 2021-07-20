@@ -15,7 +15,7 @@ public class GlistCommand implements SimpleCommand {
 
     @Override
     public void execute(Invocation invocation) {
-        for (ServerGroupObject serverGroupObject : TimoCloudAPI.getBungeeAPI().getThisProxy().getGroup().getServerGroups()) {
+        for (ServerGroupObject serverGroupObject : TimoCloudAPI.getProxyAPI().getThisProxy().getGroup().getServerGroups()) {
             for (ServerObject serverObject : serverGroupObject.getServers()) {
                 invocation.source().sendMessage(
                         TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', "&a[" + serverObject.getName() + "] &e(" + serverObject.getOnlinePlayerCount() + "): &r" +
