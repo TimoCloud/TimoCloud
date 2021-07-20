@@ -295,7 +295,6 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + server.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " --add-opens java.base/java.lang=ALL-UNNAMED " +
                                 " -jar spigot.jar -p " + serverPort + " " + buildStartParameters(server.getSpigotParameters()) +
                                 "'"
                 ).start();
@@ -505,7 +504,6 @@ public class BaseInstanceManager {
                                 " -Dtimocloud-static=" + proxy.isStatic() +
                                 " -Dtimocloud-templatedirectory=" + templateDirectory.getAbsolutePath() +
                                 " -Dtimocloud-temporarydirectory=" + temporaryDirectory.getAbsolutePath() +
-                                " --add-opens java.base/java.lang=ALL-UNNAMED " +
                                 " -jar " + fileName +
                                 "'"
                 ).start();
