@@ -15,18 +15,26 @@ import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.common.json.JsonConverter;
 import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 // Next free error code: 16
 public class APIRequestManager implements MessageListener {
 
     @Override
     public void onPluginMessage(AddressedPluginMessage message) {
-        APIRequest request = APIRequestImplementation.fromMap(message.getMessage().getData());
-        APIResponse response = processRequest(request);
+        APIRequest<?> request = APIRequestImplementation.fromMap(message.getMessage().getData());
+        APIResponse<?> response = processRequest(request);
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(message.getSender(), response.toPluginMessage()));
     }
 
@@ -42,7 +50,7 @@ public class APIRequestManager implements MessageListener {
                             try {
                                 serverGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ServerGroupProperties.class);
                             } catch (Exception e) {
-                                throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Arrays.asList(data.get("value")));
+                                throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Collections.singletonList(data.get("value")));
                             }
                             String name = serverGroupProperties.getName();
                             validateNotNull(name, "Name");
@@ -71,7 +79,7 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(jrePath, "jrePath");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
-                                throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
+                                throw new APIRequestError("A group with this name already exists", 12, Collections.singletonList(name));
                             }
 
                             ServerGroup serverGroup = new ServerGroup(
@@ -97,7 +105,7 @@ public class APIRequestManager implements MessageListener {
                             try {
                                 proxyGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ProxyGroupProperties.class);
                             } catch (Exception e) {
-                                throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Arrays.asList(data.get("value")));
+                                throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Collections.singletonList(data.get("value")));
                             }
                             String name = proxyGroupProperties.getName();
                             validateNotNull(name, "Name");

@@ -6,7 +6,9 @@ import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DnsRecord {
@@ -23,8 +25,6 @@ public class DnsRecord {
     private int ttl;
     @Getter
     private DnsZone zone;
-
-    public DnsRecord() {}
 
     public JsonObject toJson() {
         return JsonObjectBuilder.create()
@@ -50,21 +50,5 @@ public class DnsRecord {
                         jsonObject.get("zone_name").getAsString()
                 )
         );
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DnsRecord dnsRecord = (DnsRecord) o;
-
-        return id != null ? id.equals(dnsRecord.id) : dnsRecord.id == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

@@ -1,17 +1,17 @@
 package cloud.timo.TimoCloud.bukkit.signs;
 
+import lombok.NoArgsConstructor;
 import org.bukkit.Material;
 
 import java.util.List;
 
+@NoArgsConstructor
 public class SignLayout {
 
     private List<String>[] lines;
     private long updateSpeed;
     private Material signBlockMaterial;
     private int signBlockData;
-
-    public SignLayout() {}
 
     public SignLayout(List<String>[] lines, long updateSpeed, Material signBlockMaterial, int signBlockData) {
         this.lines = lines;

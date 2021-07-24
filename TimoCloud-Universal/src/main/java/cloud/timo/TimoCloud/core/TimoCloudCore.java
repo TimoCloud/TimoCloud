@@ -13,15 +13,35 @@ import cloud.timo.TimoCloud.core.api.TimoCloudCoreAPIImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudInternalMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudMessageAPICoreImplementation;
 import cloud.timo.TimoCloud.core.api.TimoCloudUniversalAPICoreImplementation;
-import cloud.timo.TimoCloud.core.managers.*;
+import cloud.timo.TimoCloud.core.managers.APIRequestManager;
+import cloud.timo.TimoCloud.core.managers.CloudFlareManager;
+import cloud.timo.TimoCloud.core.managers.CommandManager;
+import cloud.timo.TimoCloud.core.managers.CoreEventManager;
+import cloud.timo.TimoCloud.core.managers.CoreFileManager;
+import cloud.timo.TimoCloud.core.managers.CoreInstanceManager;
+import cloud.timo.TimoCloud.core.managers.CorePublicKeyManager;
+import cloud.timo.TimoCloud.core.managers.PluginMessageManager;
+import cloud.timo.TimoCloud.core.managers.TemplateManager;
 import cloud.timo.TimoCloud.core.plugins.PluginManager;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServer;
 import cloud.timo.TimoCloud.core.sockets.CoreSocketServerHandler;
 import cloud.timo.TimoCloud.core.sockets.CoreStringHandler;
-import cloud.timo.TimoCloud.core.utils.completers.*;
+import cloud.timo.TimoCloud.core.utils.completers.BaseNameCompleter;
+import cloud.timo.TimoCloud.core.utils.completers.ProxyGroupNameCompleter;
+import cloud.timo.TimoCloud.core.utils.completers.ProxyNameCompleter;
+import cloud.timo.TimoCloud.core.utils.completers.ServerGroupNameCompleter;
+import cloud.timo.TimoCloud.core.utils.completers.ServerNameCompleter;
 import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 import org.jline.builtins.Completers;
-import org.jline.reader.*;
+import org.jline.reader.Completer;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.MaskingCallback;
+import org.jline.reader.Parser;
+import org.jline.reader.UserInterruptException;
 import org.jline.reader.impl.DefaultParser;
 import org.jline.reader.impl.completer.AggregateCompleter;
 import org.jline.terminal.Terminal;
@@ -34,34 +54,58 @@ import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class TimoCloudCore implements TimoCloudModule {
 
+    @Getter
     private static TimoCloudCore instance;
+    @Getter
     private boolean shuttingDown;
-    private OptionSet options;
+    @Getter
     private CoreFileManager fileManager;
-    private SimpleFormatter simpleFormatter = new SimpleFormatter();
+    @Getter
+    private final SimpleFormatter simpleFormatter = new SimpleFormatter();
+    @Getter
     private Logger logger;
+    @Getter
     private CoreSocketServer socketServer;
+    @Getter
     private CoreSocketServerHandler socketServerHandler;
+    @Getter
     private CoreStringHandler stringHandler;
+    @Getter
     private CoreInstanceManager instanceManager;
+    @Getter
+    @Setter
     private Channel channel;
+    @Getter
     private TemplateManager templateManager;
+    @Getter
     private CommandManager commandManager;
+    @Getter
     private CoreEventManager eventManager;
+    @Getter
     private CloudFlareManager cloudFlareManager;
+    @Getter
     private PluginManager pluginManager;
+    @Getter
     private PluginMessageManager pluginMessageManager;
+    @Getter
     private APIRequestManager apiRequestManager;
+    @Getter
     private CorePublicKeyManager corePublicKeyManager;
 
     private boolean running;
+    @Getter
     private boolean waitingForCommand = false;
+    @Getter
     private LineReader reader;
 
     private static final String ANSI_RESET = "\u001B[0m";
@@ -120,7 +164,6 @@ public class TimoCloudCore implements TimoCloudModule {
     public void load(OptionSet optionSet) throws Exception {
         running = true;
         shuttingDown = false;
-        this.options = optionSet;
         makeInstances();
         getInstanceManager().init();
         new Thread(this::initSocketServer).start();
@@ -266,91 +309,6 @@ public class TimoCloudCore implements TimoCloudModule {
             e.printStackTrace();
             System.exit(1);
         }
-    }
-
-
-    public static TimoCloudCore getInstance() {
-        return instance;
-    }
-
-    public boolean isWaitingForCommand() {
-        return waitingForCommand;
-    }
-
-    public boolean isShuttingDown() {
-        return shuttingDown;
-    }
-
-    public CoreFileManager getFileManager() {
-        return fileManager;
-    }
-
-    public SimpleFormatter getSimpleFormatter() {
-        return simpleFormatter;
-    }
-
-    public Logger getLogger() {
-        return logger;
-    }
-
-    public CoreInstanceManager getInstanceManager() {
-        return instanceManager;
-    }
-
-    public TemplateManager getTemplateManager() {
-        return templateManager;
-    }
-
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
-
-    public CoreEventManager getEventManager() {
-        return eventManager;
-    }
-
-    public CloudFlareManager getCloudFlareManager() {
-        return cloudFlareManager;
-    }
-
-    public PluginManager getPluginManager() {
-        return pluginManager;
-    }
-
-    public PluginMessageManager getPluginMessageManager() {
-        return pluginMessageManager;
-    }
-
-    public APIRequestManager getApiRequestManager() {
-        return apiRequestManager;
-    }
-
-    public CorePublicKeyManager getCorePublicKeyManager() {
-        return corePublicKeyManager;
-    }
-
-    public CoreSocketServer getSocketServer() {
-        return socketServer;
-    }
-
-    public CoreSocketServerHandler getSocketServerHandler() {
-        return socketServerHandler;
-    }
-
-    public CoreStringHandler getStringHandler() {
-        return stringHandler;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    public LineReader getReader() {
-        return reader;
     }
 
     @Override

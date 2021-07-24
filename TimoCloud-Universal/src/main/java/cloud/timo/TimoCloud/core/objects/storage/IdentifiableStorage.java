@@ -11,15 +11,9 @@ import java.util.Map;
 
 public class IdentifiableStorage <T extends Identifiable> {
 
-    private Map<String, Collection<T>> byName;
-    private Map<String, T> byId;
-    private Map<PublicKey, T> byPublicKey;
-
-    public IdentifiableStorage() {
-        byName = new HashMap<>();
-        byId = new HashMap<>();
-        byPublicKey = new HashMap<>();
-    }
+    private final Map<String, Collection<T>> byName = new HashMap<>();
+    private final Map<String, T> byId = new HashMap<>();
+    private final Map<PublicKey, T> byPublicKey = new HashMap<>();
 
     public T getById(String id) {
         if (id == null) return null;
@@ -65,7 +59,7 @@ public class IdentifiableStorage <T extends Identifiable> {
         }
     }
 
-    public void update(T identifiable) { // Called when keys like name or pulic key changed
+    public void update(T identifiable) { // Called when keys like name or public key changed
         remove(identifiable);
         add(identifiable);
     }

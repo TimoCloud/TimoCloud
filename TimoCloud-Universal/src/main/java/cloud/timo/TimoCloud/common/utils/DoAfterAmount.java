@@ -1,10 +1,13 @@
 package cloud.timo.TimoCloud.common.utils;
 
+import lombok.Setter;
+
 public class DoAfterAmount {
 
     private int current;
+    @Setter
     private int amount;
-    private Runnable runnable;
+    private final Runnable runnable;
 
     public DoAfterAmount(int amount, Runnable runnable) {
         current = 0;
@@ -15,9 +18,5 @@ public class DoAfterAmount {
     public void addOne() {
         current++;
         if (current == amount) runnable.run();
-    }
-
-    public void setAmount(int amount) {
-        this.amount = amount;
     }
 }

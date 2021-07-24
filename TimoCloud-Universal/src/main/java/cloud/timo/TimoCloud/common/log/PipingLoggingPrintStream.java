@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class PipingLoggingPrintStream extends LoggingPrintStream {
 
-    private OutputStream pipeStream;
+    private final OutputStream pipeStream;
 
     public PipingLoggingPrintStream(OutputStream pipeStream, Consumer<String> logger) {
         super(logger);
@@ -22,7 +22,7 @@ public class PipingLoggingPrintStream extends LoggingPrintStream {
     public void write(int b) {
         try {
             pipeStream.write(b);
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
         super.write(b);
     }
 

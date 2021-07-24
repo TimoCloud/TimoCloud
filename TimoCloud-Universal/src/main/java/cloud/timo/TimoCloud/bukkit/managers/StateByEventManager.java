@@ -4,12 +4,16 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class StateByEventManager {
 
     private String stateBefore;
-    private int setByPlayer = 0;
     private String lastStateSet;
 
     private void setState(String state) {
@@ -18,7 +22,7 @@ public class StateByEventManager {
 
     public void setStateByMotd(String motd) {
         Object state = TimoCloudBukkit.getInstance().getFileManager().getConfig().get("MotdToState." + motd.trim());
-        if (state != null && state instanceof String) {
+        if (state instanceof String) {
             setState((String) state);
         }
     }
@@ -46,13 +50,15 @@ public class StateByEventManager {
                 Double d = NumberFormat.getInstance(Locale.GERMAN).parse(step).doubleValue();
                 steps.add(d);
                 states.put(d, TimoCloudBukkit.getInstance().getFileManager().getConfig().getString("PlayersToState.percentages." + step));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
+
         Collections.sort(steps);
         for (double step : steps) {
             if (percentage >= step) state = states.get(step);
         }
+
         if (state == null) {
             setState(stateBefore);
         } else {

@@ -10,10 +10,10 @@ public class CorePipeline extends ChannelInitializer<Channel> {
 
     @Override
     protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("splitter", new PacketLengthSplitter());
-        ch.pipeline().addLast(TimoCloudCore.getInstance().getSocketServerHandler());
-        ch.pipeline().addLast("rsaHandshakeHandler", new CoreRSAHandshakeHandler());
-        ch.pipeline().addLast("prepender", new PacketLengthPrepender());
+        ch.pipeline().addLast("splitter", new PacketLengthSplitter())
+                .addLast(TimoCloudCore.getInstance().getSocketServerHandler())
+                .addLast("rsaHandshakeHandler", new CoreRSAHandshakeHandler())
+                .addLast("prepender", new PacketLengthPrepender());
     }
 
 }

@@ -25,6 +25,7 @@ import java.util.UUID;
 
 public class BungeeStringHandler extends BasicStringHandler {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         if (message == null) {

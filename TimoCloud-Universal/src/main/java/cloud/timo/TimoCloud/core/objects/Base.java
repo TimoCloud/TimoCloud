@@ -1,6 +1,17 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.base.*;
+import cloud.timo.TimoCloud.api.events.base.BaseAddressChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseAvailableRamChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseConnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseCpuLoadChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseDisconnectEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseKeepFreeRamChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseMaxCpuLoadChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseMaxRamChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseNameChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseNotReadyEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BasePublicAddressChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.base.BaseReadyEventBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
@@ -15,7 +26,11 @@ import io.netty.channel.Channel;
 
 import java.net.InetAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Base implements PublicKeyIdentifiable, Communicatable {
@@ -68,7 +83,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         this.proxies = new HashSet<>();
     }
 
-    public void construct(Map<String, Object> properties) throws Exception {
+    public void construct(Map<String, Object> properties) {
         try {
             String id = (String) properties.get("id");
             String name = (String) properties.get("name");
@@ -138,19 +153,17 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
-        switch (type) {
-            case BASE_RESOURCES:
-                Map map = (Map) data;
-                int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
-                int availableRam = Math.max(0, ((Number) map.get("freeRam")).intValue() - getKeepFreeRam());
-                setAvailableRam(Math.max(0, Math.min(availableRam, maxRam - usedRam)));
-                double cpuLoad = (Double) map.get("cpuLoad");
-                setCpuLoad(cpuLoad);
-                boolean ready = (boolean) map.get("ready") && cpuLoad <= getMaxCpuLoad();
-                setReady(ready);
-                break;
-            default:
-                sendMessage(message);
+        if (type == MessageType.BASE_RESOURCES) {
+            Map<?, ?> map = (Map<?, ?>) data;
+            int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
+            int availableRam = Math.max(0, ((Number) map.get("freeRam")).intValue() - getKeepFreeRam());
+            setAvailableRam(Math.max(0, Math.min(availableRam, maxRam - usedRam)));
+            double cpuLoad = (Double) map.get("cpuLoad");
+            setCpuLoad(cpuLoad);
+            boolean ready = (Boolean) map.get("ready") && cpuLoad <= getMaxCpuLoad();
+            setReady(ready);
+        } else {
+            sendMessage(message);
         }
     }
 

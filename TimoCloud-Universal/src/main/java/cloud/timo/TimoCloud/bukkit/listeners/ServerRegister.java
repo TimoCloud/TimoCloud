@@ -10,13 +10,17 @@ public class ServerRegister implements Listener {
 
     @EventHandler
     public void onServerRegister(ServerRegisterEvent event) {
-        if (!event.getServer().getId().equals(TimoCloudBukkit.getInstance().getServerId())) return;
-        TimoCloudBukkit.getInstance().setServerRegistered(true);
+        TimoCloudBukkit instance = TimoCloudBukkit.getInstance();
+
+        if (!event.getServer().getId().equals(instance.getServerId())) return;
+        instance.setServerRegistered(true);
     }
 
     @EventHandler
     public void onServerUnregister(ServerUnregisterEvent event) {
-        if (!event.getServer().getId().equals(TimoCloudBukkit.getInstance().getServerId())) return;
-        TimoCloudBukkit.getInstance().setServerRegistered(false);
+        TimoCloudBukkit instance = TimoCloudBukkit.getInstance();
+
+        if (!event.getServer().getId().equals(instance.getServerId())) return;
+        instance.setServerRegistered(false);
     }
 }

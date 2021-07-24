@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ServerGroupProperties {
 
-    private String id;
+    private final String id;
     private String name;
     private Integer onlineAmount;
     private Integer maxAmount;

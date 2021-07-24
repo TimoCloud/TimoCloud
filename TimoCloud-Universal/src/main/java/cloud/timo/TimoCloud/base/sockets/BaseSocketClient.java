@@ -8,6 +8,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 
 public class BaseSocketClient {
+
     public void init(String host, int port) throws Exception {
         EventLoopGroup group = NettyUtil.getEventLoopGroup();
         Bootstrap b = new Bootstrap();
@@ -15,11 +16,12 @@ public class BaseSocketClient {
                 .channel(NettyUtil.getSocketChannelClass())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new BasePipeline());
-        ChannelFuture f = null;
+
+        ChannelFuture f;
         try {
             f = b.connect(host, port).sync();
             f.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         } finally {
             group.shutdownGracefully();

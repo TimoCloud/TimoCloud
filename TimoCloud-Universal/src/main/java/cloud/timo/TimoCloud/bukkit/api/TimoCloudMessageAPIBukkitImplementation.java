@@ -7,8 +7,10 @@ import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 
 public class TimoCloudMessageAPIBukkitImplementation extends TimoCloudMessageAPIBasicImplementation implements TimoCloudMessageAPI {
+
     @Override
     public MessageClientAddress getOwnAddress() {
         return new MessageClientAddress(TimoCloudBukkit.getInstance().getServerId(), MessageClientAddressType.SERVER);
     }
+
 }

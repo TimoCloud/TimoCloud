@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class IpManager {
 
-    private Map<InetSocketAddress, InetSocketAddress> addresses;
+    private final Map<InetSocketAddress, InetSocketAddress> addresses;
 
     public IpManager() {
         addresses = new HashMap<>();

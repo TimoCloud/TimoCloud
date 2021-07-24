@@ -21,17 +21,20 @@ public class LobbyCommand extends Command {
             BungeeMessageManager.sendMessage(sender, "&cThis command is only for players!");
             return;
         }
+
         ProxiedPlayer player = (ProxiedPlayer) sender;
         final ServerObject serverObject = TimoCloudBungee.getInstance().getLobbyManager().searchFreeLobby(player.getUniqueId(), player.getServer().getInfo().getName());
         if (serverObject == null) {
             BungeeMessageManager.sendMessage(sender, TimoCloudBungee.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));
             return;
         }
+
         ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(serverObject.getName());
         if (serverInfo == null) {
             BungeeMessageManager.sendMessage(sender, TimoCloudBungee.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));
             return;
         }
+
         player.connect(serverInfo);
         if (TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("sendLobbyCommandMessage"))
             BungeeMessageManager.sendMessage(sender, TimoCloudBungee.getInstance().getFileManager().getMessages().getString("LobbyConnect")

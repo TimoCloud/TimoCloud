@@ -22,7 +22,7 @@ public class DebugCommandHandler implements CommandHandler {
             TimoCloudCore.getInstance().getFileManager().saveJson(jsonObject, new File(
                     TimoCloudCore.getInstance().getFileManager().getDebugDirectory(), DATE_FORMAT.format(new Date()) + ".json"));
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("An error occured while collecting debugging data: ");
+            TimoCloudCore.getInstance().severe("An error occurred while collecting debugging data: ");
             TimoCloudCore.getInstance().severe(e);
         }
     }

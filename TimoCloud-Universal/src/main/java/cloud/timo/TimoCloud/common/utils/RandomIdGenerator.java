@@ -1,17 +1,19 @@
 package cloud.timo.TimoCloud.common.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.security.SecureRandom;
 import java.util.Random;
 
+@UtilityClass
 public class RandomIdGenerator {
 
-    private static final String ID_CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ123456789";
+    private final String ID_CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPRSTUVWXYZ123456789";
 
+    private final int DEFAULT_ID_LENGTH = 6;
+    private final Random random = new SecureRandom();
 
-    private static final int DEFAULT_ID_LENGTH = 6;
-    private static final Random random = new SecureRandom();
-
-    public static String generateId(int length) {
+    public String generateId(int length) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i<length; i++) {
             stringBuilder.append(ID_CHARS.charAt(random.nextInt(ID_CHARS.length())));
@@ -19,7 +21,7 @@ public class RandomIdGenerator {
         return stringBuilder.toString();
     }
 
-    public static String generateId() {
+    public String generateId() {
         return generateId(DEFAULT_ID_LENGTH);
     }
 

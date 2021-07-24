@@ -1,31 +1,41 @@
 package cloud.timo.TimoCloud.common.debugger;
 
 import cloud.timo.TimoCloud.common.protocol.Message;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class DataCollector {
 
-    private static final Set<String> HIDDEN_KEYS = new HashSet<>(Arrays.asList("api-key"));
+    private final Set<String> HIDDEN_KEYS = new HashSet<>(Collections.singletonList("api-key"));
 
-    public static Message collectData(Object root) throws IllegalAccessException {
+    public Message collectData(Object root) {
         return collectData(root, new HashMap<>(), root.getClass().getName());
     }
 
-    public static Message collectData(Object root, Map<Object, String> used, String rootId) throws RuntimeException {
+    public Message collectData(Object root, Map<Object, String> used, String rootId) throws RuntimeException {
         Message json = Message.create();
         for (Field field : root.getClass().getDeclaredFields()) {
             field.setAccessible(true);
             if (Modifier.isStatic(field.getModifiers())) continue;
-            Object object = null;
+            Object object;
             try {
                 object = field.get(root);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+
             String id = object == null
                     ? "null"
                     : System.identityHashCode(object) + "";
@@ -33,6 +43,7 @@ public class DataCollector {
                 return Message.create()
                         .set("link", used.get(id));
             }
+
             used.put(id, id);
             Object data = null;
             String newId = rootId + "." + field.getName();
@@ -64,7 +75,7 @@ public class DataCollector {
         return json;
     }
 
-    private static String getPackageName(Class clazz) {
+    private String getPackageName(Class clazz) {
         if (clazz == null) return "null";
         if (clazz.isPrimitive() || clazz.getPackage() == null) {
             return clazz.getTypeName();

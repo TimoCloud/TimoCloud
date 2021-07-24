@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.cord.managers;
 
 import cloud.timo.TimoCloud.base.TimoCloudBase;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
+import lombok.Getter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -12,9 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CordFileManager {
+
+    @Getter
     private File baseDirectory;
+    @Getter
     private File configsDirectory;
+    @Getter
     private File configFile;
+    @Getter
     private Map<String, Object> config;
 
     public CordFileManager() {
@@ -31,11 +37,11 @@ public class CordFileManager {
             this.configFile = new File(getConfigsDirectory(), "config.yml");
             configFile.createNewFile();
             Yaml yaml = new Yaml();
-            this.config = (Map<String, Object>) yaml.load(new FileReader(configFile));
+            this.config = yaml.load(new FileReader(configFile));
             if (this.config == null) this.config = new HashMap<>();
-            Map<String, Object> defaults = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/cord/config.yml"));
+            Map<String, Object> defaults = yaml.load(this.getClass().getResourceAsStream("/cord/config.yml"));
             for (String key : defaults.keySet()) {
-                if (! config.containsKey(key)) config.put(key, defaults.get(key));
+                if (!config.containsKey(key)) config.put(key, defaults.get(key));
             }
             saveConfig();
         } catch (Exception e) {
@@ -50,25 +56,10 @@ public class CordFileManager {
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             new Yaml(dumperOptions).dump(config, writer);
         } catch (Exception e) {
-            TimoCloudBase.getInstance().severe("Error while saving config: ");
-            TimoCloudCord.getInstance().severe(e);
+            TimoCloudBase instance = TimoCloudBase.getInstance();
+            instance.severe("Error while saving config: ");
+            instance.severe(e);
         }
-    }
-
-    public File getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public File getConfigsDirectory() {
-        return configsDirectory;
-    }
-
-    public File getConfigFile() {
-        return configFile;
-    }
-
-    public Map getConfig() {
-        return config;
     }
 
 }

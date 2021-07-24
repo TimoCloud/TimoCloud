@@ -46,18 +46,12 @@ public class TimoCloudBase implements TimoCloudModule {
     public static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
     private static TimoCloudBase instance;
-    private OptionSet options;
-    private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
     private RSAKeyPairRetriever rsaKeyPairRetriever;
     private BaseInstanceManager instanceManager;
@@ -98,7 +92,6 @@ public class TimoCloudBase implements TimoCloudModule {
 
     @Override
     public void load(OptionSet optionSet) throws Exception {
-        this.options = optionSet;
         makeInstances();
         info(ANSI_GREEN + "Base has been loaded");
         scheduleConnecting();
@@ -134,7 +127,7 @@ public class TimoCloudBase implements TimoCloudModule {
         String prop = System.getProperty("serverStartDelay");
         try {
             delay = Long.parseLong(prop);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return delay;
     }
@@ -156,7 +149,7 @@ public class TimoCloudBase implements TimoCloudModule {
         new Thread(() -> {
             try {
                 getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }).start();
     }
@@ -219,14 +212,16 @@ public class TimoCloudBase implements TimoCloudModule {
     private String getPublicIpAddress() {
         try {
             return new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
+
         try {
             return InetAddressUtil.getLocalHost().getHostAddress();
         } catch (Exception e) {
             severe("Error while retrieving own IP address: ");
             severe(e);
         }
+
         return "127.0.0.1";
     }
 
@@ -295,6 +290,7 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public String getPrefix() {
+        String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
         return prefix + " ";
     }
 

@@ -1,9 +1,12 @@
 package cloud.timo.TimoCloud.core.commands.utils;
 
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
-import cloud.timo.TimoCloud.core.objects.*;
-
-import java.util.Objects;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Group;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
 import java.net.InetAddress;
 

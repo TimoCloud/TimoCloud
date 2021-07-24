@@ -15,7 +15,8 @@ public class BungeeSocketClient {
                 .channel(NettyUtil.getSocketChannelClass())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new BungeePipeline());
-        ChannelFuture f = null;
+
+        ChannelFuture f;
         try {
             f = b.connect(host, port).sync();
         } catch (Exception e) {
@@ -23,6 +24,7 @@ public class BungeeSocketClient {
             group.shutdownGracefully();
             return;
         }
+
         f.channel().closeFuture().addListener(future -> {
             TimoCloudBungee.getInstance().onSocketDisconnect();
             group.shutdownGracefully();

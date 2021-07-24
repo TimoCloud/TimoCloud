@@ -17,7 +17,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_DELETE;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_BASE;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_JAVA_START_PARAMETERS;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_MAX_AMOUNT;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_ONLINE_AMOUNT;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_PRIORITY;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_RAM;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_SORT_OUT_STATES;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_SPIGOT_START_PARAMETERS;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.SG_SET_STATIC;
 
 @NoArgsConstructor
 public class ServerGroupObjectBasicImplementation implements ServerGroupObject, LinkableObject<ServerGroupObject> {

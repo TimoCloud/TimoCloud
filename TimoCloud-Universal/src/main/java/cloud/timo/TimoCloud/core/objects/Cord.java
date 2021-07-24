@@ -16,8 +16,8 @@ import java.net.InetSocketAddress;
 
 public class Cord implements Communicatable, Identifiable {
 
-    private String id;
-    private String name;
+    private final String id;
+    private final String name;
     private InetAddress address;
     private int port;
     private Channel channel;
@@ -55,11 +55,7 @@ public class Cord implements Communicatable, Identifiable {
     public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
-        switch (type) {
-            default:
-                sendMessage(message);
-                break;
-        }
+        sendMessage(message);
     }
 
     @Override

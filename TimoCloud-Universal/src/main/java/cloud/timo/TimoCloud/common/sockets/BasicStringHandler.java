@@ -9,7 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public abstract class BasicStringHandler extends SimpleChannelInboundHandler<String> {
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String message) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, String message) {
         Channel channel = ctx.channel();
         try {
             handleMessage(Message.createFromJsonString(message), message, channel);

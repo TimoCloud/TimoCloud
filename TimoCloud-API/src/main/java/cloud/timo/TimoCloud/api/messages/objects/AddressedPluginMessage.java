@@ -8,9 +8,9 @@ import cloud.timo.TimoCloud.api.TimoCloudAPI;
  */
 public class AddressedPluginMessage {
 
-    private MessageClientAddress sender;
-    private MessageClientAddress recipient;
-    private PluginMessage message;
+    private final MessageClientAddress sender;
+    private final MessageClientAddress recipient;
+    private final PluginMessage message;
 
     public AddressedPluginMessage(MessageClientAddress recipient, PluginMessage message) {
         this(TimoCloudAPI.getMessageAPI().getOwnAddress(), recipient, message);

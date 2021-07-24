@@ -9,10 +9,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DnsZone {
+
     @Getter
-    private String id;
+    private final String id;
     @Getter
-    private String name;
+    private final String name;
 
     public JsonObject toJson() {
         return JsonObjectBuilder.create()

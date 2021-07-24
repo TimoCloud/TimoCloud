@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -15,14 +16,19 @@ import java.util.Arrays;
 
 public class BukkitFileManager {
 
+    @Getter
     private File baseDirectory;
-    private File signsPath;
 
+    @Getter
     private File configFile;
+    @Getter
     private File signTemplatesFile;
+    @Getter
     private File signInstancesFile;
 
+    @Getter
     private FileConfiguration config;
+    @Getter
     private FileConfiguration signTemplates;
 
     public BukkitFileManager() {
@@ -57,7 +63,7 @@ public class BukkitFileManager {
 
     public void loadSignConfigs() {
         try {
-            signsPath = new File(baseDirectory, "/signs/");
+            File signsPath = new File(baseDirectory, "/signs/");
             signsPath.mkdirs();
 
             signTemplatesFile = new File(signsPath, "signTemplates.yml");
@@ -136,30 +142,6 @@ public class BukkitFileManager {
         }
     }
 
-    public File getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public File getConfigFile() {
-        return configFile;
-    }
-
-    public File getSignTemplatesFile() {
-        return signTemplatesFile;
-    }
-
-    public File getSignInstancesFile() {
-        return signInstancesFile;
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
-    }
-
-    public FileConfiguration getSignTemplates() {
-        return signTemplates;
-    }
-
     public JsonArray getSignInstances() {
         try {
             String fileContent = FileUtils.readFileToString(signInstancesFile, StandardCharsets.UTF_8.name());
@@ -174,7 +156,7 @@ public class BukkitFileManager {
     public void saveSignInstances(JsonArray jsonArray) {
         try {
             FileWriter fileWriter = new FileWriter(signInstancesFile, false);
-            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
+            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); // Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe(e);

@@ -15,11 +15,12 @@ public class CordSocketClient {
                 .channel(NettyUtil.getSocketChannelClass())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new CordPipeline());
-        ChannelFuture f = null;
+
+        ChannelFuture f;
         try {
             f = b.connect(host, port).sync();
             f.channel().closeFuture().sync();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
 
         } finally {
             group.shutdownGracefully();

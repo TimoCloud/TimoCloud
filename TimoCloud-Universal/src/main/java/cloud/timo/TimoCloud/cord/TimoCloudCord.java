@@ -15,7 +15,12 @@ import cloud.timo.TimoCloud.cord.api.TimoCloudMessageAPICordImplementation;
 import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
 import cloud.timo.TimoCloud.cord.managers.CordFileManager;
 import cloud.timo.TimoCloud.cord.managers.ProxyManager;
-import cloud.timo.TimoCloud.cord.sockets.*;
+import cloud.timo.TimoCloud.cord.sockets.CordSocketClient;
+import cloud.timo.TimoCloud.cord.sockets.CordSocketClientHandler;
+import cloud.timo.TimoCloud.cord.sockets.CordSocketMessageManager;
+import cloud.timo.TimoCloud.cord.sockets.CordSocketServer;
+import cloud.timo.TimoCloud.cord.sockets.CordStringHandler;
+import cloud.timo.TimoCloud.cord.sockets.MinecraftDecoder;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -33,18 +38,12 @@ public class TimoCloudCord implements TimoCloudModule {
     private static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 
     private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_BLACK = "\u001B[30m";
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_CYAN = "\u001B[36m";
-    private static final String ANSI_WHITE = "\u001B[37m";
 
     private static TimoCloudCord instance;
-    private OptionSet options;
-    private String prefix = ANSI_YELLOW + "[" +ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private CordFileManager fileManager;
     private ProxyManager proxyManager;
     private CordSocketClient socketClient;
@@ -83,7 +82,6 @@ public class TimoCloudCord implements TimoCloudModule {
 
     @Override
     public void load(OptionSet optionSet) throws Exception {
-        this.options = optionSet;
         makeInstances();
         new Thread(this::initSocketServer).start();
         info(ANSI_GREEN + "TimoCloudCord has been loaded");
@@ -92,7 +90,6 @@ public class TimoCloudCord implements TimoCloudModule {
 
     @Override
     public void unload() {
-
     }
 
     private void makeInstances() throws Exception {
@@ -146,7 +143,7 @@ public class TimoCloudCord implements TimoCloudModule {
         new Thread(() -> {
             try {
                 getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }).start();
     }
@@ -225,7 +222,7 @@ public class TimoCloudCord implements TimoCloudModule {
     }
 
     public String getPrefix() {
-        return prefix + " ";
+        return ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET + " ";
     }
 
     public CordFileManager getFileManager() {
@@ -280,4 +277,5 @@ public class TimoCloudCord implements TimoCloudModule {
     public ModuleType getModuleType() {
         return ModuleType.CORD;
     }
+
 }

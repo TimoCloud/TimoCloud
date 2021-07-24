@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ProxyGroupProperties {
 
-    private String id;
+    private final String id;
     private String name;
     private Integer maxPlayerCountPerProxy;
     private Integer maxPlayerCount;

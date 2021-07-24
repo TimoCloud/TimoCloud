@@ -7,13 +7,13 @@ import java.util.Map;
 
 public class APIRequestFutureStorage {
 
-    private Map<String, APIRequestFuture> futures;
+    private Map<String, APIRequestFuture<?>> futures;
 
     public APIRequestFutureStorage() {
         this.futures = new HashMap<>();
     }
 
-    public void addFuture(String id, APIRequestFuture future) {
+    public void addFuture(String id, APIRequestFuture<?> future) {
         futures.put(id, future);
     }
 
@@ -22,15 +22,15 @@ public class APIRequestFutureStorage {
         futures.remove(futureId);
     }
 
-    public APIRequestFuture getFuture(String id) {
+    public APIRequestFuture<?> getFuture(String id) {
         return futures.get(id);
     }
 
     /**
      * Returns an APIRequestFuture and deletes it from the storage
      */
-    public APIRequestFuture pollFuture(String id) {
-        APIRequestFuture future = getFuture(id);
+    public APIRequestFuture<?> pollFuture(String id) {
+        APIRequestFuture<?> future = getFuture(id);
         removeFuture(id);
         return future;
     }

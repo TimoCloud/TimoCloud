@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ServerGroupNameCompleter implements Completer {
+
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
         list.addAll(TimoCloudCore.getInstance().getInstanceManager().getServerGroups().stream().map(ServerGroup::getName).map(Candidate::new).collect(Collectors.toList()));

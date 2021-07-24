@@ -16,6 +16,7 @@ public class FindCommand implements SimpleCommand {
             sendMessage(invocation, "Please specify the name of the player you want to find");
             return;
         }
+
         PlayerObject playerObject = TimoCloudAPI.getUniversalAPI().getPlayer(args[0]);
         if (playerObject == null) {
             sendMessage(invocation, "&cThe player '&e" + args[0] + "&c' is not online.");

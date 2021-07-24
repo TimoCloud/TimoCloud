@@ -3,7 +3,6 @@ package cloud.timo.TimoCloud.bungeecord.listeners;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -15,11 +14,13 @@ public class ServerKick implements Listener {
     public void onServerKickEvent(ServerKickEvent event) {
         if (!TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useFallback")) return;
         if (!event.getPlayer().isConnected()) return;
+
         final ServerObject freeLobby = TimoCloudBungee.getInstance().getLobbyManager().getFreeLobby(event.getPlayer().getUniqueId(), true);
         if (freeLobby == null) {
             TimoCloudBungee.getInstance().info("No fallback server found");
             return;
         }
+
         ServerInfo server = ProxyServer.getInstance().getServerInfo(freeLobby.getName());
         if (server == null) {
             TimoCloudBungee.getInstance().info("No fallback server found");
@@ -28,6 +29,7 @@ public class ServerKick implements Listener {
 
         if (server.getName().equals(event.getCancelServer().getName()))
             return;
+
         TimoCloudBungee.getInstance().info("Connecting to fallback server: " + server.getName());
         event.setCancelled(true);
         event.setCancelServer(server);

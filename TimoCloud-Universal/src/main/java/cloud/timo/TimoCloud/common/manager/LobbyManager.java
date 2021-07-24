@@ -7,12 +7,20 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class LobbyManager {
 
     private static final long INVALIDATE_CACHE_TIME = 2000;
+    private static final Random RANDOM = new Random();
 
     private final Map<UUID, List<String>> lobbyHistory;
     private final Map<UUID, Long> lastUpdate;
@@ -74,7 +82,7 @@ public class LobbyManager {
         ServerObject target = null;
         switch (getLobbyChooseStrategy()) {
             case RANDOM:
-                target = servers.get(new Random().nextInt(servers.size()));
+                target = servers.get(RANDOM.nextInt(servers.size()));
                 break;
             case FILL:
                 for (int i = servers.size() - 1; i >= 0; i--) {

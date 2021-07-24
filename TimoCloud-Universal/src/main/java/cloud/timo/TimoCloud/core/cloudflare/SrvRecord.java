@@ -5,10 +5,10 @@ import com.google.gson.JsonObject;
 
 public class SrvRecord extends DnsRecord {
 
-    private int priority;
-    private int weight;
-    private int port;
-    private String target;
+    private final int priority;
+    private final int weight;
+    private final int port;
+    private final String target;
 
     public SrvRecord(String id, String type, String name, String content, int ttl, DnsZone zone, int priority, int weight, int port, String target) {
         super(id, type, name, content, ttl, zone);

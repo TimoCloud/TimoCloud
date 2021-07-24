@@ -15,7 +15,7 @@ public class PlayerInteract implements Listener {
         if (!event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) return;
         Block block = event.getClickedBlock();
 
-        if (block.getType().name().contains("SIGN")) {
+        if (block != null && block.getType().name().contains("SIGN")) {
             TimoCloudBukkit.getInstance().getSignManager().onSignClick(event.getPlayer(), block.getLocation());
         }
     }

@@ -4,6 +4,6 @@ import java.security.PublicKey;
 
 public interface PublicKeyIdentifiable extends Identifiable {
 
-    public PublicKey getPublicKey();
+    PublicKey getPublicKey();
 
 }

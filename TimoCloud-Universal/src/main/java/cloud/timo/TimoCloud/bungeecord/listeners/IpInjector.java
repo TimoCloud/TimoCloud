@@ -29,17 +29,20 @@ public class IpInjector implements Listener {
     }
 
     private void injectConnection(Connection connection) {
-        if (TimoCloudBungee.getInstance().getIpManager().getAddressByChannel(connection.getAddress()) == null) return;
+        TimoCloudBungee instance = TimoCloudBungee.getInstance();
+
+        if (instance.getIpManager().getAddressByChannel(connection.getAddress()) == null) return;
+
         try {
             Field wrapperField = connection.getClass().getDeclaredField("ch");
             wrapperField.setAccessible(true);
             Object wrapper = wrapperField.get(connection);
             Field addressField = wrapper.getClass().getDeclaredField("remoteAddress");
             addressField.setAccessible(true);
-            addressField.set(wrapper, TimoCloudBungee.getInstance().getIpManager().getAddressByChannel(connection.getAddress()));
+            addressField.set(wrapper, instance.getIpManager().getAddressByChannel(connection.getAddress()));
         } catch (Exception e) {
-            TimoCloudBungee.getInstance().severe("Error while injecting ip address: ");
-            TimoCloudBungee.getInstance().severe(e);
+            instance.severe("Error while injecting ip address: ");
+            instance.severe(e);
         }
     }
 

@@ -15,9 +15,9 @@ public class LogEntryReader implements Consumer<String> {
     private static final Pattern LOG_LEVEL_SEARCH_PATTERN = Pattern.compile("\\[(.*?)]");
     private static final Pattern PREFIX_SEARCH_PATTERN = Pattern.compile("(^.*?\\[.*?] ?(\\[.*?])?:? ?)");
 
-    private static Map<String, LogLevel> determinedLogLevels = new HashMap<>();
+    private static final Map<String, LogLevel> determinedLogLevels = new HashMap<>();
 
-    private Consumer<LogEntry> logEntryConsumer;
+    private final Consumer<LogEntry> logEntryConsumer;
     private LogLevel defaultLogLevel;
 
     public LogEntryReader(Consumer<LogEntry> logEntryConsumer) {

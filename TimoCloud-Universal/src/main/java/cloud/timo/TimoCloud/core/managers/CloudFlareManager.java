@@ -5,7 +5,6 @@ import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.base.BaseConnectEvent;
 import cloud.timo.TimoCloud.api.events.base.BaseDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
-import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.common.objects.HttpRequestProperty;
 import cloud.timo.TimoCloud.common.utils.ArrayUtil;
@@ -33,7 +32,7 @@ import java.util.stream.StreamSupport;
 public class CloudFlareManager implements Listener {
 
     private static final String CLOUDFLARE_API_URL = "https://api.cloudflare.com/client/v4/";
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
     private Set<DnsRecord> createdRecords;
 
     public CloudFlareManager() {

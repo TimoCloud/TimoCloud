@@ -1,22 +1,25 @@
 package cloud.timo.TimoCloud.base.objects;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class BaseProxyObject {
 
-    private String name;
-    private String id;
-    private String group;
-    private int ram;
-    private boolean isStatic;
-    private String motd;
-    private int maxPlayers;
-    private int maxPlayersPerProxy;
-    private Map<String, Object> templateHash;
-    private Map<String, Object> globalHash;
-    private List<String> javaParameters;
-    private String jrePath;
+    private final String name;
+    private final String id;
+    private final String group;
+    private final int ram;
+    private final boolean isStatic;
+    private final String motd;
+    private final int maxPlayers;
+    private final int maxPlayersPerProxy;
+    private final Map<String, Object> templateHash;
+    private final Map<String, Object> globalHash;
+    private final List<String> javaParameters;
+    private final String jrePath;
 
     public BaseProxyObject(String name, String id, int ram, boolean isStatic, String group, String motd, int maxPlayers, int maxPlayersPerProxy, Map<String, Object> templateHash, Map<String, Object> globalHash, List<String> javaParameters, String jrePath) {
         this.name = name;
@@ -31,53 +34,5 @@ public class BaseProxyObject {
         this.globalHash = globalHash;
         this.javaParameters = javaParameters;
         this.jrePath = jrePath;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public int getRam() {
-        return ram;
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public String getMotd() {
-        return motd;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public int getMaxPlayersPerProxy() {
-        return maxPlayersPerProxy;
-    }
-
-    public Map<String, Object> getTemplateHash() {
-        return templateHash;
-    }
-
-    public Map<String, Object> getGlobalHash() {
-        return globalHash;
-    }
-
-    public List<String> getJavaParameters() {
-        return javaParameters;
-    }
-
-    public String getJrePath() {
-        return jrePath;
     }
 }

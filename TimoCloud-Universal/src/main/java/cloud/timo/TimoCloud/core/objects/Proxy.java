@@ -25,26 +25,29 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
 
-    private String name;
-    private String id;
-    private ProxyGroup group;
+    private final String name;
+    private final String id;
+    private final ProxyGroup group;
     private int port;
     private InetSocketAddress address;
-    private Base base;
+    private final Base base;
     private int onlinePlayerCount;
     private final Set<PlayerObject> onlinePlayers;
     private Channel channel;
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private Collection<DnsRecord> dnsRecords;
-    private Set<Server> registeredServers;
-    private LogStorage logStorage;
+    private final Collection<DnsRecord> dnsRecords;
+    private final Set<Server> registeredServers;
+    private final LogStorage logStorage;
     private PublicKey publicKey;
 
     private DoAfterAmount templateUpdate;
@@ -138,13 +141,15 @@ public class Proxy implements Instance, Communicatable {
                 .set("name", server.getName())
                 .set("address", server.getAddress().getAddress().getHostAddress())
                 .set("port", server.getPort()));
-        if (!registeredServers.contains(server)) registeredServers.add(server);
+
+        registeredServers.add(server);
     }
 
     public void unregisterServer(Server server) {
         sendMessage(Message.create()
                 .setType(MessageType.PROXY_REMOVE_SERVER)
                 .set("name", server.getName()));
+
         registeredServers.remove(server);
     }
 

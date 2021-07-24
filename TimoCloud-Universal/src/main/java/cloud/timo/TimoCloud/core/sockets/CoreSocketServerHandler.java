@@ -12,7 +12,7 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
 
-    private Map<Channel, Communicatable> communicatables;
+    private final Map<Channel, Communicatable> communicatables;
 
     public CoreSocketServerHandler() {
         communicatables = new HashMap<>();
@@ -42,7 +42,7 @@ public class CoreSocketServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     public void removeChannel(Channel channel) {
-        if (communicatables.containsKey(channel)) communicatables.remove(channel);
+        communicatables.remove(channel);
     }
 
     public Communicatable getCommunicatable(Channel channel) {

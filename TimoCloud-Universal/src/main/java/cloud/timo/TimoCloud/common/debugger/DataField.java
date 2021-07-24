@@ -6,12 +6,13 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public class DataField {
+
     @Getter
-    private String id;
+    private final String id;
     @Getter
-    private Class fieldClass;
+    private final Class<?> fieldClass;
     @Getter
-    private Object fieldData;
+    private final Object fieldData;
 
     public Message toJson() {
         return Message.create()
@@ -20,7 +21,7 @@ public class DataField {
                 .set("data", getFieldData());
     }
 
-    private static String getClassName(Class clazz) {
+    private static String getClassName(Class<?> clazz) {
         if (clazz == null) return "null";
         if (clazz == char[].class) return getClassName(String.class);
         return clazz.getName();

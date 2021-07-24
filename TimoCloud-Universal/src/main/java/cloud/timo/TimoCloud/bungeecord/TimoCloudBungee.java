@@ -8,12 +8,18 @@ import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplem
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
-import cloud.timo.TimoCloud.bungeecord.api.*;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudInternalMessageAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudMessageAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
-import cloud.timo.TimoCloud.bungeecord.listeners.*;
+import cloud.timo.TimoCloud.bungeecord.listeners.EventMonitor;
+import cloud.timo.TimoCloud.bungeecord.listeners.IpInjector;
+import cloud.timo.TimoCloud.bungeecord.listeners.LobbyJoin;
+import cloud.timo.TimoCloud.bungeecord.listeners.ProxyPing;
+import cloud.timo.TimoCloud.bungeecord.listeners.ServerKick;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
 import cloud.timo.TimoCloud.bungeecord.managers.IpManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
@@ -33,6 +39,8 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -45,16 +53,30 @@ import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
+    @Getter
     private static TimoCloudBungee instance;
+
+    @Getter
     private BungeeFileManager fileManager;
+    @Getter
     private LobbyManager lobbyManager;
+    @Getter
     private IpManager ipManager;
+    @Getter
     private BungeeSocketClient socketClient;
+    @Getter
     private BungeeSocketClientHandler socketClientHandler;
+    @Getter
     private BungeeSocketMessageManager socketMessageManager;
+    @Getter
     private BungeeStringHandler bungeeStringHandler;
+    @Getter
     private TimoCloudCommand timoCloudCommand;
+    @Getter
+    @Setter
     private String prefix;
+    @Getter
+    @Setter
     private boolean shuttingDown = false;
 
     @Override
@@ -226,58 +248,5 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     public String getProxyId() {
         return System.getProperty("timocloud-proxyid");
     }
-
-    public static TimoCloudBungee getInstance() {
-        return instance;
-    }
-
-    public BungeeFileManager getFileManager() {
-        return fileManager;
-    }
-
-    public LobbyManager getLobbyManager() {
-        return lobbyManager;
-    }
-
-    public IpManager getIpManager() {
-        return ipManager;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public BungeeSocketClient getSocketClient() {
-        return socketClient;
-    }
-
-    public BungeeSocketClientHandler getSocketClientHandler() {
-        return socketClientHandler;
-    }
-
-    public BungeeSocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
-    }
-
-    public BungeeStringHandler getBungeeStringHandler() {
-        return bungeeStringHandler;
-    }
-
-    public TimoCloudCommand getTimoCloudCommand() {
-        return timoCloudCommand;
-    }
-
-    public boolean isShuttingDown() {
-        return shuttingDown;
-    }
-
-    public void setShuttingDown(boolean shuttingDown) {
-        this.shuttingDown = shuttingDown;
-    }
-
 
 }

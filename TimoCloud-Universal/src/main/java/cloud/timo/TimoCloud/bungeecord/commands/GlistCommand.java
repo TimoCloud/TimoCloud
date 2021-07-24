@@ -20,7 +20,7 @@ public class GlistCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] strings) {
-        for (ServerGroupObject serverGroupObject : TimoCloudAPI.getBungeeAPI().getThisProxy().getGroup().getServerGroups()) {
+        for (ServerGroupObject serverGroupObject : TimoCloudAPI.getProxyAPI().getThisProxy().getGroup().getServerGroups()) {
             for (ServerObject serverObject : serverGroupObject.getServers()) {
                 sender.sendMessage(
                         new TextComponent(ChatColor.translateAlternateColorCodes('&', "&a[" + serverObject.getName() + "] &e(" + serverObject.getOnlinePlayerCount() + "): &r" +
@@ -28,6 +28,7 @@ public class GlistCommand extends Command {
                 );
             }
         }
+
         sender.sendMessage(new TextComponent(ChatColor.RESET + "Total players online: " + TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().mapToInt(ProxyGroupObject::getOnlinePlayerCount).sum()));
     }
 }

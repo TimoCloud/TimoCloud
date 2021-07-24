@@ -2,15 +2,17 @@ package cloud.timo.TimoCloud.api.plugins;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class TimoCloudPluginDescription {
-    private String name;
-    private String author;
-    private String version;
-    private String mainClass;
-    private List<String> depends;
-    private List<String> softDepends;
-    private File file;
+
+    private final String name;
+    private final String author;
+    private final String version;
+    private final String mainClass;
+    private final List<String> depends;
+    private final List<String> softDepends;
+    private final File file;
 
     // Store main class of the plugin
     private TimoCloudPlugin plugin;
@@ -68,13 +70,13 @@ public class TimoCloudPluginDescription {
 
         TimoCloudPluginDescription that = (TimoCloudPluginDescription) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (author != null ? !author.equals(that.author) : that.author != null) return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
-        if (mainClass != null ? !mainClass.equals(that.mainClass) : that.mainClass != null) return false;
-        if (depends != null ? !depends.equals(that.depends) : that.depends != null) return false;
-        if (softDepends != null ? !softDepends.equals(that.softDepends) : that.softDepends != null) return false;
-        return file != null ? file.equals(that.file) : that.file == null;
+        if (!Objects.equals(name, that.name)) return false;
+        if (!Objects.equals(author, that.author)) return false;
+        if (!Objects.equals(version, that.version)) return false;
+        if (!Objects.equals(mainClass, that.mainClass)) return false;
+        if (!Objects.equals(depends, that.depends)) return false;
+        if (!Objects.equals(softDepends, that.softDepends)) return false;
+        return Objects.equals(file, that.file);
     }
 
     @Override

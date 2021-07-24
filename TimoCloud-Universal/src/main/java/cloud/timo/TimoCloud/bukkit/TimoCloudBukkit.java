@@ -12,7 +12,12 @@ import cloud.timo.TimoCloud.bukkit.api.TimoCloudMessageAPIBukkitImplementation;
 import cloud.timo.TimoCloud.bukkit.api.TimoCloudUniversalAPIBukkitImplementation;
 import cloud.timo.TimoCloud.bukkit.commands.SignsCommand;
 import cloud.timo.TimoCloud.bukkit.commands.TimoCloudBukkitCommand;
-import cloud.timo.TimoCloud.bukkit.listeners.*;
+import cloud.timo.TimoCloud.bukkit.listeners.BlockEvents;
+import cloud.timo.TimoCloud.bukkit.listeners.PlayerInteract;
+import cloud.timo.TimoCloud.bukkit.listeners.PlayerJoin;
+import cloud.timo.TimoCloud.bukkit.listeners.PlayerQuit;
+import cloud.timo.TimoCloud.bukkit.listeners.ServerRegister;
+import cloud.timo.TimoCloud.bukkit.listeners.SignChange;
 import cloud.timo.TimoCloud.bukkit.managers.BukkitFileManager;
 import cloud.timo.TimoCloud.bukkit.managers.SignManager;
 import cloud.timo.TimoCloud.bukkit.managers.StateByEventManager;
@@ -40,11 +45,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jline.utils.Log;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +66,10 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private boolean enabled = false;
     private boolean disabling = false;
     private boolean serverRegistered = false;
+
+    public static TimoCloudBukkit getInstance() {
+        return instance;
+    }
 
     @Override
     public void info(String message) {
@@ -230,11 +238,14 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void registerListeners() {
-        Bukkit.getPluginManager().registerEvents(new SignChange(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerInteract(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
-        Bukkit.getPluginManager().registerEvents(new BlockEvents(), this);
+        PluginManager pm = getServer().getPluginManager();
+
+        pm.registerEvents(new SignChange(), this);
+        pm.registerEvents(new PlayerInteract(), this);
+        pm.registerEvents(new PlayerJoin(), this);
+        pm.registerEvents(new PlayerQuit(), this);
+        pm.registerEvents(new BlockEvents(), this);
+
         TimoCloudAPI.getEventAPI().registerListener(new ServerRegister());
     }
 
@@ -251,6 +262,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
             severe("Error while sending player &e" + player + " &c to server &e" + server + "&c. Please report this: ");
             TimoCloudBukkit.getInstance().severe(e);
         }
+
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 
@@ -285,7 +297,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().runTask(this, () -> registerAtCore());
+        Bukkit.getScheduler().runTask(this, this::registerAtCore);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
@@ -340,11 +352,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
      */
     public void sendPlayers() {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
-    }
-
-
-    public static TimoCloudBukkit getInstance() {
-        return instance;
     }
 
     public String getPrefix() {

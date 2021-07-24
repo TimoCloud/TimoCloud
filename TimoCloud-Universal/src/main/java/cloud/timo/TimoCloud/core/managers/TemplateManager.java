@@ -17,7 +17,7 @@ public class TemplateManager {
         output.flush();
     }
 
-    private static void addFile(File file, File base, ZipOutputStream zos) throws IOException {
+    private static void addFile(File file, File base, ZipOutputStream zos) {
         if (file.isDirectory() && file.listFiles().length > 0) {
             for (File file1 : file.listFiles()) addFile(file1, base, zos);
             return;
@@ -35,7 +35,6 @@ public class TemplateManager {
             zos.closeEntry();
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
     }
 }

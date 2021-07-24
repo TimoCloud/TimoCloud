@@ -25,7 +25,7 @@ public class Message extends LinkedHashMap<String, Object> {
         return new Message();
     }
 
-    public static Message create(Map map) {
+    public static Message create(Map<String, Object> map) {
         return new Message(map);
     }
 

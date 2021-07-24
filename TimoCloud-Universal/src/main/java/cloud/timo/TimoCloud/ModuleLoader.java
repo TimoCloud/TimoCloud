@@ -26,7 +26,7 @@ public class ModuleLoader {
             "   \033[48;5;117m|_|\u001B[0m \033[48;5;117m|_|_|\u001B[0m \033[48;5;117m|_|\u001B[0m \033[48;5;117m|_|\\___/\u001B[0m \033[48;5;188m\\____|_|\033[48;5;188m\\___/ \033[48;5;188m\\__,_|\\__,_|\u001B[0m\n" +
             "                                                    ";
 
-    private static final String modulePropertyName="timocloud-module";
+    private static final String modulePropertyName = "timocloud-module";
 
     private static TimoCloudModule module;
     private static boolean moduleInParam = false;
@@ -87,10 +87,10 @@ public class ModuleLoader {
             info("    [" + i + "] " + ModuleType.values()[i-1]);
         }
         info("Please enter the number or the name of the module you want to load.");
-        ModuleType moduleType = null;
+        ModuleType moduleType;
         Scanner scanner = new Scanner(System.in);
         requestInput();
-        String read = null;
+        String read;
         while (true) {
             read = scanner.nextLine().trim();
             if (read.isEmpty()) {
@@ -122,7 +122,7 @@ public class ModuleLoader {
     private static ModuleType parseTypeFromInput(String input) {
         try {
             return ModuleType.values()[Integer.parseInt(input)-1];
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
         try {
             return ModuleType.valueOf(input.toUpperCase());
         } catch (Exception e) {

@@ -4,7 +4,22 @@ import cloud.timo.TimoCloud.api.core.commands.CommandHandler;
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
 import cloud.timo.TimoCloud.common.utils.ChatColorUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.commands.*;
+import cloud.timo.TimoCloud.core.commands.AddBaseCommandHandler;
+import cloud.timo.TimoCloud.core.commands.BaseInfoCommandHandler;
+import cloud.timo.TimoCloud.core.commands.CreateGroupCommandHandler;
+import cloud.timo.TimoCloud.core.commands.DebugCommandHandler;
+import cloud.timo.TimoCloud.core.commands.DeleteGroupCommand;
+import cloud.timo.TimoCloud.core.commands.EditGroupCommandHandler;
+import cloud.timo.TimoCloud.core.commands.GroupInfoCommandHandler;
+import cloud.timo.TimoCloud.core.commands.HelpCommandHandler;
+import cloud.timo.TimoCloud.core.commands.ListBasesCommand;
+import cloud.timo.TimoCloud.core.commands.ListGroupsCommandHandler;
+import cloud.timo.TimoCloud.core.commands.ReloadCommandHandler;
+import cloud.timo.TimoCloud.core.commands.ReloadPluginsCommandHandler;
+import cloud.timo.TimoCloud.core.commands.RestartCommandHandler;
+import cloud.timo.TimoCloud.core.commands.SendCommandCommandHandler;
+import cloud.timo.TimoCloud.core.commands.ShutdownCommandHandler;
+import cloud.timo.TimoCloud.core.commands.VersionCommandHandler;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,7 +27,7 @@ import java.util.Map;
 
 public class CommandManager {
 
-    private Map<String, CommandHandler> commandHandlers;
+    private final Map<String, CommandHandler> commandHandlers;
 
     public CommandManager() {
         commandHandlers = new HashMap<>();

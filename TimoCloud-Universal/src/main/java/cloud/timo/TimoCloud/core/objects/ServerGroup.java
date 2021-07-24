@@ -1,6 +1,13 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.serverGroup.*;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupBaseChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupJavaParametersChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupMaxAmountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupOnlineAmountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupPriorityChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupRamChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupSpigotParametersChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupStaticChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.ServerGroupObjectLink;
 import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
@@ -8,7 +15,14 @@ import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerGroupObjectCoreImplementation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ServerGroup implements Group {
@@ -27,7 +41,7 @@ public class ServerGroup implements Group {
     private List<String> spigotParameters;
     private String jrePath;
 
-    private Map<String, Server> servers = new HashMap<>();
+    private final Map<String, Server> servers = new HashMap<>();
 
     public ServerGroup(ServerGroupProperties properties) {
         construct(properties);
@@ -41,6 +55,7 @@ public class ServerGroup implements Group {
         construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters, jdkPath);
     }
 
+    @SuppressWarnings("unchecked")
     public void construct(Map<String, Object> properties) {
         try {
             String name = (String) properties.get("name");

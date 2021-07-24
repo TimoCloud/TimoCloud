@@ -8,12 +8,23 @@ import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.net.InetSocketAddress;
 
-import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.CONNECTION_STATE;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.DOWNSTREAM_HANDLER;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.UPSTREAM_HANDLER;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.readString;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.readVarInt;
 
 
 @ChannelHandler.Sharable

@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.common.datatypes;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TypeMap extends HashMap {
+public class TypeMap extends HashMap<Object, Object> {
 
     public TypeMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);

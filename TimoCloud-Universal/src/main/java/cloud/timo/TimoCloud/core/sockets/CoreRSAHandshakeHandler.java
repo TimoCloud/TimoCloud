@@ -34,7 +34,7 @@ public class CoreRSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) {
         Channel channel = ctx.channel();
         try {
             if (TimoCloudCore.getInstance().getSocketServerHandler().getCommunicatable(channel) != null) return;

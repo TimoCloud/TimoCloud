@@ -4,10 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class PacketLengthPrepender extends MessageToByteEncoder {
+public class PacketLengthPrepender extends MessageToByteEncoder<Object> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, Object in, ByteBuf out) {
         if (in instanceof byte[]) {
             byte[] bytes = (byte[]) in;
             out.writeInt(bytes.length);

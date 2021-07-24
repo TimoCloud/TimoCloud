@@ -3,7 +3,11 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
-import cloud.timo.TimoCloud.api.internal.links.*;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.PlayerObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyGroupObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -25,7 +29,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_EXECUTE_COMMAND;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_GET_LOG_FRACTION;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_STOP;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 @NoArgsConstructor

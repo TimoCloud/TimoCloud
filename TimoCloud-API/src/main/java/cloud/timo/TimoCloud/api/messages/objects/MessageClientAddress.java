@@ -13,8 +13,8 @@ public class MessageClientAddress {
 
     public static final MessageClientAddress CORE = new MessageClientAddress("CORE", MessageClientAddressType.CORE);
 
-    private MessageClientAddressType type;
-    private String name;
+    private final MessageClientAddressType type;
+    private final String name;
 
     public MessageClientAddress(String name, MessageClientAddressType type) {
         this.type = type;

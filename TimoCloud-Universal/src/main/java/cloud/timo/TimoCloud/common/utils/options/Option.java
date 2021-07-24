@@ -1,36 +1,26 @@
 package cloud.timo.TimoCloud.common.utils.options;
 
-public class Option {
-    private String[] names;
-    private boolean set;
-    private String value;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-    public Option(String[] names) {
-        this.names = names;
-    }
+@RequiredArgsConstructor
+public class Option {
+
+    @Getter
+    private final String[] names;
+    @Getter
+    @Setter
+    private boolean set;
+    @Getter
+    private String value;
 
     public Option(OptionTemplate template) {
         this(template.getNames());
     }
 
-    public String[] getNames() {
-        return names;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
     public void setValue(String value) {
         if (value != null) this.set = true;
         this.value = value;
-    }
-
-    public boolean isSet() {
-        return set;
-    }
-
-    public void setSet(boolean set) {
-        this.set = set;
     }
 }

@@ -66,12 +66,11 @@ public class PacketUtil {
         int out = 0;
         int bytes = 0;
         byte in;
-        while (true) {
+        do {
             in = input.readByte();
             out |= (in & 0x7F) << (bytes++ * 7);
             if (bytes > maxBytes) throw new RuntimeException("VarInt too big");
-            if ((in & 0x80) != 0x80) break;
-        }
+        } while ((in & 0x80) == 0x80);
         return out;
     }
 
@@ -84,15 +83,14 @@ public class PacketUtil {
 
     public static void writeVarInt(int value, ByteBuf output) {
         int part;
-        while (true) {
+        do {
             part = value & 0x7F;
             value >>>= 7;
             if (value != 0) {
                 part |= 0x80;
             }
             output.writeByte(part);
-            if (value == 0) break;
-        }
+        } while (value != 0);
     }
 
     public static void writeString(String s, ByteBuf buf) {
