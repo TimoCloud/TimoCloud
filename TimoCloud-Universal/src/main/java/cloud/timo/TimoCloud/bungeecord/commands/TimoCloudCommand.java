@@ -1,11 +1,7 @@
 package cloud.timo.TimoCloud.bungeecord.commands;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.objects.BaseObject;
-import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
-import cloud.timo.TimoCloud.api.objects.ServerObject;
-import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
-import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.*;
 import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeMessageManager;
 import cloud.timo.TimoCloud.common.protocol.Message;
@@ -17,11 +13,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimoCloudCommand extends Command implements TabExecutor {
@@ -118,6 +110,7 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     addCompletionToList(tabCompletions, "reload", strings[0]);
                     addCompletionToList(tabCompletions, "reloadplugins", strings[0]);
                     addCompletionToList(tabCompletions, "addbase", strings[0]);
+                    addCompletionToList(tabCompletions, "editbase", strings[0]);
                     addCompletionToList(tabCompletions, "addgroup", strings[0]);
                     addCompletionToList(tabCompletions, "removegroup", strings[0]);
                     addCompletionToList(tabCompletions, "editgroup", strings[0]);
@@ -132,6 +125,10 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                     break;
                 case 2:
                     switch (strings[0].toLowerCase()) {
+                        case "editbase":
+                        case "baseinfo":
+                            addBaseCompletions(tabCompletions, strings[1]);
+                            break;
                         case "addgroup":
                             addCompletionToList(tabCompletions, "server", strings[1]);
                             addCompletionToList(tabCompletions, "proxy", strings[1]);
@@ -139,50 +136,57 @@ public class TimoCloudCommand extends Command implements TabExecutor {
                         case "removegroup":
                         case "editgroup":
                         case "groupinfo":
-                            addServerGroupCompletions(strings[1], tabCompletions);
-                            addProxyGroupCompletions(strings[1], tabCompletions);
+                            addServerGroupCompletions(tabCompletions, strings[1]);
+                            addProxyGroupCompletions(tabCompletions, strings[1]);
                             break;
                         case "restart":
-                            addServerGroupCompletions(strings[1], tabCompletions);
-                            addServerCompletions(strings[1], tabCompletions);
-                            addProxyGroupCompletions(strings[1], tabCompletions);
-                            addProxyCompletions(strings[1], tabCompletions);
-                            addBaseCompletions(strings[1], tabCompletions);
-                            break;
-                        case "baseinfo":
-                            addBaseCompletions(strings[1], tabCompletions);
+                            addServerGroupCompletions(tabCompletions, strings[1]);
+                            addServerCompletions(tabCompletions, strings[1]);
+                            addProxyGroupCompletions(tabCompletions, strings[1]);
+                            addProxyCompletions(tabCompletions, strings[1]);
+                            addBaseCompletions(tabCompletions, strings[1]);
                             break;
                         case "sendcommand":
-                            addServerCompletions(strings[1], tabCompletions);
-                            addProxyCompletions(strings[1], tabCompletions);
+                            addServerCompletions(tabCompletions, strings[1]);
+                            addProxyCompletions(tabCompletions, strings[1]);
                             break;
                         default:
                             break;
                     }
                     break;
                 case 3:
-                    if (strings[0].equalsIgnoreCase("editgroup")) {
-                        ProxyGroupObject proxyGroupObject = TimoCloudAPI.getUniversalAPI().getProxyGroup(strings[1]);
-                        ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(strings[1]);
+                    switch (strings[0].toLowerCase()) {
+                        case "editbase":
+                            addCompletionToList(tabCompletions, "name", strings[2]);
+                            addCompletionToList(tabCompletions, "maxram", strings[2]);
+                            addCompletionToList(tabCompletions, "keepfreeram", strings[2]);
+                            addCompletionToList(tabCompletions, "maxcpuload", strings[2]);
+                            break;
+                        case "editgroup":
+                            ProxyGroupObject proxyGroupObject = TimoCloudAPI.getUniversalAPI().getProxyGroup(strings[1]);
+                            ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(strings[1]);
 
-                        if (proxyGroupObject != null) {
-                            addCompletionToList(tabCompletions, "minamount", strings[2]);
-                            addCompletionToList(tabCompletions, "maxamount", strings[2]);
-                            addCompletionToList(tabCompletions, "ram", strings[2]);
-                            addCompletionToList(tabCompletions, "static", strings[2]);
-                            addCompletionToList(tabCompletions, "base", strings[2]);
-                            addCompletionToList(tabCompletions, "priority", strings[2]);
-                            addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
-                            addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
-                            addCompletionToList(tabCompletions, "maxplayers", strings[2]);
-                        }
-                        if (serverGroupObject != null) {
-                            addCompletionToList(tabCompletions, "onlineamount", strings[2]);
-                            addCompletionToList(tabCompletions, "ram", strings[2]);
-                            addCompletionToList(tabCompletions, "static", strings[2]);
-                            addCompletionToList(tabCompletions, "base", strings[2]);
-                            addCompletionToList(tabCompletions, "priority", strings[2]);
-                        }
+                            if (proxyGroupObject != null) {
+                                addCompletionToList(tabCompletions, "minamount", strings[2]);
+                                addCompletionToList(tabCompletions, "maxamount", strings[2]);
+                                addCompletionToList(tabCompletions, "ram", strings[2]);
+                                addCompletionToList(tabCompletions, "static", strings[2]);
+                                addCompletionToList(tabCompletions, "base", strings[2]);
+                                addCompletionToList(tabCompletions, "priority", strings[2]);
+                                addCompletionToList(tabCompletions, "playersperproxy", strings[2]);
+                                addCompletionToList(tabCompletions, "keepfreeslots", strings[2]);
+                                addCompletionToList(tabCompletions, "maxplayers", strings[2]);
+                            }
+                            if (serverGroupObject != null) {
+                                addCompletionToList(tabCompletions, "onlineamount", strings[2]);
+                                addCompletionToList(tabCompletions, "ram", strings[2]);
+                                addCompletionToList(tabCompletions, "static", strings[2]);
+                                addCompletionToList(tabCompletions, "base", strings[2]);
+                                addCompletionToList(tabCompletions, "priority", strings[2]);
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     break;
                 case 4:
@@ -209,24 +213,24 @@ public class TimoCloudCommand extends Command implements TabExecutor {
         return tabCompletions;
     }
 
-    private void addServerGroupCompletions(String s, Set<String> list) {
-        serverGroupNames.forEach(serverGroupName -> addCompletionToList(list, serverGroupName, s));
+    private void addServerGroupCompletions(Set<String> set, String s) {
+        serverGroupNames.forEach(serverGroupName -> addCompletionToList(set, serverGroupName, s));
     }
 
-    private void addServerCompletions(String s, Set<String> list) {
-        serverNames.forEach(serverName -> addCompletionToList(list, serverName, s));
+    private void addServerCompletions(Set<String> set, String s) {
+        serverNames.forEach(serverName -> addCompletionToList(set, serverName, s));
     }
 
-    private void addProxyGroupCompletions(String s, Set<String> list) {
-        proxyGroupNames.forEach(proxyGroupName -> addCompletionToList(list, proxyGroupName, s));
+    private void addProxyGroupCompletions(Set<String> set, String s) {
+        proxyGroupNames.forEach(proxyGroupName -> addCompletionToList(set, proxyGroupName, s));
     }
 
-    private void addProxyCompletions(String s, Set<String> list) {
-        proxyNames.forEach(proxyName -> addCompletionToList(list, proxyName, s));
+    private void addProxyCompletions(Set<String> set, String s) {
+        proxyNames.forEach(proxyName -> addCompletionToList(set, proxyName, s));
     }
 
-    private void addBaseCompletions(String s, Set<String> list) {
-        baseNames.forEach(baseName -> addCompletionToList(list, baseName, s));
+    private void addBaseCompletions(Set<String> set, String s) {
+        baseNames.forEach(baseName -> addCompletionToList(set, baseName, s));
     }
 
     private void addCompletionToList(Set<String> set, String completion, String s) {

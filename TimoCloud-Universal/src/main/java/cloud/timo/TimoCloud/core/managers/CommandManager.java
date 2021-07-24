@@ -62,6 +62,7 @@ public class CommandManager {
         registerCommand(new ShutdownCommandHandler(), "shutdown", "end", "quit", "exit");
         registerCommand(new VersionCommandHandler(), "version", "info");
         registerCommand(new AddBaseCommandHandler(), "addbase");
+        registerCommand(new EditBaseCommandHandler(), "editbase");
     }
 
     public void sendHelp(CommandSender sender) {
