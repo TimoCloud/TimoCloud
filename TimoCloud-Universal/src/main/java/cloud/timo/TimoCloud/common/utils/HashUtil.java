@@ -23,6 +23,8 @@ public class HashUtil {
     private final Set<String> IGNORE_NAMES = new HashSet<>(Collections.singletonList(".DS_Store"));
 
     public List<String> getDifferentFiles(String prefix, Map<String, Object> a, Map<String, Object> b) {
+        String newPrefix = prefix;
+
         List<String> differences = new ArrayList<>();
         for (String key : a.keySet()) {
             boolean cont = false;
@@ -33,21 +35,16 @@ public class HashUtil {
                 }
 
             if (cont) continue;
-            if (prefix.endsWith("/")) prefix = prefix.substring(0, prefix.length()-1);
-            String newName = prefix + File.separator + key;
-            if (!b.containsKey(key)) {
-                differences.add(newName);
-                continue;
-            }
+            if (newPrefix.endsWith("/")) newPrefix = newPrefix.substring(0, newPrefix.length()-1);
 
-            if (a.get(key) instanceof Map != b.get(key) instanceof Map) {
+            String newName = newPrefix + File.separator + key;
+            if (!b.containsKey(key) || a.get(key) instanceof Map != b.get(key) instanceof Map) {
                 differences.add(newName);
-                continue;
-            }
-
-            if (a.get(key) instanceof Map)
+            } else if (a.get(key) instanceof Map) {
                 differences.addAll(getDifferentFiles(newName, (Map<String, Object>) a.get(key), (Map<String, Object>) b.get(key)));
-            else if (!a.get(key).equals(b.get(key))) differences.add(newName);
+            } else if (!a.get(key).equals(b.get(key))) {
+                differences.add(newName);
+            }
         }
 
         for (String key : b.keySet()) {
@@ -60,7 +57,7 @@ public class HashUtil {
 
             if (cont) continue;
             if (!a.containsKey(key)) {
-                differences.add(prefix + File.separator + key);
+                differences.add(newPrefix + File.separator + key);
             }
         }
 
@@ -97,10 +94,6 @@ public class HashUtil {
         Path path = file.toPath();
         crc.update(Files.readAllBytes(path));
         return crc.getValue() + "";
-    }
-
-    private String bytesToString(byte[] b) {
-        return new String(b, StandardCharsets.UTF_8);
     }
 
 }

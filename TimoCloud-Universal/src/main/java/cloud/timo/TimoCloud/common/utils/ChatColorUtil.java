@@ -68,10 +68,6 @@ public class ChatColorUtil {
         return Math.sqrt(Math.pow(ar - br, 2) + Math.pow(ag - bg, 2) + Math.pow(ab - bb, 2));
     }
 
-    private double rgbDifference(Color a, Color b) {
-        return rgbDifference(a.getRed(), a.getGreen(), a.getBlue(), b.getRed(), b.getGreen(), b.getBlue());
-    }
-
     private Color hex2Rgb(String hex) {
         return new Color(
                 Integer.valueOf(hex.substring( 1, 3 ), 16),
