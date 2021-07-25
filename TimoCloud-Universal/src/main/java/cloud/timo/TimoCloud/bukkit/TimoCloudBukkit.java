@@ -100,16 +100,21 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     public void onEnable() {
         this.disabling = false;
 
-        registerListeners();
-        registerTasks();
-        registerChannel();
 
-        if (!this.enabled) {
+        if (enabled) {
+            registerCommands();
+            registerListeners();
+            registerTasks();
+            registerChannel();
+        } else {
             try {
                 info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
 
                 makeInstances();
                 registerCommands();
+                registerListeners();
+                registerTasks();
+                registerChannel();
 
                 LogInjectionUtil.saveSystemOutAndErr();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
