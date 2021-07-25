@@ -8,7 +8,7 @@ import java.util.Set;
  * A plugin message is an object just containing data.
  * It basically consists of a map where data can be stored.
  * The class provides methods to retrieve certain data types easily.
- *
+ * <p>
  * Please be aware that you'll just be able to send serializable data (Strings, Integers, ...)
  */
 public class PluginMessage {
@@ -27,6 +27,11 @@ public class PluginMessage {
 
     public String getType() {
         return type;
+    }
+
+    public PluginMessage setType(String type) {
+        this.type = type;
+        return this;
     }
 
     public Map<String, Object> getData() {
@@ -89,18 +94,13 @@ public class PluginMessage {
         return (String) getObject(key);
     }
 
-    public PluginMessage setType(String type) {
-        this.type = type;
-        return this;
-    }
-
     public PluginMessage set(String key, Object value) {
         getData().put(key, value);
         return this;
     }
 
     public PluginMessage setIfCondition(String key, Object value, boolean condition) {
-        if (! condition) return this;
+        if (!condition) return this;
         return set(key, value);
     }
 
@@ -109,6 +109,6 @@ public class PluginMessage {
     }
 
     public PluginMessage setIfAbsent(String key, Object value) {
-        return setIfCondition(key, value, ! containsProperty(key));
+        return setIfCondition(key, value, !containsProperty(key));
     }
 }

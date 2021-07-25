@@ -33,6 +33,17 @@ public class PluginManager {
 
     }
 
+    private static JarEntry searchForTimoCloudYml(JarFile jarFile) {
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+            JarEntry entry = entries.nextElement();
+            File file = new File(entry.getName());
+
+            if (file.getName().equals("timocloud.yml")) return entry;
+        }
+        return null;
+    }
+
     public void loadPlugins() throws IOException, PluginLoadException {
         Collection<TimoCloudPluginDescription> pluginDescriptions = new LinkedHashSet<>();
         for (File file : TimoCloudCore.getInstance().getFileManager().getPluginsDirectory().listFiles()) {
@@ -118,17 +129,6 @@ public class PluginManager {
             dependStack.pop();
         }
         order.add(plugin);
-    }
-
-    private static JarEntry searchForTimoCloudYml(JarFile jarFile) {
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            File file = new File(entry.getName());
-
-            if (file.getName().equals("timocloud.yml")) return entry;
-        }
-        return null;
     }
 
     public TimoCloudPluginDescription loadPlugin(File file) throws IOException, PluginLoadException {

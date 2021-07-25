@@ -22,6 +22,16 @@ import cloud.timo.TimoCloud.core.sockets.Communicatable;
 
 public class CoreEventManager implements Listener {
 
+    private static String eventToJSON(Event event) {
+        try {
+            return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().writeValueAsString(event);
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while converting Event to JSON: ");
+            TimoCloudCore.getInstance().severe(e);
+            return null;
+        }
+    }
+
     public void fireEvent(Event event) {
         Message message = Message.create()
                 .setType(MessageType.EVENT_FIRED)
@@ -32,16 +42,6 @@ public class CoreEventManager implements Listener {
             communicatable.sendMessage(message);
         }
         ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(event);
-    }
-
-    private static String eventToJSON(Event event) {
-        try {
-            return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().writeValueAsString(event);
-        } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while converting Event to JSON: ");
-            TimoCloudCore.getInstance().severe(e);
-            return null;
-        }
     }
 
     @EventHandler

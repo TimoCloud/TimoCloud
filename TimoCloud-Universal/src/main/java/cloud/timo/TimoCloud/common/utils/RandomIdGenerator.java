@@ -15,7 +15,7 @@ public class RandomIdGenerator {
 
     public String generateId(int length) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i<length; i++) {
+        for (int i = 0; i < length; i++) {
             stringBuilder.append(ID_CHARS.charAt(random.nextInt(ID_CHARS.length())));
         }
         return stringBuilder.toString();

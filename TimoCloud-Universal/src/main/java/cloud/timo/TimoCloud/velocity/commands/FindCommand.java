@@ -9,6 +9,10 @@ import net.kyori.text.TextComponent;
 
 public class FindCommand implements SimpleCommand {
 
+    private static void sendMessage(Invocation sender, String message) {
+        sender.source().sendMessage(TextComponent.builder(TimoCloudVelocity.getInstance().getPrefix()).content(ChatColorUtil.translateAlternateColorCodes('&', message)).build());
+    }
+
     @Override
     public void execute(Invocation invocation) {
         String[] args = invocation.arguments();
@@ -23,9 +27,5 @@ public class FindCommand implements SimpleCommand {
             return;
         }
         sendMessage(invocation, "&e" + playerObject.getName() + " &ais online at &6" + playerObject.getServer().getName());
-    }
-
-    private static void sendMessage(Invocation sender, String message) {
-        sender.source().sendMessage(TextComponent.builder(TimoCloudVelocity.getInstance().getPrefix()).content(ChatColorUtil.translateAlternateColorCodes('&', message)).build());
     }
 }

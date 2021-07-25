@@ -20,6 +20,7 @@ public class BlockEvents implements Listener {
             }
         }
     }
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreakEvent(BlockBreakEvent event) {
         if (event.getBlock().getState() instanceof Sign) {

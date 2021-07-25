@@ -11,7 +11,7 @@ public class DeleteGroupCommand extends CommandFormatUtil implements CommandHand
 
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
-        if(args.length == 0){
+        if (args.length == 0) {
             notEnoughArgs(sender, "removegroup <groupName>");
             return;
         }
@@ -23,6 +23,7 @@ public class DeleteGroupCommand extends CommandFormatUtil implements CommandHand
                 sender.sendError("The group " + name + " does not exist. Type 'listgroups' for a list of all groups.");
                 return;
             }
+
             if (serverGroup != null) TimoCloudCore.getInstance().getInstanceManager().deleteGroup(serverGroup);
             if (proxyGroup != null) TimoCloudCore.getInstance().getInstanceManager().deleteGroup(proxyGroup);
 

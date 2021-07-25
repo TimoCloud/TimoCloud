@@ -50,8 +50,9 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     private boolean ready;
     private Set<Server> servers;
     private Set<Proxy> proxies;
+
     /**
-     When set to "AUTO", the base's public IP address (which is being passed on to servers and proxies running on this base and thereby used by players to connect) will be determined automatically. Otherwise, the given value will be used.
+     * When set to "AUTO", the base's public IP address (which is being passed on to servers and proxies running on this base and thereby used by players to connect) will be determined automatically. Otherwise, the given value will be used.
      */
     private String publicIpConfig;
 
@@ -68,7 +69,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     }
 
     public void construct(BaseProperties baseProperties) {
-        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(),baseProperties.getPublicIpConfig(), baseProperties.getPublicKey());
+        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(), baseProperties.getPublicIpConfig(), baseProperties.getPublicKey());
     }
 
     public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String publicIpConfig, PublicKey publicKey) {
@@ -108,7 +109,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
 
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -127,7 +128,6 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     @Override
     @Deprecated
     public void onConnect(Channel channel) {
-
     }
 
     public void onConnect(Channel channel, InetAddress address, InetAddress publicAddress) {
@@ -223,13 +223,13 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         return this;
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
     @Override
     public Channel getChannel() {
         return this.channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public int getAvailableRam() {

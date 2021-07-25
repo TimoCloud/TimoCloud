@@ -128,7 +128,7 @@ public class EventUtil {
 
         for (Class<? extends Event> clazz : events) {
             for (Class interf : clazz.getInterfaces()) {
-                if (! Event.class.isAssignableFrom(interf)) continue;
+                if (!Event.class.isAssignableFrom(interf)) continue;
                 eventClassImplementations.put(interf, clazz);
                 break;
             }

@@ -26,6 +26,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a server group by name
+     *
      * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
@@ -33,6 +34,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a server by name
+     *
      * @param identifier The server's name or id, case-sensitive
      * @return A {@link ServerObject} corresponding to the given name or id
      */
@@ -50,6 +52,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a proxy group by name
+     *
      * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
@@ -57,6 +60,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a proxy by name
+     *
      * @param identifier The proxy's name or id
      * @return A {@link ServerObject} corresponding to the given name or id
      */
@@ -108,6 +112,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Give a base the permission to connect to the core.
+     *
      * @param publickey The publickey that should get permission to connect to the core (Base64 encoding)
      * @return A future being completed when the value was changed
      */

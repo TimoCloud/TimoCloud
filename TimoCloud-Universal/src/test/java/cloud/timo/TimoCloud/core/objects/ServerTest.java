@@ -30,7 +30,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class) // We need that in order to mock static methods
 @PrepareForTest({
-      HashUtil.class
+        HashUtil.class
 })
 public class ServerTest extends CommunicationTest {
 

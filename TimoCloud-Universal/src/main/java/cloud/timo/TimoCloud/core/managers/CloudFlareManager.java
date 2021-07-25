@@ -40,12 +40,37 @@ public class CloudFlareManager implements Listener {
         load();
     }
 
+    private static String getDomainByHostname(String hostName) {
+        String[] hostNameSplit = hostName.split("\\.");
+        return hostNameSplit.length <= 1 ? hostName : hostNameSplit[hostNameSplit.length - 2] + "." + hostNameSplit[hostNameSplit.length - 1];
+    }
+
+    private static boolean nameMatches(String a, String b) {
+        if (a.equals("*") || b.equals("*")) return true;
+        String[] as = a.trim().toLowerCase().split("\\.");
+        String[] bs = b.trim().toLowerCase().split("\\.");
+        int i = as.length, j = bs.length;
+        while (i > 0 && j > 0) {
+            i--;
+            j--;
+            String ac = as[i];
+            String bc = bs[j];
+            if ((i == 0 && ac.equals("*")) || (j == 0 && bc.equals("*"))) return true;
+            if (!ac.equals(bc)) return false;
+        }
+        return i == j;
+    }
+
+    private static String formatInetAddress(InetAddress address) {
+        if (address.toString().startsWith("/")) return address.toString().substring(1);
+        return address.toString();
+    }
+
     public void load() {
         if (!enabled()) return;
         createdRecords = new HashSet<>();
         deleteExistingRecords();
     }
-
 
     @EventHandler
     public void onProxyRegisterEvent(ProxyRegisterEvent event) {
@@ -81,7 +106,6 @@ public class CloudFlareManager implements Listener {
             proxy.getDnsRecords().clear();
         });
     }
-
 
     @EventHandler
     public void onBaseRegisterEvent(BaseConnectEvent event) {
@@ -224,27 +248,6 @@ public class CloudFlareManager implements Listener {
         return request(url, method, (String) null, additionalProperties);
     }
 
-    private static String getDomainByHostname(String hostName) {
-        String[] hostNameSplit = hostName.split("\\.");
-        return hostNameSplit.length <= 1 ? hostName : hostNameSplit[hostNameSplit.length - 2] + "." + hostNameSplit[hostNameSplit.length - 1];
-    }
-
-    private static boolean nameMatches(String a, String b) {
-        if (a.equals("*") || b.equals("*")) return true;
-        String[] as = a.trim().toLowerCase().split("\\.");
-        String[] bs = b.trim().toLowerCase().split("\\.");
-        int i = as.length, j = bs.length;
-        while (i > 0 && j > 0) {
-            i--;
-            j--;
-            String ac = as[i];
-            String bc = bs[j];
-            if ((i == 0 && ac.equals("*")) || (j == 0 && bc.equals("*"))) return true;
-            if (!ac.equals(bc)) return false;
-        }
-        return i == j;
-    }
-
     private HttpRequestProperty[] getRequestProperties() {
         return new HttpRequestProperty[]{
                 new HttpRequestProperty("X-Auth-Email", (String) TimoCloudCore.getInstance().getFileManager().getCloudFlareConfig().get("email")),
@@ -252,10 +255,5 @@ public class CloudFlareManager implements Listener {
                 new HttpRequestProperty("Content-Type", "application/json"),
                 new HttpRequestProperty("Accept", "application/json")
         };
-    }
-
-    private static String formatInetAddress(InetAddress address) {
-        if (address.toString().startsWith("/")) return address.toString().substring(1);
-        return address.toString();
     }
 }

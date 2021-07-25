@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoin implements Listener {
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoinEvent(PlayerJoinEvent event) {
         TimoCloudBukkit instance = TimoCloudBukkit.getInstance();
         instance.getServer().getScheduler().runTaskAsynchronously(instance, instance::sendPlayers);

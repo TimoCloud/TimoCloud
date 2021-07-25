@@ -8,7 +8,6 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
-import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 
 public abstract class TimoCloudMessageAPIBasicImplementation implements TimoCloudMessageAPI {
 
-    private List<TypeSpecificMessageListener> listeners;
+    private final List<TypeSpecificMessageListener> listeners;
 
     public TimoCloudMessageAPIBasicImplementation() {
         listeners = new ArrayList<>();

@@ -47,7 +47,7 @@ public class RSAKeyUtil {
 
     public String publicKeyToBase64(PublicKey publicKey) {
         return Base64.getEncoder().encodeToString(publicKey.getEncoded());
-    };
+    }
 
     public PrivateKey privateKeyFromBase64(String privateKeyString) throws Exception {
         return KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateKeyString)));
@@ -55,6 +55,6 @@ public class RSAKeyUtil {
 
     public String privateKeyToBase64(PrivateKey privateKey) {
         return Base64.getEncoder().encodeToString(privateKey.getEncoded());
-    };
+    }
 
 }

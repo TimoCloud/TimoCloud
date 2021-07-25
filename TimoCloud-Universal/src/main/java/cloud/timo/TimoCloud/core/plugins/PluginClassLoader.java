@@ -34,7 +34,8 @@ public class PluginClassLoader extends URLClassLoader {
                 if (loader == this) continue;
                 try {
                     return loader.loadClass0(name, resolve, false);
-                } catch (ClassNotFoundException ignored) {}
+                } catch (ClassNotFoundException ignored) {
+                }
             }
         }
         throw new ClassNotFoundException(name);

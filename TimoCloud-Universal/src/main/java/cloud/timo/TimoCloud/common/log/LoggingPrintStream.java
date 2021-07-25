@@ -30,7 +30,7 @@ public class LoggingPrintStream extends PrintStream {
     private void newLine() {
         String line = byteArrayOutputStream.toString();
         if (line.endsWith("\n")) {
-            line = line.substring(0, line.length()-1);
+            line = line.substring(0, line.length() - 1);
         }
         logger.accept(line);
         try {

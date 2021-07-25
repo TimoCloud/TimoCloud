@@ -61,6 +61,10 @@ public class TimoCloudCord implements TimoCloudModule {
         return "[" + format.format(new Date()) + "] ";
     }
 
+    public static TimoCloudCord getInstance() {
+        return instance;
+    }
+
     private String formatLog(String message, String color) {
         return (getTime() + getPrefix() + color + message + ANSI_RESET);
     }
@@ -178,19 +182,19 @@ public class TimoCloudCord implements TimoCloudModule {
         if (port != null) {
             try {
                 return (Integer) port;
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         info("No proxy port specified, using any free port.");
         return getFreePort();
     }
 
     private Integer getFreePort() {
-        for (int p = 40000; p<=50000; p++) {
+        for (int p = 40000; p <= 50000; p++) {
             if (portIsFree(p)) return p;
         }
         return null;
     }
-
 
     private boolean portIsFree(int port) {
         try {
@@ -215,10 +219,6 @@ public class TimoCloudCord implements TimoCloudModule {
 
     public Integer getCoreSocketPort() {
         return (Integer) getFileManager().getConfig().get("core-port");
-    }
-
-    public static TimoCloudCord getInstance() {
-        return instance;
     }
 
     public String getPrefix() {

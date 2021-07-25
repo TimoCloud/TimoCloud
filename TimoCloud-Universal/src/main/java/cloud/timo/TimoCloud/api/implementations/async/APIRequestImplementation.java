@@ -51,6 +51,20 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
         this(type, new TypeMap().put("value", value));
     }
 
+    private static String generateId() {
+        return RandomIdGenerator.generateId();
+    }
+
+    public static APIRequestImplementation<?> fromMap(Map<?, ?> map) {
+        APIRequestImplementation<?> request = new APIRequestImplementation<>(
+                APIRequestType.valueOf((String) map.get("rtype")),
+                (String) map.get("target"),
+                map.get("data")
+        );
+        request.id = (String) map.get("id");
+        return request;
+    }
+
     @Override
     public APIRequestFuture<T> submit() {
         APIRequestFuture<T> future = new APIRequestFutureImplementation<>(this);
@@ -58,10 +72,6 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
         TimoCloudInternalAPI.getApiRequestStorage().addFuture(getId(), future);
         TimoCloudAPI.getMessageAPI().sendMessageToCore(generatePluginMessage(getData()));
         return future;
-    }
-
-    private static String generateId() {
-        return RandomIdGenerator.generateId();
     }
 
     private PluginMessage generatePluginMessage(Map<?, ?> data) {
@@ -90,15 +100,5 @@ public class APIRequestImplementation<T> implements APIRequest<T> {
     @Override
     public Map<?, ?> getData() {
         return data;
-    }
-
-    public static APIRequestImplementation<?> fromMap(Map<?, ?> map) {
-        APIRequestImplementation<?> request = new APIRequestImplementation<>(
-                APIRequestType.valueOf((String) map.get("rtype")),
-                (String) map.get("target"),
-                map.get("data")
-        );
-        request.id = (String) map.get("id");
-        return request;
     }
 }

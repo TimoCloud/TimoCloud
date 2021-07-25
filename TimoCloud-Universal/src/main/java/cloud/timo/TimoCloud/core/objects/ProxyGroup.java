@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 public class ProxyGroup implements Group {
 
+    private final Map<String, Proxy> proxies = new HashMap<>();
     private String id;
     private String name;
     private int maxPlayerCountPerProxy;
@@ -51,7 +52,6 @@ public class ProxyGroup implements Group {
     private Base base;
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
-    private final Map<String, Proxy> proxies = new HashMap<>();
     private List<String> javaParameters;
     private String jrePath;
 
@@ -273,12 +273,12 @@ public class ProxyGroup implements Group {
         EventTransmitter.sendEvent(new ProxyGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
     }
 
-    public void setJrePath(String jrePath) {
-        this.jrePath = jrePath;
-    }
-
     public String getJrePath() {
         return jrePath;
+    }
+
+    public void setJrePath(String jrePath) {
+        this.jrePath = jrePath;
     }
 
     @Override

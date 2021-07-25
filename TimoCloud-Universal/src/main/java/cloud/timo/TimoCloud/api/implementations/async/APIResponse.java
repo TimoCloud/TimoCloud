@@ -31,12 +31,12 @@ public class APIResponse<T> {
         this.success = false;
     }
 
+    public static APIResponse<?> fromPluginMessage(PluginMessage pluginMessage) {
+        return JsonConverter.convertMapIfNecessary(pluginMessage.get("data"), APIResponse.class);
+    }
+
     public PluginMessage toPluginMessage() {
         return new PluginMessage("TIMOCLOUD_API_RESPONSE")
                 .set("data", this);
-    }
-
-    public static APIResponse<?> fromPluginMessage(PluginMessage pluginMessage) {
-        return JsonConverter.convertMapIfNecessary(pluginMessage.get("data"), APIResponse.class);
     }
 }

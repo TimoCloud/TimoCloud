@@ -7,7 +7,9 @@ import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.InetAddress;
 import java.util.Collections;
@@ -17,14 +19,31 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class BaseObjectBasicImplementation implements BaseObject, LinkableObject<BaseObject> {
 
+    @Getter
     private String id;
+    @Getter
+    @Setter
     private String name;
+    @Getter
+    @Setter
     private InetAddress ipAddress;
+    @Getter
+    @Setter
     private Double cpuLoad;
+    @Getter
+    @Setter
     private Double maxCpuLoad;
+    @Getter
+    @Setter
     private int availableRam;
+    @Getter
+    @Setter
     private int maxRam;
+    @Getter
+    @Setter
     private boolean connected;
+    @Getter
+    @Setter
     private boolean ready;
     private Set<ServerObjectLink> servers;
     private Set<ProxyObjectLink> proxies;
@@ -41,86 +60,6 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
         this.ready = ready;
         this.servers = servers;
         this.proxies = proxies;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public InetAddress getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(InetAddress ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    @Override
-    public Double getCpuLoad() {
-        return cpuLoad;
-    }
-
-    public void setCpuLoad(Double cpuLoad) {
-        this.cpuLoad = cpuLoad;
-    }
-
-    @Override
-    public Double getMaxCpuLoad() {
-        return maxCpuLoad;
-    }
-
-    public void setMaxCpuLoad(Double maxCpuLoad){
-        this.maxCpuLoad = maxCpuLoad;
-    }
-
-
-    @Override
-    public int getAvailableRam() {
-        return availableRam;
-    }
-
-    public void setAvailableRam(int availableRam) {
-        this.availableRam = availableRam;
-    }
-
-
-
-    @Override
-    public int getMaxRam() {
-        return maxRam;
-    }
-
-    public void setMaxRam(int maxRam) {
-        this.maxRam = maxRam;
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
-    }
-
-    @Override
-    public boolean isReady() {
-        return ready;
-    }
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
     }
 
     @Override
@@ -162,7 +101,6 @@ public class BaseObjectBasicImplementation implements BaseObject, LinkableObject
         BaseObjectBasicImplementation that = (BaseObjectBasicImplementation) o;
 
         return id.equals(that.id);
-
     }
 
     @Override

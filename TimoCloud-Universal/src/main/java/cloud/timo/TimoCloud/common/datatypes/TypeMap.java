@@ -67,7 +67,7 @@ public class TypeMap extends HashMap<Object, Object> {
     }
 
     public TypeMap putIfCondition(Object key, Object value, boolean condition) {
-        if (! condition) return this;
+        if (!condition) return this;
         return put(key, value);
     }
 
@@ -76,7 +76,7 @@ public class TypeMap extends HashMap<Object, Object> {
     }
 
     public TypeMap putIfAbsent(String key, Object value) {
-        return putIfCondition(key, value, ! containsKey(key));
+        return putIfCondition(key, value, !containsKey(key));
     }
-    
+
 }

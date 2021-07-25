@@ -1,9 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve TimoCloud
-title: ''
-labels: bug
-assignees: ''
+name: Bug report about: Create a report to help us improve TimoCloud title: ''
+labels: bug assignees: ''
 
 ---
 
@@ -12,6 +9,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Where does it happen? (Core, Base, Server, Proxy, ...)
 2. When does it happen? '....'
 3. Do you know why it happens? (special input data, etc.) '....'
@@ -29,8 +27,9 @@ If applicable, add the stacktrace (error) from the console/log
 Please upload any relevant configurations (e.g. serverGroups.json, proxyGroups.json, signTemplates.yml, ...)
 
 **Operating System (please complete the following information):**
- - OS: [e.g. Ubuntu]
- - Version [e.g. 16.04]
+
+- OS: [e.g. Ubuntu]
+- Version [e.g. 16.04]
 
 **Additional context**
 Add any other context about the problem here.

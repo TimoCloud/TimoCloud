@@ -39,6 +39,14 @@ public class ServerGroupProperties {
         this(generateId(), name);
     }
 
+    private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
+    }
+
+    public static String generateId() {
+        return getDefaultPropertiesProvider().generateId();
+    }
+
     public String getId() {
         return id;
     }
@@ -140,14 +148,6 @@ public class ServerGroupProperties {
     public ServerGroupProperties setJrePath(String jrePath) {
         this.jrePath = jrePath;
         return this;
-    }
-
-    private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
-        return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
-    }
-
-    public static String generateId() {
-        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ServerGroupDefaultPropertiesProvider {

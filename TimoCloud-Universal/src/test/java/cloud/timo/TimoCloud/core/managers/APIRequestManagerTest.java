@@ -74,7 +74,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
         when(coreInstanceManager.getServerByIdentifier(anyString())).thenReturn(server);
         when(coreInstanceManager.getServerGroupByIdentifier(anyString())).thenReturn(serverGroup);
         when(coreInstanceManager.getProxyGroupByIdentifier(anyString())).thenReturn(proxyGroup);
-     }
+    }
 
     @Test
     public void processRequestGCreateServerGroupValid() {
@@ -727,8 +727,8 @@ public class APIRequestManagerTest extends TimoCloudTest {
         assertNotNull(serverGroup);
         assertTrue((serverGroupProperties.getBaseIdentifier() == null && serverGroup.getBase() == null) ||
                 (serverGroupProperties.getBaseIdentifier() != null &&
-                (serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getId()) ||
-                        serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getName()))));
+                        (serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getId()) ||
+                                serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getName()))));
         assertEquals((int) serverGroupProperties.getMaxAmount(), serverGroup.getMaxAmount());
         assertEquals(serverGroupProperties.getName(), serverGroup.getName());
         assertEquals((int) serverGroupProperties.getOnlineAmount(), serverGroup.getOnlineAmount());
@@ -743,8 +743,8 @@ public class APIRequestManagerTest extends TimoCloudTest {
         assertNotNull(proxyGroup);
         assertTrue((proxyGroupProperties.getBaseIdentifier() == null && proxyGroup.getBase() == null) ||
                 (proxyGroupProperties.getBaseIdentifier() != null &&
-                (proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getId()) ||
-                        proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getName()))));
+                        (proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getId()) ||
+                                proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getName()))));
         assertCollectionEqualsInAnyOrder(proxyGroupProperties.getHostNames(), proxyGroup.getHostNames());
         assertEquals((int) proxyGroupProperties.getKeepFreeSlots(), proxyGroup.getKeepFreeSlots());
         assertEquals((int) proxyGroupProperties.getMinAmount(), proxyGroup.getMinAmount());

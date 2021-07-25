@@ -8,7 +8,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class PlayerQuit implements Listener {
-    @EventHandler (priority = EventPriority.LOWEST)
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuitEvent(PlayerQuitEvent event) {
         TimoCloudBukkit instance = TimoCloudBukkit.getInstance();
         instance.getServer().getScheduler().runTaskAsynchronously(instance, instance::sendPlayers);

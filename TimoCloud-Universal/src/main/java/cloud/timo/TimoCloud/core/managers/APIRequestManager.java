@@ -31,6 +31,69 @@ import java.util.List;
 // Next free error code: 16
 public class APIRequestManager implements MessageListener {
 
+    private static void validateNotNull(Object o) throws APIRequestError {
+        validateNotNull(o, null);
+    }
+
+    private static void validateNotNull(Object o, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(o, name, String.format("%s must not be null", name));
+    }
+
+    private static void validateNotNull(Object o, String name, String message) throws APIRequestError {
+        if (o == null) {
+            throw new APIRequestError(message,
+                    1,
+                    Arrays.asList(name));
+        }
+    }
+
+    private static void validateMinimum(Number number, Number minimum) throws APIRequestError {
+        validateMinimum(number, minimum, null);
+    }
+
+    private static void validateMinimum(Number number, Number minimum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(minimum, String.format("Minimum for %s", name));
+        if (number.doubleValue() < minimum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must not be smaller than %s (actual value: %s)", name, minimum, number),
+                    2,
+                    Arrays.asList(number, minimum));
+        }
+    }
+
+    private static void validateMaximum(Number number, Number maximum) throws APIRequestError {
+        validateMinimum(number, maximum, null);
+    }
+
+    private static void validateMaximum(Number number, Number maximum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(maximum, String.format("Maximum for %s", name));
+        if (number.doubleValue() > maximum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must not be greater than %s (actual value: %s)", name, maximum, number),
+                    3,
+                    Arrays.asList(number, maximum));
+        }
+    }
+
+    private static void validateRange(Number number, Number minimum, Number maximum) throws APIRequestError {
+        validateRange(number, minimum, maximum, null);
+    }
+
+    private static void validateRange(Number number, Number minimum, Number maximum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(minimum, String.format("Minimum for %s", name));
+        validateNotNull(maximum, String.format("Maximum for %s", name));
+        if (number.doubleValue() < minimum.doubleValue() || number.doubleValue() > maximum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must be in range [%s;%s] %s (actual value: %s)", name, minimum, maximum, number),
+                    4,
+                    Arrays.asList(number, minimum, maximum));
+        }
+    }
+
     @Override
     public void onPluginMessage(AddressedPluginMessage message) {
         APIRequest<?> request = APIRequestImplementation.fromMap(message.getMessage().getData());
@@ -444,69 +507,6 @@ public class APIRequestManager implements MessageListener {
             return new APIResponse<T>(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1));
         }
         return new APIResponse<>(request, responseData);
-    }
-
-    private static void validateNotNull(Object o) throws APIRequestError {
-        validateNotNull(o, null);
-    }
-
-    private static void validateNotNull(Object o, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(o, name, String.format("%s must not be null", name));
-    }
-
-    private static void validateNotNull(Object o, String name, String message) throws APIRequestError {
-        if (o == null) {
-            throw new APIRequestError(message,
-                    1,
-                    Arrays.asList(name));
-        }
-    }
-
-    private static void validateMinimum(Number number, Number minimum) throws APIRequestError {
-        validateMinimum(number, minimum, null);
-    }
-
-    private static void validateMinimum(Number number, Number minimum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(minimum, String.format("Minimum for %s", name));
-        if (number.doubleValue() < minimum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must not be smaller than %s (actual value: %s)", name, minimum, number),
-                    2,
-                    Arrays.asList(number, minimum));
-        }
-    }
-
-    private static void validateMaximum(Number number, Number maximum) throws APIRequestError {
-        validateMinimum(number, maximum, null);
-    }
-
-    private static void validateMaximum(Number number, Number maximum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(maximum, String.format("Maximum for %s", name));
-        if (number.doubleValue() > maximum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must not be greater than %s (actual value: %s)", name, maximum, number),
-                    3,
-                    Arrays.asList(number, maximum));
-        }
-    }
-
-    private static void validateRange(Number number, Number minimum, Number maximum) throws APIRequestError {
-        validateRange(number, minimum, maximum, null);
-    }
-
-    private static void validateRange(Number number, Number minimum, Number maximum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(minimum, String.format("Minimum for %s", name));
-        validateNotNull(maximum, String.format("Maximum for %s", name));
-        if (number.doubleValue() < minimum.doubleValue() || number.doubleValue() > maximum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must be in range [%s;%s] %s (actual value: %s)", name, minimum, maximum, number),
-                    4,
-                    Arrays.asList(number, minimum, maximum));
-        }
     }
 
 }

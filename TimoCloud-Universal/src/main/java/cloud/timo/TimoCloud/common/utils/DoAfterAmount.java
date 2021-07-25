@@ -4,10 +4,10 @@ import lombok.Setter;
 
 public class DoAfterAmount {
 
+    private final Runnable runnable;
     private int current;
     @Setter
     private int amount;
-    private final Runnable runnable;
 
     public DoAfterAmount(int amount, Runnable runnable) {
         current = 0;

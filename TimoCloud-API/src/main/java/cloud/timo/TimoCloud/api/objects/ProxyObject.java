@@ -67,6 +67,7 @@ public interface ProxyObject extends IdentifiableObject {
 
     /**
      * Executes the given command as ConsoleSender on the proxy
+     *
      * @param command Without leading '/'
      * @return A future being completed when the command was executed
      */
@@ -74,19 +75,21 @@ public interface ProxyObject extends IdentifiableObject {
 
     /**
      * Stops the proxy
+     *
      * @return A future being completed when the proxy was stopped
      */
     APIRequestFuture<Void> stop();
 
     /**
      * Send a plugin message to the proxy
+     *
      * @param message The message which shall be sent
      */
     void sendPluginMessage(PluginMessage message);
 
     /**
      * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the proxy's start)
-     * @param endTime The timestamp at which the record of the log should end
+     * @param endTime   The timestamp at which the record of the log should end
      * @return A LogFractionObject containing all log entries within the given slot of time
      */
     APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime);

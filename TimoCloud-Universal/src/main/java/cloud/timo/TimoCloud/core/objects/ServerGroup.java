@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 public class ServerGroup implements Group {
 
+    private final Map<String, Server> servers = new HashMap<>();
     private String id;
     private String name;
-
     private int onlineAmount;
     private int maxAmount;
     private int ram;
@@ -40,8 +40,6 @@ public class ServerGroup implements Group {
     private List<String> javaParameters;
     private List<String> spigotParameters;
     private String jrePath;
-
-    private final Map<String, Server> servers = new HashMap<>();
 
     public ServerGroup(ServerGroupProperties properties) {
         construct(properties);
@@ -141,6 +139,12 @@ public class ServerGroup implements Group {
         return onlineAmount;
     }
 
+    public void setOnlineAmount(int onlineAmount) {
+        int oldValue = getOnlineAmount();
+        this.onlineAmount = onlineAmount;
+        EventTransmitter.sendEvent(new ServerGroupOnlineAmountChangeEventBasicImplementation(toGroupObject(), oldValue, onlineAmount));
+    }
+
     public void stopAllServers() {
         for (Server server : getServers()) {
             server.stop();
@@ -174,20 +178,14 @@ public class ServerGroup implements Group {
         return servers.get(id);
     }
 
-    public void setOnlineAmount(int onlineAmount) {
-        int oldValue = getOnlineAmount();
-        this.onlineAmount = onlineAmount;
-        EventTransmitter.sendEvent(new ServerGroupOnlineAmountChangeEventBasicImplementation(toGroupObject(), oldValue, onlineAmount));
+    public int getMaxAmount() {
+        return maxAmount;
     }
 
     public void setMaxAmount(int maxAmount) {
         int oldValue = getMaxAmount();
         this.maxAmount = maxAmount;
         EventTransmitter.sendEvent(new ServerGroupMaxAmountChangeEventBasicImplementation(toGroupObject(), oldValue, maxAmount));
-    }
-
-    public int getMaxAmount() {
-        return maxAmount;
     }
 
     public int getRam() {
@@ -203,15 +201,15 @@ public class ServerGroup implements Group {
         EventTransmitter.sendEvent(new ServerGroupRamChangeEventBasicImplementation(toGroupObject(), oldValue, ram));
     }
 
+    @Override
+    public boolean isStatic() {
+        return isStatic;
+    }
+
     public void setStatic(boolean isStatic) {
         Boolean oldValue = isStatic();
         this.isStatic = isStatic;
         EventTransmitter.sendEvent(new ServerGroupStaticChangeEventBasicImplementation(toGroupObject(), oldValue, isStatic));
-    }
-
-    @Override
-    public boolean isStatic() {
-        return isStatic;
     }
 
     public int getPriority() {
@@ -252,15 +250,15 @@ public class ServerGroup implements Group {
         this.jrePath = jrePath;
     }
 
+    @Override
+    public Base getBase() {
+        return base;
+    }
+
     public void setBase(Base base) {
         Base oldValue = getBase();
         this.base = base;
         EventTransmitter.sendEvent(new ServerGroupBaseChangeEventBasicImplementation(toGroupObject(), oldValue.toBaseObject(), base.toBaseObject()));
-    }
-
-    @Override
-    public Base getBase() {
-        return base;
     }
 
     public Set<String> getSortOutStates() {

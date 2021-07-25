@@ -50,6 +50,14 @@ public class ProxyGroupProperties {
         this(generateId(), name);
     }
 
+    private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
+    }
+
+    public static String generateId() {
+        return getDefaultPropertiesProvider().generateId();
+    }
+
     public String getId() {
         return id;
     }
@@ -196,14 +204,6 @@ public class ProxyGroupProperties {
     public ProxyGroupProperties setJrePath(String jrePath) {
         this.jrePath = jrePath;
         return this;
-    }
-
-    private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
-        return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
-    }
-
-    public static String generateId() {
-        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ProxyGroupDefaultPropertiesProvider {

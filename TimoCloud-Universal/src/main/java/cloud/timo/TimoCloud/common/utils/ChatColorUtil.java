@@ -23,20 +23,20 @@ public class ChatColorUtil {
     public String toLegacyText(String input) {
         return stripColors(input
                 .replace("&0", ANSI_RESET) // Standard color
-                .replace("&1", rgbToAnsi(0,0,170))
-                .replace("&2", rgbToAnsi(0,170,0))
-                .replace("&3", rgbToAnsi(0,170,170))
-                .replace("&4", rgbToAnsi(170,0,0))
-                .replace("&5", rgbToAnsi(170,0,170))
-                .replace("&6", rgbToAnsi(255,170,0))
-                .replace("&7", rgbToAnsi(170,170,170))
-                .replace("&8", rgbToAnsi(85,85,85))
-                .replace("&9", rgbToAnsi(85,85,255))
-                .replace("&a", rgbToAnsi(85,255,85))
-                .replace("&b", rgbToAnsi(4,249,249))
-                .replace("&c", rgbToAnsi(255,85,85))
-                .replace("&d", rgbToAnsi(255,85,255))
-                .replace("&e", rgbToAnsi(255,255,0))
+                .replace("&1", rgbToAnsi(0, 0, 170))
+                .replace("&2", rgbToAnsi(0, 170, 0))
+                .replace("&3", rgbToAnsi(0, 170, 170))
+                .replace("&4", rgbToAnsi(170, 0, 0))
+                .replace("&5", rgbToAnsi(170, 0, 170))
+                .replace("&6", rgbToAnsi(255, 170, 0))
+                .replace("&7", rgbToAnsi(170, 170, 170))
+                .replace("&8", rgbToAnsi(85, 85, 85))
+                .replace("&9", rgbToAnsi(85, 85, 255))
+                .replace("&a", rgbToAnsi(85, 255, 85))
+                .replace("&b", rgbToAnsi(4, 249, 249))
+                .replace("&c", rgbToAnsi(255, 85, 85))
+                .replace("&d", rgbToAnsi(255, 85, 255))
+                .replace("&e", rgbToAnsi(255, 255, 0))
                 .replace("&f", ANSI_RESET)
                 .replace("&r", ANSI_RESET)// Mostly, white isn't readable, so we want the standard color
         );
@@ -49,7 +49,7 @@ public class ChatColorUtil {
     private int rgbToXterm(int r, int g, int b) {
         double best = 99999999.9;
         int bestId = 0;
-        for (int i = 0; i<xtermHex.length; i++) {
+        for (int i = 0; i < xtermHex.length; i++) {
             Color c = hex2Rgb(xtermHex[i]);
             double dif = rgbDifference(r, g, b, c.getRed(), c.getGreen(), c.getBlue());
             if (dif < best) {
@@ -70,15 +70,15 @@ public class ChatColorUtil {
 
     private Color hex2Rgb(String hex) {
         return new Color(
-                Integer.valueOf(hex.substring( 1, 3 ), 16),
-                Integer.valueOf(hex.substring( 3, 5 ), 16),
-                Integer.valueOf(hex.substring( 5, 7 ), 16));
+                Integer.valueOf(hex.substring(1, 3), 16),
+                Integer.valueOf(hex.substring(3, 5), 16),
+                Integer.valueOf(hex.substring(5, 7), 16));
     }
 
     public String translateAlternateColorCodes(char altColorChar, String textToTranslate) {
         char[] b = textToTranslate.toCharArray();
 
-        for(int i = 0; i < b.length - 1; ++i) {
+        for (int i = 0; i < b.length - 1; ++i) {
             if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i + 1]) > -1) {
                 b[i] = 167;
                 b[i + 1] = Character.toLowerCase(b[i + 1]);

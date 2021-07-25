@@ -20,7 +20,9 @@ import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -39,14 +41,18 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
 
     // Assign short json property names so that the JSON object is smaller
     @JsonProperty("n")
+    @Getter
     private String name;
     @JsonProperty("i")
+    @Getter
     private String id;
     @JsonProperty("g")
     private ProxyGroupObjectLink group;
     @JsonProperty("op")
     private Set<PlayerObjectLink> onlinePlayers;
     @JsonProperty("opc")
+    @Getter
+    @Setter
     private int onlinePlayerCount;
     @JsonProperty("b")
     private BaseObjectLink base;
@@ -65,16 +71,6 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
     public ProxyGroupObject getGroup() {
         return group.resolve();
     }
@@ -82,11 +78,6 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     @Override
     public List<PlayerObject> getOnlinePlayers() {
         return Collections.unmodifiableList(onlinePlayers.stream().map(PlayerObjectLink::resolve).collect(Collectors.toList()));
-    }
-
-    @Override
-    public int getOnlinePlayerCount() {
-        return onlinePlayerCount;
     }
 
     @Override
@@ -157,7 +148,7 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
         this.onlinePlayers.add(playerObjectLink);
     }
 
-    public void setOnlinePlayerCountInternally(int i){
+    public void setOnlinePlayerCountInternally(int i) {
         this.onlinePlayerCount = i;
     }
 

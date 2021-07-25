@@ -9,7 +9,8 @@ public class TimoCloudAPI {
     private static TimoCloudEventAPI eventAPI;
     private static TimoCloudMessageAPI messageAPI;
 
-    private TimoCloudAPI() {};
+    private TimoCloudAPI() {
+    }
 
     /**
      * @return Whether the TimoCloud API is available
@@ -54,8 +55,10 @@ public class TimoCloudAPI {
     /**
      * This API can be used everywhere
      * It enables you to register listeners which will be notified when certain events happen
+     *
      * @return The event API instance
-     * @deprecated Use {@link #getEventAPI()} instead     */
+     * @deprecated Use {@link #getEventAPI()} instead
+     */
     @Deprecated
     public static TimoCloudEventAPI getEventImplementation() {
         return eventAPI;
@@ -111,6 +114,7 @@ public class TimoCloudAPI {
     /**
      * The event API makes it possible to register listeners which will be notified on certain events
      * You can use this API everywhere (Bukkit, Bungee, Core, ...)
+     *
      * @return Event API instance
      */
     public static TimoCloudEventAPI getEventAPI() {

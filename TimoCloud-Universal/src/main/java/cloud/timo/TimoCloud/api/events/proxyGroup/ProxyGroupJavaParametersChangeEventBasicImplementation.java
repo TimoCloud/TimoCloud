@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @NoArgsConstructor
-public class ProxyGroupJavaParametersChangeEventBasicImplementation  extends ProxyGroupPropertyChangeEvent<List<String>> implements ProxyGroupJavaParametersChangeEvent {
+public class ProxyGroupJavaParametersChangeEventBasicImplementation extends ProxyGroupPropertyChangeEvent<List<String>> implements ProxyGroupJavaParametersChangeEvent {
 
     public ProxyGroupJavaParametersChangeEventBasicImplementation(ProxyGroupObject instance, List<String> oldValue, List<String> newValue) {
         super(instance, oldValue, newValue);

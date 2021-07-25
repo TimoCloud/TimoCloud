@@ -5,8 +5,8 @@ package cloud.timo.TimoCloud.api.internal;
  */
 public class TimoCloudInternalAPI {
 
-    private static TimoCloudInternalMessageAPI internalMessageAPI;
     private static final APIRequestFutureStorage apiRequestStorage = new APIRequestFutureStorage();
+    private static TimoCloudInternalMessageAPI internalMessageAPI;
     private static TimoCloudInternalImplementationAPI internalImplementationAPI;
 
     public static TimoCloudInternalMessageAPI getInternalMessageAPI() {

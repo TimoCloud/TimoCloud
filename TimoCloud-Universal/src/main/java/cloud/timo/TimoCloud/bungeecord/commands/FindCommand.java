@@ -13,6 +13,10 @@ public class FindCommand extends Command {
         super("find", "bungeecord.command.find", "rfind");
     }
 
+    private static void sendMessage(CommandSender sender, String message) {
+        sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', message)));
+    }
+
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
@@ -27,9 +31,5 @@ public class FindCommand extends Command {
         }
 
         sendMessage(sender, "&e" + playerObject.getName() + " &ais online at &6" + playerObject.getServer().getName());
-    }
-
-    private static void sendMessage(CommandSender sender, String message) {
-        sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', message)));
     }
 }

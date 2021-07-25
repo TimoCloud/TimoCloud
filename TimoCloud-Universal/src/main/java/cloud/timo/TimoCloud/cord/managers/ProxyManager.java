@@ -41,7 +41,7 @@ public class ProxyManager {
             TimoCloudCord.getInstance().severe("Error while choosing proxy: ProxyChooseStrategy of group '" + group.getName() + "' is null. Please report this.");
             return null;
         }
-        
+
         List<ProxyObject> proxies = group.getProxies()
                 .stream()
                 .filter(proxy -> proxy.getOnlinePlayerCount() < proxy.getGroup().getMaxPlayerCountPerProxy())

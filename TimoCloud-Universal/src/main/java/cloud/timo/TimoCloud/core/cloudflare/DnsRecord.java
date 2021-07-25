@@ -26,18 +26,6 @@ public class DnsRecord {
     @Getter
     private DnsZone zone;
 
-    public JsonObject toJson() {
-        return JsonObjectBuilder.create()
-                .setIfNotNull("id", getId())
-                .set("type", getType())
-                .set("name", getName())
-                .set("content", getContent())
-                .set("ttl", getTtl())
-                .set("zone_id", getZone().getId())
-                .set("zone_name", getZone().getName())
-                .toJsonObject();
-    }
-
     public static DnsRecord fromJson(JsonObject jsonObject) {
         return new DnsRecord(
                 jsonObject.get("id").getAsString(),
@@ -50,5 +38,17 @@ public class DnsRecord {
                         jsonObject.get("zone_name").getAsString()
                 )
         );
+    }
+
+    public JsonObject toJson() {
+        return JsonObjectBuilder.create()
+                .setIfNotNull("id", getId())
+                .set("type", getType())
+                .set("name", getName())
+                .set("content", getContent())
+                .set("ttl", getTtl())
+                .set("zone_id", getZone().getId())
+                .set("zone_name", getZone().getName())
+                .toJsonObject();
     }
 }

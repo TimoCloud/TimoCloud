@@ -24,7 +24,7 @@ public class GlistCommand extends Command {
             for (ServerObject serverObject : serverGroupObject.getServers()) {
                 sender.sendMessage(
                         new TextComponent(ChatColor.translateAlternateColorCodes('&', "&a[" + serverObject.getName() + "] &e(" + serverObject.getOnlinePlayerCount() + "): &r" +
-                        serverObject.getOnlinePlayers().stream().map(PlayerObject::getName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(", "))))
+                                serverObject.getOnlinePlayers().stream().map(PlayerObject::getName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(", "))))
                 );
             }
         }

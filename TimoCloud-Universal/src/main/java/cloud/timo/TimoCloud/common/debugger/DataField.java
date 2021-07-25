@@ -14,16 +14,16 @@ public class DataField {
     @Getter
     private final Object fieldData;
 
+    private static String getClassName(Class<?> clazz) {
+        if (clazz == null) return "null";
+        if (clazz == char[].class) return getClassName(String.class);
+        return clazz.getName();
+    }
+
     public Message toJson() {
         return Message.create()
                 .set("id", getId())
                 .set("class", getClassName(getFieldClass()))
                 .set("data", getFieldData());
-    }
-
-    private static String getClassName(Class<?> clazz) {
-        if (clazz == null) return "null";
-        if (clazz == char[].class) return getClassName(String.class);
-        return clazz.getName();
     }
 }

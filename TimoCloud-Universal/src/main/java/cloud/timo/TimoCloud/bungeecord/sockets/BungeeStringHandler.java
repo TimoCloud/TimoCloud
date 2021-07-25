@@ -62,7 +62,7 @@ public class BungeeStringHandler extends BasicStringHandler {
                 String playerUUID = (String) information.get("playerUUID");
                 String serverObject = (String) information.get("serverObject");
                 ProxiedPlayer proxiedPlayer = TimoCloudBungee.getInstance().getProxy().getPlayer(UUID.fromString(playerUUID));
-                if(Objects.isNull(proxiedPlayer))
+                if (Objects.isNull(proxiedPlayer))
                     return;
 
                 proxiedPlayer.connect(TimoCloudBungee.getInstance().getProxy().getServerInfo(serverObject));

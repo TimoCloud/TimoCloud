@@ -33,33 +33,6 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     public MinecraftDecoder() {
     }
 
-    @Override
-    public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        try {
-            final int packetLength = readVarInt(buf);
-            final int packetID = readVarInt(buf);
-            if (packetID == 0) {
-                final int clientVersion = readVarInt(buf);
-                final String hostName = readString(buf);
-                final int port = buf.readUnsignedShort();
-                final int state = readVarInt(buf);
-                buf.retain();
-                connectClient(ctx.channel(), hostName, buf);
-            } else {
-                //TimoCloudCord.getInstance().severe("Received non-status packet: " + packetID);
-            }
-        } catch (Exception e) {
-            buf.resetReaderIndex(); // Wait until we receive the full packet
-            return;
-        }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        TimoCloudCord.getInstance().severe("Exception in MinecraftDecoder");
-        TimoCloudCord.getInstance().severe(cause);
-    }
-
     public static void connectClient(Channel channel, String hostName, ByteBuf loginPacket) {
         ProxyGroupObject proxyGroupObject = TimoCloudCord.getInstance().getProxyManager().getProxyGroupByHostName(hostName);
         if (proxyGroupObject == null) {
@@ -129,6 +102,33 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                 .setTarget(proxyObject.getId())
                 .set("CLIENT_ADDRESS", clientAddress.toString())
                 .set("CHANNEL_ADDRESS", channelAddress.toString()));
+    }
+
+    @Override
+    public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
+        try {
+            final int packetLength = readVarInt(buf);
+            final int packetID = readVarInt(buf);
+            if (packetID == 0) {
+                final int clientVersion = readVarInt(buf);
+                final String hostName = readString(buf);
+                final int port = buf.readUnsignedShort();
+                final int state = readVarInt(buf);
+                buf.retain();
+                connectClient(ctx.channel(), hostName, buf);
+            } else {
+                //TimoCloudCord.getInstance().severe("Received non-status packet: " + packetID);
+            }
+        } catch (Exception e) {
+            buf.resetReaderIndex(); // Wait until we receive the full packet
+            return;
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        TimoCloudCord.getInstance().severe("Exception in MinecraftDecoder");
+        TimoCloudCord.getInstance().severe(cause);
     }
 
 }

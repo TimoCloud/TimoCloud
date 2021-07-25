@@ -6,5 +6,5 @@ emergencyFallback: 'Economy'
 LobbyChooseStrategy: "RANDOM"
 sendLobbyCommandMessage: false
 lobbyCommands:
-- lobby
-- hub
+  - lobby
+  - hub

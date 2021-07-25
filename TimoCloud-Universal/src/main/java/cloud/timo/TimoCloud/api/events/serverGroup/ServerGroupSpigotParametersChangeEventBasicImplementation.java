@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @NoArgsConstructor
-public class ServerGroupSpigotParametersChangeEventBasicImplementation  extends ServerGroupPropertyChangeEvent<List<String>> implements ServerGroupSpigotParametersChangeEvent {
+public class ServerGroupSpigotParametersChangeEventBasicImplementation extends ServerGroupPropertyChangeEvent<List<String>> implements ServerGroupSpigotParametersChangeEvent {
 
     public ServerGroupSpigotParametersChangeEventBasicImplementation(ServerGroupObject instance, List<String> oldValue, List<String> newValue) {
         super(instance, oldValue, newValue);

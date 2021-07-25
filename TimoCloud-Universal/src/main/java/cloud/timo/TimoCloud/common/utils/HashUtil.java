@@ -5,7 +5,6 @@ import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class HashUtil {
                 }
 
             if (cont) continue;
-            if (newPrefix.endsWith("/")) newPrefix = newPrefix.substring(0, newPrefix.length()-1);
+            if (newPrefix.endsWith("/")) newPrefix = newPrefix.substring(0, newPrefix.length() - 1);
 
             String newName = newPrefix + File.separator + key;
             if (!b.containsKey(key) || a.get(key) instanceof Map != b.get(key) instanceof Map) {

@@ -39,6 +39,10 @@ import static cloud.timo.TimoCloud.api.async.APIRequestType.S_STOP;
 @NoArgsConstructor
 public class ServerObjectBasicImplementation implements ServerObject, LinkableObject<ServerObject>, Comparable {
 
+    @JsonProperty("s")
+    protected String state;
+    @JsonProperty("e")
+    protected String extra;
     // Assign short json property names so that the JSON object is smaller
     @JsonProperty("n")
     private String name;
@@ -46,10 +50,6 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
     private String id;
     @JsonProperty("g")
     private ServerGroupObjectLink group;
-    @JsonProperty("s")
-    protected String state;
-    @JsonProperty("e")
-    protected String extra;
     @JsonProperty("m")
     private String map;
     @JsonProperty("mo")
@@ -244,51 +244,51 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
         this.onlinePlayers.remove(playerObjectLink);
     }
 
-    public void setNameInternally(String name){
+    public void setNameInternally(String name) {
         this.name = name;
     }
 
-    public void setIdInternally(String id){
+    public void setIdInternally(String id) {
         this.id = id;
     }
 
-    public void setServerGroupObjectLink(ServerGroupObjectLink serverGroupObjectLink){
+    public void setServerGroupObjectLink(ServerGroupObjectLink serverGroupObjectLink) {
         this.group = serverGroupObjectLink;
     }
 
-    public void setStateInternally(String state){
+    public void setStateInternally(String state) {
         this.state = state;
     }
 
-    public void setExtraInternally(String extra){
+    public void setExtraInternally(String extra) {
         this.extra = extra;
     }
 
-    public void setMapInternally(String map){
+    public void setMapInternally(String map) {
         this.map = map;
     }
 
-    public void setMotdInternally(String motd){
+    public void setMotdInternally(String motd) {
         this.motd = motd;
     }
 
-    public void setOnlinePlayerCountInternally(int i){
+    public void setOnlinePlayerCountInternally(int i) {
         this.onlinePlayerCount = i;
     }
 
-    public void setMaxPlayerCountInternally(int i){
+    public void setMaxPlayerCountInternally(int i) {
         this.maxPlayerCount = i;
     }
 
-    public void setBaseObjectLinkInternally(BaseObjectLink base){
+    public void setBaseObjectLinkInternally(BaseObjectLink base) {
         this.base = base;
     }
 
-    public void setSocketAddressInternally(InetSocketAddress inetSocketAddress){
+    public void setSocketAddressInternally(InetSocketAddress inetSocketAddress) {
         this.socketAddress = inetSocketAddress;
     }
 
-    public void setMessageClientAddressInternally(MessageClientAddress messageClientAddress){
+    public void setMessageClientAddressInternally(MessageClientAddress messageClientAddress) {
         this.messageClientAddress = messageClientAddress;
     }
 

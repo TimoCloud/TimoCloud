@@ -46,7 +46,7 @@ public class CommandManager {
         return commandHandlers.get(command.toLowerCase());
     }
 
-    private void registerCommand(CommandHandler commandHandler, String ... commands) {
+    private void registerCommand(CommandHandler commandHandler, String... commands) {
         for (String command : commands) {
             registerCommandHandler(command, commandHandler);
         }
@@ -105,7 +105,7 @@ public class CommandManager {
         onCommand(cmd, sender, args);
     }
 
-    public void onCommand(String command, CommandSender commandSender, String ... args) {
+    public void onCommand(String command, CommandSender commandSender, String... args) {
         try {
             CommandHandler handler = getHandlerByCommand(command);
             if (handler == null) handler = getHandlerByCommand("help");

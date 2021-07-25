@@ -39,6 +39,7 @@ public interface CordObject extends IdentifiableObject {
 
     /**
      * Send a plugin message to the cord
+     *
      * @param message The message which shall be sent
      */
     void sendPluginMessage(PluginMessage message);

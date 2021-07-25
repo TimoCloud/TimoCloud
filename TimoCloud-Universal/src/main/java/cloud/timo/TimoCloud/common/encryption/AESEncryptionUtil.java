@@ -39,7 +39,7 @@ public class AESEncryptionUtil {
         try {
             byte[] initVector = generateInitVector();
             IvParameterSpec iv = new IvParameterSpec(initVector);
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getEncoded(),"AES");
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getEncoded(), "AES");
 
             Cipher cipher = Cipher.getInstance(CIPHER_IDENTIFIER);
             cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
@@ -65,7 +65,7 @@ public class AESEncryptionUtil {
             System.arraycopy(total, IV_LENGTH, encrypted, 0, encrypted.length);
 
             IvParameterSpec iv = new IvParameterSpec(initVector);
-            SecretKeySpec skeySpec = new SecretKeySpec(key.getEncoded(),"AES");
+            SecretKeySpec skeySpec = new SecretKeySpec(key.getEncoded(), "AES");
 
             Cipher cipher = Cipher.getInstance(CIPHER_IDENTIFIER);
             cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv);

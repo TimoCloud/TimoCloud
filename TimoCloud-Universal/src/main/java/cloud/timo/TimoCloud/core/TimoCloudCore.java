@@ -64,14 +64,21 @@ import static org.jline.builtins.Completers.TreeCompleter.node;
 
 public class TimoCloudCore implements TimoCloudModule {
 
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
     @Getter
     private static TimoCloudCore instance;
+
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+    }
+
+    @Getter
+    private final SimpleFormatter simpleFormatter = new SimpleFormatter();
     @Getter
     private boolean shuttingDown;
     @Getter
     private CoreFileManager fileManager;
-    @Getter
-    private final SimpleFormatter simpleFormatter = new SimpleFormatter();
     @Getter
     private Logger logger;
     @Getter
@@ -101,19 +108,11 @@ public class TimoCloudCore implements TimoCloudModule {
     private APIRequestManager apiRequestManager;
     @Getter
     private CorePublicKeyManager corePublicKeyManager;
-
     private boolean running;
     @Getter
     private boolean waitingForCommand = false;
     @Getter
     private LineReader reader;
-
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_RED = "\u001B[31m";
-
-    static {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
-    }
 
     @Override
     public void info(String message) {

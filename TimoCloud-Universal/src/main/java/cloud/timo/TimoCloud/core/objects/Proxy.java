@@ -36,18 +36,18 @@ public class Proxy implements Instance, Communicatable {
     private final String name;
     private final String id;
     private final ProxyGroup group;
+    private final Base base;
+    private final Set<PlayerObject> onlinePlayers;
+    private final Collection<DnsRecord> dnsRecords;
+    private final Set<Server> registeredServers;
+    private final LogStorage logStorage;
     private int port;
     private InetSocketAddress address;
-    private final Base base;
     private int onlinePlayerCount;
-    private final Set<PlayerObject> onlinePlayers;
     private Channel channel;
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private final Collection<DnsRecord> dnsRecords;
-    private final Set<Server> registeredServers;
-    private final LogStorage logStorage;
     private PublicKey publicKey;
 
     private DoAfterAmount templateUpdate;
@@ -284,6 +284,14 @@ public class Proxy implements Instance, Communicatable {
         return onlinePlayerCount;
     }
 
+    public void setOnlinePlayerCount(int onlinePlayerCount) {
+        int oldValue = getOnlinePlayerCount();
+        this.onlinePlayerCount = onlinePlayerCount;
+        if (onlinePlayerCount != oldValue) {
+            EventTransmitter.sendEvent(new ProxyOnlinePlayerCountChangeEventBasicImplementation(toProxyObject(), oldValue, onlinePlayerCount));
+        }
+    }
+
     public Set<PlayerObject> getOnlinePlayers() {
         return onlinePlayers;
     }
@@ -324,14 +332,6 @@ public class Proxy implements Instance, Communicatable {
 
     public LogStorage getLogStorage() {
         return logStorage;
-    }
-
-    public void setOnlinePlayerCount(int onlinePlayerCount) {
-        int oldValue = getOnlinePlayerCount();
-        this.onlinePlayerCount = onlinePlayerCount;
-        if (onlinePlayerCount != oldValue) {
-            EventTransmitter.sendEvent(new ProxyOnlinePlayerCountChangeEventBasicImplementation(toProxyObject(), oldValue, onlinePlayerCount));
-        }
     }
 
     @Override

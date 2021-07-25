@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-public class IdentifiableStorage <T extends Identifiable> {
+public class IdentifiableStorage<T extends Identifiable> {
 
     private final Map<String, Collection<T>> byName = new HashMap<>();
     private final Map<String, T> byId = new HashMap<>();
@@ -46,14 +46,16 @@ public class IdentifiableStorage <T extends Identifiable> {
     public void add(T identifiable) {
         remove(identifiable);
         byId.put(identifiable.getId(), identifiable);
-        if (identifiable instanceof PublicKeyIdentifiable) byPublicKey.put(((PublicKeyIdentifiable) identifiable).getPublicKey(), identifiable);
+        if (identifiable instanceof PublicKeyIdentifiable)
+            byPublicKey.put(((PublicKeyIdentifiable) identifiable).getPublicKey(), identifiable);
         byName.putIfAbsent(identifiable.getName().toLowerCase(), new LinkedHashSet<>());
         byName.get(identifiable.getName().toLowerCase()).add(identifiable);
     }
 
     public void remove(T identifiable) {
         byId.remove(identifiable.getId());
-        if (identifiable instanceof PublicKeyIdentifiable) byPublicKey.remove(((PublicKeyIdentifiable) identifiable).getPublicKey());
+        if (identifiable instanceof PublicKeyIdentifiable)
+            byPublicKey.remove(((PublicKeyIdentifiable) identifiable).getPublicKey());
         if (byName.containsKey(identifiable.getName().toLowerCase())) {
             byName.get(identifiable.getName().toLowerCase()).remove(identifiable);
         }

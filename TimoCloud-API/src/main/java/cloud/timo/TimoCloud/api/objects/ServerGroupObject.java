@@ -24,6 +24,7 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's maximum player count
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setOnlineAmount(int value);
@@ -35,6 +36,7 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's maximum server amount
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setMaxAmount(int value);
@@ -46,6 +48,7 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's ram
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setRam(int value);
@@ -58,6 +61,7 @@ public interface ServerGroupObject extends IdentifiableObject {
     /**
      * Changes whether the group is static or not.
      * <b>Please note that changing this should be done with care. In order to avoid problems, the group should be restarted immediately after doing so. Please note that the template directory is different for static and non-static groups.</b>
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setStatic(boolean value);
@@ -69,18 +73,21 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the group's priority
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setPriority(int value);
 
     /**
      * If a base is assigned to the group, this will return its name. If the dynamic automatic-base-selection system is used, this will return null.
+     *
      * @return A String if the base has been set statically, else null
      */
     BaseObject getBase();
 
     /**
      * Changes the base servers of this group shall be started by
+     *
      * @param value If null, a base will be selected dynamically whenever a new server gets started
      * @return A future being completed when the value was changed
      */
@@ -95,12 +102,14 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the sort-out states
+     *
      * @return A future being completed when the value was changed
      */
     APIRequestFuture<Void> setSortOutStates(Collection<String> value);
 
     /**
      * Attention: This permanently deletes the server group from the network
+     *
      * @return A future being completed when the group was deleted
      */
     APIRequestFuture<Void> delete();
@@ -112,6 +121,7 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the java start parameters
+     *
      * @return A future being completed when the parameters was changed
      */
     APIRequestFuture<Void> setJavaParameters(Collection<String> value);
@@ -123,6 +133,7 @@ public interface ServerGroupObject extends IdentifiableObject {
 
     /**
      * Changes the spigot start parameters
+     *
      * @return A future being completed when the parameters was changed
      */
     APIRequestFuture<Void> setSpigotParameters(Collection<String> value);

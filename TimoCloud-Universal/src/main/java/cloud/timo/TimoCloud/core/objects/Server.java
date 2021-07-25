@@ -39,22 +39,22 @@ public class Server implements Instance, Communicatable {
 
     private final String name;
     private final String id;
-    private int port;
     private final ServerGroup group;
-    private Channel channel;
     private final Base base;
+    private final Set<PlayerObject> onlinePlayers = Collections.synchronizedSet(new HashSet<>());
+    private final LogStorage logStorage = new LogStorage();
+    private int port;
+    private Channel channel;
     private InetSocketAddress address;
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private final Set<PlayerObject> onlinePlayers = Collections.synchronizedSet(new HashSet<>());
     private int onlinePlayerCount = 0;
     private int maxPlayers = 0;
     private String map;
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private final LogStorage logStorage = new LogStorage();
     private PublicKey publicKey;
 
     private DoAfterAmount templateUpdate;
@@ -284,6 +284,10 @@ public class Server implements Instance, Communicatable {
         return channel;
     }
 
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
     public Base getBase() {
         return base;
     }
@@ -296,10 +300,6 @@ public class Server implements Instance, Communicatable {
         this.address = address;
     }
 
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
     public String getState() {
         return state;
     }
@@ -307,7 +307,8 @@ public class Server implements Instance, Communicatable {
     public void setState(String state) {
         String oldValue = getState();
         this.state = state;
-        if (this.isRegistered()) EventTransmitter.sendEvent(new ServerStateChangeEventBasicImplementation(toServerObject(), oldValue, state));
+        if (this.isRegistered())
+            EventTransmitter.sendEvent(new ServerStateChangeEventBasicImplementation(toServerObject(), oldValue, state));
     }
 
     public String getExtra() {
@@ -317,7 +318,8 @@ public class Server implements Instance, Communicatable {
     public void setExtra(String extra) {
         String oldValue = getExtra();
         this.extra = extra;
-        if (this.isRegistered()) EventTransmitter.sendEvent(new ServerExtraChangeEventBasicImplementation(toServerObject(), oldValue, extra));
+        if (this.isRegistered())
+            EventTransmitter.sendEvent(new ServerExtraChangeEventBasicImplementation(toServerObject(), oldValue, extra));
     }
 
     public String getMotd() {
@@ -327,7 +329,7 @@ public class Server implements Instance, Communicatable {
     public void setMotd(String motd) {
         String oldValue = getMotd();
         this.motd = motd;
-        if (this.isRegistered() && ! motd.equals(oldValue)) {
+        if (this.isRegistered() && !motd.equals(oldValue)) {
             EventTransmitter.sendEvent(new ServerMotdChangeEventBasicImplementation(toServerObject(), oldValue, motd));
         }
     }

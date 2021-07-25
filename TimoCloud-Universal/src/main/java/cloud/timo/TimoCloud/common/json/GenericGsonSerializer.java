@@ -24,13 +24,11 @@ public class GenericGsonSerializer implements JsonSerializer<Object>, JsonDeseri
             String className = jsonObject.get(CLASS_PROPERTY_NAME).getAsString();
             try {
                 actualClass = Class.forName(className);
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
                 throw new JsonParseException(e.getMessage());
             }
-        }
-        else {
+        } else {
             actualClass = typeOfT.getClass();
         }
 

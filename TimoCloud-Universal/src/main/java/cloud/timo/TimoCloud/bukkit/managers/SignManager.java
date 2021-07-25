@@ -35,10 +35,6 @@ import java.util.stream.Collectors;
 
 public class SignManager {
 
-    private Set<SignTemplate> signTemplates;
-    private Map<Location, SignInstance> signInstances;
-    private int updates = 0;
-
     private static final Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
         try {
             org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
@@ -63,6 +59,9 @@ public class SignManager {
             return 0;
         }
     };
+    private Set<SignTemplate> signTemplates;
+    private Map<Location, SignInstance> signInstances;
+    private int updates = 0;
 
     public SignManager() {
         load();

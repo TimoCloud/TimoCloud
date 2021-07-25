@@ -13,7 +13,7 @@ public class InetAddressUtil {
     public InetSocketAddress getSocketAddressByName(String address) {
         String[] split = address.split(":");
         String hostname = String.join(":", Arrays.copyOfRange(split, 0, split.length - 1));
-        int port = Integer.parseInt(split[split.length-1]);
+        int port = Integer.parseInt(split[split.length - 1]);
         return InetSocketAddress.createUnresolved(hostname, port);
     }
 

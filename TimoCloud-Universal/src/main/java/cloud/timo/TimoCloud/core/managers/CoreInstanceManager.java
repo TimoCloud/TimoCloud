@@ -43,18 +43,55 @@ import java.util.stream.Stream;
 
 public class CoreInstanceManager {
 
+    private static final int MAX_SERVERS = 2500;
+    private static final int MAX_PROXIES = 500;
+    private static final int MAX_BASES = 500;
     private final Random random = new Random();
     private IdentifiableStorage<ServerGroup> serverGroups;
     private IdentifiableStorage<ProxyGroup> proxyGroups;
     private IdentifiableStorage<Server> servers;
+    // TODO Store players here, not in proxy objects
     private IdentifiableStorage<Proxy> proxies;
     private IdentifiableStorage<Base> bases;
     private IdentifiableStorage<Cord> cords;
-    // TODO Store players here, not in proxy objects
 
-    private static final int MAX_SERVERS = 2500;
-    private static final int MAX_PROXIES = 500;
-    private static final int MAX_BASES = 500;
+    /**
+     * Helper method to convert a map template directory to a map name
+     *
+     * @param file The map template directory
+     * @return The map's name
+     */
+    private static String fileToMapName(File file) {
+        if (!file.getName().contains("_")) return file.getName();
+        String[] split = file.getName().split("_");
+        return String.join("_", Arrays.copyOfRange(split, 1, split.length));
+    }
+
+    /**
+     * This method searches case-insensitively for a key in a map
+     *
+     * @param key The key which shall be searched for (case-insensitive)
+     * @param map The map in which shall be searched
+     * @return The key's value if existing, otherwise null
+     */
+    private static Object searchInMap(String key, Map<String, ?> map) {
+        if (map.containsKey(key)) return map.get(key);
+        for (String k : map.keySet()) {
+            if (k.equalsIgnoreCase(key)) return map.get(k);
+        }
+        return null;
+    }
+
+    /**
+     * A helper method to divide and rounding up
+     *
+     * @param num     The number which shall be divided
+     * @param divisor The divisor
+     * @return The quotient, rounded up
+     */
+    private static int divideRoundUp(int num, int divisor) {
+        return (num + divisor - 1) / divisor;
+    }
 
     public void init() {
         makeInstances();
@@ -405,18 +442,6 @@ public class CoreInstanceManager {
             if (sub.isDirectory() && sub.getName().startsWith(group.getName() + "_")) valid.add(fileToMapName(sub));
         }
         return valid;
-    }
-
-    /**
-     * Helper method to convert a map template directory to a map name
-     *
-     * @param file The map template directory
-     * @return The map's name
-     */
-    private static String fileToMapName(File file) {
-        if (!file.getName().contains("_")) return file.getName();
-        String[] split = file.getName().split("_");
-        return String.join("_", Arrays.copyOfRange(split, 1, split.length));
     }
 
     /**
@@ -953,35 +978,9 @@ public class CoreInstanceManager {
     }
 
     /**
-     * This method searches case-insensitively for a key in a map
-     *
-     * @param key The key which shall be searched for (case-insensitive)
-     * @param map The map in which shall be searched
-     * @return The key's value if existing, otherwise null
-     */
-    private static Object searchInMap(String key, Map<String, ?> map) {
-        if (map.containsKey(key)) return map.get(key);
-        for (String k : map.keySet()) {
-            if (k.equalsIgnoreCase(key)) return map.get(k);
-        }
-        return null;
-    }
-
-    /**
      * @return A collection of all bases
      */
     public Collection<Base> getBases() {
         return bases.values();
-    }
-
-    /**
-     * A helper method to divide and rounding up
-     *
-     * @param num     The number which shall be divided
-     * @param divisor The divisor
-     * @return The quotient, rounded up
-     */
-    private static int divideRoundUp(int num, int divisor) {
-        return (num + divisor - 1) / divisor;
     }
 }

@@ -13,17 +13,17 @@ import java.lang.reflect.Field;
 
 public class IpInjector implements Listener {
 
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPreLoginEvent(PreLoginEvent event) {
         injectConnection(event.getConnection());
     }
 
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onProxyPingEvent(ProxyPingEvent event) {
         injectConnection(event.getConnection());
     }
 
-    @EventHandler (priority = -128)
+    @EventHandler(priority = -128)
     public void onPlayerHandshakeEvent(PlayerHandshakeEvent event) {
         injectConnection(event.getConnection());
     }

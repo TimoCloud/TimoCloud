@@ -33,6 +33,7 @@ public interface ServerObject extends IdentifiableObject {
 
     /**
      * Sets the server's state and sends it to TimoCloud BungeeCord
+     *
      * @param state The state, e.g. 'INGAME' or 'FULL'
      * @return A future being completed when the state was changed
      */
@@ -45,6 +46,7 @@ public interface ServerObject extends IdentifiableObject {
 
     /**
      * An extra is a custom value users can set per API. An example use case would be 'Teaming' or 'NoTeaming'
+     *
      * @return A future being completed when the extra was changed
      */
     APIRequestFuture<Void> setExtra(String extra);
@@ -106,6 +108,7 @@ public interface ServerObject extends IdentifiableObject {
 
     /**
      * Executes the given command as ConsoleSender on the server
+     *
      * @param command <b>Without leading /</b>
      * @return A future being completed when the command was executed
      */
@@ -113,19 +116,21 @@ public interface ServerObject extends IdentifiableObject {
 
     /**
      * Stops the server
+     *
      * @return A future being completed when the server was stopped
      */
     APIRequestFuture<Void> stop();
 
     /**
      * Send a plugin message to the server
+     *
      * @param message The message which shall be sent
      */
     void sendPluginMessage(PluginMessage message);
 
     /**
      * @param startTime The timestamp at which the record of the log should start (0 if you want all log entries since the server's start)
-     * @param endTime The timestamp at which the record of the log should end
+     * @param endTime   The timestamp at which the record of the log should end
      * @return A LogFractionObject containing all log entries within the given slot of time
      */
     APIRequestFuture<LogFractionObject> getLogFraction(long startTime, long endTime);

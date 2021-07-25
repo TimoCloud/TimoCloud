@@ -5,9 +5,9 @@ import java.util.Collections;
 
 public class APIRequestError extends RuntimeException {
 
+    private final Collection<?> arguments;
     private Integer code;
     private String message;
-    private final Collection<?> arguments;
 
     public APIRequestError(String message) {
         super(message);

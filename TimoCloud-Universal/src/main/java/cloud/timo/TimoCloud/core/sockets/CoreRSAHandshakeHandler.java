@@ -41,7 +41,7 @@ public class CoreRSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf
             byte[] bytes = new byte[byteBuf.readableBytes()];
             byteBuf.readBytes(bytes);
             PublicKey publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(bytes));
-            if (! TimoCloudCore.getInstance().getCorePublicKeyManager().isKeyPermitted(publicKey)) {
+            if (!TimoCloudCore.getInstance().getCorePublicKeyManager().isKeyPermitted(publicKey)) {
                 channel.close();
                 return;
             }
@@ -60,12 +60,13 @@ public class CoreRSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (! channel.isOpen()) return;
-                    if (! channel.hasAttr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY)) {
+                    if (!channel.isOpen()) return;
+                    if (!channel.hasAttr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY)) {
                         channel.close();
                         return;
                     }
-                    if (! channel.attr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).get()) channel.close(); // If the client did not perform the handshake within 5 seconds, it probably was not permitted to connect since it was not able to decrypt the AES key and perform the handshake
+                    if (!channel.attr(HANDSHAKE_PERFORMED_ATTRIBUTE_KEY).get())
+                        channel.close(); // If the client did not perform the handshake within 5 seconds, it probably was not permitted to connect since it was not able to decrypt the AES key and perform the handshake
                 }
             }, 5000);
         } catch (Exception e) {
