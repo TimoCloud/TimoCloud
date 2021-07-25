@@ -54,14 +54,16 @@ import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupPriorityChangeEven
 import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupRamChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupSpigotParametersChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupStaticChangeEventBasicImplementation;
+import lombok.experimental.UtilityClass;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@UtilityClass
 public class EventUtil {
 
-    private static final Map<Class<? extends Event>, Class<? extends Event>> eventClassImplementations = new HashMap<>();
-    private static final Map<EventType, Class<? extends Event>> eventClassesByType = new HashMap<>();
+    private final Map<Class<? extends Event>, Class<? extends Event>> eventClassImplementations = new HashMap<>();
+    private final Map<EventType, Class<? extends Event>> eventClassesByType = new HashMap<>();
 
     static {
         final Class[] events = {
@@ -139,15 +141,15 @@ public class EventUtil {
         }
     }
 
-    public static Class<? extends Event> getClassByEventType(EventType eventType) {
+    public Class<? extends Event> getClassByEventType(EventType eventType) {
         return eventClassesByType.get(eventType);
     }
 
-    public static Class<? extends Event> getEventClassImplementation(Class<? extends Event> clazz) {
+    public Class<? extends Event> getEventClassImplementation(Class<? extends Event> clazz) {
         return eventClassImplementations.get(clazz);
     }
 
-    public static Map<Class<? extends Event>, Class<? extends Event>> getEventClassImplementations() {
+    public Map<Class<? extends Event>, Class<? extends Event>> getEventClassImplementations() {
         return eventClassImplementations;
     }
 }

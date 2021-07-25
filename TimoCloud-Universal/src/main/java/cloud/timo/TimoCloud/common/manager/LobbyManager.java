@@ -61,10 +61,12 @@ public class LobbyManager {
             TimoCloudLogger.getLogger().severe("Error while searching lobby: Could not find specified fallbackGroup '" + fallbackGroup + "'");
             return null;
         }
+
         List<ServerObject> servers = group.getServers().stream()
                 .filter(server -> !server.getName().equals(notThis))
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
                 .collect(Collectors.toList());
+
         List<ServerObject> removeServers = new ArrayList<>();
         ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis);
         if (notThisServer != null) removeServers.add(notThisServer);
@@ -73,6 +75,7 @@ public class LobbyManager {
         for (ServerObject server : servers) {
             if (history.contains(server.getName()) && !removeServers.contains(server)) removeServers.add(server);
         }
+
         servers.removeAll(removeServers);
         if (servers.size() == 0) {
             return null;
@@ -111,6 +114,7 @@ public class LobbyManager {
                 notThis = serverObject.getName();
             }
         }
+
         PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(uuid);
         ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(emergencyFallback);
 
@@ -121,6 +125,7 @@ public class LobbyManager {
         if (serverObject == null) {
             if (serverGroupObject == null) return null;
             if (serverGroupObject.getServers().isEmpty()) return null;
+
             return serverGroupObject.getServers().stream().findFirst().get();
         }
 

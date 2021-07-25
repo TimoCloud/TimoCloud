@@ -46,6 +46,7 @@ import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -68,7 +69,9 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     private VelocitySocketMessageManager socketMessageManager;
     private VelocityStringHandler velocityStringHandler;
     private TimoCloudCommand timoCloudCommand;
+    @Setter
     private String prefix;
+    @Setter
     private boolean shuttingDown = false;
 
     @Inject
@@ -100,11 +103,15 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     public void onProxyInitialization(ProxyInitializeEvent event) {
         try {
             instance = this;
-            info("&eEnabling &bTimoCloudVelocity &eversion &7[&6" + server.getPluginManager().getPlugin("timocloud").get().getDescription().getVersion().get() + "&7]&e...");
+
+            String version = server.getPluginManager().getPlugin("timocloud").get().getDescription().getVersion().get();
+
+            info("&eEnabling &bTimoCloudVelocity &eversion &7[&6" + version + "&7]&e...");
             makeInstances();
             registerCommands();
             registerListeners();
             registerTasks();
+
             Executors.newSingleThreadExecutor().submit(this::connectToCore);
             while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                 try {
@@ -115,7 +122,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
             info("&aSuccessfully started TimoCloudVelocity!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudVelocity: ");
-            TimoCloudVelocity.getInstance().severe(e);
+            severe(e);
         }
     }
 
@@ -183,13 +190,13 @@ public class TimoCloudVelocity implements TimoCloudLogger {
         try {
             KeyPair keyPair = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "/keys/")).getKeyPair();
             new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
-                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
-                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
-                channel.pipeline().addBefore("prepender", "handler", getVelocityStringHandler());
-                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
-                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey))
+                        .addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8))
+                        .addBefore("prepender", "handler", getVelocityStringHandler())
+                        .addLast("encrypter", new AESEncrypter(aesKey))
+                        .addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAKE).setTarget(getProxyId()));
+                socketMessageManager.sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAKE).setTarget(getProxyId()));
             })).startHandshake();
         } catch (Exception e) {
             severe("Error during public key authentification, please report this!");
@@ -205,7 +212,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
 
     public void onHandshakeSuccess() {
         LogInjectionUtil.injectSystemOutAndErr(logEntry ->
-                getSocketMessageManager().sendMessage(Message.create()
+                socketMessageManager.sendMessage(Message.create()
                         .setType(MessageType.PROXY_LOG_ENTRY)
                         .setData(logEntry))
         );
@@ -223,7 +230,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
     private void sendEverything() {
@@ -231,15 +238,16 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     }
 
     public void sendPlayerCount() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_SET_PLAYER_COUNT).setData(getServer().getPlayerCount()));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.PROXY_SET_PLAYER_COUNT).setData(getServer().getPlayerCount()));
     }
 
     private void registerListeners() {
-        getServer().getEventManager().register(this, new LobbyJoin());
-        getServer().getEventManager().register(this, new ServerKick());
-        getServer().getEventManager().register(this, new ProxyPing());
-        getServer().getEventManager().register(this, new EventMonitor());
-        getServer().getEventManager().register(this, new IpInjector());
+        com.velocitypowered.api.event.EventManager em = getServer().getEventManager();
+        em.register(this, new LobbyJoin());
+        em.register(this, new ServerKick());
+        em.register(this, new ProxyPing());
+        em.register(this, new EventMonitor());
+        em.register(this, new IpInjector());
     }
 
     public String getProxyName() {
@@ -249,15 +257,5 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     public String getProxyId() {
         return System.getProperty("timocloud-proxyid");
     }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-
-    public void setShuttingDown(boolean shuttingDown) {
-        this.shuttingDown = shuttingDown;
-    }
-
 
 }

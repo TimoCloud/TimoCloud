@@ -12,11 +12,11 @@ public class APIResponseManager implements MessageListener {
     @Override
     public void onPluginMessage(AddressedPluginMessage addressedPluginMessage) {
         PluginMessage message = addressedPluginMessage.getMessage();
-        if (! "TIMOCLOUD_API_RESPONSE".equals(message.getType())) {
+        if (!"TIMOCLOUD_API_RESPONSE".equals(message.getType())) {
             return;
         }
 
-        APIResponse apiResponse = APIResponse.fromPluginMessage(message);
+        APIResponse<?> apiResponse = APIResponse.fromPluginMessage(message);
 
         ((APIRequestFutureImplementation) TimoCloudInternalAPI.getApiRequestStorage().pollFuture(apiResponse.getId())).requestComplete(apiResponse);
     }

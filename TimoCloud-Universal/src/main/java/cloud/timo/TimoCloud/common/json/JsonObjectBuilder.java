@@ -3,23 +3,23 @@ package cloud.timo.TimoCloud.common.json;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class JsonObjectBuilder {
-    private JsonObject jsonObject;
+
+    private final JsonObject jsonObject;
 
     private JsonObjectBuilder() {
         this(new JsonObject());
-    }
-
-    private JsonObjectBuilder(JsonObject jsonObject) {
-        this.jsonObject = jsonObject;
     }
 
     public static JsonObjectBuilder create() {
         return new JsonObjectBuilder();
     }
 
-    public static JsonObjectBuilder create (JsonObject jsonObject) {
+    public static JsonObjectBuilder create(JsonObject jsonObject) {
         return new JsonObjectBuilder(jsonObject);
     }
 
@@ -35,18 +35,27 @@ public class JsonObjectBuilder {
     }
 
     public JsonObjectBuilder setIfNotNull(String property, Object value) {
-        if (value == null) return this;
-        return set(property, value);
+        if (value == null) {
+            return this;
+        } else {
+            return set(property, value);
+        }
     }
 
     public JsonObjectBuilder setIfCondition(String property, Object value, boolean condition) {
-        if (! condition) return this;
-        return set(property, value);
+        if (!condition) {
+            return this;
+        } else {
+            return set(property, value);
+        }
     }
 
     public JsonObjectBuilder setIfAbsent(String property, Object value) {
-        if (jsonObject.has(property)) return this;
-        return set(property, value);
+        if (jsonObject.has(property)) {
+            return this;
+        } else {
+            return set(property, value);
+        }
     }
 
     public JsonObject toJsonObject() {

@@ -8,6 +8,7 @@ import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
 import cloud.timo.TimoCloud.api.messages.objects.PluginMessage;
+import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
@@ -75,8 +76,9 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
             try {
                 listener.getListener().onPluginMessage(message);
             } catch (Exception e) {
-                TimoCloudLogger.getLogger().severe("Uncaught exception while calling method onPluginMessage: ");
-                e.printStackTrace();
+                TimoCloudLogger logger = TimoCloudLogger.getLogger();
+                logger.severe("Uncaught exception while calling method onPluginMessage: ");
+                logger.severe(e);
             }
         }
     }

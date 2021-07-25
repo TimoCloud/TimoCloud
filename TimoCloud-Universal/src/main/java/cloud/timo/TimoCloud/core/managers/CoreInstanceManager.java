@@ -43,6 +43,7 @@ import java.util.stream.Stream;
 
 public class CoreInstanceManager {
 
+    private final Random random = new Random();
     private IdentifiableStorage<ServerGroup> serverGroups;
     private IdentifiableStorage<ProxyGroup> proxyGroups;
     private IdentifiableStorage<Server> servers;
@@ -99,7 +100,7 @@ public class CoreInstanceManager {
             this.serverGroups = serverGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -124,7 +125,7 @@ public class CoreInstanceManager {
             this.proxyGroups = proxyGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading proxy groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -139,8 +140,10 @@ public class CoreInstanceManager {
                 String name = (String) properties.get("name");
                 try {
                     Base base = getBaseById(id);
-                    if (base != null) base.construct(properties);
-                    else base = new Base(properties);
+                    if (base != null)
+                        base.construct(properties);
+                    else
+                        base = new Base(properties);
                     bases.add(base);
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
@@ -149,7 +152,7 @@ public class CoreInstanceManager {
             this.bases = bases;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading bases: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -172,7 +175,7 @@ public class CoreInstanceManager {
             TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(serverGroups), TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving server groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -186,7 +189,7 @@ public class CoreInstanceManager {
             TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -199,8 +202,8 @@ public class CoreInstanceManager {
         try {
             TimoCloudCore.getInstance().getFileManager().saveJson(new Gson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while saving basess: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe("Error while saving bases: ");
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -218,7 +221,7 @@ public class CoreInstanceManager {
      * @return Group object
      */
     public Group getGroupByName(String name) {
-        Group group = null;
+        Group group;
         group = getProxyGroupByName(name);
         if (group != null) return group;
         return getServerGroupByName(name);
@@ -383,7 +386,7 @@ public class CoreInstanceManager {
                     .filter(m -> m.getValue() == bestScore)
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
-            map = best.get(new Random().nextInt(best.size()));
+            map = best.get(random.nextInt(best.size()));
         }
 
         Server server = new Server(name, id, base, map, group);
@@ -413,7 +416,7 @@ public class CoreInstanceManager {
     private static String fileToMapName(File file) {
         if (!file.getName().contains("_")) return file.getName();
         String[] split = file.getName().split("_");
-        return Arrays.stream(Arrays.copyOfRange(split, 1, split.length)).collect(Collectors.joining("_"));
+        return String.join("_", Arrays.copyOfRange(split, 1, split.length));
     }
 
     /**

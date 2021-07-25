@@ -40,13 +40,16 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
-import org.bukkit.Bukkit;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.security.KeyPair;
@@ -55,56 +58,63 @@ import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
+    @Getter
     private static TimoCloudBukkit instance;
+
+    @Getter
     private BukkitFileManager fileManager;
+    @Getter
     private BukkitSocketClientHandler socketClientHandler;
+    @Getter
     private BukkitSocketMessageManager socketMessageManager;
+    @Getter
     private BukkitStringHandler stringHandler;
+    @Getter
     private SignManager signManager;
+    @Getter
     private StateByEventManager stateByEventManager;
+    @Getter
     private String prefix = "[TimoCloud] ";
+
     private boolean enabled = false;
     private boolean disabling = false;
+    @Setter
     private boolean serverRegistered = false;
-
-    public static TimoCloudBukkit getInstance() {
-        return instance;
-    }
 
     @Override
     public void info(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
+        getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
     }
 
     @Override
     public void warning(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
+        getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + message));
     }
 
     @Override
     public void severe(String message) {
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + "&c" + message));
+        getServer().getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + "&c" + message));
     }
 
     @Override
     public void onEnable() {
         this.disabling = false;
-        if (this.enabled) {
-            registerCommands();
-            registerListeners();
-            registerTasks();
-        } else {
+
+        registerListeners();
+        registerTasks();
+        registerChannel();
+
+        if (!this.enabled) {
             try {
                 info("&eEnabling &bTimoCloudBukkit&r &eversion &7[&6" + getDescription().getVersion() + "&7]&e...");
 
                 makeInstances();
                 registerCommands();
-                registerListeners();
-                registerTasks();
-                registerChannel();
+
                 LogInjectionUtil.saveSystemOutAndErr();
                 Executors.newScheduledThreadPool(1).scheduleAtFixedRate(this::doEverySecond, 1L, 1L, TimeUnit.SECONDS);
                 Executors.newSingleThreadExecutor().submit(this::connectToCore);
+
                 long timeToTimeout = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30);
                 while (!((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).gotAnyData()) {
                     //Timeout?
@@ -114,17 +124,19 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                         System.exit(0);
                         return;
                     }
+
                     try {
                         Thread.sleep(50); // Wait until we get the API data
                     } catch (Exception ignored) {
                     }
                 }
+
                 LogInjectionUtil.restoreSystemOutAndErr();
                 this.enabled = true;
                 info("&aTimoCloudBukkit has been enabled!");
             } catch (Exception e) {
                 severe("Error while enabling TimoCloudBukkit: ");
-                TimoCloudBukkit.getInstance().severe(e);
+                severe(e);
             }
         }
     }
@@ -141,7 +153,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
             info("Connecting to TimoCloudCore socket on " + getTimoCloudCoreIP() + ":" + getTimoCloudCoreSocketPort() + "...");
             new BukkitSocketClient().init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
-            TimoCloudBukkit.getInstance().severe(e);
+            severe(e);
         }
     }
 
@@ -149,24 +161,26 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
      * Called when the server is fully ready
      */
     private void registerAtCore() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_REGISTER).setTarget(getServerId()));
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MAP).setData(getMapName()));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_REGISTER).setTarget(getServerId()));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_SET_MAP).setData(getMapName()));
     }
 
     public void onSocketConnect(Channel channel) {
         try {
-            KeyPair keyPair = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "/keys/")).getKeyPair();
+            KeyPair keyPair = new RSAKeyPairRetriever(new File(fileManager.getBaseDirectory(), "/keys/")).getKeyPair();
             new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
-                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
-                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
-                channel.pipeline().addBefore("prepender", "handler", getStringHandler());
-                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
-                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_HANDSHAKE).setTarget(getServerId()));
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey))
+                        .addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8))
+                        .addBefore("prepender", "handler", getStringHandler())
+                        .addLast("encrypter", new AESEncrypter(aesKey))
+                        .addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+
+                socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_HANDSHAKE).setTarget(getServerId()));
+
             })).startHandshake();
         } catch (Exception e) {
-            severe("Error during public key authentification, please report this!");
+            severe("Error during public key authentication, please report this!");
             e.printStackTrace();
         }
     }
@@ -176,22 +190,23 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         info("Disconnected from TimoCloudCore. Stopping server.");
         if (connectionFailed) {
             System.exit(0);
-        } else {
-            if (isEnabled()) stop();
+        } else if (isEnabled()) {
+            stop();
         }
     }
 
     public void onHandshakeSuccess() {
         LogInjectionUtil.injectSystemOutAndErr(logEntry ->
-                getSocketMessageManager().sendMessage(Message.create()
+                socketMessageManager.sendMessage(Message.create()
                         .setType(MessageType.SERVER_LOG_ENTRY)
                         .setData(logEntry)));
+
         requestApiData();
         doEverySecond();
     }
 
     public void stop() {
-        Bukkit.getScheduler().runTask(this, () -> Bukkit.getServer().shutdown());
+        getServer().shutdown();
     }
 
     private void makeInstances() throws Exception {
@@ -226,15 +241,15 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         return true;
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void registerCommands() {
-        getCommand("signs").setExecutor(new SignsCommand());
-        getCommand("signs").setPermission("timocloud.command.signs");
-        final TimoCloudBukkitCommand timoCloudBukkitCommand = new TimoCloudBukkitCommand();
-        getCommand("timocloudbukkit").setExecutor(timoCloudBukkitCommand);
-        getCommand("timocloudbukkit").setPermission("timocloud.command.bukkit");
-        getCommand("tcb").setExecutor(timoCloudBukkitCommand);
-        getCommand("tcb").setPermission("timocloud.command.bukkit");
+        PluginCommand command = getCommand("signs");
+        command.setExecutor(new SignsCommand());
+        command.setPermission("timocloud.command.signs");
 
+        command = getCommand("timocloudbukkit");
+        command.setExecutor(new TimoCloudBukkitCommand());
+        command.setPermission("timocloud.command.bukkit");
     }
 
     private void registerListeners() {
@@ -250,9 +265,10 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void registerChannel() {
-        Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     public void sendPlayerToServer(Player player, String server) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         try {
@@ -260,7 +276,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
             out.writeUTF(server);
         } catch (Exception e) {
             severe("Error while sending player &e" + player + " &c to server &e" + server + "&c. Please report this: ");
-            TimoCloudBukkit.getInstance().severe(e);
+            severe(e);
         }
 
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
@@ -291,59 +307,59 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     }
 
     private void doEverySecond() {
-        if (this.disabling) return;
-        if (!this.serverRegistered) return;
+        if (this.disabling || !this.serverRegistered) return;
         sendEverything();
     }
 
     private void registerTasks() {
-        Bukkit.getScheduler().runTask(this, this::registerAtCore);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
+        BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.runTask(this, this::registerAtCore);
+        scheduler.scheduleSyncRepeatingTask(this, () -> getSignManager().updateSigns(), 5L, 1L);
     }
 
     private void sendEverything() {
         sendMotds();
-        TimoCloudBukkit.getInstance().getServer().getScheduler().runTaskAsynchronously(TimoCloudBukkit.getInstance(), () -> TimoCloudBukkit.getInstance().sendPlayers());
+        getServer().getScheduler().runTaskAsynchronously(this, this::sendPlayers);
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
     private void sendMotds() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
+            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), getServer().getMotd(), getServer().getOnlinePlayers().size(), getServer().getMaxPlayers());
+            getServer().getPluginManager().callEvent(event);
+            socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
             getStateByEventManager().setStateByMotd(event.getMotd().trim());
         } catch (Exception e) {
             severe("Error while sending MOTD: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(Bukkit.getMotd()));
+            severe(e);
+            socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(getServer().getMotd()));
         }
     }
 
     public int getOnlinePlayersAmount() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
+            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), getServer().getMotd(), getServer().getOnlinePlayers().size(), getServer().getMaxPlayers());
+            getServer().getPluginManager().callEvent(event);
             return event.getNumPlayers();
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            return Bukkit.getOnlinePlayers().size();
+            severe(e);
+            return getServer().getOnlinePlayers().size();
         }
     }
 
     public int getMaxPlayersAmount() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
+            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), getServer().getMotd(), getServer().getOnlinePlayers().size(), getServer().getMaxPlayers());
+            getServer().getPluginManager().callEvent(event);
             return event.getMaxPlayers();
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            return Bukkit.getMaxPlayers();
+            severe(e);
+            return getServer().getMaxPlayers();
         }
     }
 
@@ -351,39 +367,11 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
      * Must be called asynchronously
      */
     public void sendPlayers() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
-    }
-
-    public String getPrefix() {
-        return prefix;
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
     }
 
     public void setPrefix(String prefix) {
         this.prefix = ChatColor.translateAlternateColorCodes('&', prefix) + " ";
-    }
-
-    public BukkitSocketClientHandler getSocketClientHandler() {
-        return socketClientHandler;
-    }
-
-    public BukkitFileManager getFileManager() {
-        return fileManager;
-    }
-
-    public BukkitSocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
-    }
-
-    public BukkitStringHandler getStringHandler() {
-        return stringHandler;
-    }
-
-    public SignManager getSignManager() {
-        return signManager;
-    }
-
-    public StateByEventManager getStateByEventManager() {
-        return stateByEventManager;
     }
 
     public String getServerName() {
@@ -398,10 +386,7 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         if (isRandomMap()) {
             return System.getProperty("timocloud-mapname");
         }
-        return getFileManager().getConfig().getString("defaultMapName");
-    }
 
-    public void setServerRegistered(boolean serverRegistered) {
-        this.serverRegistered = serverRegistered;
+        return getFileManager().getConfig().getString("defaultMapName");
     }
 }
