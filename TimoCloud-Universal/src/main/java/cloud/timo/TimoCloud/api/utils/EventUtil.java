@@ -68,6 +68,7 @@ public class EventUtil {
                 ServerMaxPlayersChangeEventBasicImplementation.class,
                 ServerMotdChangeEventBasicImplementation.class,
                 ServerOnlinePlayerCountChangeEventBasicImplementation.class,
+                ServerStartEventBasicImplementation.class,
                 ServerRegisterEventBasicImplementation.class,
                 ServerStateChangeEventBasicImplementation.class,
                 ServerUnregisterEventBasicImplementation.class,
