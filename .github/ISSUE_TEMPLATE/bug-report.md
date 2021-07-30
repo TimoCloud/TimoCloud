@@ -1,6 +1,9 @@
 ---
-name: Bug report about: Create a report to help us improve TimoCloud title: ''
-labels: bug assignees: ''
+name: Bug Report
+about: Create a report to help us improve TimoCloud
+title: ''
+labels: bug
+assignees: ''
 
 ---
 
