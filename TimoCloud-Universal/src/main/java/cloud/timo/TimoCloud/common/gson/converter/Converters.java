@@ -14,7 +14,7 @@ public class Converters {
 
 
     /**
-     * The specific genericized type for {@code RuntimeException}.
+     * The specific genericized type for {@code APIRequestError}.
      */
     public static final Type APIREQUESTERROR_TYPE = new TypeToken<APIRequestError>() {
     }.getType();
