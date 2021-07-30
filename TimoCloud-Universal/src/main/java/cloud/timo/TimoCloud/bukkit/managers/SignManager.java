@@ -56,7 +56,7 @@ public class SignManager {
     };
 
     public SignManager() {
-        load();
+        Bukkit.getScheduler().runTask(TimoCloudBukkit.getInstance(), this::load);
     }
 
     public void load() {
