@@ -4,6 +4,7 @@ author: TimoCrafter
 main: cloud.timo.TimoCloud.bukkit.TimoCloudBukkit
 api-version: 1.13
 softdepend: [Multiverse-Core]
+load: STARTUP
 commands:
   timocloudbukkit:
     aliases: [tcb]
