@@ -9,7 +9,7 @@ import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -69,7 +69,7 @@ public class LobbyJoin {
 
     private void kickPlayer(Player player) {
         String fallBackMessage = TimoCloudVelocity.getInstance().getFileManager().getMessages().getString("NoFallBackGroupFound");
-        player.disconnect(TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', fallBackMessage)));
+        player.disconnect(Component.text(ChatColorUtil.translateAlternateColorCodes('&', fallBackMessage)));
     }
 
     private boolean useFallback() {
