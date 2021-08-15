@@ -81,4 +81,8 @@ public class BaseServerObject {
     public String getJrePath() {
         return jrePath;
     }
+
+    public int getTimeout() {
+        return timeout;
+    }
 }

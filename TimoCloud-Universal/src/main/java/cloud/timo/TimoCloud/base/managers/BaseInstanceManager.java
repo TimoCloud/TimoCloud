@@ -563,8 +563,8 @@ public class BaseInstanceManager {
 
             //delay because we can only get the pid after 20 Millis.
             final int finalProxyPort = proxyPort;
-            new java.util.Timer().schedule(
-                    new java.util.TimerTask() {
+            new Timer().schedule(
+                    new TimerTask() {
                         @Override
                         public void run() {
                             try {
