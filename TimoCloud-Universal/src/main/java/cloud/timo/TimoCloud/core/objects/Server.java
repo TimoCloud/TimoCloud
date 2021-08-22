@@ -68,6 +68,7 @@ public class Server implements Instance, Communicatable {
         this.map = map;
         if (this.map == null) this.map = "";
         this.logStorage = new LogStorage();
+        this.pid = -1;
 
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::requestPidStatus, 5, 5, TimeUnit.SECONDS);
@@ -198,6 +199,7 @@ public class Server implements Instance, Communicatable {
     }
 
     public void requestPidStatus() {
+        if(getPid() == -1) return;
         Message message = Message.create()
                 .setType(MessageType.BASE_PID_EXIST_REQUEST)
                 .set("pid", getPid())

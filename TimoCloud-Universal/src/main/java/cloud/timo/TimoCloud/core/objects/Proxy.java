@@ -68,6 +68,7 @@ public class Proxy implements Instance, Communicatable {
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();
         this.dnsRecords = new HashSet<>();
+        this.pid = -1;
 
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::requestPidStatus, 5, 5, TimeUnit.SECONDS);
@@ -151,6 +152,7 @@ public class Proxy implements Instance, Communicatable {
 
 
     public void requestPidStatus() {
+        if(getPid() == -1) return;
         Message message = Message.create()
                 .setType(MessageType.BASE_PID_EXIST_REQUEST)
                 .set("pid", getPid())
