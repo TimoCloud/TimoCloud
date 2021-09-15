@@ -79,7 +79,7 @@ public class Server implements Instance, Communicatable {
         if (System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
             //Timeout
             kill();
-            TimoCloudCore.getInstance().info("Server " + getName() + " timed out.");
+            TimoCloudCore.getInstance().warning("Server " + getName() + " timed out.");
         }
     }
 

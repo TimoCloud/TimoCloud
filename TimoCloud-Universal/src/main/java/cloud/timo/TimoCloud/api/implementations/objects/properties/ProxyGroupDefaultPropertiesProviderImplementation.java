@@ -93,7 +93,7 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
 
     @Override
     public int getTimeout() {
-        return 180000;
+        return 1000*60*3;
     }
 
 }

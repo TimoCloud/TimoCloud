@@ -76,6 +76,6 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
 
     @Override
     public int getTimeout() {
-        return 180000;
+        return 1000*60*3;
     }
 }

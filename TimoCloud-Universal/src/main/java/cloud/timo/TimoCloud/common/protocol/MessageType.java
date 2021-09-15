@@ -51,9 +51,9 @@ public enum MessageType {
     BASE_SERVER_NOT_STARTED                     (36),
     BASE_PROXY_STARTED                          (37),
     BASE_PROXY_NOT_STARTED                      (38),
-    BASE_INSTANCE_KILL                          (53),
-    BASE_PID_EXIST_REQUEST                      (54),
-    BASE_PID_EXIST_RESPONSE                     (55),
+    BASE_INSTANCE_KILL                          (53), //Kill a screen
+    BASE_PID_EXIST_REQUEST                      (54), //ask if process is still running
+    BASE_PID_EXIST_RESPONSE                     (55), //answers whether process is still running
 
     CORD_HANDSHAKE                              (39),
     CORD_HANDSHAKE_SUCCESS                      (40),

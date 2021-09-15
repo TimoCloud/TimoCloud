@@ -309,7 +309,8 @@ public class BaseInstanceManager {
                 throw new ServerStartException("Could not start process");
             }
 
-            //delay because we can only get the pid after 20 Millis.
+            final int[] retriesLeft = new int[]{10};
+            //delay because we can only get the pid after some time.
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
@@ -323,12 +324,18 @@ public class BaseInstanceManager {
                                         .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
                                         .set("pid", pid)
                                 );
+                                cancel();
                             } catch (Exception e) {
-                                TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
-                                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_SERVER_NOT_STARTED).setTarget(server.getId()));
+                                if (retriesLeft[0] == 0) {
+                                    TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
+                                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_SERVER_NOT_STARTED).setTarget(server.getId()));
+                                    cancel();
+                                } else {
+                                    retriesLeft[0] = retriesLeft[0] - 1;
+                                }
                             }
                         }
-                    }, 20);
+                    }, 20, 20);
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting server " + server.getName() + ": " + e.getMessage());
             TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_SERVER_NOT_STARTED).setTarget(server.getId()));
@@ -561,10 +568,12 @@ public class BaseInstanceManager {
                 throw new ProxyStartException("Error while starting process");
             }
 
-            //delay because we can only get the pid after 20 Millis.
             final int finalProxyPort = proxyPort;
-            new Timer().schedule(
-                    new TimerTask() {
+
+            final int[] retriesLeft = new int[]{10};
+            //delay because we can only get the pid after 20 Millis.
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
                         @Override
                         public void run() {
                             try {
@@ -576,12 +585,18 @@ public class BaseInstanceManager {
                                         .set("publicKey", RSAKeyUtil.publicKeyToBase64(publicKey))
                                         .set("pid", pid)
                                 );
+                                cancel();
                             } catch (Exception e) {
-                                TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
-                                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_PROXY_NOT_STARTED).setTarget(proxy.getId()));
+                                if (retriesLeft[0] == 0) {
+                                    TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());
+                                    TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_PROXY_NOT_STARTED).setTarget(proxy.getId()));
+                                    cancel();
+                                } else {
+                                    retriesLeft[0] = retriesLeft[0] - 1;
+                                }
                             }
                         }
-                    }, 20);
+                    }, 20, 20);
 
         } catch (Exception e) {
             TimoCloudBase.getInstance().severe("Error while starting proxy " + proxy.getName() + ": " + e.getMessage());

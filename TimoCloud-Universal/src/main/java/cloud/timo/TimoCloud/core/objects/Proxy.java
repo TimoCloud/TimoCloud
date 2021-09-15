@@ -79,7 +79,7 @@ public class Proxy implements Instance, Communicatable {
         if (System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
             //Timeout
             kill();
-            TimoCloudCore.getInstance().info("Proxy " + getName() + " timed out.");
+            TimoCloudCore.getInstance().warning("Proxy " + getName() + " timed out.");
         }
     }
 
