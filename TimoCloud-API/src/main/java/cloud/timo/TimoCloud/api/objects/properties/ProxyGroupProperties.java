@@ -25,6 +25,7 @@ public class ProxyGroupProperties {
     private Collection<String> hostNames;
     private List<String> javaParameters;
     private String jrePath;
+    private int timeout;
 
     public ProxyGroupProperties(String id, String name) {
         this.id = id;
@@ -44,6 +45,7 @@ public class ProxyGroupProperties {
         this.hostNames = getDefaultPropertiesProvider().getHostNames();
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
         this.jrePath = getDefaultPropertiesProvider().getJrePath();
+        this.timeout = getDefaultPropertiesProvider().getTimeout();
     }
 
     public ProxyGroupProperties(String name) {
@@ -162,6 +164,14 @@ public class ProxyGroupProperties {
         return this;
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
+    }
+
     public ProxyChooseStrategy getProxyChooseStrategy() {
         return proxyChooseStrategy;
     }
@@ -239,6 +249,8 @@ public class ProxyGroupProperties {
         String getJrePath();
 
         String generateId();
+
+        int getTimeout();
 
     }
 }

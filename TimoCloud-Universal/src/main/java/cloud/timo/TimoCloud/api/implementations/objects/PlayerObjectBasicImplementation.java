@@ -90,9 +90,16 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
 
     @Override
     public APIRequestFuture<Boolean> sendToServer(ServerObject serverObject) {
-        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_PLAYER, getProxy().getId(),  new TypeMap()
+        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_PLAYER, getProxy().getId(), new TypeMap()
                 .put("playerUUID", getId())
                 .put("targetServer", serverObject.getId())).submit();
+    }
+
+    @Override
+    public APIRequestFuture<Boolean> sendMessage(String message) {
+        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_MESSAGE, getProxy().getId(), new TypeMap()
+                .put("playerUUID", getId())
+                .put("message", message)).submit();
     }
 
     public void setOnline(boolean online) {

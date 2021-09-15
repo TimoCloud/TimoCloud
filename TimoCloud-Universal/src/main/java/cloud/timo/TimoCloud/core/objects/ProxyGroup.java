@@ -34,13 +34,14 @@ public class ProxyGroup implements Group {
     private Map<String, Proxy> proxies = new HashMap<>();
     private List<String> javaParameters;
     private String jrePath;
+    private int timeout;
 
     public ProxyGroup(ProxyGroupProperties properties) {
         construct(properties);
     }
 
-    public ProxyGroup(String id, String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath) {
-        construct(id, name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames, javaParameters, jdkPath);
+    public ProxyGroup(String id, String name, int maxPlayerCountPerProxy, int maxPlayerCount, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseName, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath, int timeout) {
+        construct(id, name, maxPlayerCountPerProxy, maxPlayerCount, keepFreeSlots, minAmount, maxAmount, ram, motd, isStatic, priority, serverGroups, baseName, proxyChooseStrategy, hostNames, javaParameters, jdkPath, timeout);
     }
 
     public ProxyGroup(Map<String, Object> properties) {
@@ -68,7 +69,8 @@ public class ProxyGroup implements Group {
                     (String) properties.getOrDefault("proxy-choose-strategy", defaultProperties.getProxyChooseStrategy().name()),
                     (Collection<String>) properties.getOrDefault("hostNames", defaultProperties.getHostNames()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
-                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())));
+                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())),
+                    ((Number) properties.getOrDefault("timeout", defaultProperties.getTimeout())).intValue());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -76,10 +78,10 @@ public class ProxyGroup implements Group {
     }
 
     public void construct(ProxyGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames(), properties.getJavaParameters(), properties.getJrePath());
+        construct(properties.getId(), properties.getName(), properties.getMaxPlayerCountPerProxy(), properties.getMaxPlayerCount(), properties.getKeepFreeSlots(), properties.getMinAmount(), properties.getMaxAmount(), properties.getRam(), properties.getMotd(), properties.isStatic(), properties.getPriority(), properties.getServerGroups(), properties.getBaseIdentifier(), properties.getProxyChooseStrategy().name(), properties.getHostNames(), properties.getJavaParameters(), properties.getJrePath(), properties.getTimeout());
     }
 
-    public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath) {
+    public void construct(String id, String name, int playersPerProxy, int maxPlayers, int keepFreeSlots, int minAmount, int maxAmount, int ram, String motd, boolean isStatic, int priority, Collection<String> serverGroups, String baseIdentifier, String proxyChooseStrategy, Collection<String> hostNames, List<String> javaParameters, String jdkPath, int timeout) {
         this.id = id;
         this.name = name;
         this.maxPlayerCountPerProxy = playersPerProxy;
@@ -93,6 +95,7 @@ public class ProxyGroup implements Group {
         this.priority = priority;
         this.javaParameters = javaParameters;
         this.jrePath = jdkPath;
+        this.timeout = timeout;
         setServerGroups(serverGroups);
 
         if (baseIdentifier != null)
@@ -124,6 +127,7 @@ public class ProxyGroup implements Group {
         properties.put("hostNames", getHostNames());
         properties.put("javaParameters", getJavaParameters());
         properties.put("jrePath", getJrePath());
+        properties.put("timeout", getTimeout());
         if (getBase() != null) properties.put("base", getBase().getId());
         return properties;
     }
@@ -272,6 +276,14 @@ public class ProxyGroup implements Group {
         int oldValue = getRam();
         this.ram = ram;
         EventTransmitter.sendEvent(new ProxyGroupRamChangeEventBasicImplementation(toGroupObject(), oldValue, ram));
+    }
+
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     public String getMotd() {

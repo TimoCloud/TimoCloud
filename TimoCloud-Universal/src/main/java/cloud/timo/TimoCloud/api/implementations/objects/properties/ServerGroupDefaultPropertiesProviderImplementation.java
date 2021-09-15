@@ -73,4 +73,9 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
     public String getJrePath() {
         return "java";
     }
+
+    @Override
+    public int getTimeout() {
+        return 1000*60*3;
+    }
 }
