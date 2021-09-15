@@ -83,7 +83,7 @@ public class SignManager {
             List<String> sortOutStates = config.contains(sortOutStatesKey) ? config.getStringList(template + ".sortOutStates") : null;
             try {
                 for (String layout : config.getConfigurationSection(template + ".layouts").getKeys(false)) {
-                    List[] lines = Arrays.copyOf(new Object[4], 4, List[].class);
+                    List<String>[] lines = Arrays.copyOf(new Object[4], 4, List[].class);
                     for (int i = 0; i < 4; i++) {
                         String line = config.getString(template + ".layouts." + layout + ".lines." + (i + 1));
                         if (line == null)

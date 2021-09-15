@@ -153,17 +153,19 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
-        if (type == MessageType.BASE_RESOURCES) {
-            Map<?, ?> map = (Map<?, ?>) data;
-            int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
-            int availableRam = Math.max(0, ((Number) map.get("freeRam")).intValue() - getKeepFreeRam());
-            setAvailableRam(Math.max(0, Math.min(availableRam, maxRam - usedRam)));
-            double cpuLoad = (Double) map.get("cpuLoad");
-            setCpuLoad(cpuLoad);
-            boolean ready = (Boolean) map.get("ready") && cpuLoad <= getMaxCpuLoad();
-            setReady(ready);
-        } else {
-            sendMessage(message);
+        switch (type) {
+            case BASE_RESOURCES:
+                Map<?, ?> map = (Map<?, ?>) data;
+                int usedRam = servers.stream().mapToInt((server) -> server.getGroup().getRam()).sum() + proxies.stream().mapToInt((proxy) -> proxy.getGroup().getRam()).sum();
+                int availableRam = Math.max(0, ((Number) map.get("freeRam")).intValue() - getKeepFreeRam());
+                setAvailableRam(Math.max(0, Math.min(availableRam, maxRam - usedRam)));
+                double cpuLoad = (Double) map.get("cpuLoad");
+                setCpuLoad(cpuLoad);
+                boolean ready = (Boolean) map.get("ready") && cpuLoad <= getMaxCpuLoad();
+                setReady(ready);
+                break;
+            default:
+                sendMessage(message);
         }
     }
 

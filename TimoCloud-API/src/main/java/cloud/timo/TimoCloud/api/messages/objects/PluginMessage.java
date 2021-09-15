@@ -8,7 +8,7 @@ import java.util.Set;
  * A plugin message is an object just containing data.
  * It basically consists of a map where data can be stored.
  * The class provides methods to retrieve certain data types easily.
- * <p>
+ *
  * Please be aware that you'll just be able to send serializable data (Strings, Integers, ...)
  */
 public class PluginMessage {
