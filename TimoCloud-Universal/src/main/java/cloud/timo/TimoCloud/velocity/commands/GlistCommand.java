@@ -7,7 +7,7 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.common.utils.ChatColorUtil;
 import com.velocitypowered.api.command.SimpleCommand;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.stream.Collectors;
 
@@ -18,10 +18,10 @@ public class GlistCommand implements SimpleCommand {
         for (ServerGroupObject serverGroupObject : TimoCloudAPI.getProxyAPI().getThisProxy().getGroup().getServerGroups()) {
             for (ServerObject serverObject : serverGroupObject.getServers()) {
                 invocation.source().sendMessage(
-                        TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', "&a[" + serverObject.getName() + "] &e(" + serverObject.getOnlinePlayerCount() + "): &r" +
+                        Component.text(ChatColorUtil.translateAlternateColorCodes('&', "&a[" + serverObject.getName() + "] &e(" + serverObject.getOnlinePlayerCount() + "): &r" +
                                 serverObject.getOnlinePlayers().stream().map(PlayerObject::getName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(", ")))));
             }
         }
-        invocation.source().sendMessage(TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', "Total players online: " + TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().mapToInt(ProxyGroupObject::getOnlinePlayerCount).sum())));
+        invocation.source().sendMessage(Component.text(ChatColorUtil.translateAlternateColorCodes('&', "Total players online: " + TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().mapToInt(ProxyGroupObject::getOnlinePlayerCount).sum())));
     }
 }

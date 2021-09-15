@@ -9,6 +9,8 @@ import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import org.apache.commons.io.FileDeleteStrategy;
+import oshi.SystemInfo;
+import oshi.software.os.OSProcess;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
@@ -28,6 +31,23 @@ public class BaseStringHandler extends BasicStringHandler {
             case BASE_HANDSHAKE_SUCCESS:
                 TimoCloudBase.getInstance().onHandshakeSuccess();
                 break;
+            case BASE_INSTANCE_KILL: {
+                TimoCloudBase.getInstance().getInstanceManager().killInstanceScreen((String) data);
+                break;
+            }
+            case BASE_PID_EXIST_REQUEST: {
+                String id = (String) message.get("id");
+                int pid = ((Number) message.get("pid")).intValue();
+                SystemInfo si = new SystemInfo();
+                final OSProcess process = si.getOperatingSystem().getProcess(pid);
+                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.BASE_PID_EXIST_RESPONSE)
+                        .setTarget(id)
+                        .set("requestedPid", pid)
+                        .set("running", Objects.nonNull(process))
+                );
+                break;
+            }
             case BASE_START_SERVER: {
                 String serverName = (String) message.get("name");
                 String id = (String) message.get("id");
@@ -41,7 +61,8 @@ public class BaseStringHandler extends BasicStringHandler {
                 List<String> javaParameters = (List<String>) message.get("javaParameters");
                 List<String> spigotParameters = (List<String>) message.get("spigotParameters");
                 String jrePath = (String) message.get("jrePath");
-                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters, jrePath));
+                int timeout = ((Number) message.get("timeout")).intValue();
+                TimoCloudBase.getInstance().getInstanceManager().addToServerQueue(new BaseServerObject(serverName, id, ram, isStatic, map, group, templateHash, mapHash, globalHash, javaParameters, spigotParameters, jrePath, timeout));
                 TimoCloudBase.getInstance().info("Added server " + serverName + " to queue.");
                 break;
             }

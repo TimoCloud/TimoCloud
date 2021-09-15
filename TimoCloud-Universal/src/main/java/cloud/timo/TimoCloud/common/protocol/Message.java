@@ -1,5 +1,6 @@
 package cloud.timo.TimoCloud.common.protocol;
 
+import cloud.timo.TimoCloud.common.json.GsonFactory;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
@@ -12,7 +13,7 @@ public class Message extends LinkedHashMap<String, Object> {
     private static final String TARGET_KEY = "@";
     private static final String DATA_KEY = "d";
 
-    private static final GsonBuilder GSON_BUILDER = new GsonBuilder();
+    private static final GsonBuilder GSON_BUILDER = GsonFactory.getNewBuilder();
 
     private Message() {
     }

@@ -25,7 +25,13 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
@@ -46,6 +52,9 @@ public class Proxy implements Instance, Communicatable {
     private Set<Server> registeredServers;
     private LogStorage logStorage;
     private PublicKey publicKey;
+    private int pid;
+    private final ScheduledExecutorService scheduler;
+    private long lastContact = System.currentTimeMillis();
 
     private DoAfterAmount templateUpdate;
 
@@ -59,7 +68,21 @@ public class Proxy implements Instance, Communicatable {
         this.registeredServers = new HashSet<>();
         this.logStorage = new LogStorage();
         this.dnsRecords = new HashSet<>();
+        this.pid = -1;
+
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::requestPidStatus, 5, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::checkTimeout, 5, 5, TimeUnit.SECONDS);
     }
+
+    private void checkTimeout() {
+        if (System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
+            //Timeout
+            kill();
+            TimoCloudCore.getInstance().warning("Proxy " + getName() + " timed out.");
+        }
+    }
+
 
     @Override
     public void register() {
@@ -83,6 +106,7 @@ public class Proxy implements Instance, Communicatable {
         getBase().removeProxy(this);
         TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
         getBase().sendMessage(Message.create().setType(MessageType.BASE_PROXY_STOPPED).setData(getId()));
+        scheduler.shutdown();
     }
 
     @Override
@@ -126,10 +150,30 @@ public class Proxy implements Instance, Communicatable {
         getGroup().addProxy(this);
     }
 
+
+    public void requestPidStatus() {
+        if(getPid() == -1) return;
+        Message message = Message.create()
+                .setType(MessageType.BASE_PID_EXIST_REQUEST)
+                .set("pid", getPid())
+                .set("id", getId());
+        getBase().sendMessage(message);
+    }
+
     @Override
     public void stop() {
         sendMessage(Message.create().setType(MessageType.PROXY_STOP));
         TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
+    }
+
+    @Override
+    public void kill() {
+        Message message = Message.create()
+                .setType(MessageType.BASE_INSTANCE_KILL)
+                .setData(getId());
+        getBase().sendMessage(message);
+        TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(this);
+        onShutdown();
     }
 
     public void registerServer(Server server) {
@@ -163,6 +207,11 @@ public class Proxy implements Instance, Communicatable {
 
     @Override
     public void onMessage(Message message, Communicatable sender) {
+        if (getChannel() != null &&
+                sender.getChannel().id().equals(getChannel().id())) {
+            //communicate
+            lastContact = System.currentTimeMillis();
+        }
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
@@ -170,7 +219,9 @@ public class Proxy implements Instance, Communicatable {
                 stop();
                 break;
             case BASE_PROXY_STARTED:
+                lastContact = System.currentTimeMillis();
                 setPort(((Number) message.get("port")).intValue());
+                setPid(((Number) message.get("pid")).intValue());
                 try {
                     setPublicKey(RSAKeyUtil.publicKeyFromBase64((String) message.get("publicKey")));
                 } catch (Exception e) {
@@ -195,6 +246,14 @@ public class Proxy implements Instance, Communicatable {
                 LogEntry logEntry = JsonConverter.convertMapIfNecessary(data, LogEntry.class);
                 logStorage.addEntry(logEntry);
                 break;
+            case BASE_PID_EXIST_RESPONSE:
+                final boolean running = (boolean) message.get("running");
+                if (!running) {
+                    unregister();
+                    TimoCloudCore.getInstance().info("Process of Proxy " + getName() + " not found.");
+                    onShutdown();
+                }
+                break;
             default:
                 sendMessage(message);
         }
@@ -217,9 +276,11 @@ public class Proxy implements Instance, Communicatable {
     public void onDisconnect() {
         this.connected = false;
         setChannel(null);
-        unregister();
-        TimoCloudCore.getInstance().info("Proxy " + getName() + " disconnected.");
-        onShutdown();
+        if (isRegistered()) {
+            unregister();
+            TimoCloudCore.getInstance().info("Proxy " + getName() + " disconnected.");
+            onShutdown();
+        }
     }
 
     @Override
@@ -240,6 +301,15 @@ public class Proxy implements Instance, Communicatable {
                 .setData(Message.create()
                         .set("playerUUID", playerUUID)
                         .set("serverObject", serverObject.getName())
+                ));
+    }
+
+    public void sendChatMessage(String playerUUID, String chatMessage) {
+        sendMessage(Message.create()
+                .setType(MessageType.PROXY_SEND_MESSAGE)
+                .setData(Message.create()
+                        .set("playerUUID", playerUUID)
+                        .set("chatMessage", chatMessage)
                 ));
     }
 
@@ -281,6 +351,14 @@ public class Proxy implements Instance, Communicatable {
 
     public Set<PlayerObject> getOnlinePlayers() {
         return onlinePlayers;
+    }
+
+    public int getPid() {
+        return pid;
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
     }
 
     @Override

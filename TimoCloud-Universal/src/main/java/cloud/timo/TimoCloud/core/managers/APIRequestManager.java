@@ -70,6 +70,9 @@ public class APIRequestManager implements MessageListener {
                             String jrePath = serverGroupProperties.getJrePath();
                             validateNotNull(jrePath, "jrePath");
 
+                            int timeout = serverGroupProperties.getTimeout();
+                            validateNotNull(timeout, "timeout");
+
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
                                 throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
                             }
@@ -86,7 +89,8 @@ public class APIRequestManager implements MessageListener {
                                     sortOutStates,
                                     javaParameters,
                                     spigotParameters,
-                                    jrePath
+                                    jrePath,
+                                    timeout
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(serverGroup);
@@ -125,6 +129,8 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(javaParameters, "JavaParameters");
                             String jrePath = proxyGroupProperties.getJrePath();
                             validateNotNull(jrePath, "jrePath");
+                            final int timeout = proxyGroupProperties.getTimeout();
+                            validateNotNull(timeout, "timeout");
                             if (serverGroups.isEmpty()) serverGroups = Collections.singleton("*");
                             String baseIdentifier = proxyGroupProperties.getBaseIdentifier();
                             if (baseIdentifier != null && TimoCloudCore.getInstance().getInstanceManager().getBaseByIdentifier(baseIdentifier) == null) {
@@ -156,7 +162,8 @@ public class APIRequestManager implements MessageListener {
                                     proxyChooseStrategy.name(),
                                     hostNames,
                                     javaParameters,
-                                    jrePath
+                                    jrePath,
+                                    timeout
                             );
 
                             TimoCloudCore.getInstance().getInstanceManager().createGroup(proxyGroup);
@@ -415,10 +422,22 @@ public class APIRequestManager implements MessageListener {
                             String targetServer = data.getString("targetServer");
                             validateNotNull(playerUUID, "UUID");
                             validateNotNull(targetServer, "targetServer");
-                            Boolean isOnGivenProxy = Boolean.valueOf(proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID)));
+                            Boolean isOnGivenProxy = proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID));
                             responseData = (T) isOnGivenProxy;
                             if (isOnGivenProxy) {
                                 proxy.sendPlayer(playerUUID, TimoCloudCore.getInstance().getInstanceManager().getServerByIdentifier(targetServer));
+                            }
+                            break;
+                        }
+                        case P_SEND_MESSAGE: {
+                            String playerUUID = data.getString("playerUUID");
+                            String message = data.getString("message");
+                            validateNotNull(playerUUID, "UUID");
+                            validateNotNull(message, "message");
+                            Boolean isOnGivenProxy = proxy.getOnlinePlayers().stream().anyMatch(playerObject -> playerObject.getUuid().toString().equals(playerUUID));
+                            responseData = (T) isOnGivenProxy;
+                            if (isOnGivenProxy) {
+                                proxy.sendChatMessage(playerUUID, message);
                             }
                             break;
                         }

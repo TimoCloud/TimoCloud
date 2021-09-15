@@ -14,8 +14,8 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {
         if (args.length < 3) {
-            notEnoughArgs(sender, "editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
-            notEnoughArgs(sender, "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
+            notEnoughArgs(sender, "editgroup <name> <onlineAmount (int) | maxAmount (int) | ram (int) | static (boolean) | priority (int) | base (String) | jrePath (String)> <value>");
+            notEnoughArgs(sender, "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int) > <value>");
             return;
         }
         String groupName = args[0];
@@ -32,10 +32,8 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
                 case "onlineamount":
                     int newOnlineAmount = Integer.parseInt(value);
                     if (serverGroup.isStatic() && newOnlineAmount > 1) {
-                        if (serverGroup.isStatic() && newOnlineAmount > 1) {
-                            sender.sendError("Static server groups cannot have an onlineAmount bigger than 1!");
-                            return;
-                        }
+                        sender.sendError("Static server groups cannot have an onlineAmount bigger than 1!");
+                        return;
                     }
                     serverGroup.setOnlineAmount(Integer.parseInt(value));
                     break;
@@ -65,8 +63,11 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
                     int priority = Integer.parseInt(value);
                     serverGroup.setPriority(priority);
                     break;
+                case "jrepath":
+                    serverGroup.setJrePath(value);
+                    break;
                 default:
-                    invalidArgs(sender, "editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
+                    invalidArgs(sender, "editgroup <name> <onlineAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int) | jrePath (String)> <value>");
                     return;
             }
             TimoCloudCore.getInstance().getInstanceManager().saveServerGroups();
@@ -111,8 +112,11 @@ public class EditGroupCommandHandler extends CommandFormatUtil implements Comman
                     int priority = Integer.parseInt(value);
                     proxyGroup.setPriority(priority);
                     break;
+                case "jrepath":
+                    proxyGroup.setJrePath(value);
+                    break;
                 default:
-                    invalidArgs(sender, "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int)> <value>");
+                    invalidArgs(sender, "editgroup <name> <playersPerProxy (int) | maxPlayers (int) | keepFreeSlots (int) | minAmount (int) | maxAmount (int) | base (String) | ram (int) | static (boolean) | priority (int) | jrePath (String)> <value>");
                     return;
             }
             TimoCloudCore.getInstance().getInstanceManager().saveProxyGroups();

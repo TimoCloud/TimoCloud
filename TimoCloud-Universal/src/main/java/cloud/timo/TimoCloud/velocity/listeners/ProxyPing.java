@@ -8,7 +8,7 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyPingEvent;
 import com.velocitypowered.api.proxy.server.ServerPing;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 public class ProxyPing {
 
@@ -20,7 +20,7 @@ public class ProxyPing {
         serverPing = serverPing.asBuilder().maximumPlayers(proxyObject.getGroup().getMaxPlayerCount()).onlinePlayers(
                 proxyObject.getGroup().getOnlinePlayerCount()).build();
         if (TimoCloudVelocity.getInstance().getFileManager().getConfig().getBoolean("useGlobalMotd"))
-            serverPing = serverPing.asBuilder().description(TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', proxyObject.getGroup().getMotd()))).build();
+            serverPing = serverPing.asBuilder().description(Component.text(ChatColorUtil.translateAlternateColorCodes('&', proxyObject.getGroup().getMotd()))).build();
         event.setPing(serverPing);
     }
 
