@@ -76,7 +76,7 @@ public class Proxy implements Instance, Communicatable {
     }
 
     private void checkTimeout() {
-        if (System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
+        if (getGroup().getTimeout() != -1 && System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
             //Timeout
             kill();
             TimoCloudCore.getInstance().warning("Proxy " + getName() + " timed out.");
@@ -219,7 +219,6 @@ public class Proxy implements Instance, Communicatable {
                 stop();
                 break;
             case BASE_PROXY_STARTED:
-                lastContact = System.currentTimeMillis();
                 setPort(((Number) message.get("port")).intValue());
                 setPid(((Number) message.get("pid")).intValue());
                 try {
