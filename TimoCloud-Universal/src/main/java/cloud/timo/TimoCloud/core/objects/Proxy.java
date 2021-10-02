@@ -152,7 +152,7 @@ public class Proxy implements Instance, Communicatable {
 
 
     public void requestPidStatus() {
-        if(getPid() == -1) return;
+        if (getPid() == -1) return;
         Message message = Message.create()
                 .setType(MessageType.BASE_PID_EXIST_REQUEST)
                 .set("pid", getPid())
