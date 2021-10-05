@@ -165,7 +165,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
     }
 
     private void registerTasks() {
-        server.getScheduler().buildTask(this, this::everySecond).delay(1L, TimeUnit.SECONDS).repeat(1L, TimeUnit.SECONDS);
+        server.getScheduler().buildTask(this, this::everySecond).repeat(1L, TimeUnit.SECONDS).schedule();
     }
 
     public String getTimoCloudCoreIP() {
