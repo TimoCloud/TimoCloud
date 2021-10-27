@@ -33,6 +33,9 @@ import java.security.PublicKey;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Server implements Instance, Communicatable {
@@ -56,6 +59,9 @@ public class Server implements Instance, Communicatable {
     private boolean registered;
     private boolean connected;
     private PublicKey publicKey;
+    private int pid;
+    private final ScheduledExecutorService scheduler;
+    private long lastContact = System.currentTimeMillis();
 
     private DoAfterAmount templateUpdate;
 
@@ -67,6 +73,20 @@ public class Server implements Instance, Communicatable {
         this.address = new InetSocketAddress(base.getPublicAddress(), 0);
         this.map = map;
         if (this.map == null) this.map = "";
+        this.logStorage = new LogStorage();
+        this.pid = -1;
+
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::requestPidStatus, 5, 5, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(this::checkTimeout, 5, 5, TimeUnit.SECONDS);
+    }
+
+    private void checkTimeout() {
+        if (getGroup().getTimeout() != -1 && System.currentTimeMillis() - lastContact > getGroup().getTimeout()) {
+            //Timeout
+            kill();
+            TimoCloudCore.getInstance().warning("Server " + getName() + " timed out.");
+        }
     }
 
     public boolean isStatic() {
@@ -88,7 +108,8 @@ public class Server implements Instance, Communicatable {
                     .set("globalHash", HashUtil.getHashes(TimoCloudCore.getInstance().getFileManager().getServerGlobalDirectory()))
                     .set("spigotParameters", getGroup().getSpigotParameters())
                     .set("javaParameters", getGroup().getJavaParameters())
-                    .set("jrePath", getGroup().getJrePath());
+                    .set("jrePath", getGroup().getJrePath())
+                    .set("timeout", getGroup().getTimeout());
             if (!getGroup().isStatic()) {
                 File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
                 File mapDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName() + "_" + getMap());
@@ -133,9 +154,11 @@ public class Server implements Instance, Communicatable {
     public void onDisconnect() {
         this.connected = false;
         setChannel(null);
-        unregister();
-        TimoCloudCore.getInstance().info("Server " + getName() + " disconnected.");
-        onShutdown();
+        if (isRegistered()) {
+            unregister();
+            TimoCloudCore.getInstance().info("Server " + getName() + " disconnected.");
+            onShutdown();
+        }
     }
 
     /**
@@ -172,6 +195,24 @@ public class Server implements Instance, Communicatable {
         this.registered = false;
     }
 
+    @Override
+    public void kill() {
+        Message message = Message.create()
+                .setType(MessageType.BASE_INSTANCE_KILL)
+                .setData(getId());
+        getBase().sendMessage(message);
+        onShutdown();
+    }
+
+    public void requestPidStatus() {
+        if(getPid() == -1) return;
+        Message message = Message.create()
+                .setType(MessageType.BASE_PID_EXIST_REQUEST)
+                .set("pid", getPid())
+                .set("id", getId());
+        getBase().sendMessage(message);
+    }
+
     /**
      * Called when the server is completely shut down
      */
@@ -180,6 +221,7 @@ public class Server implements Instance, Communicatable {
         getBase().removeServer(this);
 
         getBase().sendMessage(Message.create().setType(MessageType.BASE_SERVER_STOPPED).setData(getId()));
+        scheduler.shutdown();
     }
 
     public void onPlayerConnect(PlayerObject playerObject) {
@@ -192,6 +234,11 @@ public class Server implements Instance, Communicatable {
 
     @Override
     public void onMessage(Message message, Communicatable sender) {
+        if (getChannel() != null &&
+                sender.getChannel().id().equals(getChannel().id())) {
+            //communicate
+            lastContact = System.currentTimeMillis();
+        }
         MessageType type = message.getType();
         Object data = message.getData();
         switch (type) {
@@ -218,7 +265,9 @@ public class Server implements Instance, Communicatable {
                 stop();
                 break;
             case BASE_SERVER_STARTED:
+                lastContact = System.currentTimeMillis();
                 setPort(((Number) message.get("port")).intValue());
+                setPid(((Number) message.get("pid")).intValue());
                 try {
                     setPublicKey(RSAKeyUtil.publicKeyFromBase64((String) message.get("publicKey")));
                 } catch (Exception e) {
@@ -239,6 +288,14 @@ public class Server implements Instance, Communicatable {
                 if (isRegistered() && sender instanceof Base) break;
                 LogEntry logEntry = JsonConverter.convertMapIfNecessary(data, LogEntry.class);
                 logStorage.addEntry(logEntry);
+                break;
+            case BASE_PID_EXIST_RESPONSE:
+                final boolean running = (boolean) message.get("running");
+                if (!running) {
+                    unregister();
+                    TimoCloudCore.getInstance().info("Process of Server " + getName() + " not found.");
+                    onShutdown();
+                }
                 break;
             default:
                 sendMessage(message);
@@ -345,6 +402,14 @@ public class Server implements Instance, Communicatable {
     public void setPort(Integer port) {
         this.port = port;
         setAddress(new InetSocketAddress(getAddress().getAddress(), port));
+    }
+
+    public void setPid(int pid) {
+        this.pid = pid;
+    }
+
+    public int getPid() {
+        return pid;
     }
 
     public int getOnlinePlayerCount() {

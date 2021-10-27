@@ -90,4 +90,10 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
     public String generateId() {
         return RandomIdGenerator.generateId();
     }
+
+    @Override
+    public int getTimeout() {
+        return 1000*60*3;
+    }
+
 }

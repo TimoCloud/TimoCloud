@@ -40,6 +40,7 @@ public class ServerGroup implements Group {
     private List<String> javaParameters;
     private List<String> spigotParameters;
     private String jrePath;
+    private int timeout;
 
     public ServerGroup(ServerGroupProperties properties) {
         construct(properties);
@@ -49,8 +50,8 @@ public class ServerGroup implements Group {
         construct(properties);
     }
 
-    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jdkPath) {
-        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters, jdkPath);
+    public ServerGroup(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseName, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jdkPath, int timeout) {
+        construct(id, name, onlineAmount, maxAmount, ram, isStatic, priority, baseName, sortOutStates, javaParameters, spigotParameters, jdkPath, timeout);
     }
 
     @SuppressWarnings("unchecked")
@@ -70,7 +71,8 @@ public class ServerGroup implements Group {
                     (Collection<String>) properties.getOrDefault("sort-out-states", defaultProperties.getSortOutStates()),
                     (List<String>) properties.getOrDefault("javaParameters", defaultProperties.getJavaParameters()),
                     (List<String>) properties.getOrDefault("spigotParameters", defaultProperties.getSpigotParameters()),
-                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())));
+                    ((String) properties.getOrDefault("jrePath", defaultProperties.getJrePath())),
+                    ((Number) properties.getOrDefault("timeout", defaultProperties.getTimeout())).intValue());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
             e.printStackTrace();
@@ -90,14 +92,15 @@ public class ServerGroup implements Group {
         properties.put("javaParameters", getJavaParameters());
         properties.put("spigotParameters", getSpigotParameters());
         properties.put("jrePath", getJrePath());
+        properties.put("timeout", getTimeout());
         return properties;
     }
 
     public void construct(ServerGroupProperties properties) {
-        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters(), properties.getJrePath());
+        construct(properties.getId(), properties.getName(), properties.getOnlineAmount(), properties.getMaxAmount(), properties.getRam(), properties.isStatic(), properties.getPriority(), properties.getBaseIdentifier(), properties.getSortOutStates(), properties.getJavaParameters(), properties.getSpigotParameters(), properties.getJrePath(), properties.getTimeout());
     }
 
-    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jrePath) {
+    public void construct(String id, String name, int onlineAmount, int maxAmount, int ram, boolean isStatic, int priority, String baseIdentifier, Collection<String> sortOutStates, List<String> javaParameters, List<String> spigotParameters, String jrePath, int timeout) {
         if (isStatic() && onlineAmount > 1) {
             TimoCloudCore.getInstance().severe("Static groups (" + name + ") can only have 1 server. Please set 'onlineAmount' to 1");
             onlineAmount = 1;
@@ -115,6 +118,7 @@ public class ServerGroup implements Group {
         this.spigotParameters = spigotParameters;
         this.javaParameters = javaParameters;
         this.jrePath = jrePath;
+        this.timeout = timeout;
         if (isStatic() && getBase() == null) {
             TimoCloudCore.getInstance().severe("Static server group " + getName() + " has no base specified. Please specify a base name in order to enable starting of servers.");
         }
@@ -253,6 +257,14 @@ public class ServerGroup implements Group {
     @Override
     public Base getBase() {
         return base;
+    }
+  
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     public void setBase(Base base) {

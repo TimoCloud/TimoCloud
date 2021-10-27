@@ -7,7 +7,7 @@ import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import cloud.timo.TimoCloud.velocity.managers.VelocityMessageManager;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,7 +56,7 @@ public class TimoCloudCommand implements SimpleCommand {
                     .set("sender", sendername)
                     .toString());
         } catch (Exception e) {
-            invocation.source().sendMessage(TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', "&cAn error occurred while executing command. Please see console for more details.")));
+            invocation.source().sendMessage(Component.text(ChatColorUtil.translateAlternateColorCodes('&', "&cAn error occured while exeuting command. Please see console for more details.")));
             TimoCloudVelocity.getInstance().severe(e);
         }
     }
@@ -67,7 +67,7 @@ public class TimoCloudCommand implements SimpleCommand {
 
     public void sendMessage(String senderName, String message) {
         if (getSender(senderName) == null) return;
-        getSender(senderName).source().sendMessage(TextComponent.of(ChatColorUtil.translateAlternateColorCodes('&', message)));
+        getSender(senderName).source().sendMessage(Component.text(ChatColorUtil.translateAlternateColorCodes('&', message)));
     }
 
     private Invocation getSender(String name) {

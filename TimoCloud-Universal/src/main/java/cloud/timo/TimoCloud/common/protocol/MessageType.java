@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 import java.util.Map;
 
-// NEXT FREE ID: 52
+// NEXT FREE ID: 56
 
 @RequiredArgsConstructor
 public enum MessageType {
@@ -17,6 +17,7 @@ public enum MessageType {
     PROXY_HANDSHAKE_SUCCESS                     (4),
     PROXY_EXECUTE_COMMAND                       (5),
     PROXY_SEND_PLAYER                           (51),
+    PROXY_SEND_MESSAGE                          (52),
     PROXY_STOP                                  (6),
 
     PROXY_SET_PLAYER_COUNT                      (7),
@@ -54,6 +55,9 @@ public enum MessageType {
     BASE_SERVER_NOT_STARTED                     (36),
     BASE_PROXY_STARTED                          (37),
     BASE_PROXY_NOT_STARTED                      (38),
+    BASE_INSTANCE_KILL                          (53), //Kill a screen
+    BASE_PID_EXIST_REQUEST                      (54), //ask if process is still running
+    BASE_PID_EXIST_RESPONSE                     (55), //answers whether process is still running
 
     CORD_HANDSHAKE                              (39),
     CORD_HANDSHAKE_SUCCESS                      (40),

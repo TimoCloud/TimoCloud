@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +65,7 @@ public class SignManager {
     private int updates = 0;
 
     public SignManager() {
-        load();
+        Bukkit.getScheduler().runTask(TimoCloudBukkit.getInstance(), this::load);
     }
 
     public void load() {

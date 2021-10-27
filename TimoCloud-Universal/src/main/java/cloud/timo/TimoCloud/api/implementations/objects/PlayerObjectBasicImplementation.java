@@ -81,6 +81,17 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     }
 
     @Override
+    public APIRequestFuture<Boolean> sendMessage(String message) {
+        return new APIRequestImplementation<Boolean>(APIRequestType.P_SEND_MESSAGE, getProxy().getId(), new TypeMap()
+                .put("playerUUID", getId())
+                .put("message", message)).submit();
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    @Override
     public PlayerObjectLink toLink() {
         return new PlayerObjectLink(this);
     }

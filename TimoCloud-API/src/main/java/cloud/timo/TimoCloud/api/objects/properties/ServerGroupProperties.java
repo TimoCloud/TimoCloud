@@ -19,6 +19,7 @@ public class ServerGroupProperties {
     private List<String> javaParameters;
     private List<String> spigotParameters;
     private String jrePath;
+    private int timeout;
 
     public ServerGroupProperties(String id, String name) {
         this.id = id;
@@ -33,6 +34,7 @@ public class ServerGroupProperties {
         this.javaParameters = getDefaultPropertiesProvider().getJavaParameters();
         this.spigotParameters = getDefaultPropertiesProvider().getSpigotParameters();
         this.jrePath = getDefaultPropertiesProvider().getJrePath();
+        this.timeout = getDefaultPropertiesProvider().getTimeout();
     }
 
     public ServerGroupProperties(String name) {
@@ -145,6 +147,15 @@ public class ServerGroupProperties {
         return jrePath;
     }
 
+    public int getTimeout() {
+        return timeout;
+    }
+
+    public ServerGroupProperties setTimeout(int timeout) {
+        this.timeout = timeout;
+        return this;
+    }
+
     public ServerGroupProperties setJrePath(String jrePath) {
         this.jrePath = jrePath;
         return this;
@@ -173,6 +184,8 @@ public class ServerGroupProperties {
         List<String> getSpigotParameters();
 
         String getJrePath();
+
+        int getTimeout();
 
     }
 }

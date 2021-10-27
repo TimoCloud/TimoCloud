@@ -6,7 +6,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class JsonConverter {
 
-    private final Gson GSON = new Gson();
+    private final Gson GSON = GsonFactory.getGson();
 
     public <T> T convertMapIfNecessary(Object map, Class<T> clazz) {
         if (map == null) return null;

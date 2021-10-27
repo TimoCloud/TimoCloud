@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 public class GenericGsonSerializer implements JsonSerializer<Object>, JsonDeserializer<Object> {
 
     private static final String CLASS_PROPERTY_NAME = "class";
-    private final Gson gson = new Gson();
+    private final Gson gson = GsonFactory.getGson();
 
     @Override
     public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

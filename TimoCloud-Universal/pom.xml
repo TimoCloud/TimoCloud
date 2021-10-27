@@ -9,7 +9,7 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.TimoCloud</groupId>
-        <version>6.3.2</version>
+        <version>6.4.3</version>
     </parent>
 
     <repositories>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>com.velocitypowered</groupId>
             <artifactId>velocity-api</artifactId>
-            <version>1.1.5</version>
+            <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -173,6 +173,17 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>5.8.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.26</version>
@@ -216,6 +227,12 @@
             <artifactId>mockito-core</artifactId>
             <version>2.8.9</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.moandjiezana.toml</groupId>
+            <artifactId>toml4j</artifactId>
+            <version>0.7.2</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>

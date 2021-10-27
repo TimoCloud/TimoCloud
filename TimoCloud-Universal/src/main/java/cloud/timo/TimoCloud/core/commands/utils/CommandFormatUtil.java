@@ -1,12 +1,7 @@
 package cloud.timo.TimoCloud.core.commands.utils;
 
 import cloud.timo.TimoCloud.api.core.commands.CommandSender;
-import cloud.timo.TimoCloud.core.objects.Base;
-import cloud.timo.TimoCloud.core.objects.Group;
-import cloud.timo.TimoCloud.core.objects.Proxy;
-import cloud.timo.TimoCloud.core.objects.ProxyGroup;
-import cloud.timo.TimoCloud.core.objects.Server;
-import cloud.timo.TimoCloud.core.objects.ServerGroup;
+import cloud.timo.TimoCloud.core.objects.*;
 
 import java.net.InetAddress;
 
@@ -28,6 +23,7 @@ public class CommandFormatUtil {
                 " &7(&6RAM&7: &2" + group.getRam() + "MB" +
                 "&7, &6Keep-Online-Amount&7: &2" + group.getOnlineAmount() +
                 "&7, &6Max-Amount&7: &2" + group.getMaxAmount() +
+                "&7, &6JrePath&7: &2" + group.getJrePath() +
                 "&7, &6static&7: &2" + group.isStatic() +
                 "&7)");
         sender.sendMessage("  &6Servers&7: &2" + group.getServers().size());
@@ -49,6 +45,7 @@ public class CommandFormatUtil {
                 "&7, &6Max-Amount&7: &2" + group.getMaxAmount() +
                 "&7, &6Min-Amount&7: &2" + group.getMinAmount() +
                 "&7, &6Priority&7: &2" + group.getPriority() +
+                "&7, &6JrePath&7: &2" + group.getJrePath() +
                 "&7, &6static&7: &2" + group.isStatic() +
                 "&7)");
         sender.sendMessage("  &6Proxies&7: &2" + group.getProxies().size());

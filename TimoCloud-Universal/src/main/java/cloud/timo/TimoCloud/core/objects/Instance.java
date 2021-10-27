@@ -11,4 +11,5 @@ public interface Instance extends PublicKeyIdentifiable {
     void register();
 
     void unregister();
+    void kill();
 }

@@ -18,6 +18,7 @@ import cloud.timo.TimoCloud.velocity.api.TimoCloudUniversalAPIVelocityImplementa
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import io.netty.channel.Channel;
+import net.kyori.adventure.text.Component;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -62,12 +63,16 @@ public class VelocityStringHandler extends BasicStringHandler {
                 String playerUUID = (String) information.get("playerUUID");
                 String serverObject = (String) information.get("serverObject");
                 Optional<Player> player = TimoCloudVelocity.getInstance().getServer().getPlayer(UUID.fromString(playerUUID));
-                if (!player.isPresent())
-                    return;
-
-                player.get().createConnectionRequest(TimoCloudVelocity.getInstance().getServer().getServer(serverObject).get()).fireAndForget();
+                player.ifPresent(it -> it.createConnectionRequest(TimoCloudVelocity.getInstance().getServer().getServer(serverObject).get()).fireAndForget());
                 break;
             }
+            case PROXY_SEND_MESSAGE:
+                Map<String, Object> information = (Map<String, Object>) data;
+                String playerUUID = (String) information.get("playerUUID");
+                String chatMessage = (String) information.get("chatMessage");
+                Optional<Player> player = TimoCloudVelocity.getInstance().getServer().getPlayer(UUID.fromString(playerUUID));
+                player.ifPresent(it -> it.sendMessage(Component.text(chatMessage)));
+                break;
             case PROXY_ADD_SERVER:
                 TimoCloudVelocity.getInstance().getServer().registerServer(new ServerInfo(server, new InetSocketAddress((String) message.get("address"), ((Number) message.get("port")).intValue())));
                 break;

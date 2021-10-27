@@ -5,7 +5,8 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.common.utils.ChatColorUtil;
 import cloud.timo.TimoCloud.velocity.TimoCloudVelocity;
 import com.velocitypowered.api.command.SimpleCommand;
-import net.kyori.text.TextComponent;
+import net.kyori.adventure.text.Component;
+
 
 public class FindCommand implements SimpleCommand {
 
@@ -27,5 +28,9 @@ public class FindCommand implements SimpleCommand {
             return;
         }
         sendMessage(invocation, "&e" + playerObject.getName() + " &ais online at &6" + playerObject.getServer().getName());
+    }
+  
+    private static void sendMessage(Invocation sender, String message) {
+        sender.source().sendMessage(Component.text(TimoCloudVelocity.getInstance().getPrefix()).content(ChatColorUtil.translateAlternateColorCodes('&', message)));
     }
 }
