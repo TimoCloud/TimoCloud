@@ -33,6 +33,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     private PublicKey publicKey;
     private boolean connected;
     private boolean ready;
+    private boolean staticOnly;
     private Set<Server> servers;
     private Set<Proxy> proxies;
     /**
@@ -44,8 +45,8 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         construct(properties);
     }
 
-    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String publicIpConfig, PublicKey publicKey) {
-        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, publicIpConfig, publicKey);
+    public Base(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, boolean staticOnly, String publicIpConfig, PublicKey publicKey) {
+        construct(id, name, maxRam, keepFreeRam, maxCpuLoad, staticOnly, publicIpConfig, publicKey);
     }
 
     public Base(Map<String, Object> properties) throws Exception {
@@ -53,15 +54,16 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
     }
 
     public void construct(BaseProperties baseProperties) {
-        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(),baseProperties.getPublicIpConfig(), baseProperties.getPublicKey());
+        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getMaxRam(), baseProperties.getKeepFreeRam(), baseProperties.getMaxCpuLoad(), baseProperties.isStaticOnly(), baseProperties.getPublicIpConfig(), baseProperties.getPublicKey());
     }
 
-    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, String publicIpConfig, PublicKey publicKey) {
+    public void construct(String id, String name, int maxRam, int keepFreeRam, double maxCpuLoad, boolean staticOnly, String publicIpConfig, PublicKey publicKey) {
         this.id = id;
         this.name = name;
         this.maxRam = maxRam;
         this.keepFreeRam = keepFreeRam;
         this.maxCpuLoad = maxCpuLoad;
+        this.staticOnly = staticOnly;
         this.publicIpConfig = publicIpConfig;
         this.publicKey = publicKey;
         this.servers = new HashSet<>();
@@ -87,6 +89,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                     ((Number) properties.getOrDefault("maxRam", defaultProperties.getMaxRam())).intValue(),
                     ((Number) properties.getOrDefault("keepFreeRam", defaultProperties.getKeepFreeRam())).intValue(),
                     ((Number) properties.getOrDefault("maxCpuLoad", defaultProperties.getMaxCpuLoad())).doubleValue(),
+                    ((boolean) properties.getOrDefault("staticOnly", false)),
                     (String) properties.getOrDefault("publicAddress", defaultProperties.getPublicIpConfig()),
                     publicKey
             );
@@ -104,6 +107,7 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
         properties.put("maxRam", getMaxRam());
         properties.put("keepFreeRam", getKeepFreeRam());
         properties.put("maxCpuLoad", getMaxCpuLoad());
+        properties.put("onlyStatic", isStaticOnly());
         properties.put("publicAddress", getPublicIpConfig());
         properties.put("publicKey", Base64.getEncoder().encodeToString(getPublicKey().getEncoded()));
         return properties;
@@ -344,6 +348,14 @@ public class Base implements PublicKeyIdentifiable, Communicatable {
                 getServers().stream().map(Server::toLink).collect(Collectors.toSet()),
                 getProxies().stream().map(Proxy::toLink).collect(Collectors.toSet())
         );
+    }
+
+    public boolean isStaticOnly() {
+        return staticOnly;
+    }
+
+    public void setStaticOnly(boolean staticOnly) {
+        this.staticOnly = staticOnly;
     }
 
     public BaseObjectLink toLink() {
