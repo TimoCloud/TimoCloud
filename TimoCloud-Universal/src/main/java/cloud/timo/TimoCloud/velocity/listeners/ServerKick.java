@@ -27,8 +27,7 @@ public class ServerKick {
             return;
         }
         TimoCloudVelocity.getInstance().info("Connecting to fallback server: " + server.get().getServerInfo().getName());
-        event.setResult(() -> false);
-        event.getPlayer().createConnectionRequest(server.get()).fireAndForget();
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(server.get()));
     }
 
 }
