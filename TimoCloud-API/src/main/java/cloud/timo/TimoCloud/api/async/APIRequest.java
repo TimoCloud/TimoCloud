@@ -24,5 +24,5 @@ public interface APIRequest<T> {
     /**
      * @return Parameters for the APIRequest. Parameters for APIRequest setter types are usually stored as "value"
      */
-    Map getData();
+    Map<?, ?> getData();
 }

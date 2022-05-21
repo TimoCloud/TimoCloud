@@ -1,18 +1,22 @@
 package cloud.timo.TimoCloud.common.utils;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class ServerToGroupUtil {
-    public static String getGroupByServer(String server) {
+
+    public String getGroupByServer(String server) {
         if (!server.contains("-")) {
             return server;
         }
-        String ret = "";
+        StringBuilder sb = new StringBuilder();
         String[] split = server.split("-");
         for (int i = 0; i < split.length - 1; i++) {
-            ret = ret + split[i];
+            sb.append(split[i]);
             if (i < split.length - 2) {
-                ret = ret + "-";
+                sb.append("-");
             }
         }
-        return ret;
+        return sb.toString();
     }
 }

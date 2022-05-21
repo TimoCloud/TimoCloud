@@ -10,7 +10,14 @@ import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.common.json.GsonFactory;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Cord;
+import cloud.timo.TimoCloud.core.objects.Group;
+import cloud.timo.TimoCloud.core.objects.GroupInstanceDemand;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import cloud.timo.TimoCloud.core.objects.storage.IdentifiableStorage;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import com.google.gson.JsonArray;
@@ -21,23 +28,70 @@ import io.netty.channel.Channel;
 import java.io.File;
 import java.net.InetAddress;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CoreInstanceManager {
 
-    private IdentifiableStorage<ServerGroup> serverGroups;
-    private IdentifiableStorage<ProxyGroup> proxyGroups;
-    private IdentifiableStorage<Server> servers;
-    private IdentifiableStorage<Proxy> proxies;
-    private IdentifiableStorage<Base> bases;
-    private IdentifiableStorage<Cord> cords;
-    // TODO Store players here, not in proxy objects
-
     private static final int MAX_SERVERS = 2500;
     private static final int MAX_PROXIES = 500;
     private static final int MAX_BASES = 500;
+    private final Random random = new Random();
+    private IdentifiableStorage<ServerGroup> serverGroups;
+    private IdentifiableStorage<ProxyGroup> proxyGroups;
+    private IdentifiableStorage<Server> servers;
+    // TODO Store players here, not in proxy objects
+    private IdentifiableStorage<Proxy> proxies;
+    private IdentifiableStorage<Base> bases;
+    private IdentifiableStorage<Cord> cords;
+
+    /**
+     * Helper method to convert a map template directory to a map name
+     *
+     * @param file The map template directory
+     * @return The map's name
+     */
+    private static String fileToMapName(File file) {
+        if (!file.getName().contains("_")) return file.getName();
+        String[] split = file.getName().split("_");
+        return String.join("_", Arrays.copyOfRange(split, 1, split.length));
+    }
+
+    /**
+     * This method searches case-insensitively for a key in a map
+     *
+     * @param key The key which shall be searched for (case-insensitive)
+     * @param map The map in which shall be searched
+     * @return The key's value if existing, otherwise null
+     */
+    private static Object searchInMap(String key, Map<String, ?> map) {
+        if (map.containsKey(key)) return map.get(key);
+        for (String k : map.keySet()) {
+            if (k.equalsIgnoreCase(key)) return map.get(k);
+        }
+        return null;
+    }
+
+    /**
+     * A helper method to divide and rounding up
+     *
+     * @param num     The number which shall be divided
+     * @param divisor The divisor
+     * @return The quotient, rounded up
+     */
+    private static int divideRoundUp(int num, int divisor) {
+        return (num + divisor - 1) / divisor;
+    }
 
     public void init() {
         makeInstances();
@@ -83,7 +137,7 @@ public class CoreInstanceManager {
             this.serverGroups = serverGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading server groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -108,7 +162,7 @@ public class CoreInstanceManager {
             this.proxyGroups = proxyGroups;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading proxy groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -123,8 +177,10 @@ public class CoreInstanceManager {
                 String name = (String) properties.get("name");
                 try {
                     Base base = getBaseById(id);
-                    if (base != null) base.construct(properties);
-                    else base = new Base(properties);
+                    if (base != null)
+                        base.construct(properties);
+                    else
+                        base = new Base(properties);
                     bases.add(base);
                 } catch (Exception e) {
                     TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
@@ -133,7 +189,7 @@ public class CoreInstanceManager {
             this.bases = bases;
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while loading bases: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -156,7 +212,7 @@ public class CoreInstanceManager {
             TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(serverGroups), TimoCloudCore.getInstance().getFileManager().getServerGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving server groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -170,7 +226,7 @@ public class CoreInstanceManager {
             TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(proxyGroups), TimoCloudCore.getInstance().getFileManager().getProxyGroupsFile());
         } catch (Exception e) {
             TimoCloudCore.getInstance().severe("Error while saving proxy groups: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -183,8 +239,8 @@ public class CoreInstanceManager {
         try {
             TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while saving basess: ");
-            e.printStackTrace();
+            TimoCloudCore.getInstance().severe("Error while saving bases: ");
+            TimoCloudCore.getInstance().severe(e);
         }
     }
 
@@ -202,7 +258,7 @@ public class CoreInstanceManager {
      * @return Group object
      */
     public Group getGroupByName(String name) {
-        Group group = null;
+        Group group;
         group = getProxyGroupByName(name);
         if (group != null) return group;
         return getServerGroupByName(name);
@@ -367,7 +423,7 @@ public class CoreInstanceManager {
                     .filter(m -> m.getValue() == bestScore)
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
-            map = best.get(new Random().nextInt(best.size()));
+            map = best.get(random.nextInt(best.size()));
         }
 
         Server server = new Server(name, id, base, map, group);
@@ -386,18 +442,6 @@ public class CoreInstanceManager {
             if (sub.isDirectory() && sub.getName().startsWith(group.getName() + "_")) valid.add(fileToMapName(sub));
         }
         return valid;
-    }
-
-    /**
-     * Helper method to convert a map template directory to a map name
-     *
-     * @param file The map template directory
-     * @return The map's name
-     */
-    private static String fileToMapName(File file) {
-        if (!file.getName().contains("_")) return file.getName();
-        String[] split = file.getName().split("_");
-        return Arrays.stream(Arrays.copyOfRange(split, 1, split.length)).collect(Collectors.joining("_"));
     }
 
     /**
@@ -934,35 +978,9 @@ public class CoreInstanceManager {
     }
 
     /**
-     * This method searches case-insensitively for a key in a map
-     *
-     * @param key The key which shall be searched for (case-insensitive)
-     * @param map The map in which shall be searched
-     * @return The key's value if existing, otherwise null
-     */
-    private static Object searchInMap(String key, Map<String, ?> map) {
-        if (map.containsKey(key)) return map.get(key);
-        for (String k : map.keySet()) {
-            if (k.equalsIgnoreCase(key)) return map.get(k);
-        }
-        return null;
-    }
-
-    /**
      * @return A collection of all bases
      */
     public Collection<Base> getBases() {
         return bases.values();
-    }
-
-    /**
-     * A helper method to divide and rounding up
-     *
-     * @param num     The number which shall be divided
-     * @param divisor The divisor
-     * @return The quotient, rounded up
-     */
-    private static int divideRoundUp(int num, int divisor) {
-        return (num + divisor - 1) / divisor;
     }
 }

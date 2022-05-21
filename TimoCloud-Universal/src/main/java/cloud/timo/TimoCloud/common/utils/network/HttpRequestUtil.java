@@ -3,6 +3,7 @@ package cloud.timo.TimoCloud.common.utils.network;
 import cloud.timo.TimoCloud.common.objects.HttpRequestProperty;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import lombok.experimental.UtilityClass;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -11,9 +12,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+@UtilityClass
 public class HttpRequestUtil {
 
-    public static String request(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
+    public String request(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod(requestMethod);
@@ -38,11 +40,11 @@ public class HttpRequestUtil {
         return stringBuilder.toString();
     }
 
-    public static JsonElement requestJson(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
+    public JsonElement requestJson(String urlString, String requestMethod, String data, HttpRequestProperty... properties) throws Exception {
         return new JsonParser().parse(request(urlString, requestMethod, data, properties));
     }
 
-    public static Object requestJson(String urlString, String requestMethod, HttpRequestProperty... properties) throws Exception {
+    public Object requestJson(String urlString, String requestMethod, HttpRequestProperty... properties) throws Exception {
         return requestJson(urlString, requestMethod, null, properties);
     }
 

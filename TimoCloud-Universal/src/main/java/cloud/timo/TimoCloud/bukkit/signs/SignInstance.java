@@ -1,74 +1,32 @@
 package cloud.timo.TimoCloud.bukkit.signs;
 
 import cloud.timo.TimoCloud.api.objects.ServerObject;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.bukkit.Location;
 
+@RequiredArgsConstructor
 public class SignInstance {
-
-    private Location location;
-    private String target;
-    private String templateName;
-    private SignTemplate template;
-    private boolean dynamic;
-    private int priority;
+    @Getter
+    private final Location location;
+    @Getter
+    private final String target;
+    @Getter
+    private final String templateName;
+    @Getter
+    private final SignTemplate template;
+    @Getter
+    private final boolean dynamic;
+    @Getter
+    private final int priority;
+    @Getter
+    @Setter
     private int step = 0;
+    @Getter
+    @Setter
     private ServerObject targetServer;
+    @Getter
+    @Setter
     private boolean active = true;
-
-    public SignInstance(Location location, String target, String templateName, SignTemplate template, boolean dynamic, int priority) {
-        this.location = location;
-        this.target = target;
-        this.templateName = templateName;
-        this.template = template;
-        this.dynamic = dynamic;
-        this.priority = priority;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public String getTemplateName() {
-        return templateName;
-    }
-
-    public SignTemplate getTemplate() {
-        return template;
-    }
-
-    public boolean isDynamic() {
-        return dynamic;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public int getStep() {
-        return step;
-    }
-
-    public void setStep(int step) {
-        this.step = step;
-    }
-
-    public ServerObject getTargetServer() {
-        return targetServer;
-    }
-
-    public void setTargetServer(ServerObject targetServer) {
-        this.targetServer = targetServer;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 }

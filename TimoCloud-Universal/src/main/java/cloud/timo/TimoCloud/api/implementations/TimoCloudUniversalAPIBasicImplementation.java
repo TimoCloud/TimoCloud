@@ -7,7 +7,13 @@ import cloud.timo.TimoCloud.api.events.Event;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
 import cloud.timo.TimoCloud.api.implementations.listeners.TimoCloudUniversalAPIStorageUpdateListener;
 import cloud.timo.TimoCloud.api.implementations.storage.IdentifiableObjectStorage;
-import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
+import cloud.timo.TimoCloud.api.objects.CordObject;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.api.utils.EventUtil;
@@ -18,19 +24,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_PROXY_GROUP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.G_CREATE_SERVER_GROUP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.G_REGISTER_PUBLICKEY;
 
 public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniversalAPI {
-
-    private IdentifiableObjectStorage<ServerGroupObject> serverGroups = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<ProxyGroupObject> proxyGroups = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<ServerObject> servers = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<ProxyObject> proxies = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<BaseObject> bases = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<PlayerObject> players = new IdentifiableObjectStorage<>();
-    private IdentifiableObjectStorage<CordObject> cords = new IdentifiableObjectStorage<>();
 
     private final Class<? extends ServerObject> serverObjectImplementation;
     private final Class<? extends ProxyObject> proxyObjectImplementation;
@@ -39,7 +44,13 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     private final Class<? extends PlayerObject> playerObjectImplementation;
     private final Class<? extends BaseObject> baseObjectImplementation;
     private final Class<? extends CordObject> cordObjectImplementation;
-
+    private IdentifiableObjectStorage<ServerGroupObject> serverGroups = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ProxyGroupObject> proxyGroups = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ServerObject> servers = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<ProxyObject> proxies = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<BaseObject> bases = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<PlayerObject> players = new IdentifiableObjectStorage<>();
+    private IdentifiableObjectStorage<CordObject> cords = new IdentifiableObjectStorage<>();
     private boolean gotAnyData = false;
 
     private ObjectMapper objectMapper;
@@ -59,6 +70,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     private ObjectMapper prepareObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
+
         SimpleAbstractTypeResolver resolver = new SimpleAbstractTypeResolver();
         resolver.addMapping(ServerGroupObject.class, serverGroupObjectImplementation);
         resolver.addMapping(ProxyGroupObject.class, proxyGroupObjectImplementation);
@@ -69,7 +81,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         resolver.addMapping(CordObject.class, cordObjectImplementation);
 
         for (Class<? extends Event> eventClass : EventUtil.getEventClassImplementations().keySet()) {
-            resolver.addMapping((Class) eventClass, EventUtil.getEventClassImplementation(eventClass));
+            resolver.addMapping((Class<Event>) eventClass, EventUtil.getEventClassImplementation(eventClass));
         }
 
         module.setAbstractTypes(resolver);
@@ -80,35 +92,45 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         return objectMapper;
     }
 
+    @SuppressWarnings("unchecked")
     public void setData(Map<String, Object> json) {
         try {
-            ((Collection) json.get("serverGroups")).stream()
-                    .map(object -> readValue((String) object, serverGroupObjectImplementation))
-                    .forEach(serverGroup -> this.serverGroups.add((ServerGroupObject) serverGroup));
-            ((Collection) json.get("proxyGroups")).stream()
-                    .map(object -> readValue((String) object, proxyGroupObjectImplementation))
-                    .forEach(proxyGroup -> this.proxyGroups.add((ProxyGroupObject) proxyGroup));
-            ((Collection) json.get("servers")).stream()
-                    .map(object -> readValue((String) object, serverObjectImplementation))
-                    .forEach(server -> this.servers.add((ServerObject) server));
-            ((Collection) json.get("proxies")).stream()
-                    .map(object -> readValue((String) object, proxyObjectImplementation))
-                    .forEach(proxy -> this.proxies.add((ProxyObject) proxy));
-            ((Collection) json.get("bases")).stream()
-                    .map(object -> readValue((String) object, baseObjectImplementation))
-                    .forEach(base -> this.bases.add((BaseObject) base));
-            ((Collection) json.get("players")).stream()
-                    .map(object -> readValue((String) object, playerObjectImplementation))
-                    .forEach(player -> this.players.add((PlayerObject) player));
-            ((Collection) json.get("cords")).stream()
-                    .map(object -> readValue((String) object, cordObjectImplementation))
-                    .forEach(cord -> this.cords.add((CordObject) cord));
+            ((Collection<String>) json.get("serverGroups")).stream()
+                    .map(object -> readValue(object, serverGroupObjectImplementation))
+                    .forEach(serverGroup -> this.serverGroups.add(serverGroup));
+
+            ((Collection<String>) json.get("proxyGroups")).stream()
+                    .map(object -> readValue(object, proxyGroupObjectImplementation))
+                    .forEach(proxyGroup -> this.proxyGroups.add(proxyGroup));
+
+            ((Collection<String>) json.get("servers")).stream()
+                    .map(object -> readValue(object, serverObjectImplementation))
+                    .forEach(server -> this.servers.add(server));
+
+            ((Collection<String>) json.get("proxies")).stream()
+                    .map(object -> readValue(object, proxyObjectImplementation))
+                    .forEach(proxy -> this.proxies.add(proxy));
+
+            ((Collection<String>) json.get("bases")).stream()
+                    .map(object -> readValue(object, baseObjectImplementation))
+                    .forEach(base -> this.bases.add(base));
+
+            ((Collection<String>) json.get("players")).stream()
+                    .map(object -> readValue(object, playerObjectImplementation))
+                    .forEach(player -> this.players.add(player));
+
+            ((Collection<String>) json.get("cords")).stream()
+                    .map(object -> readValue(object, cordObjectImplementation))
+                    .forEach(cord -> this.cords.add(cord));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (! this.gotAnyData) {
+
+        if (!this.gotAnyData) {
             TimoCloudAPI.getEventAPI().registerListener(new TimoCloudUniversalAPIStorageUpdateListener(this));
         }
+
         this.gotAnyData = true;
     }
 

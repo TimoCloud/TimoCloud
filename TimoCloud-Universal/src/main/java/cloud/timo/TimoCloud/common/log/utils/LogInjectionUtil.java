@@ -4,21 +4,23 @@ import cloud.timo.TimoCloud.api.objects.log.LogLevel;
 import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.common.log.LogEntryReader;
 import cloud.timo.TimoCloud.common.log.PipingLoggingPrintStream;
+import lombok.experimental.UtilityClass;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
 
+@UtilityClass
 public class LogInjectionUtil {
 
-    private static PrintStream formerSystemOut;
-    private static PrintStream formerSystemErr;
+    private PrintStream formerSystemOut;
+    private PrintStream formerSystemErr;
 
-    public static void saveSystemOutAndErr() {
+    public void saveSystemOutAndErr() {
         formerSystemOut = System.out;
         formerSystemErr = System.err;
     }
 
-    public static void injectSystemOutAndErr(Consumer<LogEntry> sendLogEntry) {
+    public void injectSystemOutAndErr(Consumer<LogEntry> sendLogEntry) {
         formerSystemOut = System.out;
         LogEntryReader outReader = new LogEntryReader(sendLogEntry, LogLevel.INFO);
         PipingLoggingPrintStream newOutStream = new PipingLoggingPrintStream(System.out, outReader);
@@ -29,7 +31,7 @@ public class LogInjectionUtil {
         System.setErr(newErrStream);
     }
 
-    public static void restoreSystemOutAndErr() {
+    public void restoreSystemOutAndErr() {
         System.setOut(formerSystemOut);
         System.setErr(formerSystemErr);
     }

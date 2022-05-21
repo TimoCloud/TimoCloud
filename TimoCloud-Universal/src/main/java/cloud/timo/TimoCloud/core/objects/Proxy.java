@@ -36,21 +36,21 @@ import java.util.stream.Collectors;
 
 public class Proxy implements Instance, Communicatable {
 
-    private String name;
-    private String id;
-    private ProxyGroup group;
+    private final String name;
+    private final String id;
+    private final ProxyGroup group;
+    private final Base base;
+    private final Set<PlayerObject> onlinePlayers;
+    private final Collection<DnsRecord> dnsRecords;
+    private final Set<Server> registeredServers;
+    private final LogStorage logStorage;
     private int port;
     private InetSocketAddress address;
-    private Base base;
     private int onlinePlayerCount;
-    private final Set<PlayerObject> onlinePlayers;
     private Channel channel;
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private Collection<DnsRecord> dnsRecords;
-    private Set<Server> registeredServers;
-    private LogStorage logStorage;
     private PublicKey publicKey;
     private int pid;
     private final ScheduledExecutorService scheduler;
@@ -182,13 +182,15 @@ public class Proxy implements Instance, Communicatable {
                 .set("name", server.getName())
                 .set("address", server.getAddress().getAddress().getHostAddress())
                 .set("port", server.getPort()));
-        if (!registeredServers.contains(server)) registeredServers.add(server);
+
+        registeredServers.add(server);
     }
 
     public void unregisterServer(Server server) {
         sendMessage(Message.create()
                 .setType(MessageType.PROXY_REMOVE_SERVER)
                 .set("name", server.getName()));
+
         registeredServers.remove(server);
     }
 
@@ -348,6 +350,14 @@ public class Proxy implements Instance, Communicatable {
         return onlinePlayerCount;
     }
 
+    public void setOnlinePlayerCount(int onlinePlayerCount) {
+        int oldValue = getOnlinePlayerCount();
+        this.onlinePlayerCount = onlinePlayerCount;
+        if (onlinePlayerCount != oldValue) {
+            EventTransmitter.sendEvent(new ProxyOnlinePlayerCountChangeEventBasicImplementation(toProxyObject(), oldValue, onlinePlayerCount));
+        }
+    }
+
     public Set<PlayerObject> getOnlinePlayers() {
         return onlinePlayers;
     }
@@ -396,14 +406,6 @@ public class Proxy implements Instance, Communicatable {
 
     public LogStorage getLogStorage() {
         return logStorage;
-    }
-
-    public void setOnlinePlayerCount(int onlinePlayerCount) {
-        int oldValue = getOnlinePlayerCount();
-        this.onlinePlayerCount = onlinePlayerCount;
-        if (onlinePlayerCount != oldValue) {
-            EventTransmitter.sendEvent(new ProxyOnlinePlayerCountChangeEventBasicImplementation(toProxyObject(), oldValue, onlinePlayerCount));
-        }
     }
 
     @Override

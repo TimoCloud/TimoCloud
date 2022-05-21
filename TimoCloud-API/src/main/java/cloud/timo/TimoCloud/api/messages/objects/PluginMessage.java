@@ -29,6 +29,11 @@ public class PluginMessage {
         return type;
     }
 
+    public PluginMessage setType(String type) {
+        this.type = type;
+        return this;
+    }
+
     public Map<String, Object> getData() {
         return data;
     }
@@ -89,18 +94,13 @@ public class PluginMessage {
         return (String) getObject(key);
     }
 
-    public PluginMessage setType(String type) {
-        this.type = type;
-        return this;
-    }
-
     public PluginMessage set(String key, Object value) {
         getData().put(key, value);
         return this;
     }
 
     public PluginMessage setIfCondition(String key, Object value, boolean condition) {
-        if (! condition) return this;
+        if (!condition) return this;
         return set(key, value);
     }
 
@@ -109,6 +109,6 @@ public class PluginMessage {
     }
 
     public PluginMessage setIfAbsent(String key, Object value) {
-        return setIfCondition(key, value, ! containsProperty(key));
+        return setIfCondition(key, value, !containsProperty(key));
     }
 }

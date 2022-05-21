@@ -1,18 +1,17 @@
 package cloud.timo.TimoCloud.common.utils.options;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@RequiredArgsConstructor
 public class OptionSet {
 
-    private Map<String, Option> options;
+    private final Map<String, Option> options;
 
     public OptionSet() {
-        options = new HashMap<>();
-    }
-
-    public OptionSet(Map<String, Option> options) {
-        this.options = options;
+        this(new HashMap<>());
     }
 
     public void add(Option option) {
@@ -22,7 +21,7 @@ public class OptionSet {
     }
 
     public boolean has(String option) {
-        return option.contains(option) && get(option).isSet();
+        return options.containsKey(option) && get(option).isSet();
     }
 
     public Option get(String option) {

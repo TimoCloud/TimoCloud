@@ -13,12 +13,12 @@ public class CordPipeline extends ChannelInitializer<Channel> {
 
     @Override
     protected void initChannel(Channel ch) {
-        ch.pipeline().addLast(TimoCloudCord.getInstance().getSocketClientHandler());
-        ch.pipeline().addLast("prepender", new PacketLengthPrepender());
-        ch.pipeline().addLast("splitter", new PacketLengthSplitter());
-        ch.pipeline().addLast("decoder", new StringDecoder(CharsetUtil.UTF_8));
-        ch.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
-        ch.pipeline().addLast("handler", TimoCloudCord.getInstance().getStringHandler());
+        ch.pipeline().addLast(TimoCloudCord.getInstance().getSocketClientHandler())
+                .addLast("prepender", new PacketLengthPrepender())
+                .addLast("splitter", new PacketLengthSplitter())
+                .addLast("decoder", new StringDecoder(CharsetUtil.UTF_8))
+                .addLast("encoder", new StringEncoder(CharsetUtil.UTF_8))
+                .addLast("handler", TimoCloudCord.getInstance().getStringHandler());
     }
 
 }

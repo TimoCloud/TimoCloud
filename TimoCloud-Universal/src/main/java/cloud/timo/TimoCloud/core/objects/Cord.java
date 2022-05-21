@@ -10,17 +10,28 @@ import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.CordObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
 import io.netty.channel.Channel;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class Cord implements Communicatable, Identifiable {
 
-    private String id;
-    private String name;
+    @Getter
+    private final String id;
+    @Getter
+    private final String name;
+    @Getter
+    @Setter
     private InetAddress address;
+    @Getter
+    @Setter
     private int port;
+    @Getter
+    @Setter
     private Channel channel;
+    @Getter
     private boolean connected;
 
     public Cord(String name, InetAddress address, Channel channel) {
@@ -47,19 +58,10 @@ public class Cord implements Communicatable, Identifiable {
     }
 
     @Override
-    public Channel getChannel() {
-        return channel;
-    }
-
-    @Override
     public void onMessage(Message message, Communicatable sender) {
         MessageType type = message.getType();
         Object data = message.getData();
-        switch (type) {
-            default:
-                sendMessage(message);
-                break;
-        }
+        sendMessage(message);
     }
 
     @Override
@@ -72,42 +74,8 @@ public class Cord implements Communicatable, Identifiable {
         sendMessage(Message.create().setType(MessageType.CORD_HANDSHAKE_SUCCESS));
     }
 
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(InetAddress address) {
-        this.address = address;
-    }
-
     public InetSocketAddress getSocketAddress() {
         return new InetSocketAddress(getAddress(), getPort());
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
-    @Override
-    public boolean isConnected() {
-        return connected;
     }
 
     public CordObject toCordObject() {

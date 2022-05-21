@@ -10,32 +10,31 @@ import java.util.zip.ZipOutputStream;
 
 public class TemplateManager {
 
-    public void zipFiles(Collection<File> files, File base, OutputStream output) throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(output);
-        for (File file : files) addFile(file, base, zos);
-        zos.close();
-        output.flush();
-    }
-
-    private static void addFile(File file, File base, ZipOutputStream zos) throws IOException {
+    private static void addFile(File file, File base, ZipOutputStream zos) {
         if (file.isDirectory() && file.listFiles().length > 0) {
             for (File file1 : file.listFiles()) addFile(file1, base, zos);
             return;
         }
         try {
-            if (! file.exists()) return;
+            if (!file.exists()) return;
             String relative = base.toURI().relativize(file.toURI()).getPath();
-            if (file.isDirectory() && ! relative.endsWith("/")) relative += "/";
+            if (file.isDirectory() && !relative.endsWith("/")) relative += "/";
             ZipEntry zipEntry = new ZipEntry(relative);
             zos.putNextEntry(zipEntry);
-            if (! file.isDirectory()) {
+            if (!file.isDirectory()) {
                 Files.copy(file.toPath(), zos);
             }
             zipEntry.setTime(file.lastModified());
             zos.closeEntry();
         } catch (Exception e) {
             e.printStackTrace();
-            return;
         }
+    }
+
+    public void zipFiles(Collection<File> files, File base, OutputStream output) throws IOException {
+        ZipOutputStream zos = new ZipOutputStream(output);
+        for (File file : files) addFile(file, base, zos);
+        zos.close();
+        output.flush();
     }
 }

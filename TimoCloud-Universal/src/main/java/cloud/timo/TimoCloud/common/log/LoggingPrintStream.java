@@ -1,12 +1,14 @@
 package cloud.timo.TimoCloud.common.log;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.function.Consumer;
 
 public class LoggingPrintStream extends PrintStream {
 
-    private Consumer<String> logger;
+    private final Consumer<String> logger;
     private ByteArrayOutputStream byteArrayOutputStream;
 
     public LoggingPrintStream(Consumer<String> logger) {
@@ -28,7 +30,7 @@ public class LoggingPrintStream extends PrintStream {
     private void newLine() {
         String line = byteArrayOutputStream.toString();
         if (line.endsWith("\n")) {
-            line = line.substring(0, line.length()-1);
+            line = line.substring(0, line.length() - 1);
         }
         logger.accept(line);
         try {
@@ -83,7 +85,7 @@ public class LoggingPrintStream extends PrintStream {
     }
 
     @Override
-    public void println(char[] x) {
+    public void println(char @NotNull [] x) {
         super.println(x);
         newLine();
     }

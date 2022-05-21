@@ -13,12 +13,7 @@ import java.util.stream.Collectors;
 
 public class ProxyManager {
 
-    public ProxyGroupObject getProxyGroupByHostName(String hostName) {
-        for (ProxyGroupObject group : TimoCloudAPI.getUniversalAPI().getProxyGroups())
-            for (String hostName1 : group.getHostNames())
-                if (matches(hostName, hostName1)) return group;
-        return null;
-    }
+    private static final Random RANDOM = new Random();
 
     private static boolean matches(String input, String pattern) {
         if (pattern.trim().equalsIgnoreCase("*")) return true;
@@ -34,18 +29,29 @@ public class ProxyManager {
         return Pattern.compile(sb.toString());
     }
 
+    public ProxyGroupObject getProxyGroupByHostName(String hostName) {
+        for (ProxyGroupObject group : TimoCloudAPI.getUniversalAPI().getProxyGroups())
+            for (String hostName1 : group.getHostNames())
+                if (matches(hostName, hostName1)) return group;
+        return null;
+    }
 
     public ProxyObject getFreeProxy(ProxyGroupObject group) {
         if (group.getProxyChooseStrategy() == null) {
             TimoCloudCord.getInstance().severe("Error while choosing proxy: ProxyChooseStrategy of group '" + group.getName() + "' is null. Please report this.");
             return null;
         }
-        List<ProxyObject> proxies = group.getProxies().stream().filter(proxy -> proxy.getOnlinePlayerCount() < proxy.getGroup().getMaxPlayerCountPerProxy()).collect(Collectors.toList());
-        proxies.sort(Comparator.comparing(ProxyObject::getOnlinePlayerCount));
+
+        List<ProxyObject> proxies = group.getProxies()
+                .stream()
+                .filter(proxy -> proxy.getOnlinePlayerCount() < proxy.getGroup().getMaxPlayerCountPerProxy())
+                .sorted(Comparator.comparing(ProxyObject::getOnlinePlayerCount))
+                .collect(Collectors.toList());
+
         if (proxies.size() == 0) return null;
         switch (group.getProxyChooseStrategy()) {
             case RANDOM:
-                return proxies.get(new Random().nextInt(proxies.size()));
+                return proxies.get(RANDOM.nextInt(proxies.size()));
             case FILL:
                 return proxies.get(proxies.size() - 1);
             case BALANCE:

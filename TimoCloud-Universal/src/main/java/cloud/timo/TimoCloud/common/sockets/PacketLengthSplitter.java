@@ -9,7 +9,7 @@ import java.util.List;
 public class PacketLengthSplitter extends ByteToMessageDecoder {
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) {
         while (byteBuf.readableBytes() > 0) {
             byteBuf.markReaderIndex();
             if (byteBuf.readableBytes() < 4) return;

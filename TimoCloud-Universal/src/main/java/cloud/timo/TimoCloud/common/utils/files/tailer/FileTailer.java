@@ -8,10 +8,10 @@ import java.io.FileReader;
 
 public class FileTailer implements Runnable {
 
+    private final File file;
+    private final FileTailerListener listener;
+    private final long interval;
     private volatile boolean running;
-    private File file;
-    private FileTailerListener listener;
-    private long interval;
 
     public FileTailer(File file, FileTailerListener listener, long interval) {
         this.file = file;
@@ -29,7 +29,7 @@ public class FileTailer implements Runnable {
             listener.handleException(e);
             return;
         }
-        String line = null;
+        String line;
         while (running) {
             try {
                 try {
@@ -41,7 +41,8 @@ public class FileTailer implements Runnable {
                 if (line == null) {
                     try {
                         Thread.sleep(interval);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     continue;
                 }
                 listener.readLine(line);

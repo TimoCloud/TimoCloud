@@ -15,25 +15,29 @@ public class BaseFileManager {
     private File baseDirectory;
     private File configsDirectory;
     private File templatesDirectory;
-        private File serverTemplatesDirectory;
-            private File serverGlobalDirectory;
-        private File proxyTemplatesDirectory;
-            private File proxyGlobalDirectory;
+    private File serverTemplatesDirectory;
+    private File serverGlobalDirectory;
+    private File proxyTemplatesDirectory;
+    private File proxyGlobalDirectory;
     private File temporaryDirectory;
     private File serverTemporaryDirectory;
     private File proxyTemporaryDirectory;
     private File staticDirectory;
-        private File serverStaticDirectory;
-        private File proxyStaticDirectory;
+    private File serverStaticDirectory;
+    private File proxyStaticDirectory;
     private File cacheDirectory;
     private File logsDirectory;
-        private File serverLogsDirectory;
-        private File proxyLogsDirectory;
+    private File serverLogsDirectory;
+    private File proxyLogsDirectory;
     private File configFile;
     private Map<String, Object> config;
 
     public BaseFileManager() {
         load();
+    }
+
+    public static void deleteDirectory(File directory) {
+        if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
     }
 
     public void load() {
@@ -84,7 +88,7 @@ public class BaseFileManager {
             if (this.config == null) this.config = new HashMap<>();
             Map<String, Object> defaults = (Map<String, Object>) yaml.load(this.getClass().getResourceAsStream("/base/config.yml"));
             for (String key : defaults.keySet()) {
-                if (! config.containsKey(key)) config.put(key, defaults.get(key));
+                if (!config.containsKey(key)) config.put(key, defaults.get(key));
             }
             saveConfig();
         } catch (Exception e) {
@@ -102,10 +106,6 @@ public class BaseFileManager {
             TimoCloudBase.getInstance().severe("Error while saving config: ");
             TimoCloudBase.getInstance().severe(e);
         }
-    }
-
-    public static void deleteDirectory(File directory) {
-        if (directory.exists()) FileDeleteStrategy.FORCE.deleteQuietly(directory);
     }
 
     public File getBaseDirectory() {

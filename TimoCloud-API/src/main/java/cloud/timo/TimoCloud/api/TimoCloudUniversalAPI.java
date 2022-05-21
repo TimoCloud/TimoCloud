@@ -1,7 +1,13 @@
 package cloud.timo.TimoCloud.api;
 
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
-import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
+import cloud.timo.TimoCloud.api.objects.CordObject;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 
@@ -20,6 +26,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a server group by name
+     *
      * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
@@ -27,6 +34,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a server by name
+     *
      * @param identifier The server's name or id, case-sensitive
      * @return A {@link ServerObject} corresponding to the given name or id
      */
@@ -44,6 +52,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a proxy group by name
+     *
      * @param identifier The group's name or id, case-sensitive
      * @return A {@link ServerGroupObject} corresponding to the given name
      */
@@ -51,6 +60,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Use this to get a proxy by name
+     *
      * @param identifier The proxy's name or id
      * @return A {@link ServerObject} corresponding to the given name or id
      */
@@ -102,6 +112,7 @@ public interface TimoCloudUniversalAPI {
 
     /**
      * Give a base the permission to connect to the core.
+     *
      * @param publickey The publickey that should get permission to connect to the core (Base64 encoding)
      * @return A future being completed when the value was changed
      */

@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CoreFileManager {
+
     private File baseDirectory;
     private File configsDirectory;
     private File templatesDirectory;

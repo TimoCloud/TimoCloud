@@ -5,17 +5,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import lombok.RequiredArgsConstructor;
 
 import javax.crypto.SecretKey;
 import java.util.List;
 
+@RequiredArgsConstructor
 public class AESDecrypter extends ByteToMessageDecoder {
 
-    private SecretKey aesKey;
-
-    public AESDecrypter(SecretKey aesKey) {
-        this.aesKey = aesKey;
-    }
+    private final SecretKey aesKey;
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) throws Exception {

@@ -7,6 +7,17 @@ import java.net.InetAddress;
 
 public class CommandFormatUtil {
 
+    public static String formatBoolean(boolean b) {
+        return b ? "&2true" : "&cfalse";
+    }
+
+    public static String formatIp(InetAddress ip) {
+        if (ip == null) return "null";
+        String s = ip.toString();
+        if (s.startsWith("/")) s = s.substring(1);
+        return s;
+    }
+
     public void displayGroup(ServerGroup group, CommandSender sender) {
         sender.sendMessage("  &e" + group.getName() +
                 " &7(&6RAM&7: &2" + group.getRam() + "MB" +
@@ -68,17 +79,6 @@ public class CommandFormatUtil {
 
     public void invalidArgs(CommandSender commandSender, String usage) {
         commandSender.sendError("Invalid arguments. Please use: " + usage);
-    }
-
-    public static String formatBoolean(boolean b) {
-        return b ? "&2true" : "&cfalse";
-    }
-
-    public static String formatIp(InetAddress ip) {
-        if (ip == null) return "null";
-        String s = ip.toString();
-        if (s.startsWith("/")) s = s.substring(1);
-        return s;
     }
 
 }

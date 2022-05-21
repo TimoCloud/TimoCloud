@@ -12,9 +12,9 @@ import java.security.KeyPair;
 
 public class RSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
-    private Channel channel;
-    private KeyPair keyPair;
-    private RSAHandshakeFuture future;
+    private final Channel channel;
+    private final KeyPair keyPair;
+    private final RSAHandshakeFuture future;
 
     public RSAHandshakeHandler(Channel channel, KeyPair keyPair, RSAHandshakeFuture future) {
         this.channel = channel;
@@ -30,15 +30,14 @@ public class RSAHandshakeHandler extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) {
         try {
             byte[] bytes = new byte[byteBuf.readableBytes()];
             byteBuf.readBytes(bytes);
             SecretKey secretKey = new SecretKeySpec(RSAKeyUtil.decrypt(keyPair.getPrivate(), bytes), "AES");
             channel.pipeline().remove(this);
             future.onCompletion(secretKey);
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
     }
 

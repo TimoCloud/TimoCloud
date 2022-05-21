@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ServerGroupProperties {
 
-    private String id;
+    private final String id;
     private String name;
     private Integer onlineAmount;
     private Integer maxAmount;
@@ -39,6 +39,14 @@ public class ServerGroupProperties {
 
     public ServerGroupProperties(String name) {
         this(generateId(), name);
+    }
+
+    private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
+    }
+
+    public static String generateId() {
+        return getDefaultPropertiesProvider().generateId();
     }
 
     public String getId() {
@@ -151,14 +159,6 @@ public class ServerGroupProperties {
     public ServerGroupProperties setJrePath(String jrePath) {
         this.jrePath = jrePath;
         return this;
-    }
-
-    private static ServerGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
-        return TimoCloudInternalAPI.getImplementationAPI().getServerGroupDefaultPropertiesProvider();
-    }
-
-    public static String generateId() {
-        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ServerGroupDefaultPropertiesProvider {

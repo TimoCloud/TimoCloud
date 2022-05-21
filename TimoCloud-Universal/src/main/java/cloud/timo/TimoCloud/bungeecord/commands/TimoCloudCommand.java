@@ -10,14 +10,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.PluginDescription;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TimoCloudCommand extends Command {
 
-    private Map<String, CommandSender> senders;
+    private final Map<String, CommandSender> senders;
 
     public TimoCloudCommand() {
         super("TimoCloud", "timocloud.admin");
@@ -56,7 +54,7 @@ public class TimoCloudCommand extends Command {
                 sendVersion(sender);
                 return;
             }
-            String command = Arrays.stream(args).collect(Collectors.joining(" "));
+            String command = String.join(" ", args);
             senders.put(sender.getName(), sender);
 
             TimoCloudBungee.getInstance().getSocketClientHandler().sendMessage(Message.create()
@@ -65,7 +63,7 @@ public class TimoCloudCommand extends Command {
                     .set("sender", sender.getName())
                     .toString());
         } catch (Exception e) {
-            sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', "&cAn error occured while exeuting command. Please see console for more details.")));
+            sender.sendMessage(new TextComponent(ChatColor.translateAlternateColorCodes('&', "&cAn error occurred while executing command. Please see console for more details.")));
         }
     }
 

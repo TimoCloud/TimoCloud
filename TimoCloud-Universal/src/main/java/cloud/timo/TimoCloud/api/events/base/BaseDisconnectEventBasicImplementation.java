@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.objects.BaseObject;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class BaseDisconnectEventBasicImplementation extends BasePropertyChangeEvent<Boolean>  implements BaseDisconnectEvent {
+public class BaseDisconnectEventBasicImplementation extends BasePropertyChangeEvent<Boolean> implements BaseDisconnectEvent {
 
     private BaseObject baseObject;
 

@@ -8,7 +8,7 @@ import java.util.HashSet;
 
 public class CorePublicKeyManager {
 
-    private Collection<PublicKey> permittedBaseKeys; // One-time keys for first connection
+    private final Collection<PublicKey> permittedBaseKeys; // One-time keys for first connection
 
     public CorePublicKeyManager() {
         this.permittedBaseKeys = new HashSet<>();

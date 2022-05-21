@@ -15,7 +15,7 @@ public class ProxyPing implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onProxyPingEvent(ProxyPingEvent event) {
-        ProxyObject proxyObject = TimoCloudAPI.getBungeeAPI().getThisProxy();
+        ProxyObject proxyObject = TimoCloudAPI.getProxyAPI().getThisProxy();
 
         ServerPing serverPing = event.getResponse();
         serverPing.setPlayers(new ServerPing.Players(
@@ -23,6 +23,7 @@ public class ProxyPing implements Listener {
                 proxyObject.getGroup().getOnlinePlayerCount(),
                 serverPing.getPlayers().getSample()
         ));
+
         if (TimoCloudBungee.getInstance().getFileManager().getConfig().getBoolean("useGlobalMotd"))
             serverPing.setDescriptionComponent(new TextComponent(ChatColor.translateAlternateColorCodes('&', proxyObject.getGroup().getMotd())));
     }

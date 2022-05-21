@@ -7,17 +7,17 @@ import java.util.Map;
 
 public class OptionParser {
 
-    private List<OptionTemplate> optionTemplates;
+    private final List<OptionTemplate> optionTemplates;
 
     public OptionParser() {
-        optionTemplates = new ArrayList();
+        optionTemplates = new ArrayList<>();
     }
 
-    public void addTemplate(String ... keys) {
+    public void addTemplate(String... keys) {
         optionTemplates.add(new OptionTemplate(keys));
     }
 
-    public OptionSet parse(String ... options) {
+    public OptionSet parse(String... options) {
         Map<String, Option> optionSet = new HashMap<>();
         for (OptionTemplate template : optionTemplates) {
             Option option = new Option(template);
@@ -25,8 +25,9 @@ public class OptionParser {
                 optionSet.put(name, option);
             }
         }
+
         for (String optionString : options) {
-            if (! optionString.startsWith("-")) continue;
+            if (!optionString.startsWith("-")) continue;
             while (optionString.startsWith("-")) optionString = optionString.substring(1);
             if (optionString.isEmpty()) continue;
             String name = optionString.contains("=") ? optionString.split("=")[0] : optionString;
@@ -42,6 +43,7 @@ public class OptionParser {
                 optionSet.put(name1, option);
             }
         }
+
         return new OptionSet(optionSet);
     }
 }

@@ -10,10 +10,12 @@ import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class NettyUtil {
 
-    public static EventLoopGroup getEventLoopGroup() {
+    public EventLoopGroup getEventLoopGroup() {
         switch (getTransportType()) {
             case EPOLL:
                 return new EpollEventLoopGroup();
@@ -24,7 +26,7 @@ public class NettyUtil {
         }
     }
 
-    public static Class<? extends ServerSocketChannel> getServerSocketChannelClass() {
+    public Class<? extends ServerSocketChannel> getServerSocketChannelClass() {
         switch (getTransportType()) {
             case EPOLL:
                 return EpollServerSocketChannel.class;
@@ -35,7 +37,7 @@ public class NettyUtil {
         }
     }
 
-    public static Class<? extends SocketChannel> getSocketChannelClass() {
+    public Class<? extends SocketChannel> getSocketChannelClass() {
         switch (getTransportType()) {
             case EPOLL:
                 return EpollSocketChannel.class;
@@ -46,16 +48,16 @@ public class NettyUtil {
         }
     }
 
-    public static NettyTransportType getTransportType() {
+    public NettyTransportType getTransportType() {
         if (epollAvailable()) return NettyTransportType.EPOLL;
         return NettyTransportType.NIO;
     }
 
-    private static boolean epollAvailable() {
+    private boolean epollAvailable() {
         return Epoll.isAvailable();
     }
 
-    private static enum NettyTransportType {
+    private enum NettyTransportType {
         NIO, EPOLL
     }
 }

@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 public class LogTailerListener extends FileTailerListener {
 
-    private Consumer<String> logEntryReader;
+    private final Consumer<String> logEntryReader;
 
     public LogTailerListener(Consumer<String> logEntryReader) {
         this.logEntryReader = logEntryReader;

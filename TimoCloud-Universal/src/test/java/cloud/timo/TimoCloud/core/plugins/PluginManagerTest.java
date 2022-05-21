@@ -16,7 +16,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.util.Arrays;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
@@ -69,7 +71,7 @@ public class PluginManagerTest extends TimoCloudTest {
         inOrder.verify(pluginClassLoader).loadClass(eq(plugin1.getMainClass()));
     }
 
-    @Test (expected = PluginLoadException.class)
+    @Test(expected = PluginLoadException.class)
     public void testDependencyFail1() throws Exception {
         TimoCloudPluginDescription plugin1 = generatePluginDescriptionWithDepends("Plugin1", "Plugin2");
         TimoCloudPluginDescription plugin2 = generatePluginDescriptionWithDepends("Plugin2", "Plugin1");
@@ -77,7 +79,7 @@ public class PluginManagerTest extends TimoCloudTest {
         pluginManager.loadPlugins(Arrays.asList(plugin1, plugin2));
     }
 
-    @Test (expected = PluginLoadException.class)
+    @Test(expected = PluginLoadException.class)
     public void testDependencyFail2() throws Exception {
         TimoCloudPluginDescription plugin1 = generatePluginDescriptionWithDepends("Plugin1", "Plugin2");
         TimoCloudPluginDescription plugin2 = generatePluginDescriptionWithDepends("Plugin2", "Plugin3");
@@ -96,11 +98,11 @@ public class PluginManagerTest extends TimoCloudTest {
         expectNoException();
     }
 
-    private TimoCloudPluginDescription generatePluginDescriptionWithSoftDepends(String name, String ... softDepends) {
+    private TimoCloudPluginDescription generatePluginDescriptionWithSoftDepends(String name, String... softDepends) {
         return generatePluginDescription(name, new String[0], softDepends);
     }
 
-    private TimoCloudPluginDescription generatePluginDescriptionWithDepends(String name, String ... depends) {
+    private TimoCloudPluginDescription generatePluginDescriptionWithDepends(String name, String... depends) {
         return generatePluginDescription(name, depends, new String[0]);
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ProxyGroupProperties {
 
-    private String id;
+    private final String id;
     private String name;
     private Integer maxPlayerCountPerProxy;
     private Integer maxPlayerCount;
@@ -50,6 +50,14 @@ public class ProxyGroupProperties {
 
     public ProxyGroupProperties(String name) {
         this(generateId(), name);
+    }
+
+    private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
+    }
+
+    public static String generateId() {
+        return getDefaultPropertiesProvider().generateId();
     }
 
     public String getId() {
@@ -206,14 +214,6 @@ public class ProxyGroupProperties {
     public ProxyGroupProperties setJrePath(String jrePath) {
         this.jrePath = jrePath;
         return this;
-    }
-
-    private static ProxyGroupDefaultPropertiesProvider getDefaultPropertiesProvider() {
-        return TimoCloudInternalAPI.getImplementationAPI().getProxyGroupDefaultPropertiesProvider();
-    }
-
-    public static String generateId() {
-        return getDefaultPropertiesProvider().generateId();
     }
 
     public interface ProxyGroupDefaultPropertiesProvider {

@@ -28,8 +28,13 @@ public class BaseProperties {
         this.publicKey = publicKey;
         this.publicIpConfig = publicIpConfig;
     }
+
     public BaseProperties(String id, String name, PublicKey publicKey) {
         this(id, name, publicKey, getDefaultPropertiesProvider().getPublicIpConfig());
+    }
+
+    private static BaseDefaultPropertiesProvider getDefaultPropertiesProvider() {
+        return TimoCloudInternalAPI.getImplementationAPI().getBaseDefaultPropertiesProvider();
     }
 
     public String getPublicIpConfig() {
@@ -93,10 +98,6 @@ public class BaseProperties {
     public BaseProperties setMaxCpuLoad(Double maxCpuLoad) {
         this.maxCpuLoad = maxCpuLoad;
         return this;
-    }
-
-    private static BaseDefaultPropertiesProvider getDefaultPropertiesProvider() {
-        return TimoCloudInternalAPI.getImplementationAPI().getBaseDefaultPropertiesProvider();
     }
 
     public interface BaseDefaultPropertiesProvider {

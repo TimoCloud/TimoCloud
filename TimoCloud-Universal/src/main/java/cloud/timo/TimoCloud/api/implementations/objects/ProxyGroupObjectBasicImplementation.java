@@ -2,8 +2,16 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
-import cloud.timo.TimoCloud.api.internal.links.*;
-import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.ProxyGroupObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerGroupObjectLink;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
+import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +20,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_DELETE;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_BASE;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_HOST_NAMES;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_JAVA_START_PARAMETERS;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_KEEP_FREE_SLOTS;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_MAX_AMOUNT;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_MAX_PLAYER_COUNT;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_MAX_PLAYER_COUNT_PER_PROXY;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_MIN_AMOUNT;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_MOTD;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_PRIORITY;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_PROXY_CHOOSE_STRATEGY;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_RAM;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.PG_SET_STATIC;
 
 @NoArgsConstructor
 public class ProxyGroupObjectBasicImplementation implements ProxyGroupObject, LinkableObject<ProxyGroupObject> {

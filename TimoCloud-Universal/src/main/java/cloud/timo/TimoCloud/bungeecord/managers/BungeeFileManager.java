@@ -4,6 +4,7 @@ import cloud.timo.TimoCloud.bungeecord.TimoCloudBungee;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -17,11 +18,18 @@ import java.nio.file.Files;
 
 public class BungeeFileManager {
 
-    private String baseDirectory = "plugins/TimoCloud/";
-    private String configsDirectory = baseDirectory + "configs/";
+    @Getter
+    private final String baseDirectory = "plugins/TimoCloud/";
+    @Getter
+    private final String configsDirectory = baseDirectory + "configs/";
+
+    @Getter
     private File configFile;
+    @Getter
     private Configuration config;
+    @Getter
     private File messagesFile;
+    @Getter
     private Configuration messages;
 
     public BungeeFileManager() {
@@ -65,8 +73,9 @@ public class BungeeFileManager {
 
             TimoCloudBungee.getInstance().setPrefix(ChatColor.translateAlternateColorCodes('&', config.getString("prefix") + " "));
         } catch (Exception e) {
-            TimoCloudBungee.getInstance().severe("Exception while initializing files:");
-            TimoCloudBungee.getInstance().severe(e);
+            TimoCloudBungee instance = TimoCloudBungee.getInstance();
+            instance.severe("Exception while initializing files:");
+            instance.severe(e);
         }
     }
 
@@ -84,30 +93,10 @@ public class BungeeFileManager {
     public void saveJson(JsonArray jsonArray, File file) {
         try {
             FileWriter fileWriter = new FileWriter(file, false);
-            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); //Prettify JSON
+            fileWriter.write(new GsonBuilder().setPrettyPrinting().create().toJson(jsonArray)); // Prettify JSON
             fileWriter.close();
         } catch (Exception e) {
             TimoCloudBungee.getInstance().severe(e);
         }
-    }
-
-    public String getBaseDirectory() {
-        return baseDirectory;
-    }
-
-    public File getConfigFile() {
-        return configFile;
-    }
-
-    public Configuration getConfig() {
-        return config;
-    }
-
-    public File getMessagesFile() {
-        return messagesFile;
-    }
-
-    public Configuration getMessages() {
-        return messages;
     }
 }

@@ -10,6 +10,10 @@ import net.kyori.adventure.text.Component;
 
 public class FindCommand implements SimpleCommand {
 
+    private static void sendMessage(Invocation sender, String message) {
+        sender.source().sendMessage(TextComponent.builder(TimoCloudVelocity.getInstance().getPrefix()).content(ChatColorUtil.translateAlternateColorCodes('&', message)).build());
+    }
+
     @Override
     public void execute(Invocation invocation) {
         String[] args = invocation.arguments();
@@ -17,6 +21,7 @@ public class FindCommand implements SimpleCommand {
             sendMessage(invocation, "Please specify the name of the player you want to find");
             return;
         }
+
         PlayerObject playerObject = TimoCloudAPI.getUniversalAPI().getPlayer(args[0]);
         if (playerObject == null) {
             sendMessage(invocation, "&cThe player '&e" + args[0] + "&c' is not online.");
@@ -24,7 +29,7 @@ public class FindCommand implements SimpleCommand {
         }
         sendMessage(invocation, "&e" + playerObject.getName() + " &ais online at &6" + playerObject.getServer().getName());
     }
-
+  
     private static void sendMessage(Invocation sender, String message) {
         sender.source().sendMessage(Component.text(TimoCloudVelocity.getInstance().getPrefix()).content(ChatColorUtil.translateAlternateColorCodes('&', message)));
     }

@@ -23,6 +23,7 @@ import java.util.Objects;
 @ChannelHandler.Sharable
 public class BaseStringHandler extends BasicStringHandler {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         MessageType type = message.getType();

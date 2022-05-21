@@ -49,7 +49,8 @@ public interface APIRequestFuture<T> {
 
     /**
      * Stops the current thread to wait for a response and returns it when it arrived
-     * @return The respoonse to the API request
+     *
+     * @return The response to the API request
      * @throws APIRequestError An APIRequestError might be thrown if the API request is not valid
      */
     T awaitResponse() throws APIRequestError;

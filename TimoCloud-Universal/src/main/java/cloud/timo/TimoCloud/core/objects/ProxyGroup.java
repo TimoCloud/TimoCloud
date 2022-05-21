@@ -1,6 +1,17 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.proxyGroup.*;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupBaseChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupJavaParametersChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupKeepFreeSlotsChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupMaxAmountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupMaxPlayerCountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupMaxPlayerCountPerProxyChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupMinAmountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupMotdChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupPriorityChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupProxyChooseStrategyChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupRamChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.proxyGroup.ProxyGroupStaticChangeEventBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.ProxyGroupObjectLink;
 import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
@@ -10,11 +21,21 @@ import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ProxyGroupObjectCoreImplementation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ProxyGroup implements Group {
 
+    private final Map<String, Proxy> proxies = new HashMap<>();
     private String id;
     private String name;
     private int maxPlayerCountPerProxy;
@@ -31,7 +52,6 @@ public class ProxyGroup implements Group {
     private Base base;
     private Set<String> hostNames;
     private ProxyChooseStrategy proxyChooseStrategy;
-    private Map<String, Proxy> proxies = new HashMap<>();
     private List<String> javaParameters;
     private String jrePath;
     private int timeout;
@@ -48,6 +68,7 @@ public class ProxyGroup implements Group {
         construct(properties);
     }
 
+    @SuppressWarnings("unchecked")
     public void construct(Map<String, Object> properties) {
         try {
             String name = (String) properties.get("name");
@@ -256,12 +277,12 @@ public class ProxyGroup implements Group {
         EventTransmitter.sendEvent(new ProxyGroupJavaParametersChangeEventBasicImplementation(toGroupObject(), oldValue, javaParameters));
     }
 
-    public void setJrePath(String jrePath) {
-        this.jrePath = jrePath;
-    }
-
     public String getJrePath() {
         return jrePath;
+    }
+
+    public void setJrePath(String jrePath) {
+        this.jrePath = jrePath;
     }
 
     @Override

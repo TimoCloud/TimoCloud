@@ -2,9 +2,20 @@ package cloud.timo.TimoCloud.core.api;
 
 import cloud.timo.TimoCloud.api.TimoCloudUniversalAPI;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.api.objects.*;
+import cloud.timo.TimoCloud.api.objects.BaseObject;
+import cloud.timo.TimoCloud.api.objects.CordObject;
+import cloud.timo.TimoCloud.api.objects.PlayerObject;
+import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
+import cloud.timo.TimoCloud.api.objects.ProxyObject;
+import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
+import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Cord;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
 import java.util.Collection;
 import java.util.Set;

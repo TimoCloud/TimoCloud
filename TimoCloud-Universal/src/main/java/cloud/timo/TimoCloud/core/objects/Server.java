@@ -1,6 +1,13 @@
 package cloud.timo.TimoCloud.core.objects;
 
-import cloud.timo.TimoCloud.api.events.server.*;
+import cloud.timo.TimoCloud.api.events.server.ServerExtraChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerMapChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerMaxPlayersChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerMotdChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerOnlinePlayerCountChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerRegisterEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerStateChangeEventBasicImplementation;
+import cloud.timo.TimoCloud.api.events.server.ServerUnregisterEventBasicImplementation;
 import cloud.timo.TimoCloud.api.implementations.objects.PlayerObjectBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.objects.PlayerObject;
@@ -33,24 +40,24 @@ import java.util.stream.Collectors;
 
 public class Server implements Instance, Communicatable {
 
-    private String name;
-    private String id;
+    private final String name;
+    private final String id;
+    private final ServerGroup group;
+    private final Base base;
+    private final Set<PlayerObject> onlinePlayers = Collections.synchronizedSet(new HashSet<>());
+    private final LogStorage logStorage = new LogStorage();
     private int port;
-    private ServerGroup group;
     private Channel channel;
-    private Base base;
     private InetSocketAddress address;
     private String state = "STARTING";
     private String extra = "";
     private String motd = "";
-    private final Set<PlayerObject> onlinePlayers;
     private int onlinePlayerCount = 0;
     private int maxPlayers = 0;
     private String map;
     private boolean starting;
     private boolean registered;
     private boolean connected;
-    private LogStorage logStorage;
     private PublicKey publicKey;
     private int pid;
     private final ScheduledExecutorService scheduler;
@@ -64,7 +71,6 @@ public class Server implements Instance, Communicatable {
         this.group = group;
         this.base = base;
         this.address = new InetSocketAddress(base.getPublicAddress(), 0);
-        this.onlinePlayers = Collections.synchronizedSet(new HashSet<>());
         this.map = map;
         if (this.map == null) this.map = "";
         this.logStorage = new LogStorage();
@@ -335,6 +341,10 @@ public class Server implements Instance, Communicatable {
         return channel;
     }
 
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
+
     public Base getBase() {
         return base;
     }
@@ -345,10 +355,6 @@ public class Server implements Instance, Communicatable {
 
     public void setAddress(InetSocketAddress address) {
         this.address = address;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
     }
 
     public String getState() {

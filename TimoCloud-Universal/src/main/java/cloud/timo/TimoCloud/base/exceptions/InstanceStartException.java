@@ -5,5 +5,4 @@ public class InstanceStartException extends Exception {
     public InstanceStartException(String message) {
         super(message);
     }
-
 }

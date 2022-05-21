@@ -17,13 +17,16 @@ public class LobbyCommand implements SimpleCommand {
             VelocityMessageManager.sendMessage(invocation, "&cThis command is only for players!");
             return;
         }
+
         Player player = (Player) invocation.source();
         final ServerObject serverObject = TimoCloudVelocity.getInstance().getLobbyManager().searchFreeLobby(player.getUniqueId(),
                 player.getCurrentServer().get().getServer().getServerInfo().getName());
+
         if (serverObject == null) {
             VelocityMessageManager.sendMessage(invocation, TimoCloudVelocity.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));
             return;
         }
+
         final Optional<RegisteredServer> server = TimoCloudVelocity.getInstance().getServer().getServer(
                 serverObject.getName());
 
@@ -31,6 +34,7 @@ public class LobbyCommand implements SimpleCommand {
             VelocityMessageManager.sendMessage(invocation, TimoCloudVelocity.getInstance().getFileManager().getMessages().getString("NoFreeLobbyFound"));
             return;
         }
+
         player.createConnectionRequest(server.get()).fireAndForget();
         if (TimoCloudVelocity.getInstance().getFileManager().getConfig().getBoolean("sendLobbyCommandMessage"))
             VelocityMessageManager.sendMessage(invocation, TimoCloudVelocity.getInstance().getFileManager().getMessages().getString("LobbyConnect")

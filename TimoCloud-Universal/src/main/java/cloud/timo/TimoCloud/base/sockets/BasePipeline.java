@@ -10,9 +10,9 @@ public class BasePipeline extends ChannelInitializer<Channel> {
 
     @Override
     protected void initChannel(Channel ch) {
-        ch.pipeline().addLast("splitter", new PacketLengthSplitter());
-        ch.pipeline().addLast(TimoCloudBase.getInstance().getSocketClientHandler());
-        ch.pipeline().addLast("prepender", new PacketLengthPrepender());
+        ch.pipeline().addLast("splitter", new PacketLengthSplitter())
+                .addLast(TimoCloudBase.getInstance().getSocketClientHandler())
+                .addLast("prepender", new PacketLengthPrepender());
     }
 
 }

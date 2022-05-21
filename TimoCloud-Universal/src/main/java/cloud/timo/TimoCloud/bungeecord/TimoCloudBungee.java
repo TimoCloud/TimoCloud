@@ -8,12 +8,18 @@ import cloud.timo.TimoCloud.api.implementations.internal.TimoCloudInternalImplem
 import cloud.timo.TimoCloud.api.implementations.managers.APIResponseManager;
 import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.utils.APIInstanceUtil;
-import cloud.timo.TimoCloud.bungeecord.api.*;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudInternalMessageAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudMessageAPIBungeeImplementation;
+import cloud.timo.TimoCloud.bungeecord.api.TimoCloudUniversalAPIBungeeImplementation;
 import cloud.timo.TimoCloud.bungeecord.commands.FindCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.GlistCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.LobbyCommand;
 import cloud.timo.TimoCloud.bungeecord.commands.TimoCloudCommand;
-import cloud.timo.TimoCloud.bungeecord.listeners.*;
+import cloud.timo.TimoCloud.bungeecord.listeners.EventMonitor;
+import cloud.timo.TimoCloud.bungeecord.listeners.IpInjector;
+import cloud.timo.TimoCloud.bungeecord.listeners.LobbyJoin;
+import cloud.timo.TimoCloud.bungeecord.listeners.ProxyPing;
+import cloud.timo.TimoCloud.bungeecord.listeners.ServerKick;
 import cloud.timo.TimoCloud.bungeecord.managers.BungeeFileManager;
 import cloud.timo.TimoCloud.bungeecord.managers.IpManager;
 import cloud.timo.TimoCloud.bungeecord.sockets.BungeeSocketClient;
@@ -33,9 +39,11 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 
 import java.io.File;
 import java.security.KeyPair;
@@ -45,16 +53,30 @@ import java.util.concurrent.TimeUnit;
 
 public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
+    @Getter
     private static TimoCloudBungee instance;
+
+    @Getter
     private BungeeFileManager fileManager;
+    @Getter
     private LobbyManager lobbyManager;
+    @Getter
     private IpManager ipManager;
+    @Getter
     private BungeeSocketClient socketClient;
+    @Getter
     private BungeeSocketClientHandler socketClientHandler;
+    @Getter
     private BungeeSocketMessageManager socketMessageManager;
+    @Getter
     private BungeeStringHandler bungeeStringHandler;
+    @Getter
     private TimoCloudCommand timoCloudCommand;
+    @Getter
+    @Setter
     private String prefix;
+    @Getter
+    @Setter
     private boolean shuttingDown = false;
 
     @Override
@@ -123,9 +145,11 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     private void registerCommands() {
-        getProxy().getPluginManager().registerCommand(this, getTimoCloudCommand());
-        getProxy().getPluginManager().registerCommand(this, new GlistCommand());
-        getProxy().getPluginManager().registerCommand(this, new FindCommand());
+        PluginManager pm = getProxy().getPluginManager();
+        pm.registerCommand(this, getTimoCloudCommand());
+        pm.registerCommand(this, new GlistCommand());
+        pm.registerCommand(this, new FindCommand());
+
         List<String> lobbyCommands = getFileManager().getConfig().getStringList("lobbyCommands");
         if (lobbyCommands.size() > 0) {
             String[] aliases = lobbyCommands.subList(1, lobbyCommands.size()).toArray(new String[0]);
@@ -139,7 +163,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
             socketClient.init(getTimoCloudCoreIP(), getTimoCloudCoreSocketPort());
         } catch (Exception e) {
             severe("Error while connecting to Core:");
-            TimoCloudBungee.getInstance().severe(e);
+            severe(e);
             onSocketDisconnect();
         }
     }
@@ -160,17 +184,17 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         try {
             KeyPair keyPair = new RSAKeyPairRetriever(new File(getFileManager().getBaseDirectory(), "/keys/")).getKeyPair();
             new RSAHandshakeHandler(channel, keyPair, (aesKey -> {
-                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
-                channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
-                channel.pipeline().addBefore("prepender", "handler", getBungeeStringHandler());
-                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
-                channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
+                channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey))
+                        .addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8))
+                        .addBefore("prepender", "handler", getBungeeStringHandler())
+                        .addLast("encrypter", new AESEncrypter(aesKey))
+                        .addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAKE).setTarget(getProxyId()));
+                socketMessageManager.sendMessage(Message.create().setType(MessageType.PROXY_HANDSHAKE).setTarget(getProxyId()));
             })).startHandshake();
         } catch (Exception e) {
-            severe("Error during public key authentification, please report this!");
-            e.printStackTrace();
+            severe("Error during public key authentication, please report this!");
+            severe(e);
         }
     }
 
@@ -182,7 +206,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
 
     public void onHandshakeSuccess() {
         LogInjectionUtil.injectSystemOutAndErr(logEntry ->
-                getSocketMessageManager().sendMessage(Message.create()
+                socketMessageManager.sendMessage(Message.create()
                         .setType(MessageType.PROXY_LOG_ENTRY)
                         .setData(logEntry))
         );
@@ -191,16 +215,17 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     public void stop() {
-        ProxyServer.getInstance().stop();
+        getProxy().stop();
     }
 
     private void everySecond() {
-        if (isShuttingDown()) return;
-        sendEverything();
+        if (!isShuttingDown()) {
+            sendEverything();
+        }
     }
 
     private void requestApiData() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
     private void sendEverything() {
@@ -208,15 +233,16 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     }
 
     public void sendPlayerCount() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.PROXY_SET_PLAYER_COUNT).setData(getProxy().getOnlineCount()));
+        socketMessageManager.sendMessage(Message.create().setType(MessageType.PROXY_SET_PLAYER_COUNT).setData(getProxy().getOnlineCount()));
     }
 
     private void registerListeners() {
-        getProxy().getPluginManager().registerListener(this, new LobbyJoin());
-        getProxy().getPluginManager().registerListener(this, new ServerKick());
-        getProxy().getPluginManager().registerListener(this, new ProxyPing());
-        getProxy().getPluginManager().registerListener(this, new EventMonitor());
-        getProxy().getPluginManager().registerListener(this, new IpInjector());
+        PluginManager pm = getProxy().getPluginManager();
+        pm.registerListener(this, new LobbyJoin());
+        pm.registerListener(this, new ServerKick());
+        pm.registerListener(this, new ProxyPing());
+        pm.registerListener(this, new EventMonitor());
+        pm.registerListener(this, new IpInjector());
     }
 
     public String getProxyName() {
@@ -226,58 +252,5 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
     public String getProxyId() {
         return System.getProperty("timocloud-proxyid");
     }
-
-    public static TimoCloudBungee getInstance() {
-        return instance;
-    }
-
-    public BungeeFileManager getFileManager() {
-        return fileManager;
-    }
-
-    public LobbyManager getLobbyManager() {
-        return lobbyManager;
-    }
-
-    public IpManager getIpManager() {
-        return ipManager;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public BungeeSocketClient getSocketClient() {
-        return socketClient;
-    }
-
-    public BungeeSocketClientHandler getSocketClientHandler() {
-        return socketClientHandler;
-    }
-
-    public BungeeSocketMessageManager getSocketMessageManager() {
-        return socketMessageManager;
-    }
-
-    public BungeeStringHandler getBungeeStringHandler() {
-        return bungeeStringHandler;
-    }
-
-    public TimoCloudCommand getTimoCloudCommand() {
-        return timoCloudCommand;
-    }
-
-    public boolean isShuttingDown() {
-        return shuttingDown;
-    }
-
-    public void setShuttingDown(boolean shuttingDown) {
-        this.shuttingDown = shuttingDown;
-    }
-
 
 }

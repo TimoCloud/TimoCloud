@@ -1,22 +1,26 @@
 package cloud.timo.TimoCloud.base.objects;
 
+import lombok.Getter;
+
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class BaseServerObject {
-    private String name;
-    private String id;
-    private String group;
-    private int ram;
-    private boolean isStatic;
-    private String map;
-    private Map<String, Object> templateHash;
-    private Map<String, Object> mapHash;
-    private Map<String, Object> globalHash;
-    private List<String> javaParameters;
-    private List<String> spigotParameters;
-    private String jrePath;
-    private int timeout;
+
+    private final String name;
+    private final String id;
+    private final String group;
+    private final int ram;
+    private final boolean isStatic;
+    private final String map;
+    private final Map<String, Object> templateHash;
+    private final Map<String, Object> mapHash;
+    private final Map<String, Object> globalHash;
+    private final List<String> javaParameters;
+    private final List<String> spigotParameters;
+    private final String jrePath;
+    private final int timeout;
 
     public BaseServerObject(String name, String id, int ram, boolean isStatic, String map, String group, Map<String, Object> templateHash, Map<String, Object> mapHash, Map<String, Object> globalHash, List<String> javaParameters, List<String> spigotParameters, String jrePath, int timeout) {
         this.name = name;
@@ -32,57 +36,5 @@ public class BaseServerObject {
         this.spigotParameters = spigotParameters;
         this.jrePath = jrePath;
         this.timeout = timeout;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public int getRam() {
-        return ram;
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public String getMap() {
-        return map;
-    }
-
-    public Map<String, Object> getTemplateHash() {
-        return templateHash;
-    }
-
-    public Map<String, Object> getMapHash() {
-        return mapHash;
-    }
-
-    public Map<String, Object> getGlobalHash() {
-        return globalHash;
-    }
-
-    public List<String> getJavaParameters() {
-        return javaParameters;
-    }
-
-    public List<String> getSpigotParameters() {
-        return spigotParameters;
-    }
-
-    public String getJrePath() {
-        return jrePath;
-    }
-
-    public int getTimeout() {
-        return timeout;
     }
 }

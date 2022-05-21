@@ -8,45 +8,29 @@ import cloud.timo.TimoCloud.cord.TimoCloudCord;
 import cloud.timo.TimoCloud.cord.objects.ConnectionState;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.net.InetSocketAddress;
 
-import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.CONNECTION_STATE;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.DOWNSTREAM_HANDLER;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.UPSTREAM_HANDLER;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.readString;
+import static cloud.timo.TimoCloud.cord.utils.PacketUtil.readVarInt;
 
 
 @ChannelHandler.Sharable
 public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
 
     public MinecraftDecoder() {
-    }
-
-    @Override
-    public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
-        try {
-            final int packetLength = readVarInt(buf);
-            final int packetID = readVarInt(buf);
-            if (packetID == 0) {
-                final int clientVersion = readVarInt(buf);
-                final String hostName = readString(buf);
-                final int port = buf.readUnsignedShort();
-                final int state = readVarInt(buf);
-                buf.retain();
-                connectClient(ctx.channel(), hostName, buf);
-            } else {
-                //TimoCloudCord.getInstance().severe("Received non-status packet: " + packetID);
-            }
-        } catch (Exception e) {
-            buf.resetReaderIndex(); // Wait until we receive the full packet
-            return;
-        }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        TimoCloudCord.getInstance().severe("Exception in MinecraftDecoder");
-        TimoCloudCord.getInstance().severe(cause);
     }
 
     public static void connectClient(Channel channel, String hostName, ByteBuf loginPacket) {
@@ -118,6 +102,33 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
                 .setTarget(proxyObject.getId())
                 .set("CLIENT_ADDRESS", clientAddress.toString())
                 .set("CHANNEL_ADDRESS", channelAddress.toString()));
+    }
+
+    @Override
+    public void channelRead0(final ChannelHandlerContext ctx, ByteBuf buf) throws Exception {
+        try {
+            final int packetLength = readVarInt(buf);
+            final int packetID = readVarInt(buf);
+            if (packetID == 0) {
+                final int clientVersion = readVarInt(buf);
+                final String hostName = readString(buf);
+                final int port = buf.readUnsignedShort();
+                final int state = readVarInt(buf);
+                buf.retain();
+                connectClient(ctx.channel(), hostName, buf);
+            } else {
+                //TimoCloudCord.getInstance().severe("Received non-status packet: " + packetID);
+            }
+        } catch (Exception e) {
+            buf.resetReaderIndex(); // Wait until we receive the full packet
+            return;
+        }
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        TimoCloudCord.getInstance().severe("Exception in MinecraftDecoder");
+        TimoCloudCord.getInstance().severe(cause);
     }
 
 }

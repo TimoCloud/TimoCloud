@@ -9,7 +9,11 @@ import cloud.timo.TimoCloud.api.objects.ProxyChooseStrategy;
 import cloud.timo.TimoCloud.api.objects.properties.ProxyGroupProperties;
 import cloud.timo.TimoCloud.api.objects.properties.ServerGroupProperties;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
-import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +23,23 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -58,7 +74,7 @@ public class APIRequestManagerTest extends TimoCloudTest {
         when(coreInstanceManager.getServerByIdentifier(anyString())).thenReturn(server);
         when(coreInstanceManager.getServerGroupByIdentifier(anyString())).thenReturn(serverGroup);
         when(coreInstanceManager.getProxyGroupByIdentifier(anyString())).thenReturn(proxyGroup);
-     }
+    }
 
     @Test
     public void processRequestGCreateServerGroupValid() {
@@ -711,8 +727,8 @@ public class APIRequestManagerTest extends TimoCloudTest {
         assertNotNull(serverGroup);
         assertTrue((serverGroupProperties.getBaseIdentifier() == null && serverGroup.getBase() == null) ||
                 (serverGroupProperties.getBaseIdentifier() != null &&
-                (serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getId()) ||
-                        serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getName()))));
+                        (serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getId()) ||
+                                serverGroupProperties.getBaseIdentifier().equals(serverGroup.getBase().getName()))));
         assertEquals((int) serverGroupProperties.getMaxAmount(), serverGroup.getMaxAmount());
         assertEquals(serverGroupProperties.getName(), serverGroup.getName());
         assertEquals((int) serverGroupProperties.getOnlineAmount(), serverGroup.getOnlineAmount());
@@ -727,8 +743,8 @@ public class APIRequestManagerTest extends TimoCloudTest {
         assertNotNull(proxyGroup);
         assertTrue((proxyGroupProperties.getBaseIdentifier() == null && proxyGroup.getBase() == null) ||
                 (proxyGroupProperties.getBaseIdentifier() != null &&
-                (proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getId()) ||
-                        proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getName()))));
+                        (proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getId()) ||
+                                proxyGroupProperties.getBaseIdentifier().equals(proxyGroup.getBase().getName()))));
         assertCollectionEqualsInAnyOrder(proxyGroupProperties.getHostNames(), proxyGroup.getHostNames());
         assertEquals((int) proxyGroupProperties.getKeepFreeSlots(), proxyGroup.getKeepFreeSlots());
         assertEquals((int) proxyGroupProperties.getMinAmount(), proxyGroup.getMinAmount());

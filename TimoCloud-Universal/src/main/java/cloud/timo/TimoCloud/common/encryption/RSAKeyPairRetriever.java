@@ -1,13 +1,17 @@
 package cloud.timo.TimoCloud.common.encryption;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.KeyPair;
 
 public class RSAKeyPairRetriever {
 
-    private File directory;
-    private File privateKeyFile;
-    private File publicKeyFile;
+    private final File directory;
+    private final File privateKeyFile;
+    private final File publicKeyFile;
 
     public RSAKeyPairRetriever(File directory) {
         this.directory = directory;

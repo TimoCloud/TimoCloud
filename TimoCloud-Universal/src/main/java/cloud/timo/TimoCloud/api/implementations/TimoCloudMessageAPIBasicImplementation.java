@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public abstract class TimoCloudMessageAPIBasicImplementation implements TimoCloudMessageAPI {
 
-    private List<TypeSpecificMessageListener> listeners;
+    private final List<TypeSpecificMessageListener> listeners;
 
     public TimoCloudMessageAPIBasicImplementation() {
         listeners = new ArrayList<>();
@@ -75,8 +75,9 @@ public abstract class TimoCloudMessageAPIBasicImplementation implements TimoClou
             try {
                 listener.getListener().onPluginMessage(message);
             } catch (Exception e) {
-                TimoCloudLogger.getLogger().severe("Uncaught exception while calling method onPluginMessage: ");
-                e.printStackTrace();
+                TimoCloudLogger logger = TimoCloudLogger.getLogger();
+                logger.severe("Uncaught exception while calling method onPluginMessage: ");
+                logger.severe(e);
             }
         }
     }

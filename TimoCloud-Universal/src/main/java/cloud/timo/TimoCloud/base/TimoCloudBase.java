@@ -25,6 +25,8 @@ import io.netty.channel.Channel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileDeleteStrategy;
 
 import java.io.BufferedReader;
@@ -46,18 +48,13 @@ public class TimoCloudBase implements TimoCloudModule {
     public static final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
+    @Getter
     private static TimoCloudBase instance;
-    private OptionSet options;
-    private String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
     private BaseFileManager fileManager;
     private RSAKeyPairRetriever rsaKeyPairRetriever;
     private BaseInstanceManager instanceManager;
@@ -68,6 +65,8 @@ public class TimoCloudBase implements TimoCloudModule {
     private BaseStringHandler stringHandler;
     private BaseResourceManager resourceManager;
     private ScheduledExecutorService scheduler;
+    @Getter
+    @Setter
     private boolean connected = false;
     private boolean handshakePerformed = false;
     private boolean publicKeyPrinted;
@@ -98,7 +97,6 @@ public class TimoCloudBase implements TimoCloudModule {
 
     @Override
     public void load(OptionSet optionSet) throws Exception {
-        this.options = optionSet;
         makeInstances();
         info(ANSI_GREEN + "Base has been loaded");
         scheduleConnecting();
@@ -106,7 +104,6 @@ public class TimoCloudBase implements TimoCloudModule {
 
     @Override
     public void unload() {
-
     }
 
     private void makeInstances() throws Exception {
@@ -134,17 +131,9 @@ public class TimoCloudBase implements TimoCloudModule {
         String prop = System.getProperty("serverStartDelay");
         try {
             delay = Long.parseLong(prop);
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return delay;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void setConnected(boolean connected) {
-        this.connected = connected;
     }
 
     public void alertConnecting() {
@@ -156,7 +145,7 @@ public class TimoCloudBase implements TimoCloudModule {
         new Thread(() -> {
             try {
                 getSocketClient().init(getCoreSocketIP(), getCoreSocketPort());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }).start();
     }
@@ -165,7 +154,7 @@ public class TimoCloudBase implements TimoCloudModule {
         if (isConnected()) return;
         setConnected(true);
         try {
-            if (! getRsaKeyPairRetriever().isValidKeyPairExisting()) {
+            if (!getRsaKeyPairRetriever().isValidKeyPairExisting()) {
                 KeyPair keyPair = getRsaKeyPairRetriever().generateKeyPair();
                 info(String.format("Successfully generated public key! Please register this base at the Core by executing the following command in the Core console: '%saddbase %s'", ANSI_RED, RSAKeyUtil.publicKeyToBase64(keyPair.getPublic()) + ANSI_RESET));
                 this.publicKeyPrinted = true;
@@ -176,7 +165,7 @@ public class TimoCloudBase implements TimoCloudModule {
                 channel.pipeline().addBefore("prepender", "decrypter", new AESDecrypter(aesKey));
                 channel.pipeline().addBefore("prepender", "decoder", new StringDecoder(CharsetUtil.UTF_8));
                 channel.pipeline().addBefore("prepender", "handler", TimoCloudBase.getInstance().getStringHandler());
-                channel.pipeline().addLast( "encrypter", new AESEncrypter(aesKey));
+                channel.pipeline().addLast("encrypter", new AESEncrypter(aesKey));
                 channel.pipeline().addLast("encoder", new StringEncoder(CharsetUtil.UTF_8));
 
                 getSocketMessageManager().sendMessage(Message.create().setType(MessageType.BASE_HANDSHAKE).set("publicAddress", getPublicIpAddress()));
@@ -197,7 +186,7 @@ public class TimoCloudBase implements TimoCloudModule {
         if (isConnected()) {
             if (handshakePerformed) info("Disconnected from Core. Reconnecting...");
             else {
-                if (! publicKeyPrinted) {
+                if (!publicKeyPrinted) {
                     try {
                         info(String.format("In order to be able to connect to the Core, you have to register this base by executing the command '%saddbase %s' in the Core console.", ANSI_RED, RSAKeyUtil.publicKeyToBase64(getRsaKeyPairRetriever().getKeyPair().getPublic()) + ANSI_RESET));
                     } catch (Exception e) {
@@ -219,14 +208,16 @@ public class TimoCloudBase implements TimoCloudModule {
     private String getPublicIpAddress() {
         try {
             return new BufferedReader(new InputStreamReader(new URL("http://checkip.amazonaws.com").openStream())).readLine();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
+
         try {
             return InetAddressUtil.getLocalHost().getHostAddress();
         } catch (Exception e) {
             severe("Error while retrieving own IP address: ");
             severe(e);
         }
+
         return "127.0.0.1";
     }
 
@@ -252,10 +243,6 @@ public class TimoCloudBase implements TimoCloudModule {
 
     public Integer getCoreSocketPort() {
         return (Integer) getFileManager().getConfig().get("core-port");
-    }
-
-    public static TimoCloudBase getInstance() {
-        return instance;
     }
 
     public BaseFileManager getFileManager() {
@@ -295,6 +282,7 @@ public class TimoCloudBase implements TimoCloudModule {
     }
 
     public String getPrefix() {
+        String prefix = ANSI_YELLOW + "[" + ANSI_CYAN + "Timo" + ANSI_RESET + "Cloud" + ANSI_YELLOW + "]" + ANSI_RESET;
         return prefix + " ";
     }
 

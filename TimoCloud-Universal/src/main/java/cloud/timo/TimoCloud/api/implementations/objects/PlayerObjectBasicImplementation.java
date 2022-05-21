@@ -11,7 +11,9 @@ import cloud.timo.TimoCloud.api.objects.PlayerObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.InetAddress;
 import java.util.UUID;
@@ -19,11 +21,18 @@ import java.util.UUID;
 @NoArgsConstructor
 public class PlayerObjectBasicImplementation implements PlayerObject, LinkableObject<PlayerObject> {
 
+    @Getter
+    @Setter
     private String name;
+    @Getter
     private UUID uuid;
     private ServerObjectLink server;
     private ProxyObjectLink proxy;
+    @Getter
+    @Setter
     private InetAddress ipAddress;
+    @Getter
+    @Setter
     private boolean online;
 
     public PlayerObjectBasicImplementation(String name, UUID uuid, ServerObjectLink server, ProxyObjectLink proxy, InetAddress ipAddress, boolean online) {
@@ -38,18 +47,6 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
     @Override
     public String getId() {
         return getUuid().toString();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public UUID getUuid() {
-        return uuid;
     }
 
     public void setUuid(UUID uuid) {
@@ -74,18 +71,6 @@ public class PlayerObjectBasicImplementation implements PlayerObject, LinkableOb
 
     public void setProxy(ProxyObject proxy) {
         this.proxy = ((ProxyObjectBasicImplementation) proxy).toLink();
-    }
-
-    public InetAddress getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(InetAddress ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public boolean isOnline() {
-        return online;
     }
 
     @Override

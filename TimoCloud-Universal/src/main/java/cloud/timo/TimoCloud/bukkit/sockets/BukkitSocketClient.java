@@ -15,7 +15,8 @@ public class BukkitSocketClient {
                 .channel(NettyUtil.getSocketChannelClass())
                 .option(ChannelOption.TCP_NODELAY, true)
                 .handler(new BukkitPipeline());
-        ChannelFuture f = null;
+
+        ChannelFuture f;
         try {
             f = b.connect(host, port).sync();
         } catch (Exception e) {
@@ -23,6 +24,7 @@ public class BukkitSocketClient {
             group.shutdownGracefully();
             return;
         }
+
         f.channel().closeFuture().addListener(future -> {
             TimoCloudBukkit.getInstance().onSocketDisconnect(false);
             group.shutdownGracefully();

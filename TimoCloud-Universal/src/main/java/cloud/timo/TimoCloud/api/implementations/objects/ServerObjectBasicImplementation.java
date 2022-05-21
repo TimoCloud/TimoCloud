@@ -3,7 +3,11 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
-import cloud.timo.TimoCloud.api.internal.links.*;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.PlayerObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerGroupObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ServerObjectLink;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -25,12 +29,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.S_EXECUTE_COMMAND;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.S_GET_LOG_FRACTION;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.S_SET_EXTRA;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.S_SET_STATE;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.S_STOP;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 @NoArgsConstructor
 public class ServerObjectBasicImplementation implements ServerObject, LinkableObject<ServerObject>, Comparable {
 
+    @JsonProperty("s")
+    protected String state;
+    @JsonProperty("e")
+    protected String extra;
     // Assign short json property names so that the JSON object is smaller
     @JsonProperty("n")
     private String name;
@@ -38,10 +50,6 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
     private String id;
     @JsonProperty("g")
     private ServerGroupObjectLink group;
-    @JsonProperty("s")
-    protected String state;
-    @JsonProperty("e")
-    protected String extra;
     @JsonProperty("m")
     private String map;
     @JsonProperty("mo")
@@ -236,51 +244,51 @@ public class ServerObjectBasicImplementation implements ServerObject, LinkableOb
         this.onlinePlayers.remove(playerObjectLink);
     }
 
-    public void setNameInternally(String name){
+    public void setNameInternally(String name) {
         this.name = name;
     }
 
-    public void setIdInternally(String id){
+    public void setIdInternally(String id) {
         this.id = id;
     }
 
-    public void setServerGroupObjectLink(ServerGroupObjectLink serverGroupObjectLink){
+    public void setServerGroupObjectLink(ServerGroupObjectLink serverGroupObjectLink) {
         this.group = serverGroupObjectLink;
     }
 
-    public void setStateInternally(String state){
+    public void setStateInternally(String state) {
         this.state = state;
     }
 
-    public void setExtraInternally(String extra){
+    public void setExtraInternally(String extra) {
         this.extra = extra;
     }
 
-    public void setMapInternally(String map){
+    public void setMapInternally(String map) {
         this.map = map;
     }
 
-    public void setMotdInternally(String motd){
+    public void setMotdInternally(String motd) {
         this.motd = motd;
     }
 
-    public void setOnlinePlayerCountInternally(int i){
+    public void setOnlinePlayerCountInternally(int i) {
         this.onlinePlayerCount = i;
     }
 
-    public void setMaxPlayerCountInternally(int i){
+    public void setMaxPlayerCountInternally(int i) {
         this.maxPlayerCount = i;
     }
 
-    public void setBaseObjectLinkInternally(BaseObjectLink base){
+    public void setBaseObjectLinkInternally(BaseObjectLink base) {
         this.base = base;
     }
 
-    public void setSocketAddressInternally(InetSocketAddress inetSocketAddress){
+    public void setSocketAddressInternally(InetSocketAddress inetSocketAddress) {
         this.socketAddress = inetSocketAddress;
     }
 
-    public void setMessageClientAddressInternally(MessageClientAddress messageClientAddress){
+    public void setMessageClientAddressInternally(MessageClientAddress messageClientAddress) {
         this.messageClientAddress = messageClientAddress;
     }
 

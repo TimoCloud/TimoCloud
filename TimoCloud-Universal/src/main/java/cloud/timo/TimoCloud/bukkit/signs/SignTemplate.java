@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class SignTemplate {
-    private String name;
-    private Map<String, SignLayout> layouts;
+
+    private final String name;
+    private final Map<String, SignLayout> layouts;
     private Set<String> sortOutStates;
 
     public SignTemplate(String name, Map<String, SignLayout> layouts, Collection<String> sortOutStates) {

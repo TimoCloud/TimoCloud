@@ -3,7 +3,11 @@ package cloud.timo.TimoCloud.api.implementations.objects;
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
 import cloud.timo.TimoCloud.api.async.APIRequestFuture;
 import cloud.timo.TimoCloud.api.implementations.async.APIRequestImplementation;
-import cloud.timo.TimoCloud.api.internal.links.*;
+import cloud.timo.TimoCloud.api.internal.links.BaseObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.LinkableObject;
+import cloud.timo.TimoCloud.api.internal.links.PlayerObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyGroupObjectLink;
+import cloud.timo.TimoCloud.api.internal.links.ProxyObjectLink;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddress;
 import cloud.timo.TimoCloud.api.messages.objects.MessageClientAddressType;
@@ -16,7 +20,9 @@ import cloud.timo.TimoCloud.api.objects.log.LogFractionObject;
 import cloud.timo.TimoCloud.common.datatypes.TypeMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -25,7 +31,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_EXECUTE_COMMAND;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_GET_LOG_FRACTION;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.P_STOP;
 
 @JsonIgnoreProperties({"messageClientAddress"})
 @NoArgsConstructor
@@ -33,14 +41,18 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
 
     // Assign short json property names so that the JSON object is smaller
     @JsonProperty("n")
+    @Getter
     private String name;
     @JsonProperty("i")
+    @Getter
     private String id;
     @JsonProperty("g")
     private ProxyGroupObjectLink group;
     @JsonProperty("op")
     private Set<PlayerObjectLink> onlinePlayers;
     @JsonProperty("opc")
+    @Getter
+    @Setter
     private int onlinePlayerCount;
     @JsonProperty("b")
     private BaseObjectLink base;
@@ -59,16 +71,6 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
     public ProxyGroupObject getGroup() {
         return group.resolve();
     }
@@ -76,11 +78,6 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     @Override
     public List<PlayerObject> getOnlinePlayers() {
         return Collections.unmodifiableList(onlinePlayers.stream().map(PlayerObjectLink::resolve).collect(Collectors.toList()));
-    }
-
-    @Override
-    public int getOnlinePlayerCount() {
-        return onlinePlayerCount;
     }
 
     @Override
@@ -151,7 +148,7 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
         this.onlinePlayers.add(playerObjectLink);
     }
 
-    public void setOnlinePlayerCountInternally(int i){
+    public void setOnlinePlayerCountInternally(int i) {
         this.onlinePlayerCount = i;
     }
 

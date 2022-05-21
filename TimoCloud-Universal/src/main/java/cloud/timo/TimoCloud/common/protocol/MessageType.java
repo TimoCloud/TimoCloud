@@ -1,10 +1,14 @@
 package cloud.timo.TimoCloud.common.protocol;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
 // NEXT FREE ID: 56
 
+@RequiredArgsConstructor
 public enum MessageType {
     CORE_PARSE_COMMAND                          (1),
     CORE_SEND_MESSAGE_TO_COMMAND_SENDER         (2),
@@ -80,15 +84,8 @@ public enum MessageType {
         }
     }
 
-    private int id;
-
-    MessageType(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
+    @Getter
+    private final int id;
 
     public static MessageType fromId(int id) {
         return BY_ID.get(id);

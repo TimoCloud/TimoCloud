@@ -8,10 +8,12 @@ import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class EventTransmitter {
 
-    public static void sendEvent(Event event) {
+    public void sendEvent(Event event) {
         try {
             TimoCloudInternalAPI.getInternalMessageAPI().sendMessageToCore(Message.create()
                     .setType(MessageType.FIRE_EVENT)
@@ -24,7 +26,7 @@ public class EventTransmitter {
         }
     }
 
-    private static ObjectMapper getObjectMapper() {
+    private ObjectMapper getObjectMapper() {
         return ((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper();
     }
 }

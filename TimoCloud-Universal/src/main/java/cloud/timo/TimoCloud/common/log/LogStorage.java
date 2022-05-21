@@ -1,11 +1,15 @@
 package cloud.timo.TimoCloud.common.log;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class LogStorage {
 
-    private TreeMap<Long, Collection<LogEntry>> storage;
+    private final TreeMap<Long, Collection<LogEntry>> storage;
 
     public LogStorage() {
         storage = new TreeMap<>();
@@ -19,7 +23,7 @@ public class LogStorage {
 
     public void removeEntry(LogEntry entry) {
         Long key = entry.getTimestamp();
-        if (! storage.containsKey(key)) return;
+        if (!storage.containsKey(key)) return;
         storage.get(key).remove(entry);
     }
 

@@ -26,7 +26,7 @@ public class Message extends LinkedHashMap<String, Object> {
         return new Message();
     }
 
-    public static Message create(Map map) {
+    public static Message create(Map<String, Object> map) {
         return new Message(map);
     }
 
@@ -52,22 +52,7 @@ public class Message extends LinkedHashMap<String, Object> {
     }
 
     public Message setIfAbsent(String key, Object value) {
-        return setIfCondition(key, value, ! containsKey(key));
-    }
-
-    public Message setType(MessageType type) {
-        set(TYPE_KEY, type.getId());
-        return this;
-    }
-
-    public Message setTarget(String target) {
-        set(TARGET_KEY, target);
-        return this;
-    }
-
-    public Message setData(Object data) {
-        set(DATA_KEY, data);
-        return this;
+        return setIfCondition(key, value, !containsKey(key));
     }
 
     public <T> T get(String key, Class<T> type) {
@@ -78,12 +63,27 @@ public class Message extends LinkedHashMap<String, Object> {
         return MessageType.fromId(((Number) get(TYPE_KEY)).intValue());
     }
 
+    public Message setType(MessageType type) {
+        set(TYPE_KEY, type.getId());
+        return this;
+    }
+
     public String getTarget() {
         return (String) get(TARGET_KEY);
     }
 
+    public Message setTarget(String target) {
+        set(TARGET_KEY, target);
+        return this;
+    }
+
     public Object getData() {
         return get(DATA_KEY);
+    }
+
+    public Message setData(Object data) {
+        set(DATA_KEY, data);
+        return this;
     }
 
     public JsonObject toJsonObject() {

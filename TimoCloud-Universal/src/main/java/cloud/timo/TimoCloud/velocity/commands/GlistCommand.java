@@ -22,6 +22,7 @@ public class GlistCommand implements SimpleCommand {
                                 serverObject.getOnlinePlayers().stream().map(PlayerObject::getName).sorted(String.CASE_INSENSITIVE_ORDER).collect(Collectors.joining(", ")))));
             }
         }
+      
         invocation.source().sendMessage(Component.text(ChatColorUtil.translateAlternateColorCodes('&', "Total players online: " + TimoCloudAPI.getUniversalAPI().getProxyGroups().stream().mapToInt(ProxyGroupObject::getOnlinePlayerCount).sum())));
     }
 }

@@ -22,14 +22,19 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SignManager {
-
-    private Set<SignTemplate> signTemplates;
-    private Map<Location, SignInstance> signInstances;
-    private int updates = 0;
 
     private static final Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
         try {
@@ -55,6 +60,9 @@ public class SignManager {
             return 0;
         }
     };
+    private Set<SignTemplate> signTemplates;
+    private Map<Location, SignInstance> signInstances;
+    private int updates = 0;
 
     public SignManager() {
         Bukkit.getScheduler().runTask(TimoCloudBukkit.getInstance(), this::load);
@@ -83,8 +91,10 @@ public class SignManager {
                             throw new SignParseException("Line " + (i + 1) + " (signTemplates.yml section '" + template + ".layouts.lines." + (i + 1) + ") is not defined.");
                         lines[i] = Arrays.asList(line.split(";"));
                     }
-                    Material signBlockMaterial = null;
-                    int signBlockData = 0;
+
+                    Material signBlockMaterial;
+                    int signBlockData;
+
                     try {
                         String materialString = config.getString(template + ".layouts." + layout + ".signBlockMaterial");
                         if (materialString != null) materialString = materialString.toUpperCase();
@@ -101,9 +111,11 @@ public class SignManager {
                             signBlockData
                     ));
                 }
+
                 if (!layouts.containsKey("Default")) {
                     throw new SignParseException("Template " + template + " does not have a default layout 'Default'. Please add it and type /signs reload");
                 }
+
                 signTemplates.add(new SignTemplate(template, layouts, sortOutStates));
             } catch (Exception e) {
                 TimoCloudBukkit.getInstance().severe("Could not parse sign template &e" + template + "&c. Please check your &esignTemplates.yml&c.");
@@ -162,11 +174,12 @@ public class SignManager {
 
     private SignTemplate templateNotFound(String name) {
         List[] lines = {
-                Arrays.asList("&cCould not find"),
-                Arrays.asList("&ctemplate"),
-                Arrays.asList(""),
-                Arrays.asList(name)
+                Collections.singletonList("&cCould not find"),
+                Collections.singletonList("&ctemplate"),
+                Collections.singletonList(""),
+                Collections.singletonList(name)
         };
+
         Map<String, SignLayout> layouts = new HashMap<>();
         layouts.put("Default", new SignLayout(lines, -1, null, 0));
         return new SignTemplate("TemplateNotFound", layouts, null);
@@ -175,7 +188,9 @@ public class SignManager {
     public void updateSigns() {
         if (TimoCloudAPI.getUniversalAPI().getServerGroups() == null) return;
         Collection<SignInstance> dynamicInstances = new ArrayList<>();
+
         if (signInstances.isEmpty()) return;
+
         for (SignInstance signInstance : signInstances.values()) {
             if (signInstance.isDynamic()) {
                 dynamicInstances.add(signInstance);
@@ -183,6 +198,7 @@ public class SignManager {
                 processStaticSign(signInstance);
             }
         }
+
         processDynamicSigns(dynamicInstances);
         updates++;
     }
@@ -194,6 +210,7 @@ public class SignManager {
             groups.putIfAbsent(group, new ArrayList<>());
             groups.get(group).add(signInstance);
         }
+
         for (ServerGroupObject group : groups.keySet()) processDynamicSignsPerGroup(group, groups.get(group));
     }
 
@@ -211,6 +228,7 @@ public class SignManager {
             templates.putIfAbsent(signInstance.getTemplate(), new ArrayList<>());
             templates.get(signInstance.getTemplate()).add(signInstance);
         }
+
         for (SignTemplate template : templates.keySet())
             processDynamicSignsPerGroupAndTemplate(group, template, templates.get(template));
     }
@@ -277,7 +295,7 @@ public class SignManager {
         if (!TimoCloudBukkit.getInstance().isVersion113OrAbove()) {
             try {
                 Block.class.getMethod("setData", byte.class).invoke(attachedTo, (byte) signLayout.getSignBlockData());
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
@@ -324,7 +342,7 @@ public class SignManager {
 
     public void addSign(Location location, String target, String template, int priority, Player player) {
         SignInstance existing = getSignInstanceByLocation(location);
-        if (existing != null) signInstances.remove(existing);
+        if (existing != null) signInstances.remove(location);
         if (template.equals("")) template = "Default";
         SignTemplate signTemplate = getSignTemplate(template);
         if (signTemplate == null) {

@@ -9,7 +9,7 @@ import cloud.timo.TimoCloud.core.objects.ProxyGroup;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
-public class SendCommandCommandHandler  extends CommandFormatUtil implements CommandHandler {
+public class SendCommandCommandHandler extends CommandFormatUtil implements CommandHandler {
 
     @Override
     public void onCommand(String command, CommandSender sender, String... args) {

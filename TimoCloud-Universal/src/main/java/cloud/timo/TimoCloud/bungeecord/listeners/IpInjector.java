@@ -13,33 +13,36 @@ import java.lang.reflect.Field;
 
 public class IpInjector implements Listener {
 
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPreLoginEvent(PreLoginEvent event) {
         injectConnection(event.getConnection());
     }
 
-    @EventHandler (priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW)
     public void onProxyPingEvent(ProxyPingEvent event) {
         injectConnection(event.getConnection());
     }
 
-    @EventHandler (priority = -128)
+    @EventHandler(priority = -128)
     public void onPlayerHandshakeEvent(PlayerHandshakeEvent event) {
         injectConnection(event.getConnection());
     }
 
     private void injectConnection(Connection connection) {
-        if (TimoCloudBungee.getInstance().getIpManager().getAddressByChannel(connection.getAddress()) == null) return;
+        TimoCloudBungee instance = TimoCloudBungee.getInstance();
+
+        if (instance.getIpManager().getAddressByChannel(connection.getAddress()) == null) return;
+
         try {
             Field wrapperField = connection.getClass().getDeclaredField("ch");
             wrapperField.setAccessible(true);
             Object wrapper = wrapperField.get(connection);
             Field addressField = wrapper.getClass().getDeclaredField("remoteAddress");
             addressField.setAccessible(true);
-            addressField.set(wrapper, TimoCloudBungee.getInstance().getIpManager().getAddressByChannel(connection.getAddress()));
+            addressField.set(wrapper, instance.getIpManager().getAddressByChannel(connection.getAddress()));
         } catch (Exception e) {
-            TimoCloudBungee.getInstance().severe("Error while injecting ip address: ");
-            TimoCloudBungee.getInstance().severe(e);
+            instance.severe("Error while injecting ip address: ");
+            instance.severe(e);
         }
     }
 

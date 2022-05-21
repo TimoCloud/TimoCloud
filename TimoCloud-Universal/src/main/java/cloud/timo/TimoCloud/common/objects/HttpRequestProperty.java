@@ -4,9 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public class HttpRequestProperty {
-    @Getter
-    private String key;
-    @Getter
-    private String value;
+    private final String key;
+    private final String value;
 }

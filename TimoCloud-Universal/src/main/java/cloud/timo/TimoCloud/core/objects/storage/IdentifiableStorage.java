@@ -9,17 +9,11 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-public class IdentifiableStorage <T extends Identifiable> {
+public class IdentifiableStorage<T extends Identifiable> {
 
-    private Map<String, Collection<T>> byName;
-    private Map<String, T> byId;
-    private Map<PublicKey, T> byPublicKey;
-
-    public IdentifiableStorage() {
-        byName = new HashMap<>();
-        byId = new HashMap<>();
-        byPublicKey = new HashMap<>();
-    }
+    private final Map<String, Collection<T>> byName = new HashMap<>();
+    private final Map<String, T> byId = new HashMap<>();
+    private final Map<PublicKey, T> byPublicKey = new HashMap<>();
 
     public T getById(String id) {
         if (id == null) return null;
@@ -52,20 +46,22 @@ public class IdentifiableStorage <T extends Identifiable> {
     public void add(T identifiable) {
         remove(identifiable);
         byId.put(identifiable.getId(), identifiable);
-        if (identifiable instanceof PublicKeyIdentifiable) byPublicKey.put(((PublicKeyIdentifiable) identifiable).getPublicKey(), identifiable);
+        if (identifiable instanceof PublicKeyIdentifiable)
+            byPublicKey.put(((PublicKeyIdentifiable) identifiable).getPublicKey(), identifiable);
         byName.putIfAbsent(identifiable.getName().toLowerCase(), new LinkedHashSet<>());
         byName.get(identifiable.getName().toLowerCase()).add(identifiable);
     }
 
     public void remove(T identifiable) {
         byId.remove(identifiable.getId());
-        if (identifiable instanceof PublicKeyIdentifiable) byPublicKey.remove(((PublicKeyIdentifiable) identifiable).getPublicKey());
+        if (identifiable instanceof PublicKeyIdentifiable)
+            byPublicKey.remove(((PublicKeyIdentifiable) identifiable).getPublicKey());
         if (byName.containsKey(identifiable.getName().toLowerCase())) {
             byName.get(identifiable.getName().toLowerCase()).remove(identifiable);
         }
     }
 
-    public void update(T identifiable) { // Called when keys like name or pulic key changed
+    public void update(T identifiable) { // Called when keys like name or public key changed
         remove(identifiable);
         add(identifiable);
     }

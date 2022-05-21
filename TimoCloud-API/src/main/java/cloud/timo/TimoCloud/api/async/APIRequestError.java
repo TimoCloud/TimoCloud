@@ -5,9 +5,9 @@ import java.util.Collections;
 
 public class APIRequestError extends RuntimeException {
 
+    private final Collection<?> arguments;
     private Integer code;
     private String message;
-    private Collection arguments;
 
     public APIRequestError(String message) {
         super(message);
@@ -18,7 +18,7 @@ public class APIRequestError extends RuntimeException {
         this(message, code, Collections.emptyList());
     }
 
-    public APIRequestError(String message, int code, Collection arguments) {
+    public APIRequestError(String message, int code, Collection<?> arguments) {
         super(String.format("[%d] %s", code, message));
         this.code = code;
         this.message = message;
@@ -33,7 +33,7 @@ public class APIRequestError extends RuntimeException {
         return this.message;
     }
 
-    public Collection getArguments() {
+    public Collection<?> getArguments() {
         return arguments;
     }
 

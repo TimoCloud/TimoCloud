@@ -31,11 +31,11 @@ public class GroupInstanceDemand implements Comparable<GroupInstanceDemand> {
     }
 
     public int getScore() {
-        return getAmount()*getGroup().getPriority();
+        return getAmount() * getGroup().getPriority();
     }
 
     @Override
     public int compareTo(GroupInstanceDemand o) {
-        return o.getScore()-getScore();
+        return o.getScore() - getScore();
     }
 }

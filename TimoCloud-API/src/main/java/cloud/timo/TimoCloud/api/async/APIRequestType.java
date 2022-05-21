@@ -1,6 +1,10 @@
 package cloud.timo.TimoCloud.api.async;
 
-import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.*;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.GENERAL;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.PROXY;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.PROXY_GROUP;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.SERVER;
+import static cloud.timo.TimoCloud.api.async.APIRequestType.TargetType.SERVER_GROUP;
 
 /**
  * Abbreviations:
@@ -58,7 +62,7 @@ public enum APIRequestType {
 
     ;
 
-    private TargetType targetType;
+    private final TargetType targetType;
 
     APIRequestType(TargetType targetType) {
         this.targetType = targetType;

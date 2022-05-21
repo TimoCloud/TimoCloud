@@ -18,7 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class LobbyJoin implements Listener {
-    private Set<UUID> pending;
+
+    private final Set<UUID> pending;
 
     public LobbyJoin() {
         pending = new HashSet<>();
@@ -49,6 +50,7 @@ public class LobbyJoin implements Listener {
             event.setCancelled(true);
             return;
         }
+
         ServerInfo info = ProxyServer.getInstance().getServerInfo(freeLobby.getName());
         if (info == null) {
             TimoCloudBungee.getInstance().severe("No lobby server found.");
@@ -58,6 +60,7 @@ public class LobbyJoin implements Listener {
             event.setCancelled(true);
             return;
         }
+
         event.setTarget(info);
         pending.remove(player.getUniqueId());
     }

@@ -1,21 +1,23 @@
 package cloud.timo.TimoCloud.common.utils.network;
 
+import lombok.experimental.UtilityClass;
+
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
+@UtilityClass
 public class InetAddressUtil {
 
-    public static InetSocketAddress getSocketAddressByName(String address) throws Exception {
+    public InetSocketAddress getSocketAddressByName(String address) {
         String[] split = address.split(":");
-        String hostname = Arrays.stream(Arrays.copyOfRange(split, 0, split.length - 1)).collect(Collectors.joining(":"));
-        int port = Integer.parseInt(split[split.length-1]);
+        String hostname = String.join(":", Arrays.copyOfRange(split, 0, split.length - 1));
+        int port = Integer.parseInt(split[split.length - 1]);
         return InetSocketAddress.createUnresolved(hostname, port);
     }
 
-    public static InetAddress getLocalHost() throws UnknownHostException {
+    public InetAddress getLocalHost() throws UnknownHostException {
         try {
             return InetAddress.getLocalHost();
         } catch (Exception e) {

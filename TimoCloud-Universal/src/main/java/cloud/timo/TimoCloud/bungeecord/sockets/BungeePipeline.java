@@ -9,10 +9,10 @@ import io.netty.channel.ChannelInitializer;
 public class BungeePipeline extends ChannelInitializer<Channel> {
 
     @Override
-    protected void initChannel(Channel ch) throws Exception {
-        ch.pipeline().addLast("splitter", new PacketLengthSplitter());
-        ch.pipeline().addLast(TimoCloudBungee.getInstance().getSocketClientHandler());
-        ch.pipeline().addLast("prepender", new PacketLengthPrepender());
+    protected void initChannel(Channel ch) {
+        ch.pipeline().addLast("splitter", new PacketLengthSplitter())
+                .addLast(TimoCloudBungee.getInstance().getSocketClientHandler())
+                .addLast("prepender", new PacketLengthPrepender());
     }
 
 }

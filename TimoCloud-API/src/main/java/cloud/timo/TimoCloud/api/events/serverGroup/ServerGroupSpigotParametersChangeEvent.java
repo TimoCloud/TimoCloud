@@ -5,7 +5,7 @@ import cloud.timo.TimoCloud.api.objects.ServerGroupObject;
 
 import java.util.List;
 
-public interface ServerGroupSpigotParametersChangeEvent  extends Event {
+public interface ServerGroupSpigotParametersChangeEvent extends Event {
 
     ServerGroupObject getServerGroup();
 

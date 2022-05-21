@@ -7,12 +7,20 @@ import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.common.global.logging.TimoCloudLogger;
 import cloud.timo.TimoCloud.velocity.objects.LobbyChooseStrategy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class LobbyManager {
 
     private static final long INVALIDATE_CACHE_TIME = 2000;
+    private static final Random RANDOM = new Random();
 
     private final Map<UUID, List<String>> lobbyHistory;
     private final Map<UUID, Long> lastUpdate;
@@ -53,10 +61,12 @@ public class LobbyManager {
             TimoCloudLogger.getLogger().severe("Error while searching lobby: Could not find specified fallbackGroup '" + fallbackGroup + "'");
             return null;
         }
+
         List<ServerObject> servers = group.getServers().stream()
                 .filter(server -> !server.getName().equals(notThis))
                 .filter(server -> server.getOnlinePlayerCount() < server.getMaxPlayerCount())
                 .collect(Collectors.toList());
+
         List<ServerObject> removeServers = new ArrayList<>();
         ServerObject notThisServer = notThis == null ? null : TimoCloudAPI.getUniversalAPI().getServer(notThis);
         if (notThisServer != null) removeServers.add(notThisServer);
@@ -65,6 +75,7 @@ public class LobbyManager {
         for (ServerObject server : servers) {
             if (history.contains(server.getName()) && !removeServers.contains(server)) removeServers.add(server);
         }
+
         servers.removeAll(removeServers);
         if (servers.size() == 0) {
             return null;
@@ -74,7 +85,7 @@ public class LobbyManager {
         ServerObject target = null;
         switch (getLobbyChooseStrategy()) {
             case RANDOM:
-                target = servers.get(new Random().nextInt(servers.size()));
+                target = servers.get(RANDOM.nextInt(servers.size()));
                 break;
             case FILL:
                 for (int i = servers.size() - 1; i >= 0; i--) {
@@ -103,6 +114,7 @@ public class LobbyManager {
                 notThis = serverObject.getName();
             }
         }
+
         PlayerObject player = TimoCloudAPI.getUniversalAPI().getPlayer(uuid);
         ServerGroupObject serverGroupObject = TimoCloudAPI.getUniversalAPI().getServerGroup(emergencyFallback);
 
@@ -113,6 +125,7 @@ public class LobbyManager {
         if (serverObject == null) {
             if (serverGroupObject == null) return null;
             if (serverGroupObject.getServers().isEmpty()) return null;
+
             return serverGroupObject.getServers().stream().findFirst().get();
         }
 

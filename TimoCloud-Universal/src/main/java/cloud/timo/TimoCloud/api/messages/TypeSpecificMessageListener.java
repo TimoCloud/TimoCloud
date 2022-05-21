@@ -8,10 +8,10 @@ import java.util.Set;
 
 public class TypeSpecificMessageListener {
 
-    private MessageListener listener;
-    private Set<String> supportedTypes;
+    private final MessageListener listener;
+    private final Set<String> supportedTypes;
 
-    public TypeSpecificMessageListener(MessageListener listener, String ... supportedTypes) {
+    public TypeSpecificMessageListener(MessageListener listener, String... supportedTypes) {
         this.listener = listener;
         this.supportedTypes = new HashSet<>(Arrays.asList(supportedTypes));
     }

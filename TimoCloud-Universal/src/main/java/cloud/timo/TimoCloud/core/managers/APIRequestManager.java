@@ -15,18 +15,89 @@ import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.common.json.JsonConverter;
 import cloud.timo.TimoCloud.common.log.LogEntry;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
-import cloud.timo.TimoCloud.core.objects.*;
+import cloud.timo.TimoCloud.core.objects.Base;
+import cloud.timo.TimoCloud.core.objects.Proxy;
+import cloud.timo.TimoCloud.core.objects.ProxyGroup;
+import cloud.timo.TimoCloud.core.objects.Server;
+import cloud.timo.TimoCloud.core.objects.ServerGroup;
 
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 // Next free error code: 16
 public class APIRequestManager implements MessageListener {
 
+    private static void validateNotNull(Object o) throws APIRequestError {
+        validateNotNull(o, null);
+    }
+
+    private static void validateNotNull(Object o, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(o, name, String.format("%s must not be null", name));
+    }
+
+    private static void validateNotNull(Object o, String name, String message) throws APIRequestError {
+        if (o == null) {
+            throw new APIRequestError(message,
+                    1,
+                    Arrays.asList(name));
+        }
+    }
+
+    private static void validateMinimum(Number number, Number minimum) throws APIRequestError {
+        validateMinimum(number, minimum, null);
+    }
+
+    private static void validateMinimum(Number number, Number minimum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(minimum, String.format("Minimum for %s", name));
+        if (number.doubleValue() < minimum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must not be smaller than %s (actual value: %s)", name, minimum, number),
+                    2,
+                    Arrays.asList(number, minimum));
+        }
+    }
+
+    private static void validateMaximum(Number number, Number maximum) throws APIRequestError {
+        validateMinimum(number, maximum, null);
+    }
+
+    private static void validateMaximum(Number number, Number maximum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(maximum, String.format("Maximum for %s", name));
+        if (number.doubleValue() > maximum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must not be greater than %s (actual value: %s)", name, maximum, number),
+                    3,
+                    Arrays.asList(number, maximum));
+        }
+    }
+
+    private static void validateRange(Number number, Number minimum, Number maximum) throws APIRequestError {
+        validateRange(number, minimum, maximum, null);
+    }
+
+    private static void validateRange(Number number, Number minimum, Number maximum, String name) throws APIRequestError {
+        if (name == null) name = "Value";
+        validateNotNull(number, name);
+        validateNotNull(minimum, String.format("Minimum for %s", name));
+        validateNotNull(maximum, String.format("Maximum for %s", name));
+        if (number.doubleValue() < minimum.doubleValue() || number.doubleValue() > maximum.doubleValue()) {
+            throw new APIRequestError(String.format("%s must be in range [%s;%s] %s (actual value: %s)", name, minimum, maximum, number),
+                    4,
+                    Arrays.asList(number, minimum, maximum));
+        }
+    }
+
     @Override
     public void onPluginMessage(AddressedPluginMessage message) {
-        APIRequest request = APIRequestImplementation.fromMap(message.getMessage().getData());
-        APIResponse response = processRequest(request);
+        APIRequest<?> request = APIRequestImplementation.fromMap(message.getMessage().getData());
+        APIResponse<?> response = processRequest(request);
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(message.getSender(), response.toPluginMessage()));
     }
 
@@ -42,7 +113,7 @@ public class APIRequestManager implements MessageListener {
                             try {
                                 serverGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ServerGroupProperties.class);
                             } catch (Exception e) {
-                                throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Arrays.asList(data.get("value")));
+                                throw new APIRequestError("Could not deserialize ServerGroupProperties", 10, Collections.singletonList(data.get("value")));
                             }
                             String name = serverGroupProperties.getName();
                             validateNotNull(name, "Name");
@@ -74,7 +145,7 @@ public class APIRequestManager implements MessageListener {
                             validateNotNull(timeout, "timeout");
 
                             if (TimoCloudCore.getInstance().getInstanceManager().getGroupByName(name) != null) {
-                                throw new APIRequestError("A group with this name already exists", 12, Arrays.asList(name));
+                                throw new APIRequestError("A group with this name already exists", 12, Collections.singletonList(name));
                             }
 
                             ServerGroup serverGroup = new ServerGroup(
@@ -101,7 +172,7 @@ public class APIRequestManager implements MessageListener {
                             try {
                                 proxyGroupProperties = JsonConverter.convertMapIfNecessary(data.get("value"), ProxyGroupProperties.class);
                             } catch (Exception e) {
-                                throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Arrays.asList(data.get("value")));
+                                throw new APIRequestError("Could not deserialize ProxyGroupProperties", 11, Collections.singletonList(data.get("value")));
                             }
                             String name = proxyGroupProperties.getName();
                             validateNotNull(name, "Name");
@@ -455,69 +526,6 @@ public class APIRequestManager implements MessageListener {
             return new APIResponse<T>(request, new APIRequestError(String.format("An unknown error occurred: %s", e.getMessage()), 1));
         }
         return new APIResponse<>(request, responseData);
-    }
-
-    private static void validateNotNull(Object o) throws APIRequestError {
-        validateNotNull(o, null);
-    }
-
-    private static void validateNotNull(Object o, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(o, name, String.format("%s must not be null", name));
-    }
-
-    private static void validateNotNull(Object o, String name, String message) throws APIRequestError {
-        if (o == null) {
-            throw new APIRequestError(message,
-                    1,
-                    Arrays.asList(name));
-        }
-    }
-
-    private static void validateMinimum(Number number, Number minimum) throws APIRequestError {
-        validateMinimum(number, minimum, null);
-    }
-
-    private static void validateMinimum(Number number, Number minimum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(minimum, String.format("Minimum for %s", name));
-        if (number.doubleValue() < minimum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must not be smaller than %s (actual value: %s)", name, minimum, number),
-                    2,
-                    Arrays.asList(number, minimum));
-        }
-    }
-
-    private static void validateMaximum(Number number, Number maximum) throws APIRequestError {
-        validateMinimum(number, maximum, null);
-    }
-
-    private static void validateMaximum(Number number, Number maximum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(maximum, String.format("Maximum for %s", name));
-        if (number.doubleValue() > maximum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must not be greater than %s (actual value: %s)", name, maximum, number),
-                    3,
-                    Arrays.asList(number, maximum));
-        }
-    }
-
-    private static void validateRange(Number number, Number minimum, Number maximum) throws APIRequestError {
-        validateRange(number, minimum, maximum, null);
-    }
-
-    private static void validateRange(Number number, Number minimum, Number maximum, String name) throws APIRequestError {
-        if (name == null) name = "Value";
-        validateNotNull(number, name);
-        validateNotNull(minimum, String.format("Minimum for %s", name));
-        validateNotNull(maximum, String.format("Maximum for %s", name));
-        if (number.doubleValue() < minimum.doubleValue() || number.doubleValue() > maximum.doubleValue()) {
-            throw new APIRequestError(String.format("%s must be in range [%s;%s] %s (actual value: %s)", name, minimum, maximum, number),
-                    4,
-                    Arrays.asList(number, minimum, maximum));
-        }
     }
 
 }

@@ -6,7 +6,9 @@ import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 public class DnsRecord {
@@ -24,20 +26,6 @@ public class DnsRecord {
     @Getter
     private DnsZone zone;
 
-    public DnsRecord() {}
-
-    public JsonObject toJson() {
-        return JsonObjectBuilder.create()
-                .setIfNotNull("id", getId())
-                .set("type", getType())
-                .set("name", getName())
-                .set("content", getContent())
-                .set("ttl", getTtl())
-                .set("zone_id", getZone().getId())
-                .set("zone_name", getZone().getName())
-                .toJsonObject();
-    }
-
     public static DnsRecord fromJson(JsonObject jsonObject) {
         return new DnsRecord(
                 jsonObject.get("id").getAsString(),
@@ -52,19 +40,15 @@ public class DnsRecord {
         );
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DnsRecord dnsRecord = (DnsRecord) o;
-
-        return id != null ? id.equals(dnsRecord.id) : dnsRecord.id == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+    public JsonObject toJson() {
+        return JsonObjectBuilder.create()
+                .setIfNotNull("id", getId())
+                .set("type", getType())
+                .set("name", getName())
+                .set("content", getContent())
+                .set("ttl", getTtl())
+                .set("zone_id", getZone().getId())
+                .set("zone_name", getZone().getName())
+                .toJsonObject();
     }
 }

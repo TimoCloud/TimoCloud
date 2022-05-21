@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ProxyNameCompleter implements Completer {
+
     @Override
     public void complete(LineReader lineReader, ParsedLine parsedLine, List<Candidate> list) {
         list.addAll(TimoCloudCore.getInstance().getInstanceManager().getProxyGroups().stream().map(ProxyGroup::getProxies).flatMap(Collection::stream).map(Proxy::getName).map(Candidate::new).collect(Collectors.toList()));

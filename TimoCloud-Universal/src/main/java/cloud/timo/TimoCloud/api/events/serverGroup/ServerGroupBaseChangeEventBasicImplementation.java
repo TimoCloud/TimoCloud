@@ -33,6 +33,7 @@ public class ServerGroupBaseChangeEventBasicImplementation extends ServerGroupPr
     public BaseObject getNewValue() {
         return newBaseId == null ? null : TimoCloudAPI.getUniversalAPI().getBase(newBaseId);
     }
+
     @Override
     public EventType getType() {
         return EventType.SG_BASE_CHANGE;

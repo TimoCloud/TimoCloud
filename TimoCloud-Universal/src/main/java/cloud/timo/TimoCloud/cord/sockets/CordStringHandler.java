@@ -21,6 +21,7 @@ import java.util.Map;
 @ChannelHandler.Sharable
 public class CordStringHandler extends BasicStringHandler {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
         String type = (String) message.get("type");
