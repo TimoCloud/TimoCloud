@@ -2,7 +2,6 @@ pipeline {
 	agent any
 	tools {
         	maven '3.8.6'
-		jdk '8'
     	}
 	stages {
 		stage ('Clean Workspace') {
