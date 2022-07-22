@@ -51,7 +51,7 @@ public class ServerGroupDefaultPropertiesProviderImplementation implements Serve
 
     @Override
     public List<String> getJavaParameters() {
-        if (System.getProperty("os.arch") == "arm" || System.getProperty("os.arch") == "aarch64") return Arrays.asList(
+        if (System.getProperty("os.arch").contains("arm") || System.getProperty("os.arch").contains("aarch64")) return Arrays.asList(
                 "-Dfile.encoding=UTF8",
                 "-XX:+UseG1GC",
                 "-XX:+UnlockExperimentalVMOptions",
