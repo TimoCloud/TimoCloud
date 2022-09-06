@@ -258,9 +258,13 @@ public class TimoCloudCore implements TimoCloudModule {
         return (Integer) getFileManager().getConfig().get("socket-port");
     }
 
+    public String getSocketAdress() {
+        return (String) getFileManager().getConfig().get("socket-ip");
+    }
+
     private void initSocketServer() {
         try {
-            socketServer.init("0.0.0.0", getSocketPort());
+            socketServer.init(getSocketAdress(), getSocketPort());
         } catch (Exception e) {
             severe("Error while initializing socket server:");
             e.printStackTrace();
