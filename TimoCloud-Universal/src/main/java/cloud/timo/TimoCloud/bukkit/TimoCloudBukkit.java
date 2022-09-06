@@ -41,10 +41,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jline.utils.Log;
 
 import java.io.File;
-import java.io.PrintStream;
+import java.lang.reflect.Constructor;
+import java.net.InetAddress;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +62,10 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
     private boolean enabled = false;
     private boolean disabling = false;
     private boolean serverRegistered = false;
+
+    public static TimoCloudBukkit getInstance() {
+        return instance;
+    }
 
     @Override
     public void info(String message) {
@@ -300,10 +304,21 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     private void sendMotds() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
-            getStateByEventManager().setStateByMotd(event.getMotd().trim());
+            Constructor<ServerListPingEvent> eventConstructor;
+            try {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
+                getStateByEventManager().setStateByMotd(event.getMotd().trim());
+            } catch (NoSuchMethodException e) {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                Bukkit.getPluginManager().callEvent(event);
+                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
+                getStateByEventManager().setStateByMotd(event.getMotd().trim());
+            }
         } catch (Exception e) {
             severe("Error while sending MOTD: ");
             TimoCloudBukkit.getInstance().severe(e);
@@ -313,9 +328,18 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     public int getOnlinePlayersAmount() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
-            return event.getNumPlayers();
+            Constructor<ServerListPingEvent> eventConstructor;
+            try {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                return event.getNumPlayers();
+            } catch (NoSuchMethodException e) {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                return event.getNumPlayers();
+            }
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
             TimoCloudBukkit.getInstance().severe(e);
@@ -325,9 +349,18 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
 
     public int getMaxPlayersAmount() {
         try {
-            ServerListPingEvent event = new ServerListPingEvent(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-            Bukkit.getPluginManager().callEvent(event);
-            return event.getMaxPlayers();
+            Constructor<ServerListPingEvent> eventConstructor;
+            try {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                return event.getMaxPlayers();
+            } catch (NoSuchMethodException e) {
+                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                Bukkit.getPluginManager().callEvent(event);
+                return event.getMaxPlayers();
+            }
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
             TimoCloudBukkit.getInstance().severe(e);
@@ -340,11 +373,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
      */
     public void sendPlayers() {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
-    }
-
-
-    public static TimoCloudBukkit getInstance() {
-        return instance;
     }
 
     public String getPrefix() {

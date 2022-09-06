@@ -78,7 +78,8 @@ public class ProxyGroupDefaultPropertiesProviderImplementation implements ProxyG
 
     @Override
     public List<String> getJavaParameters() {
-        return Arrays.asList("-Dfile.encoding=UTF8", "-XX:+UnlockExperimentalVMOptions", "-XX:+DoEscapeAnalysis", "-XX:+UseCompressedOops", "-XX:MaxGCPauseMillis=10", "-XX:GCPauseIntervalMillis=100", "-XX:+UseAdaptiveSizePolicy", "-XX:ParallelGCThreads=2", "-XX:UseSSE=3");
+        if (System.getProperty("os.arch").contains("arm") || System.getProperty("os.arch").contains("aarch64")) return Arrays.asList("-Dfile.encoding=UTF8", "-XX:+UnlockExperimentalVMOptions", "-XX:+DoEscapeAnalysis", "-XX:+UseCompressedOops", "-XX:MaxGCPauseMillis=10", "-XX:GCPauseIntervalMillis=100", "-XX:+UseAdaptiveSizePolicy", "-XX:ParallelGCThreads=2");
+        else return Arrays.asList("-Dfile.encoding=UTF8", "-XX:+UnlockExperimentalVMOptions", "-XX:+DoEscapeAnalysis", "-XX:+UseCompressedOops", "-XX:MaxGCPauseMillis=10", "-XX:GCPauseIntervalMillis=100", "-XX:+UseAdaptiveSizePolicy", "-XX:ParallelGCThreads=2", "-XX:UseSSE=3");
     }
 
     @Override

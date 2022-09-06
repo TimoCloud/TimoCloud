@@ -427,6 +427,7 @@ public class CoreInstanceManager {
         return getBases().stream()
                 .filter(Base::isConnected)
                 .filter(Base::isReady)
+                .filter(base -> !base.isStaticOnly())
                 .filter(base -> group.getBase() == null || group.getBase().equals(base))
                 .filter(base -> base.getAvailableRam() >= group.getRam())
                 .min(Comparator.comparingInt(Base::getAvailableRam)).orElse(null);

@@ -13,6 +13,7 @@ public class BaseProperties {
     private Integer keepFreeRam;
     private Double maxCpuLoad;
     private String publicIpConfig;
+    private boolean staticOnly;
 
     private BaseProperties() {
         this.maxRam = getDefaultPropertiesProvider().getMaxRam();
@@ -21,15 +22,16 @@ public class BaseProperties {
         this.publicIpConfig = getDefaultPropertiesProvider().getPublicIpConfig();
     }
 
-    public BaseProperties(String id, String name, PublicKey publicKey, String publicIpConfig) {
+    public BaseProperties(String id, String name, PublicKey publicKey, String publicIpConfig, boolean staticOnly) {
         this();
         this.id = id;
         this.name = name;
         this.publicKey = publicKey;
         this.publicIpConfig = publicIpConfig;
+        this.staticOnly = staticOnly;
     }
     public BaseProperties(String id, String name, PublicKey publicKey) {
-        this(id, name, publicKey, getDefaultPropertiesProvider().getPublicIpConfig());
+        this(id, name, publicKey, getDefaultPropertiesProvider().getPublicIpConfig(),false);
     }
 
     public String getPublicIpConfig() {
@@ -93,6 +95,14 @@ public class BaseProperties {
     public BaseProperties setMaxCpuLoad(Double maxCpuLoad) {
         this.maxCpuLoad = maxCpuLoad;
         return this;
+    }
+
+    public boolean isStaticOnly() {
+        return staticOnly;
+    }
+
+    public void setStaticOnly(boolean staticOnly) {
+        this.staticOnly = staticOnly;
     }
 
     private static BaseDefaultPropertiesProvider getDefaultPropertiesProvider() {
