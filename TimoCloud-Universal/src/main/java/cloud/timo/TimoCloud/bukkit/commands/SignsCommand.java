@@ -15,8 +15,8 @@ public class SignsCommand implements CommandExecutor {
             return false;
         }
 
-        if (args.length == 1) 
-            if (args[0].equalsIgnoreCase("reload")) {
+        
+            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 TimoCloudBukkit.getInstance().getFileManager().loadSignConfigs();
                 TimoCloudBukkit.getInstance().getSignManager().load();
                 BukkitMessageManager.sendMessage(sender, "&aSuccessfully reloaded signs.");
