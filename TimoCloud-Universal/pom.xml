@@ -15,7 +15,7 @@
     <repositories>
         <repository>
             <id>mvnrepository</id>
-            <url>http://mvnrepository.com/artifact/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>bungeecord-repo</id>
