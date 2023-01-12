@@ -312,12 +312,21 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
                 getStateByEventManager().setStateByMotd(event.getMotd().trim());
             } catch (NoSuchMethodException e) {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                Bukkit.getPluginManager().callEvent(event);
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
-                getStateByEventManager().setStateByMotd(event.getMotd().trim());
+                try {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    Bukkit.getPluginManager().callEvent(event);
+                    getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
+                    getStateByEventManager().setStateByMotd(event.getMotd().trim());
+                } catch (NoSuchMethodException e2) {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    Bukkit.getPluginManager().callEvent(event);
+                    getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
+                    getStateByEventManager().setStateByMotd(event.getMotd().trim());
+                }
             }
         } catch (Exception e) {
             severe("Error while sending MOTD: ");
@@ -335,10 +344,17 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 Bukkit.getPluginManager().callEvent(event);
                 return event.getNumPlayers();
             } catch (NoSuchMethodException e) {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                return event.getNumPlayers();
+                try {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    return event.getNumPlayers();
+                } catch (NoSuchMethodException e2) {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    return event.getNumPlayers();
+                }
             }
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
@@ -356,10 +372,17 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
                 Bukkit.getPluginManager().callEvent(event);
                 return event.getMaxPlayers();
             } catch (NoSuchMethodException e) {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                return event.getMaxPlayers();
+                try {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    return event.getMaxPlayers();
+                } catch (NoSuchMethodException e2) {
+                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
+                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
+                    Bukkit.getPluginManager().callEvent(event);
+                    return event.getMaxPlayers();
+                }
             }
         } catch (Exception e) {
             severe("Error while calling ServerListPingEvent: ");
