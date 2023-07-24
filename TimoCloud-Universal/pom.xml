@@ -15,7 +15,7 @@
     <repositories>
         <repository>
             <id>mvnrepository</id>
-            <url>http://mvnrepository.com/artifact/</url>
+            <url>https://repo1.maven.org/maven2/</url>
         </repository>
         <repository>
             <id>bungeecord-repo</id>
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-handler</artifactId>
-            <version>4.1.46.Final</version>
+            <version>4.1.94.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -186,13 +186,13 @@
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
-            <version>1.26</version>
+            <version>2.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.6.1</version>
+            <version>2.14.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
