@@ -13,6 +13,7 @@ import cloud.timo.TimoCloud.common.json.JsonObjectBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,8 +21,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
-import org.bukkit.material.MaterialData;
 
 import java.util.*;
 import java.util.stream.Collectors;
