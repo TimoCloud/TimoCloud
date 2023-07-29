@@ -12,11 +12,15 @@ import java.util.Map;
 
 public class CommandManager {
 
-    private Map<String, CommandHandler> commandHandlers;
+    private final Map<String, CommandHandler> commandHandlers = new HashMap<>();
+    private final Map<String, CommandHandler> pluginCommandHandlers = new HashMap<>();
 
     public CommandManager() {
-        commandHandlers = new HashMap<>();
         registerDefaultCommands();
+    }
+
+    public void registerPluginCommandHandler(String command, CommandHandler commandHandler) {
+        pluginCommandHandlers.put(command.toLowerCase(), commandHandler);
     }
 
     public void registerCommandHandler(String command, CommandHandler commandHandler) {
@@ -25,9 +29,13 @@ public class CommandManager {
 
     public void unregisterCommandHandler(String command) {
         commandHandlers.remove(command.toLowerCase());
+        pluginCommandHandlers.remove(command.toLowerCase());
     }
 
     private CommandHandler getHandlerByCommand(String command) {
+        if (pluginCommandHandlers.containsKey(command.toLowerCase())) {
+            return pluginCommandHandlers.get(command.toLowerCase());
+        }
         return commandHandlers.get(command.toLowerCase());
     }
 
@@ -54,6 +62,7 @@ public class CommandManager {
         registerCommand(new ShutdownCommandHandler(), "shutdown", "end", "quit", "exit");
         registerCommand(new VersionCommandHandler(), "version", "info");
         registerCommand(new AddBaseCommandHandler(), "addbase");
+        registerCommand(new EditBaseCommandHandler(), "editbase");
     }
 
     public void sendHelp(CommandSender sender) {
@@ -101,6 +110,10 @@ public class CommandManager {
             TimoCloudCore.getInstance().severe(e);
             sendHelp(commandSender);
         }
+    }
+
+    public Map<String, CommandHandler> getPluginCommandHandlers() {
+        return pluginCommandHandlers;
     }
 
 }

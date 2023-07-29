@@ -632,6 +632,7 @@ public class CoreInstanceManager {
      * @return How many additional instances of the given group are needed. Negative if more servers are online than needed
      */
     private int serversNeeded(ServerGroup group) {
+        if (group.isStatic() && group.getServers().size() > 0) return 0;
         int running = (int) group.getServers().stream().filter((server) -> isStateActive(server.getState(), group) || server.isStarting()).count();
         int needed = group.getOnlineAmount() - running;
         return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount() - group.getServers().size()) : needed;

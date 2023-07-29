@@ -14,7 +14,7 @@ public class ProxyPing {
 
     @Subscribe(order = PostOrder.EARLY)
     public void onProxyPingEvent(ProxyPingEvent event) {
-        ProxyObject proxyObject = TimoCloudAPI.getBungeeAPI().getThisProxy();
+        ProxyObject proxyObject = TimoCloudAPI.getProxyAPI().getThisProxy();
 
         ServerPing serverPing = event.getPing();
         serverPing = serverPing.asBuilder().maximumPlayers(proxyObject.getGroup().getMaxPlayerCount()).onlinePlayers(

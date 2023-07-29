@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -129,11 +130,15 @@ public class BukkitFileManager {
             signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockMaterial", "STAINED_CLAY");
             signTemplates.addDefault("NoFreeServerFound.layouts.Default.signBlockData", 8);
         }
-        try {
-            signTemplates.save(signTemplatesFile);
-        } catch (Exception e) {
-            TimoCloudBukkit.getInstance().severe(e);
-        }
+
+        signTemplates.addDefault("Default.layouts.STARTING.signColor", "null");
+        signTemplates.addDefault("Default.layouts.STARTING.signGlow", false);
+        signTemplates.addDefault("Default.layouts.ONLINE.signColor", "null");
+        signTemplates.addDefault("Default.layouts.ONLINE.signGlow", false);
+        signTemplates.addDefault("NoFreeServerFound.layouts.Default.signColor", "null");
+        signTemplates.addDefault("NoFreeServerFound.layouts.Default.signGlow", false);
+
+        saveSignTemplates();
     }
 
     public File getBaseDirectory() {
@@ -171,6 +176,14 @@ public class BukkitFileManager {
         }
     }
 
+    public void saveSignTemplates() {
+        try {
+            signTemplates.save(signTemplatesFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public void saveSignInstances(JsonArray jsonArray) {
         try {
             FileWriter fileWriter = new FileWriter(signInstancesFile, false);

@@ -222,6 +222,17 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         return true;
     }
 
+    //Check if running on version 1.17 or above by accessing a material only available since 1.17
+    public boolean isVersion117OrAbove() {
+        try {
+            //1.17 Item
+            Material material = Material.DEEPSLATE;
+        } catch (NoSuchFieldError e) {
+            return false;
+        }
+        return true;
+    }
+
     private void registerCommands() {
         getCommand("signs").setExecutor(new SignsCommand());
         getCommand("signs").setPermission("timocloud.command.signs");

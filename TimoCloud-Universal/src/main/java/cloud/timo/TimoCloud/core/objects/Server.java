@@ -129,6 +129,7 @@ public class Server implements Instance, Communicatable {
         }
         getGroup().addServer(this);
         getBase().addServer(this);
+        TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerStartEventBasicImplementation(toServerObject()));
     }
 
     @Override
