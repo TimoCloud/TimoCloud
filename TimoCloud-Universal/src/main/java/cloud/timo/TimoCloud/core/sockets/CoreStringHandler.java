@@ -130,7 +130,19 @@ public class CoreStringHandler extends BasicStringHandler {
                     TimoCloudCore.getInstance().severe("Error while cord handshake: A cord with the name '" + cordName + "' is already conencted.");
                     return;
                 }
-                Cord cord = TimoCloudCore.getInstance().getInstanceManager().getOrCreateCord(cordName, address, channel);
+
+                PublicKey publicKey = channel.attr(CoreRSAHandshakeHandler.RSA_KEY_ATTRIBUTE_KEY).get();
+
+                if (! TimoCloudCore.getInstance().getCorePublicKeyManager().redeemBaseKeyIfPermitted(publicKey)) {
+                    channel.close();
+                    return;
+                }
+
+                Cord cord = TimoCloudCore.getInstance().getInstanceManager().getCordByPublicKey(publicKey);
+                if (cord == null) { // First connection
+                    cord = TimoCloudCore.getInstance().getInstanceManager().createCord(cordName, address, channel,publicKey);
+                }
+
                 TimoCloudCore.getInstance().getSocketServerHandler().setCommunicatable(channel, cord);
                 cord.onConnect(channel);
                 cord.onHandshakeSuccess();

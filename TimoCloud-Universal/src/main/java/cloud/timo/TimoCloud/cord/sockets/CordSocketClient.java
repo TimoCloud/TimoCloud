@@ -20,7 +20,6 @@ public class CordSocketClient {
             f = b.connect(host, port).sync();
             f.channel().closeFuture().sync();
         } catch (Exception e) {
-
         } finally {
             group.shutdownGracefully();
             TimoCloudCord.getInstance().onSocketDisconnect();

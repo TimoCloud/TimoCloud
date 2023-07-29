@@ -20,7 +20,11 @@ import com.velocitypowered.api.proxy.server.ServerInfo;
 import io.netty.channel.Channel;
 import net.kyori.adventure.text.Component;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -81,9 +85,11 @@ public class VelocityStringHandler extends BasicStringHandler {
                 break;
             case CORD_SET_IP:
                 try {
+                    InetSocketAddress clientAddress = (InetSocketAddress) fromString((String) message.get("CLIENT_ADDRESS"));
                     TimoCloudVelocity.getInstance().getIpManager().setAddresses(
                             InetAddressUtil.getSocketAddressByName((String) message.get("CHANNEL_ADDRESS")),
-                            InetAddressUtil.getSocketAddressByName((String) message.get("CLIENT_ADDRESS")));
+                            clientAddress);
+
                 } catch (Exception e) {
                     TimoCloudVelocity.getInstance().severe("Error while parsing IP addresses (" + message.get("CHANNEL_ADDRESS") + ", " + message.get("CLIENT_ADDRESS") + "): ");
                     TimoCloudVelocity.getInstance().severe(e);
@@ -100,6 +106,21 @@ public class VelocityStringHandler extends BasicStringHandler {
             }
             default:
                 TimoCloudVelocity.getInstance().severe("Could not categorize json message: " + message);
+        }
+    }
+
+    /** Read the object from Base64 string. */
+    private static Object fromString( String s )  {
+        byte [] data = Base64.getDecoder().decode( s );
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(
+                    new ByteArrayInputStream(  data ) );
+            Object o  = ois.readObject();
+            ois.close();
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

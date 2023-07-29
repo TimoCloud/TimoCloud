@@ -21,6 +21,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
+import org.bukkit.material.MaterialData;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,23 +34,44 @@ public class SignManager {
 
     private static final Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
         try {
-            org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
-            org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
-            if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
-            if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
-                return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
-            switch (sign1.getFacing()) {
-                case NORTH:
-                    return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
-                case SOUTH:
-                    return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
-                case EAST:
-                    return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
-                case WEST:
-                    return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
-                default:
-                    return 0;
+            try {
+                org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
+                org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
+                if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+                switch (sign1.getFacing()) {
+                    case NORTH:
+                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                    case SOUTH:
+                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                    case EAST:
+                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                    case WEST:
+                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                    default:
+                        return 0;
+                }
+            } catch (ClassCastException e) {
+                org.bukkit.block.data.Rotatable sign1 = (org.bukkit.block.data.Rotatable) o1.getLocation().getBlock().getBlockData();
+                org.bukkit.block.data.Rotatable sign2 = (org.bukkit.block.data.Rotatable) o2.getLocation().getBlock().getBlockData();
+                if (!sign1.getRotation().equals(sign2.getRotation())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+                switch (sign1.getRotation()) {
+                    case NORTH:
+                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                    case SOUTH:
+                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                    case EAST:
+                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                    case WEST:
+                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                    default:
+                        return 0;
+                }
             }
+
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe(e);
             return 0;
@@ -316,10 +338,11 @@ public class SignManager {
         return signInstances.containsKey(location);
     }
 
-    public void onSignClick(Player player, Location location) {
+    public boolean onSignClick(Player player, Location location) {
         SignInstance signInstance = getSignInstanceByLocation(location);
-        if (signInstance == null || signInstance.getTarget() == null || signInstance.getTargetServer() == null) return;
+        if (signInstance == null || signInstance.getTarget() == null || signInstance.getTargetServer() == null) return signInstance != null;
         TimoCloudBukkit.getInstance().sendPlayerToServer(player, signInstance.getTargetServer().getName());
+        return true;
     }
 
     public void addSign(Location location, String target, String template, int priority, Player player) {

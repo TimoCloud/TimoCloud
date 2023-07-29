@@ -15,12 +15,18 @@ import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
 import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
+import com.google.gson.Gson;
 import io.netty.channel.Channel;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -90,9 +96,11 @@ public class BungeeStringHandler extends BasicStringHandler {
                 break;
             case CORD_SET_IP:
                 try {
+                    InetSocketAddress clientAddress = (InetSocketAddress) fromString((String) message.get("CLIENT_ADDRESS"));
                     TimoCloudBungee.getInstance().getIpManager().setAddresses(
                             InetAddressUtil.getSocketAddressByName((String) message.get("CHANNEL_ADDRESS")),
-                            InetAddressUtil.getSocketAddressByName((String) message.get("CLIENT_ADDRESS")));
+                           clientAddress);
+
                 } catch (Exception e) {
                     TimoCloudBungee.getInstance().severe("Error while parsing IP addresses (" + message.get("CHANNEL_ADDRESS") + ", " + message.get("CLIENT_ADDRESS") + "): ");
                     TimoCloudBungee.getInstance().severe(e);
@@ -109,6 +117,21 @@ public class BungeeStringHandler extends BasicStringHandler {
             }
             default:
                 TimoCloudBungee.getInstance().severe("Could not categorize json message: " + message);
+        }
+    }
+
+    /** Read the object from Base64 string. */
+    private static Object fromString( String s )  {
+        byte [] data = Base64.getDecoder().decode( s );
+        ObjectInputStream ois = null;
+        try {
+            ois = new ObjectInputStream(
+                    new ByteArrayInputStream(  data ) );
+            Object o  = ois.readObject();
+            ois.close();
+            return o;
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

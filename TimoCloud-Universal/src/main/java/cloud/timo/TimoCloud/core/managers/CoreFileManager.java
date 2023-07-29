@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -37,6 +38,8 @@ public class CoreFileManager {
     private File serverGroupsFile;
     private File proxyGroupsFile;
     private File basesFile;
+    @Getter
+    private File cordFile;
 
     public CoreFileManager() {
     }
@@ -97,6 +100,8 @@ public class CoreFileManager {
             proxyGroupsFile.createNewFile();
             this.basesFile = new File(configsDirectory, "bases.json");
             basesFile.createNewFile();
+            this.cordFile = new File(configsDirectory, "cords.json");
+            cordFile.createNewFile();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -212,4 +217,5 @@ public class CoreFileManager {
     public File getBasesFile() {
         return basesFile;
     }
+
 }
