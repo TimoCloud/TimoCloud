@@ -24,7 +24,7 @@ public class PlayerUtil {
             if (server != null) serverObjectLink = server.toLink();
         }
 
-        proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getBungeeAPI().getThisProxy()).toLink();
+        proxyObject = ((ProxyObjectBasicImplementation) TimoCloudAPI.getProxyAPI().getThisProxy()).toLink();
 
         return new PlayerObjectBungeeImplementation(
                 player.getName(),

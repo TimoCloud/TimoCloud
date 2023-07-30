@@ -154,6 +154,7 @@ public class TimoCloudCore implements TimoCloudModule {
                 node("addgroup",
                         node("server"),
                         node("proxy")),
+                node("editbase", new Completers.TreeCompleter.Node(new AggregateCompleter(new BaseNameCompleter()), Collections.emptyList())),
                 node("removegroup"),
                 node("editgroup", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter()), Collections.emptyList())),
                 node("restart", new Completers.TreeCompleter.Node(new AggregateCompleter(new ServerGroupNameCompleter(), new ProxyGroupNameCompleter(), new ServerNameCompleter(), new ProxyNameCompleter()), Collections.emptyList())),

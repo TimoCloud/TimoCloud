@@ -6,6 +6,7 @@ import cloud.timo.TimoCloud.api.events.serverGroup.ServerGroupDeletedEventBasicI
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.api.objects.ServerObject;
 import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
+import cloud.timo.TimoCloud.api.objects.properties.CordProperties;
 import cloud.timo.TimoCloud.common.events.EventTransmitter;
 import cloud.timo.TimoCloud.common.json.GsonFactory;
 import cloud.timo.TimoCloud.common.utils.RandomIdGenerator;
@@ -58,6 +59,7 @@ public class CoreInstanceManager {
      */
     public void loadEverything() {
         loadBases();
+        loadCords();
         loadServerGroups();
         loadProxyGroups();
     }
@@ -137,11 +139,37 @@ public class CoreInstanceManager {
         }
     }
 
+    public void loadCords() {
+        try {
+            IdentifiableStorage<Cord> cords = new IdentifiableStorage<>();
+            JsonArray cordList = TimoCloudCore.getInstance().getFileManager().loadJsonArray(TimoCloudCore.getInstance().getFileManager().getCordFile());
+            for (JsonElement jsonElement : cordList) {
+                Map<String, Object> properties = GsonFactory.getGson().fromJson(jsonElement, new TypeToken<Map<String, Object>>() {
+                }.getType());
+                String id = (String) properties.get("id");
+                String name = (String) properties.get("name");
+                try {
+                    Cord cord = getCordById(id);
+                    if (cord != null) cord.construct(properties);
+                    else cord = new Cord(properties);
+                    cords.add(cord);
+                } catch (Exception e) {
+                    TimoCloudCore.getInstance().severe(String.format("Error while loading base with name %s and id %s: ", name, id));
+                }
+            }
+            this.cords = cords;
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while loading bases: ");
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Saves both, server- & proxy configurations to config files
      */
     public void saveEverything() {
         saveBases();
+        saveCords();
         saveServerGroups();
         saveProxyGroups();
     }
@@ -183,7 +211,21 @@ public class CoreInstanceManager {
         try {
             TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(bases), TimoCloudCore.getInstance().getFileManager().getBasesFile());
         } catch (Exception e) {
-            TimoCloudCore.getInstance().severe("Error while saving basess: ");
+            TimoCloudCore.getInstance().severe("Error while saving bases: ");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Saves cord configurations to config file
+     */
+    public void saveCords() {
+        JsonArray cords = new JsonArray();
+        getCords().stream().map(Cord::getProperties).map(map -> GsonFactory.getGson().toJsonTree(map)).forEach(cords::add);
+        try {
+            TimoCloudCore.getInstance().getFileManager().saveJson(GsonFactory.getGson().toJsonTree(cords), TimoCloudCore.getInstance().getFileManager().getCordFile());
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while saving cords: ");
             e.printStackTrace();
         }
     }
@@ -590,6 +632,7 @@ public class CoreInstanceManager {
      * @return How many additional instances of the given group are needed. Negative if more servers are online than needed
      */
     private int serversNeeded(ServerGroup group) {
+        if (group.isStatic() && group.getServers().size() > 0) return 0;
         int running = (int) group.getServers().stream().filter((server) -> isStateActive(server.getState(), group) || server.isStarting()).count();
         int needed = group.getOnlineAmount() - running;
         return group.getMaxAmount() > 0 ? Math.min(needed, group.getMaxAmount() - group.getServers().size()) : needed;
@@ -835,6 +878,14 @@ public class CoreInstanceManager {
     }
 
     /**
+     * @param id The cord's name
+     * @return A cord object if a cord with the given id exists, otherwise null
+     */
+    public Cord getCordById(String id) {
+        return cords.getById(id);
+    }
+
+    /**
      * Searches for a base by id first, if not found, by name
      *
      * @param identifier The base's id or name
@@ -898,24 +949,21 @@ public class CoreInstanceManager {
         bases.update(base);
     }
 
+
+
+
     /**
-     * This method is called when a cord connects
-     * If a cord with the given name already exists (from a previous connection), the properties will just be modified, otherwise a new cord object will be created
-     *
-     * @param name    The cord's name
-     * @param address The IP address the cord connected from
-     * @param channel The cord's netty socket channel
-     * @return A cord object with the given properties
+     * @param publicKey The core's public RSA key
+     * @return A core object
      */
-    public Cord getOrCreateCord(String name, InetAddress address, Channel channel) {
-        Cord cord = cords.getByIdentifier(name);
-        if (cord == null) {
-            cord = new Cord(name, address, channel);
-            cords.add(cord);
-        } else {
-            cord.setChannel(channel);
-            cord.setAddress(address);
-        }
+    public Cord getCordByPublicKey(PublicKey publicKey) {
+        return cords.getByPublicKey(publicKey);
+    }
+
+    public Cord createCord(String name, InetAddress address, Channel channel, PublicKey publicKey) {
+        Cord cord = new Cord(new CordProperties(RandomIdGenerator.generateId(), name, publicKey));
+        cords.add(cord);
+        saveCords();
         return cord;
     }
 

@@ -23,7 +23,11 @@ public class CorePublicKeyManager {
     }
 
     public boolean isBaseKeyPermitted(PublicKey publicKey) {
-        return permittedBaseKeys.contains(publicKey) || TimoCloudCore.getInstance().getInstanceManager().getBaseByPublicKey(publicKey) != null;
+        return permittedBaseKeys.contains(publicKey) || TimoCloudCore.getInstance().getInstanceManager().getBaseByPublicKey(publicKey) != null || TimoCloudCore.getInstance().getInstanceManager().getCordByPublicKey(publicKey) != null;
+    }
+
+    public boolean isCordKeyPermitted(PublicKey publicKey){
+        return TimoCloudCore.getInstance().getInstanceManager().getCordByPublicKey(publicKey) != null;
     }
 
     public boolean redeemBaseKeyIfPermitted(PublicKey publicKey) {
@@ -41,7 +45,7 @@ public class CorePublicKeyManager {
     }
 
     public boolean isKeyPermitted(PublicKey publicKey) {
-        return isBaseKeyPermitted(publicKey) || isServerKeyPermitted(publicKey) || isProxyKeyPermitted(publicKey);
+        return isBaseKeyPermitted(publicKey) || isServerKeyPermitted(publicKey) || isProxyKeyPermitted(publicKey) || isCordKeyPermitted(publicKey);
     }
 
     public boolean redeemKeyIfPermitted(PublicKey publicKey) {

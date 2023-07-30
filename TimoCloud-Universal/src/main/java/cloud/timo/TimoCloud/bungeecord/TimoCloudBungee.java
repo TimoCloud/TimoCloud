@@ -88,6 +88,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
                 } catch (Exception ignored) {
                 }
             }
+            timoCloudCommand.loadNames();
             info("&aSuccessfully started TimoCloudBungee!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudBungee: ");
@@ -217,6 +218,7 @@ public class TimoCloudBungee extends Plugin implements TimoCloudLogger {
         getProxy().getPluginManager().registerListener(this, new ProxyPing());
         getProxy().getPluginManager().registerListener(this, new EventMonitor());
         getProxy().getPluginManager().registerListener(this, new IpInjector());
+        TimoCloudAPI.getEventAPI().registerListener(new TabCompleteListener());
     }
 
     public String getProxyName() {

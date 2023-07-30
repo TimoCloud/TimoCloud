@@ -14,7 +14,8 @@ public class CordSocketClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         setChannel(ctx.channel());
-        TimoCloudCord.getInstance().onSocketConnect();
+        TimoCloudCord.getInstance().onSocketConnect(ctx.channel());
+
     }
 
     @Override

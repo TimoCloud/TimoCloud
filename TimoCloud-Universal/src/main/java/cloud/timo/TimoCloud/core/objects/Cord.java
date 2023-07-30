@@ -4,6 +4,9 @@ import cloud.timo.TimoCloud.api.events.cord.CordConnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.events.cord.CordDisconnectEventBasicImplementation;
 import cloud.timo.TimoCloud.api.internal.links.CordObjectLink;
 import cloud.timo.TimoCloud.api.objects.CordObject;
+import cloud.timo.TimoCloud.api.objects.properties.BaseProperties;
+import cloud.timo.TimoCloud.api.objects.properties.CordProperties;
+import cloud.timo.TimoCloud.common.encryption.RSAKeyUtil;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -13,26 +16,80 @@ import io.netty.channel.Channel;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.security.PublicKey;
+import java.util.Base64;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class Cord implements Communicatable, Identifiable {
+public class Cord implements Communicatable, PublicKeyIdentifiable {
 
     private String id;
     private String name;
     private InetAddress address;
     private int port;
     private Channel channel;
+
+    private PublicKey publicKey;
     private boolean connected;
 
-    public Cord(String name, InetAddress address, Channel channel) {
-        this.id = name; // TODO Generate IDs
+    public Cord(CordProperties properties) {
+        this.id = properties.getId();
+        this.name = properties.getName();
+        this.publicKey = properties.getPublicKey();
+    }
+
+
+    public Cord(Map<String, Object> properties) throws Exception {
+        construct(properties);
+    }
+
+    public void construct(CordProperties baseProperties) {
+        construct(baseProperties.getId(), baseProperties.getName(), baseProperties.getPublicKey());
+    }
+
+    public void construct(String id, String name, PublicKey publicKey) {
+        this.id = id;
         this.name = name;
-        this.address = address;
-        this.channel = channel;
+        this.publicKey = publicKey;
+    }
+
+    public void construct(Map<String, Object> properties) throws Exception {
+        try {
+            String id = (String) properties.get("id");
+            String name = (String) properties.get("name");
+            String publicKeyString = (String) properties.get("publicKey");
+            PublicKey publicKey;
+            try {
+                publicKey = RSAKeyUtil.publicKeyFromBase64(publicKeyString);
+            } catch (Exception e) {
+                TimoCloudCore.getInstance().severe(e);
+                throw new IllegalArgumentException(String.format("Invalid RSA public key: %s", publicKeyString));
+            }
+            BaseProperties defaultProperties = new BaseProperties(id, name, publicKey);
+            construct(
+                    id,
+                    name,
+                    publicKey
+            );
+
+        } catch (Exception e) {
+            TimoCloudCore.getInstance().severe("Error while loading server group '" + properties.get("name") + "':");
+            e.printStackTrace();
+        }
+    }
+
+    public Map<String, Object> getProperties() {
+        Map<String, Object> properties = new LinkedHashMap<>();
+        properties.put("id", getId());
+        properties.put("name", getName());
+        properties.put("publicKey", Base64.getEncoder().encodeToString(getPublicKey().getEncoded()));
+        return properties;
     }
 
     @Override
     public void onConnect(Channel channel) {
         this.channel = channel;
+        this.address = ((InetSocketAddress) channel.remoteAddress()).getAddress();
         this.connected = true;
         TimoCloudCore.getInstance().info("TimoCloudCord " + getName() + " connected.");
         TimoCloudCore.getInstance().getEventManager().fireEvent(new CordConnectEventBasicImplementation(toCordObject()));
@@ -83,6 +140,10 @@ public class Cord implements Communicatable, Identifiable {
 
     public InetAddress getAddress() {
         return address;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
     }
 
     public void setAddress(InetAddress address) {

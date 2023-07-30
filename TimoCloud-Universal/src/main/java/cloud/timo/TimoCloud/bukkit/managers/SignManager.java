@@ -13,14 +13,11 @@ import cloud.timo.TimoCloud.common.json.JsonObjectBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,23 +30,44 @@ public class SignManager {
 
     private static final Comparator<SignInstance> compareSignInstancesByLocation = (o1, o2) -> {
         try {
-            org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
-            org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
-            if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
-            if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
-                return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
-            switch (sign1.getFacing()) {
-                case NORTH:
-                    return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
-                case SOUTH:
-                    return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
-                case EAST:
-                    return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
-                case WEST:
-                    return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
-                default:
-                    return 0;
+            try {
+                org.bukkit.material.Sign sign1 = (org.bukkit.material.Sign) o1.getLocation().getBlock().getState().getData();
+                org.bukkit.material.Sign sign2 = (org.bukkit.material.Sign) o2.getLocation().getBlock().getState().getData();
+                if (!sign1.getFacing().equals(sign2.getFacing())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+                switch (sign1.getFacing()) {
+                    case NORTH:
+                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                    case SOUTH:
+                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                    case EAST:
+                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                    case WEST:
+                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                    default:
+                        return 0;
+                }
+            } catch (ClassCastException e) {
+                org.bukkit.block.data.Rotatable sign1 = (org.bukkit.block.data.Rotatable) o1.getLocation().getBlock().getBlockData();
+                org.bukkit.block.data.Rotatable sign2 = (org.bukkit.block.data.Rotatable) o2.getLocation().getBlock().getBlockData();
+                if (!sign1.getRotation().equals(sign2.getRotation())) return 0;
+                if (o1.getLocation().getBlockY() != o2.getLocation().getBlockY())
+                    return o2.getLocation().getBlockY() - o1.getLocation().getBlockY();
+                switch (sign1.getRotation()) {
+                    case NORTH:
+                        return o2.getLocation().getBlockX() - o1.getLocation().getBlockX();
+                    case SOUTH:
+                        return o1.getLocation().getBlockX() - o2.getLocation().getBlockX();
+                    case EAST:
+                        return o2.getLocation().getBlockZ() - o1.getLocation().getBlockZ();
+                    case WEST:
+                        return o1.getLocation().getBlockZ() - o2.getLocation().getBlockZ();
+                    default:
+                        return 0;
+                }
             }
+
         } catch (Exception e) {
             TimoCloudBukkit.getInstance().severe(e);
             return 0;
@@ -84,20 +102,48 @@ public class SignManager {
                         lines[i] = Arrays.asList(line.split(";"));
                     }
                     Material signBlockMaterial = null;
+                    DyeColor signColor = null;
+                    boolean signGlow = false;
                     int signBlockData = 0;
                     try {
                         String materialString = config.getString(template + ".layouts." + layout + ".signBlockMaterial");
                         if (materialString != null) materialString = materialString.toUpperCase();
                         signBlockMaterial = Material.getMaterial(materialString);
                         signBlockData = config.getInt(template + ".layouts." + layout + ".signBlockData");
+
+                        if (TimoCloudBukkit.getInstance().isVersion117OrAbove()) {
+                            String colorString = config.getString(template + ".layouts." + layout + ".signColor");
+                            boolean saveTemplates = false;
+
+                            if (colorString != null) {
+                                if (!colorString.equalsIgnoreCase("null")) {
+                                    signColor = DyeColor.valueOf(colorString.toUpperCase());
+                                }
+                            } else {
+                                config.set(template + ".layouts." + layout + ".signColor", "null");
+                                saveTemplates = true;
+                            }
+
+                            if (config.get(template + ".layouts." + layout + ".signGlow") != null) {
+                                signGlow = config.getBoolean(template + ".layouts." + layout + ".signGlow");
+                            } else {
+                                config.set(template + ".layouts." + layout + ".signGlow", false);
+                                saveTemplates = true;
+                            }
+                            if (saveTemplates) {
+                                TimoCloudBukkit.getInstance().getFileManager().saveSignTemplates();
+                            }
+                        }
                     } catch (Exception e) {
-                        throw new SignParseException("Invalid signBlockMaterial or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
+                        throw new SignParseException("Invalid signBlockMaterial, signColor, signGlow or signBlockData. Please check https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for a list of valid materials. SignBlockData has to be a valid integer (number)");
                     }
 
                     layouts.put(layout, new SignLayout(
                             lines,
                             config.getLong(template + ".layouts." + layout + ".updateSpeed"),
                             signBlockMaterial,
+                            signColor,
+                            signGlow,
                             signBlockData
                     ));
                 }
@@ -168,7 +214,7 @@ public class SignManager {
                 Arrays.asList(name)
         };
         Map<String, SignLayout> layouts = new HashMap<>();
-        layouts.put("Default", new SignLayout(lines, -1, null, 0));
+        layouts.put("Default", new SignLayout(lines, -1, null, null, false, 0));
         return new SignTemplate("TemplateNotFound", layouts, null);
     }
 
@@ -260,6 +306,18 @@ public class SignManager {
         for (int i = 0; i < 4; i++) {
             sign.setLine(i, replace(signLayout.getLine(i).get(signInstance.getStep() % signLayout.getLine(i).size()), server));
         }
+        if (TimoCloudBukkit.getInstance().isVersion117OrAbove()) {
+            DyeColor signColor = signLayout.getSignColor();
+            boolean signGlow = signLayout.isSignGlow();
+
+            if (signColor != null) {
+                sign.setColor(signColor);
+            }
+
+            sign.setGlowingText(signGlow);
+            sign.update();
+        }
+
         sign.update();
         setSignBlock(signInstance, signLayout);
 
@@ -280,6 +338,7 @@ public class SignManager {
             } catch (Exception e) {
             }
         }
+
     }
 
     private Block getSignBlockAttached(Block signBlock) {
@@ -316,10 +375,12 @@ public class SignManager {
         return signInstances.containsKey(location);
     }
 
-    public void onSignClick(Player player, Location location) {
+    public boolean onSignClick(Player player, Location location) {
         SignInstance signInstance = getSignInstanceByLocation(location);
-        if (signInstance == null || signInstance.getTarget() == null || signInstance.getTargetServer() == null) return;
+        if (signInstance == null || signInstance.getTarget() == null || signInstance.getTargetServer() == null)
+            return signInstance != null;
         TimoCloudBukkit.getInstance().sendPlayerToServer(player, signInstance.getTargetServer().getName());
+        return true;
     }
 
     public void addSign(Location location, String target, String template, int priority, Player player) {

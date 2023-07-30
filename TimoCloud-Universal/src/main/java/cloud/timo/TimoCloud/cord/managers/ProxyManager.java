@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.api.objects.ProxyGroupObject;
 import cloud.timo.TimoCloud.api.objects.ProxyObject;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -13,11 +14,12 @@ import java.util.stream.Collectors;
 
 public class ProxyManager {
 
-    public ProxyGroupObject getProxyGroupByHostName(String hostName) {
+    public List<ProxyGroupObject> getProxyGroupByHostName(String hostName) {
+        List<ProxyGroupObject> proxies = new ArrayList<>();
         for (ProxyGroupObject group : TimoCloudAPI.getUniversalAPI().getProxyGroups())
             for (String hostName1 : group.getHostNames())
-                if (matches(hostName, hostName1)) return group;
-        return null;
+                if (matches(hostName, hostName1)) proxies.add(group);
+        return proxies;
     }
 
     private static boolean matches(String input, String pattern) {
@@ -35,22 +37,24 @@ public class ProxyManager {
     }
 
 
-    public ProxyObject getFreeProxy(ProxyGroupObject group) {
-        if (group.getProxyChooseStrategy() == null) {
-            TimoCloudCord.getInstance().severe("Error while choosing proxy: ProxyChooseStrategy of group '" + group.getName() + "' is null. Please report this.");
-            return null;
+    public ProxyObject getFreeProxy(List<ProxyGroupObject> groups) {
+        for (ProxyGroupObject proxyGroupObject : groups) {
+            if (proxyGroupObject.getProxyChooseStrategy() == null) {
+                TimoCloudCord.getInstance().severe("Error while choosing proxy: ProxyChooseStrategy of group '" + proxyGroupObject.getName() + "' is null. Please report this.");
+                return null;
+            }
+            List<ProxyObject> proxies = proxyGroupObject.getProxies().stream().filter(proxy -> proxy.getOnlinePlayerCount() < proxy.getGroup().getMaxPlayerCountPerProxy()).sorted(Comparator.comparing(ProxyObject::getOnlinePlayerCount)).collect(Collectors.toList());
+            if (proxies.isEmpty()) continue;
+            switch (proxyGroupObject.getProxyChooseStrategy()) {
+                case RANDOM:
+                    return proxies.get(new Random().nextInt(proxies.size()));
+                case FILL:
+                    return proxies.get(proxies.size() - 1);
+                case BALANCE:
+                    return proxies.get(0);
+            }
         }
-        List<ProxyObject> proxies = group.getProxies().stream().filter(proxy -> proxy.getOnlinePlayerCount() < proxy.getGroup().getMaxPlayerCountPerProxy()).collect(Collectors.toList());
-        proxies.sort(Comparator.comparing(ProxyObject::getOnlinePlayerCount));
-        if (proxies.size() == 0) return null;
-        switch (group.getProxyChooseStrategy()) {
-            case RANDOM:
-                return proxies.get(new Random().nextInt(proxies.size()));
-            case FILL:
-                return proxies.get(proxies.size() - 1);
-            case BALANCE:
-                return proxies.get(0);
-        }
+
         return null;
     }
 
