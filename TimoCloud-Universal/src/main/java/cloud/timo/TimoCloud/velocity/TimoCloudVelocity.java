@@ -109,6 +109,7 @@ public class TimoCloudVelocity implements TimoCloudLogger {
                 } catch (Exception e) {
                 }
             }
+            timoCloudCommand.loadNames();
             info("&aSuccessfully started TimoCloudVelocity!");
         } catch (Exception e) {
             severe("Error while enabling TimoCloudVelocity: ");

@@ -11,7 +11,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+import java.io.*;
 import java.net.InetSocketAddress;
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static cloud.timo.TimoCloud.cord.utils.PacketUtil.*;
 
@@ -50,8 +54,8 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
     }
 
     public static void connectClient(Channel channel, String hostName, ByteBuf loginPacket) {
-        ProxyGroupObject proxyGroupObject = TimoCloudCord.getInstance().getProxyManager().getProxyGroupByHostName(hostName);
-        if (proxyGroupObject == null) {
+        List<ProxyGroupObject> proxyGroupObject = TimoCloudCord.getInstance().getProxyManager().getProxyGroupByHostName(hostName);
+        if (proxyGroupObject.isEmpty()) {
             TimoCloudCord.getInstance().severe("Error: No proxy group found for hostname '" + hostName + "'");
             channel.close();
             return;
@@ -59,10 +63,10 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
         connectClient(channel, proxyGroupObject, hostName, loginPacket);
     }
 
-    public static void connectClient(Channel channel, ProxyGroupObject proxyGroupObject, String hostName, ByteBuf loginPacket) {
+    public static void connectClient(Channel channel, List<ProxyGroupObject> proxyGroupObject, String hostName, ByteBuf loginPacket) {
         ProxyObject proxyObject = TimoCloudCord.getInstance().getProxyManager().getFreeProxy(proxyGroupObject);
         if (proxyObject == null) {
-            TimoCloudCord.getInstance().severe("No free proxy of group '" + proxyGroupObject.getName() + "' found. Disconnecting client.");
+            TimoCloudCord.getInstance().severe("No free proxy of group(s) '" + proxyGroupObject.stream().map(ProxyGroupObject::getName).collect(Collectors.joining(", ")) + "' found. Disconnecting client.");
             channel.close();
             return;
         }
@@ -116,8 +120,25 @@ public class MinecraftDecoder extends SimpleChannelInboundHandler<ByteBuf> {
         TimoCloudCord.getInstance().getSocketMessageManager().sendMessage(Message.create()
                 .setType(MessageType.CORD_SET_IP)
                 .setTarget(proxyObject.getId())
-                .set("CLIENT_ADDRESS", clientAddress.toString())
+                .set("CLIENT_ADDRESS", toString(clientAddress))
                 .set("CHANNEL_ADDRESS", channelAddress.toString()));
+    }
+
+    /**
+     * Write the object to a Base64 string.
+     */
+    private static String toString(Serializable o) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(o);
+            oos.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
 }

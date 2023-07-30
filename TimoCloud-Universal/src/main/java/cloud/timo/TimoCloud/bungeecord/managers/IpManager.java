@@ -1,5 +1,7 @@
 package cloud.timo.TimoCloud.bungeecord.managers;
 
+import cloud.timo.TimoCloud.common.utils.network.InetAddressUtil;
+
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +15,11 @@ public class IpManager {
     }
 
     public InetSocketAddress getAddressByChannel(InetSocketAddress channel) {
-        return addresses.getOrDefault(channel, null);
+        try {
+            return addresses.getOrDefault(InetAddressUtil.getSocketAddressByName(channel.toString()), null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void setAddresses(InetSocketAddress channel, InetSocketAddress ip) {

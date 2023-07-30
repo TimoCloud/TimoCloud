@@ -214,7 +214,7 @@ public class TimoCloudUniversalAPIStorageUpdateListener implements Listener {
 
     //Server Events
     @EventHandler
-    public void onServerRegisterEvent(ServerRegisterEvent event) {
+    public void onServerStartEvent(ServerStartEvent event) {
         ServerObject server = event.getServer();
         api.getServerStorage().add(server);
         ((ServerGroupObjectBasicImplementation) server.getGroup()).addServerInternally(((ServerObjectBasicImplementation) server).toLink());
