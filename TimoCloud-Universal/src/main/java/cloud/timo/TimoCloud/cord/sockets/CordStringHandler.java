@@ -1,19 +1,18 @@
 package cloud.timo.TimoCloud.cord.sockets;
 
 import cloud.timo.TimoCloud.api.TimoCloudAPI;
-import cloud.timo.TimoCloud.api.events.EventType;
 import cloud.timo.TimoCloud.api.implementations.TimoCloudMessageAPIBasicImplementation;
-import cloud.timo.TimoCloud.api.implementations.TimoCloudUniversalAPIBasicImplementation;
-import cloud.timo.TimoCloud.api.implementations.managers.EventManager;
 import cloud.timo.TimoCloud.api.messages.objects.AddressedPluginMessage;
-import cloud.timo.TimoCloud.api.utils.EventUtil;
+import cloud.timo.TimoCloud.bukkit.TimoCloudBukkit;
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
 import cloud.timo.TimoCloud.common.sockets.BasicStringHandler;
-import cloud.timo.TimoCloud.common.utils.EnumUtil;
 import cloud.timo.TimoCloud.common.utils.PluginMessageSerializer;
 import cloud.timo.TimoCloud.cord.TimoCloudCord;
-import cloud.timo.TimoCloud.cord.api.TimoCloudUniversalAPICordImplementation;
+import cloud.timo.TimoCloud.cord.sockets.handler.APIDataHandler;
+import cloud.timo.TimoCloud.cord.sockets.handler.EventFiredHandler;
+import cloud.timo.TimoCloud.cord.sockets.handler.HandshakeSuccessHandler;
+import cloud.timo.TimoCloud.cord.sockets.handler.PluginMessageHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 
@@ -23,33 +22,22 @@ import java.util.Map;
 public class CordStringHandler extends BasicStringHandler {
 
     @Override
+    public void registerHandlers() {
+        addHandler(new APIDataHandler());
+        addHandler(new EventFiredHandler());
+        addHandler(new HandshakeSuccessHandler());
+        addHandler(new PluginMessageHandler());
+    }
+
+    @Override
     public void handleMessage(Message message, String originalMessage, Channel channel) {
-        MessageType type = message.getType();
-        Object data = message.getData();
-        switch (type) {
-            case CORD_HANDSHAKE_SUCCESS:
-                TimoCloudCord.getInstance().onHandshakeSuccess();
-                break;
-            case API_DATA: {
-                ((TimoCloudUniversalAPICordImplementation) TimoCloudAPI.getUniversalAPI()).setData((Map<String, Object>) data);
-                break;
-            }
-            case EVENT_FIRED:
-                try {
-                    EventType eventType = EnumUtil.valueOf(EventType.class, (String) message.get("eT"));
-                    ((EventManager) TimoCloudAPI.getEventAPI()).callEvent(((TimoCloudUniversalAPIBasicImplementation) TimoCloudAPI.getUniversalAPI()).getObjectMapper().readValue((String) data, EventUtil.getClassByEventType(eventType)));
-                } catch (Exception e) {
-                    System.err.println("Error while parsing event from json: ");
-                    TimoCloudCord.getInstance().severe(e);
-                }
-                break;
-            case ON_PLUGIN_MESSAGE: {
-                AddressedPluginMessage addressedPluginMessage = PluginMessageSerializer.deserialize((Map) data);
-                ((TimoCloudMessageAPIBasicImplementation) TimoCloudAPI.getMessageAPI()).onMessage(addressedPluginMessage);
-                break;
-            }
-            default:
-                TimoCloudCord.getInstance().severe("Could not categorize json message: " + originalMessage);
+        if (message == null) {
+            TimoCloudBukkit.getInstance().severe("Error while parsing json (json is null): " + originalMessage);
+            return;
+        }
+
+        if(!handleMessageInternal(message, originalMessage, channel)) {
+            TimoCloudBukkit.getInstance().severe("Error: Could not categorize json message: " + message);
         }
     }
 }
