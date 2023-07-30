@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.sockets.handler;
 
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.protocol.TransferType;
 import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.objects.Proxy;
@@ -52,7 +53,7 @@ public class BaseProxyTemplateRequestHandler extends CoreMessageHandler{
                 String content = byteArrayToString(outputStream.toByteArray());
                 channel.writeAndFlush(Message.create()
                         .setType(MessageType.TRANSFER_TEMPLATE)
-                        .set("transferType", "PROXY_TEMPLATE")
+                        .set("transferType", TransferType.PROXY_TEMPLATE)
                         .set("template", template)
                         .set("file", content)
                         .setTarget(targetId)
@@ -68,7 +69,7 @@ public class BaseProxyTemplateRequestHandler extends CoreMessageHandler{
                 String content = byteArrayToString(outputStream.toByteArray());
                 channel.writeAndFlush(Message.create()
                         .setType(MessageType.TRANSFER_TEMPLATE)
-                        .set("transferType", "PROXY_GLOBAL_TEMPLATE")
+                        .set("transferType",TransferType.PROXY_GLOBAL_TEMPLATE)
                         .set("file", content)
                         .setTarget(targetId)
                         .toString());

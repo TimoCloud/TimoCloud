@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.sockets.handler;
 
 import cloud.timo.TimoCloud.common.protocol.Message;
 import cloud.timo.TimoCloud.common.protocol.MessageType;
+import cloud.timo.TimoCloud.common.protocol.TransferType;
 import cloud.timo.TimoCloud.common.sockets.handler.MessageHandler;
 import cloud.timo.TimoCloud.common.utils.DoAfterAmount;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
@@ -56,7 +57,7 @@ public class BaseServerTemplateRequestHandler extends CoreMessageHandler {
                 String content = byteArrayToString(outputStream.toByteArray());
                 channel.writeAndFlush(Message.create()
                         .setType(MessageType.TRANSFER_TEMPLATE)
-                        .set("transferType", "SERVER_TEMPLATE")
+                        .set("transferType", TransferType.SERVER_TEMPLATE)
                         .set("template", template)
                         .set("file", content)
                         .setTarget(targetId)
@@ -72,7 +73,7 @@ public class BaseServerTemplateRequestHandler extends CoreMessageHandler {
                 String content = byteArrayToString(outputStream.toByteArray());
                 channel.writeAndFlush(Message.create()
                         .setType(MessageType.TRANSFER_TEMPLATE)
-                        .set("transferType", "SERVER_TEMPLATE")
+                        .set("transferType", TransferType.SERVER_TEMPLATE)
                         .set("template", server.getGroup().getName() + "_" + map)
                         .set("file", content)
                         .setTarget(targetId)
@@ -88,7 +89,7 @@ public class BaseServerTemplateRequestHandler extends CoreMessageHandler {
                 String content = byteArrayToString(outputStream.toByteArray());
                 channel.writeAndFlush(Message.create()
                         .setType(MessageType.TRANSFER_TEMPLATE)
-                        .set("transferType", "SERVER_GLOBAL_TEMPLATE")
+                        .set("transferType", TransferType.SERVER_GLOBAL_TEMPLATE)
                         .set("file", content)
                         .setTarget(targetId)
                         .toString());
