@@ -12,6 +12,7 @@ TimoCloud is full of innovative features. Here is a list of the most important o
  - **High efficiency**: Efficiency is one of our major goals: While using powerful software such as *screen* and *Netty*, TimoCloud tries to keep your servers' resource usage as little as possible
  - **Multi-Root**: Use one *TimoCloudCore* instance in combination with as many bases (a.k.a. "Wrapper") as you want. 
  - **Multi-Proxy**: TimoCloud is standalone and does not only start Bukkit/Spigot servers for you, but also BungeeCord/Velocity proxies
+ - **Player distribution:** The players are distributed to the different proxies thanks to our cord - depending on algorithms you can choose. 
  - **Beautiful, live-updating sign system**: Use the integrated server join sign system to let players access all your servers. Signs are dynamic - that means only _free_ servers will be displayed - and can be animated.
  
  ## Download
