@@ -4,14 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cloud.timo.TimoCloud</groupId>
+    <groupId>cloud.timo.timocloud</groupId>
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
     <version>6.6.0</version>
 
     <name>TimoCloud</name>
-    <description>TimoCloud is a Minecraft server/proxy management system ("Cloud System"). It will care about keeping online enough servers/proxies of every kind. But it's more than that. Thank to its algorithms, you'll never have to care again about servers or resources. TimoCloud automatically chooses servers with low CPU usage and enough available RAM to start your instances. And its integrated Flow-System makes updating templates easier than ever before: Edit one file in a server template, and the update will automatically be deployed to all bases (a.k.a. "Wrapper"). But of course, only the changed files will get updated.</description>
+    <description>TimoCloud is a Minecraft server/proxy management system ("Cloud System"). It will care about keeping
+        online enough servers/proxies of every kind. But it's more than that. Thank to its algorithms, you'll never have
+        to care again about servers or resources. TimoCloud automatically chooses servers with low CPU usage and enough
+        available RAM to start your instances. And its integrated Flow-System makes updating templates easier than ever
+        before: Edit one file in a server template, and the update will automatically be deployed to all bases (a.k.a.
+        "Wrapper"). But of course, only the changed files will get updated.
+    </description>
     <url>https://github.com/TimoCloud/TimoCloud</url>
+
+    <licenses>
+        <license>
+            <name>Custom License</name>
+            <url>https://github.com/TimoCloud/TimoCloud/blob/master/LICENSE</url>
+        </license>
+    </licenses>
 
     <modules>
         <module>TimoCloud-Universal</module>
@@ -42,31 +55,15 @@
         <url>https://github.com/TimoCloud/TimoCloud/</url>
     </scm>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>TimoCloud-API</id>
-            <name>TimoCloud-API</name>
-            <url>http://maven.timo.cloud/repository/TimoCloud-API/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <distributionManagement>
-        <repository>
-            <id>TimoCloud-API</id>
-            <name>TimoCloud-API</name>
-            <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
-        </repository>
         <snapshotRepository>
-            <id>TimoCloud-API</id>
-            <name>TimoCloud-API</name>
-            <url>https://maven.timo.cloud/repository/TimoCloud-API/</url>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
 

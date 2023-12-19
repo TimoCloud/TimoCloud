@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.api.objects.log;
 import java.util.Collection;
 
 /**
- * Represents a part of a log with a given start- & end-timestamp
+ * Represents a part of a log with a given start- &amp; end-timestamp
  */
 public interface LogFractionObject {
 

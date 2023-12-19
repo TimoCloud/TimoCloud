@@ -8,7 +8,7 @@
     <artifactId>TimoCloud-Universal</artifactId>
     <parent>
         <artifactId>TimoCloud</artifactId>
-        <groupId>cloud.timo.TimoCloud</groupId>
+        <groupId>cloud.timo.timocloud</groupId>
         <version>6.6.0</version>
     </parent>
 
@@ -206,7 +206,7 @@
             <version>3.5.1</version>
         </dependency>
         <dependency>
-            <groupId>cloud.timo.TimoCloud</groupId>
+            <groupId>cloud.timo.timocloud</groupId>
             <artifactId>TimoCloud-API</artifactId>
             <version>${project.version}</version>
         </dependency>

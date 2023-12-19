@@ -39,13 +39,13 @@ public interface PlayerObject extends IdentifiableObject {
 
     /**
      * @param serverObject The server the player shall be sent to
-     * @return An APIRequestFuture<Boolean> specifying if the player has been sent to the server successfully
+     * @return An APIRequestFuture with Boolean specifying if the player has been sent to the server successfully
      */
     APIRequestFuture<Boolean> sendToServer(ServerObject serverObject);
 
     /**
      * @param message the message which is sent to the player
-     * @return An APIRequestFuture<Boolean> specifying if the message successfully sent to the Player
+     * @return An APIRequestFuture with Boolean specifying if the message successfully sent to the Player
      */
     APIRequestFuture<Boolean> sendMessage(String message);
 
