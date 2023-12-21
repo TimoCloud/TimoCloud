@@ -122,6 +122,16 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
     }
 
     @Override
+    public APIRequestFuture<Void> createCloudflareRecords() {
+        return new APIRequestImplementation<Void>(P_CREATE_CLOUDFLARE_DNS_RECORDS, getId()).submit();
+    }
+
+    @Override
+    public APIRequestFuture<Void> deleteCloudflareRecords() {
+        return new APIRequestImplementation<Void>(P_DELETE_CLOUDFLARE_DNS_RECORDS, getId()).submit();
+    }
+
+    @Override
     public void sendPluginMessage(PluginMessage message) {
         TimoCloudAPI.getMessageAPI().sendMessage(new AddressedPluginMessage(getMessageAddress(), message));
     }
@@ -151,7 +161,7 @@ public class ProxyObjectBasicImplementation implements ProxyObject, LinkableObje
         this.onlinePlayers.add(playerObjectLink);
     }
 
-    public void setOnlinePlayerCountInternally(int i){
+    public void setOnlinePlayerCountInternally(int i) {
         this.onlinePlayerCount = i;
     }
 

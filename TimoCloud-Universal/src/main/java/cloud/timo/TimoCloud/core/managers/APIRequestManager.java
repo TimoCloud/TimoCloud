@@ -445,6 +445,14 @@ public class APIRequestManager implements MessageListener {
                             proxy.stop();
                             break;
                         }
+                        case P_DELETE_CLOUDFLARE_DNS_RECORDS: {
+                            TimoCloudCore.getInstance().getCloudFlareManager().unregisterProxy(proxy);
+                            break;
+                        }
+                        case P_CREATE_CLOUDFLARE_DNS_RECORDS: {
+                            TimoCloudCore.getInstance().getCloudFlareManager().registerProxy(proxy);
+                            break;
+                        }
                     }
                     break;
                 }

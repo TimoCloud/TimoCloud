@@ -7,7 +7,7 @@
     <groupId>cloud.timo.timocloud</groupId>
     <artifactId>TimoCloud</artifactId>
     <packaging>pom</packaging>
-    <version>6.6.0</version>
+    <version>6.7.0</version>
 
     <name>TimoCloud</name>
     <description>TimoCloud is a Minecraft server/proxy management system ("Cloud System"). It will care about keeping
