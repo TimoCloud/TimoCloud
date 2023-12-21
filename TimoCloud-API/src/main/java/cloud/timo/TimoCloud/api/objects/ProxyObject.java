@@ -79,6 +79,18 @@ public interface ProxyObject extends IdentifiableObject {
     APIRequestFuture<Void> stop();
 
     /**
+     * create Cloudflare records for the proxy only use if you have unregistered first
+     * @return A future being completed when the records were created
+     */
+    APIRequestFuture<Void> createCloudflareRecords();
+
+    /**
+     * delete Cloudflare records for the proxy
+     * @return A future being completed when the records were deleted
+     */
+    APIRequestFuture<Void> deleteCloudflareRecords();
+
+    /**
      * Send a plugin message to the proxy
      * @param message The message which shall be sent
      */

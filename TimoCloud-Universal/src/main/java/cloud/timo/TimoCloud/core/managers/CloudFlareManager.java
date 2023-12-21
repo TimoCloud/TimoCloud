@@ -51,8 +51,15 @@ public class CloudFlareManager implements Listener {
     @EventHandler
     public void onProxyRegisterEvent(ProxyRegisterEvent event) {
         if (!enabled()) return;
+        Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
+        registerProxy(proxy);
+
+    }
+
+    public void registerProxy(Proxy proxy) {
+        if (!enabled()) return;
+        if (proxy.getDnsRecords() != null && !proxy.getDnsRecords().isEmpty()) return;
         executorService.submit(() -> {
-            Proxy proxy = TimoCloudCore.getInstance().getInstanceManager().getProxyByProxyObject(event.getProxy());
             getActiveHostnames().parallelStream().forEach(hostName -> {
                 for (String hostName1 : proxy.getGroup().getHostNames()) {
                     if (!nameMatches(hostName, hostName1)) continue;
