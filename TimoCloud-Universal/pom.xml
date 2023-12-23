@@ -9,8 +9,12 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.timocloud</groupId>
-        <version>6.7.0</version>
+        <version>6.7.2</version>
     </parent>
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
 
     <repositories>
         <repository>
@@ -42,6 +46,7 @@
             <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
         </repository>
     </repositories>
+
 
     <build>
         <resources>
