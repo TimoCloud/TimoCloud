@@ -280,13 +280,17 @@ public class Proxy implements Instance, Communicatable {
                             File toDownload = new File(templateDirectory, "proxy.jar");
                             PaperAPI.download(downloadURL, toDownload);
                             TimoCloudCore.getInstance().info("Downloaded " + fileName + "!", true);
-                            TimoCloudCore.getInstance().info("Do you want to start the server now? (yes, no)", true);
+                            TimoCloudCore.getInstance().info("Do you want to start the proxy now? (yes, no)", true);
                             TimoCloudCore.getInstance().consoleInputConsumer = s2 -> {
-                                if (s2.equalsIgnoreCase("yes")) {
+                                if (s2.equalsIgnoreCase("yes") || s2.equals("y")) {
                                     TimoCloudCore.getInstance().info("Starting proxy " + getName() + "...", true);
                                     start();
+                                    return true;
+                                } else if (s2.equals("no") || s2.equals("n")) {
+                                    return true;
                                 }
-                                return true;
+                                TimoCloudCore.getInstance().info("Do you want to start the proxy now? (yes, no)", true);
+                                return false;
                             };
                             return false;
                         } else {
@@ -302,11 +306,15 @@ public class Proxy implements Instance, Communicatable {
                 TimoCloudCore.getInstance().info("Downloaded " + fileName + "!", true);
                 TimoCloudCore.getInstance().info("Do you want to start the proxy now? (yes, no)", true);
                 TimoCloudCore.getInstance().consoleInputConsumer = s2 -> {
-                    if (s2.equalsIgnoreCase("yes")) {
+                    if (s2.equalsIgnoreCase("yes") || s2.equals("y")) {
                         TimoCloudCore.getInstance().info("Starting proxy " + getName() + "...", true);
                         start();
+                        return true;
+                    } else if (s2.equals("no") || s2.equals("n")) {
+                        return true;
                     }
-                    return true;
+                    TimoCloudCore.getInstance().info("Do you want to start the proxy now? (yes, no)", true);
+                    return false;
                 };
                 break;
             default:
