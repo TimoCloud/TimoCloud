@@ -3,7 +3,7 @@ package cloud.timo.TimoCloud.common.protocol;
 import java.util.HashMap;
 import java.util.Map;
 
-// NEXT FREE ID: 56
+// NEXT FREE ID: 59
 
 public enum MessageType {
     CORE_PARSE_COMMAND                          (1),
@@ -31,10 +31,11 @@ public enum MessageType {
     SERVER_SET_MAP                              (18),
     SERVER_SET_PLAYERS                          (19),
     SERVER_STOP                                 (20),
-
     SERVER_REGISTER                             (21),
     SERVER_TRANSFER_FINISHED                    (22),
     SERVER_LOG_ENTRY                            (23),
+    BASE_DOWNLOAD_FILE                           (57),
+    SERVER_DOWNLOAD_FILE_FINISHED               (58),
 
     BASE_HANDSHAKE                              (24),
     BASE_HANDSHAKE_SUCCESS                      (25),
@@ -54,6 +55,7 @@ public enum MessageType {
     BASE_INSTANCE_KILL                          (53), //Kill a screen
     BASE_PID_EXIST_REQUEST                      (54), //ask if process is still running
     BASE_PID_EXIST_RESPONSE                     (55), //answers whether process is still running
+    BASE_INSTANCE_FILE_NOT_FOUND                (56), //Server file or Proxy file not found (spigot.jar or proxy.jar missing)
 
     CORD_HANDSHAKE                              (39),
     CORD_HANDSHAKE_SUCCESS                      (40),

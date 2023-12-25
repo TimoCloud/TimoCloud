@@ -22,6 +22,7 @@ public class BaseStringHandler extends BasicStringHandler {
         addHandler(new BaseStartProxyHandler());
         addHandler(new BaseStartServerHandler());
         addHandler(new TransferTemplateHandler());
+        addHandler(new BaseDownloadFileHandler());
     }
 
     @Override

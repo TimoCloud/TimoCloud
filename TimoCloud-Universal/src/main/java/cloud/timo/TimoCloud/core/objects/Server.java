@@ -17,18 +17,19 @@ import cloud.timo.TimoCloud.common.utils.HashUtil;
 import cloud.timo.TimoCloud.core.TimoCloudCore;
 import cloud.timo.TimoCloud.core.api.ServerObjectCoreImplementation;
 import cloud.timo.TimoCloud.core.sockets.Communicatable;
+import cloud.timo.TimoCloud.core.utils.paperapi.PaperAPI;
+import com.google.gson.JsonObject;
 import io.netty.channel.Channel;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.security.PublicKey;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class Server implements Instance, Communicatable {
@@ -200,7 +201,7 @@ public class Server implements Instance, Communicatable {
     }
 
     public void requestPidStatus() {
-        if(getPid() == -1) return;
+        if (getPid() == -1) return;
         Message message = Message.create()
                 .setType(MessageType.BASE_PID_EXIST_REQUEST)
                 .set("pid", getPid())
@@ -291,6 +292,63 @@ public class Server implements Instance, Communicatable {
                     TimoCloudCore.getInstance().info("Process of Server " + getName() + " not found.");
                     onShutdown();
                 }
+                break;
+            case BASE_INSTANCE_FILE_NOT_FOUND:
+                List<String> collect = Arrays.stream(PaperAPI.Project.values()).filter(project -> project.isSupported(this.getClass())).map(PaperAPI.Project::getName).collect(Collectors.toList());
+                TimoCloudCore.getInstance().info("spigot.jar not found for server " + getName() + ". Do you want to select a Serversoftware? (" + String.join(", ", collect) + ", none)", true);
+                TimoCloudCore.getInstance().consoleInputConsumer = s -> {
+                    if (Objects.equals(s, "none")) return true;
+                    PaperAPI.Project project = PaperAPI.Project.getByName(s);
+                    if (project == null) {
+                        TimoCloudCore.getInstance().info("Unknown project " + s + ". Please try again.", true);
+                        return false;
+                    }
+                    List<String> versions = PaperAPI.getVersions(project);
+                    TimoCloudCore.getInstance().info("Witch version of " + project.getName() + " you need? (" + String.join(", ", versions) + ", none)", true);
+                    TimoCloudCore.getInstance().consoleInputConsumer = s1 -> {
+                        if (Objects.equals(s, "none")) return true;
+                        if (!versions.contains(s1)) {
+                            TimoCloudCore.getInstance().info("Unknown version " + s1 + ". Please try again.", true);
+                            return false;
+                        }
+                        JsonObject latestBuilds = PaperAPI.getLatestBuilds(project, s1);
+                        int latestBuild = latestBuilds.get("build").getAsInt();
+                        String fileName = latestBuilds.getAsJsonObject("downloads").getAsJsonObject("application").get("name").getAsString();
+                        String downloadURL = PaperAPI.buildDownloadURL(project, s1, latestBuild, fileName);
+                        TimoCloudCore.getInstance().info("Downloading " + fileName + "...", true);
+                        if (!isStatic()) {
+                            File templateDirectory = new File(TimoCloudCore.getInstance().getFileManager().getServerTemplatesDirectory(), getGroup().getName());
+                            File toDownload = new File(templateDirectory, "spigot.jar");
+                            PaperAPI.download(downloadURL, toDownload);
+                            TimoCloudCore.getInstance().info("Downloaded " + fileName + "!", true);
+                            TimoCloudCore.getInstance().info("Do you want to start the server now? (yes, no)", true);
+                            TimoCloudCore.getInstance().consoleInputConsumer = s2 -> {
+                                if (s2.equalsIgnoreCase("yes")) {
+                                    TimoCloudCore.getInstance().info("Starting server " + getName() + "...", true);
+                                    start();
+                                }
+                                return true;
+                            };
+                            return false;
+                        } else {
+                            getBase().sendMessage(Message.create().setType(MessageType.BASE_DOWNLOAD_FILE).setTarget(getId()).set("groupName", getGroup().getName()).set("url", downloadURL).set("fileName", fileName).set("storageName", "spigot.jar").set("groupType", "server"));
+                        }
+                        return true;
+                    };
+                    return false;
+                };
+                break;
+            case SERVER_DOWNLOAD_FILE_FINISHED:
+                String fileName = (String) message.get("fileName");
+                TimoCloudCore.getInstance().info("Downloaded " + fileName + "!", true);
+                TimoCloudCore.getInstance().info("Do you want to start the server now? (yes, no)", true);
+                TimoCloudCore.getInstance().consoleInputConsumer = s2 -> {
+                    if (s2.equalsIgnoreCase("yes")) {
+                        TimoCloudCore.getInstance().info("Starting server " + getName() + "...", true);
+                        start();
+                    }
+                    return true;
+                };
                 break;
             default:
                 sendMessage(message);
