@@ -21,19 +21,18 @@ public class PaperAPI {
 
     public static List<String> getVersions(Project project) {
         String requestUrl = PAPER_API_URL + "projects/" + project.getName();
-        JsonObject json = getJson(requestUrl);
         List<String> versions = new ArrayList<>();
-        json.getAsJsonArray("versions").forEach(jsonElement -> versions.add(jsonElement.getAsString()));
+        try {
+            JsonObject json = getJson(requestUrl);
+            json.getAsJsonArray("versions").forEach(jsonElement -> versions.add(jsonElement.getAsString()));
+        } catch (IOException ignored) {
+        }
         return versions;
     }
 
-    public static JsonObject getJson(String url) {
-        try {
-            String json = IOUtils.toString(URI.create(url), StandardCharsets.UTF_8);
-            return JsonParser.parseString(json).getAsJsonObject();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static JsonObject getJson(String url) throws IOException {
+        String json = IOUtils.toString(URI.create(url), StandardCharsets.UTF_8);
+        return JsonParser.parseString(json).getAsJsonObject();
     }
 
     public static void download(String url, File dest) {
@@ -50,9 +49,13 @@ public class PaperAPI {
 
     public static JsonObject getLatestBuilds(Project project, String version) {
         String requestUrl = PAPER_API_URL + "projects/" + project.getName() + "/versions/" + version + "/builds";
-        JsonArray builds = getJson(requestUrl).getAsJsonArray("builds");
-        JsonObject latestBuilds = builds.get(builds.size() - 1).getAsJsonObject();
-        return latestBuilds;
+        try {
+            JsonArray builds = getJson(requestUrl).getAsJsonArray("builds");
+            JsonObject latestBuilds = builds.get(builds.size() - 1).getAsJsonObject();
+            return latestBuilds;
+        } catch (IOException e) {
+            return null;
+        }
     }
 
     public enum Project {
@@ -79,7 +82,7 @@ public class PaperAPI {
             return name;
         }
 
-       public boolean isSupported(Class<?> clazz) {
+        public boolean isSupported(Class<?> clazz) {
             return this.clazz != null && this.clazz.isAssignableFrom(clazz);
         }
 

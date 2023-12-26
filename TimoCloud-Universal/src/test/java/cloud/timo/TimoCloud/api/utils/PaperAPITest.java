@@ -1,13 +1,11 @@
 package cloud.timo.TimoCloud.api.utils;
 
-import cloud.timo.TimoCloud.TimoCloudTest;
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
 import cloud.timo.TimoCloud.core.utils.paperapi.PaperAPI;
 import com.google.gson.JsonObject;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -21,7 +19,7 @@ public class PaperAPITest {
 
     // This test checks if the PaperAPI is working correctly
     @Test
-    public void paperAPITest() {
+    public void paperAPITest() throws MalformedURLException {
         for (PaperAPI.Project value : PaperAPI.Project.values()) {
             List<String> versions = PaperAPI.getVersions(value);
             for (String version : versions) {
@@ -29,12 +27,8 @@ public class PaperAPITest {
                 int latestBuild = latestBuilds.get("build").getAsInt();
                 String fileName = latestBuilds.getAsJsonObject("downloads").getAsJsonObject("application").get("name").getAsString();
                 String downloadURL = PaperAPI.buildDownloadURL(value, version, latestBuild, fileName);
-                try {
-                    String contentType = getContentType(URI.create(downloadURL).toURL());
-                    assertTrue("Download of project " + value.getName() + " failed", contentType.startsWith("application/java-archive"));
-                } catch (MalformedURLException e) {
-                    throw new RuntimeException(e);
-                }
+                String contentType = getContentType(URI.create(downloadURL).toURL());
+                assertTrue("Download of project " + value.getName() + " failed", contentType.startsWith("application/java-archive"));
             }
         }
         assertTrue("No Paper-Projects support Proxy", Arrays.stream(PaperAPI.Project.values()).anyMatch(project -> project.isSupported(Proxy.class)));
@@ -58,7 +52,7 @@ public class PaperAPITest {
         String type = null;
         try {
             type = url.openConnection().getContentType();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
 
         if (type == null)
