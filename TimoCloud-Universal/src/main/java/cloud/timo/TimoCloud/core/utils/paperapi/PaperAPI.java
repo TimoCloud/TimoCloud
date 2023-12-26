@@ -5,6 +5,7 @@ import cloud.timo.TimoCloud.core.objects.Server;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -35,12 +36,9 @@ public class PaperAPI {
         return JsonParser.parseString(json).getAsJsonObject();
     }
 
+    @SneakyThrows
     public static void download(String url, File dest) {
-        try {
-            FileUtils.copyURLToFile(URI.create(url).toURL(), dest);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        FileUtils.copyURLToFile(URI.create(url).toURL(), dest);
     }
 
     public static String buildDownloadURL(Project project, String version, int build, String fileName) {
