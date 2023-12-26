@@ -224,6 +224,9 @@ public class BaseInstanceManager {
                 TimoCloudBase.getInstance().severe("Could not start server " + server.getName() + " because spigot.jar does not exist. " + (
                         server.isStatic() ? "Please make sure the file " + spigotJar.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'spigot.jar' in your template."));
+                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.BASE_INSTANCE_FILE_NOT_FOUND)
+                        .setTarget(server.getId()));
                 throw new ServerStartException("spigot.jar does not exist");
             }
 
@@ -427,6 +430,9 @@ public class BaseInstanceManager {
                 TimoCloudBase.getInstance().severe("Could not start proxy " + proxy.getName() + " because proxy.jar does not exist. " + (
                         proxy.isStatic() ? "Please make sure the file " + proxyJarFile.getAbsolutePath() + " exists (case sensitive!)."
                                 : "Please make sure to have a file called 'proxy.jar' in your template."));
+                TimoCloudBase.getInstance().getSocketMessageManager().sendMessage(Message.create()
+                        .setType(MessageType.BASE_INSTANCE_FILE_NOT_FOUND)
+                        .setTarget(proxy.getId()));
                 throw new ProxyStartException("proxy.jar does not exist");
             }
             JarFile proxyJar = new JarFile(proxyJarFile.exists() ? proxyJarFile : bungeeJar);

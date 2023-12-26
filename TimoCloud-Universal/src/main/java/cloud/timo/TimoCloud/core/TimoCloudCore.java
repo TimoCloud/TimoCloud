@@ -30,10 +30,13 @@ import org.jline.terminal.TerminalBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.logging.*;
 
 import static org.jline.builtins.Completers.TreeCompleter.node;
@@ -64,6 +67,8 @@ public class TimoCloudCore implements TimoCloudModule {
     private boolean waitingForCommand = false;
     private LineReader reader;
 
+    public Predicate<String> consoleInputConsumer;
+
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
 
@@ -71,47 +76,86 @@ public class TimoCloudCore implements TimoCloudModule {
         System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
     }
 
+    private List<Runnable> waitingConsoles = new ArrayList<>();
+
     @Override
     public void info(String message) {
+        info(message, false);
+    }
+
+    public void info(String message, boolean force) {
         if (getReader() == null) {
             System.out.println(message);
             return;
         }
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
-        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.INFO, message)));
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
-        getReader().getTerminal().writer().flush();
+
+        Runnable printLog = () -> {
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+            getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.INFO, message)));
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+            getReader().getTerminal().writer().flush();
+        };
+        if (consoleInputConsumer == null || force) {
+            printLog.run();
+        } else {
+            waitingConsoles.add(printLog);
+        }
+
 
         if (getLogger() != null) getLogger().info(message);
     }
 
     @Override
     public void warning(String message) {
+        warning(message, false);
+    }
+
+    public void warning(String message, boolean force) {
         if (getReader() == null) {
             System.out.println(message);
             return;
         }
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
-        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.WARNING, message)));
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
-        getReader().getTerminal().writer().flush();
+
+        Runnable printLog = () -> {
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+            getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.WARNING, message)));
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+            getReader().getTerminal().writer().flush();
+        };
+        if (consoleInputConsumer == null) {
+            printLog.run();
+        } else {
+            waitingConsoles.add(printLog);
+        }
 
         if (getLogger() != null) getLogger().warning(message);
     }
 
     @Override
     public void severe(String message) {
+        severe(message, false);
+    }
+
+    public void severe(String message, boolean force) {
         if (getReader() == null) {
             System.err.println(message);
             return;
         }
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
-        getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.SEVERE, ANSI_RED + message + ANSI_RESET)));
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
-        if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
-        getReader().getTerminal().writer().flush();
+
+        Runnable printLog = () -> {
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.CLEAR);
+            getReader().getTerminal().writer().print(getSimpleFormatter().format(new LogRecord(Level.SEVERE, ANSI_RED + message + ANSI_RESET)));
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDRAW_LINE);
+            if (isWaitingForCommand()) getReader().callWidget(LineReader.REDISPLAY);
+            getReader().getTerminal().writer().flush();
+        };
+        if (consoleInputConsumer == null) {
+            printLog.run();
+        } else {
+            waitingConsoles.add(printLog);
+        }
 
         if (getLogger() != null) getLogger().severe(message);
     }
@@ -190,7 +234,14 @@ public class TimoCloudCore implements TimoCloudModule {
             waitingForCommand = false;
             line = line.trim();
             if (line.isEmpty()) continue;
-            getCommandManager().onCommand(line);
+            if (consoleInputConsumer != null) {
+                if (consoleInputConsumer.test(line)) {
+                    consoleInputConsumer = null;
+                    waitingConsoles.forEach(Runnable::run);
+                }
+            } else {
+                getCommandManager().onCommand(line);
+            }
         }
     }
 
