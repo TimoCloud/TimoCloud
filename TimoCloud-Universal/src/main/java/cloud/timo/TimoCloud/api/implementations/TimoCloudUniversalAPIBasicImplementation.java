@@ -203,6 +203,19 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         return new APIRequestImplementation<ProxyGroupObject>(G_CREATE_PROXY_GROUP, properties).submit();
     }
 
+    @Override
+    public String getThisInstanceName() {
+        String name = "Unknown";
+        if (TimoCloudAPI.getBukkitAPI() != null) {
+            name = TimoCloudAPI.getBukkitAPI().getThisServer().getName();
+        } else if (TimoCloudAPI.getProxyAPI() != null) {
+            name = TimoCloudAPI.getProxyAPI().getThisProxy().getName();
+        } else if (TimoCloudAPI.getCoreAPI() != null) {
+            name = "Core";
+        }
+        return name;
+    }
+
     public IdentifiableObjectStorage<ServerGroupObject> getServerGroupStorage() {
         return serverGroups;
     }
