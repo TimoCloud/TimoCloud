@@ -163,13 +163,13 @@ public class Server implements Instance, Communicatable {
     public void register() {
         if (isRegistered()) return;
         getGroup().onServerConnect(this);
-        setState("ONLINE");
         for (ProxyGroup proxyGroup : TimoCloudCore.getInstance().getInstanceManager().getProxyGroups()) {
             if (!proxyGroup.getServerGroups().contains(getGroup())) continue;
             proxyGroup.registerServer(this);
         }
         this.starting = false;
         this.registered = true;
+        setState("ONLINE");
         TimoCloudCore.getInstance().info("Server " + getName() + " registered.");
         TimoCloudCore.getInstance().getEventManager().fireEvent(new ServerRegisterEventBasicImplementation(toServerObject()));
     }
