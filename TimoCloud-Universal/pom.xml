@@ -9,7 +9,7 @@
     <parent>
         <artifactId>TimoCloud</artifactId>
         <groupId>cloud.timo.timocloud</groupId>
-        <version>6.7.3</version>
+        <version>6.7.4</version>
     </parent>
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
