@@ -106,7 +106,7 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (! this.gotAnyData) {
+        if (!this.gotAnyData) {
             TimoCloudAPI.getEventAPI().registerListener(new TimoCloudUniversalAPIStorageUpdateListener(this));
         }
         this.gotAnyData = true;
@@ -204,16 +204,26 @@ public class TimoCloudUniversalAPIBasicImplementation implements TimoCloudUniver
     }
 
     @Override
-    public String getThisInstanceName() {
-        String name = "Unknown";
+    public IdentifiableObject getThisInstance() {
+        IdentifiableObject instance = null;
         if (TimoCloudAPI.getBukkitAPI() != null) {
-            name = TimoCloudAPI.getBukkitAPI().getThisServer().getName();
+            instance = TimoCloudAPI.getBukkitAPI().getThisServer();
         } else if (TimoCloudAPI.getProxyAPI() != null) {
-            name = TimoCloudAPI.getProxyAPI().getThisProxy().getName();
+            instance = TimoCloudAPI.getProxyAPI().getThisProxy();
         } else if (TimoCloudAPI.getCoreAPI() != null) {
-            name = "Core";
+            instance = new IdentifiableObject() {
+                @Override
+                public String getId() {
+                    return "Core";
+                }
+
+                @Override
+                public String getName() {
+                    return "Core";
+                }
+            };
         }
-        return name;
+        return instance;
     }
 
     public IdentifiableObjectStorage<ServerGroupObject> getServerGroupStorage() {

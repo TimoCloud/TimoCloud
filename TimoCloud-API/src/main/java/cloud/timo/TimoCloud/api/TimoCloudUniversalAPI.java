@@ -120,7 +120,7 @@ public interface TimoCloudUniversalAPI {
     APIRequestFuture<ProxyGroupObject> createProxyGroup(ProxyGroupProperties properties);
 
     /**
-     * @return The current instance's Name
+     * @return The current instance's
      */
-    String getThisInstanceName();
+    IdentifiableObject getThisInstance();
 }
