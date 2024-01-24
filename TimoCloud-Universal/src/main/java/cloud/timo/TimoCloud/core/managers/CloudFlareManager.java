@@ -118,24 +118,20 @@ public class CloudFlareManager implements Listener {
     }
 
     private void deleteExistingRecords() {
-        executorService.submit(() -> {
-            getZones().parallelStream().forEach(zone -> {
-                getRecords(zone).parallelStream().forEach(record -> {
-                    if (record.getName().contains(".base.")) {
-                        if (!createdRecords.contains(record)) {
-                            deleteRecord(record);
-                        }
-                    }
-                });
-            });
-        });
-        executorService.submit(() -> {
-            getActiveHostnames().parallelStream().forEach(hostname -> { // Delete SRV records
-                getMatchingSrvRecords(hostname, "SRV").parallelStream().forEach(record -> {
+        getZones().parallelStream().forEach(zone -> {
+            getRecords(zone).parallelStream().forEach(record -> {
+                if (record.getName().contains(".base.")) {
                     if (!createdRecords.contains(record)) {
                         deleteRecord(record);
                     }
-                });
+                }
+            });
+        });
+        getActiveHostnames().parallelStream().forEach(hostname -> { // Delete SRV records
+            getMatchingSrvRecords(hostname, "SRV").parallelStream().forEach(record -> {
+                if (!createdRecords.contains(record)) {
+                    deleteRecord(record);
+                }
             });
         });
     }
@@ -146,8 +142,6 @@ public class CloudFlareManager implements Listener {
             this.createdRecords.add(createdRecord);
             return createdRecord;
         } catch (Exception e) {
-            if (e.getMessage().contains("The record already exists."))
-                return null; // This happens when a base connects while we are deleting old records
             TimoCloudCore.getInstance().severe(e);
             return null;
         }
