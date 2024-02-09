@@ -18,19 +18,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         openjdk-17-jdk-headless \
         screen \
-        sudo \
         curl \
-        gnupg \
-        apt-transport-https \
-        ca-certificates \
         wget \
-        openssl \
-        procps \
-        net-tools \
-        iputils-ping \
-        lsof \
-        vim \
-        nano \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -47,8 +36,6 @@ RUN chown -R timocloud:timocloud /home/timocloud \
     && chmod 755 TimoCloud.jar
 
 USER timocloud
-
-ENV JAVA_OPTS="-Xms512M -Xmx1G -Dlog4j.configurationFile=log4j2.xml"
 
 CMD screen -dm -S core java -jar /home/timocloud/TimoCloud.jar --module=CORE && \
     screen -dm -S base java -jar /home/timocloud/TimoCloud.jar --module=BASE && \
