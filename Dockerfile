@@ -32,6 +32,9 @@ WORKDIR /home/timocloud
 
 COPY . .
 
+RUN rm -rf /home/timocloud/TimoCloud.jar
+RUN wget https://jenkins.timo.cloud/job/TimoCloud/job/master/lastSuccessfulBuild/artifact/TimoCloud-Universal/target/TimoCloud.jar
+
 RUN chown -R timocloud:timocloud /home/timocloud \
     && chmod 755 TimoCloud.jar
 
