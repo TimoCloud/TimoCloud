@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  timocloud:
+    container_name: timocloud-main
+    build:
+      context: .
+    ports:
+      - "25565:25565"
+    volumes:
+      - /home/main:/app
+    networks:
+      - live_network
+    restart: always
+
+networks:
+  live_network:
+    driver: bridge
