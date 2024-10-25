@@ -18,7 +18,7 @@ import java.util.List;
 
 public class PaperAPI {
 
-    public static final String PAPER_API_URL = "https://papermc.io/api/v2/";
+    public static final String PAPER_API_URL = "https://api.papermc.io/v2/";
 
     public static List<String> getVersions(Project project) {
         String requestUrl = PAPER_API_URL + "projects/" + project.getName();
