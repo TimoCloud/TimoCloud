@@ -5,7 +5,6 @@ import cloud.timo.TimoCloud.api.events.Listener;
 import cloud.timo.TimoCloud.api.events.base.BaseConnectEvent;
 import cloud.timo.TimoCloud.api.events.base.BaseDisconnectEvent;
 import cloud.timo.TimoCloud.api.events.proxy.ProxyRegisterEvent;
-import cloud.timo.TimoCloud.api.events.proxy.ProxyUnregisterEvent;
 import cloud.timo.TimoCloud.api.objects.BaseObject;
 import cloud.timo.TimoCloud.common.objects.HttpRequestProperty;
 import cloud.timo.TimoCloud.common.utils.ArrayUtil;
@@ -21,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.net.InetAddress;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,7 +66,7 @@ public class CloudFlareManager implements Listener {
                     proxy.addDnsRecord(addRecord(new SrvRecord(
                             null,
                             "SRV",
-                            hostName,
+                            getSRVNameByHostname(hostName),
                             formatInetAddress(proxy.getAddress().getAddress()),
                             1,
                             getZoneByName(getDomainByHostname(hostName)),
@@ -79,6 +79,10 @@ public class CloudFlareManager implements Listener {
                 }
             });
         });
+    }
+
+    private String getSRVNameByHostname(String hostName) {
+        return MessageFormat.format("_minecraft._tcp.{0}", hostName);
     }
 
     public void unregisterProxy(Proxy proxy) {
