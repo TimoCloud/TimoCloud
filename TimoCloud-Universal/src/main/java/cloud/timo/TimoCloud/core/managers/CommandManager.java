@@ -63,6 +63,7 @@ public class CommandManager {
         registerCommand(new VersionCommandHandler(), "version", "info");
         registerCommand(new AddBaseCommandHandler(), "addbase");
         registerCommand(new EditBaseCommandHandler(), "editbase");
+        registerCommand(new StartCommandHandler(), "start", "startgroup");
     }
 
     public void sendHelp(CommandSender sender) {
