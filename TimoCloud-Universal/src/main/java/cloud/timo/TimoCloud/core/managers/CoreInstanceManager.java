@@ -418,6 +418,17 @@ public class CoreInstanceManager {
     }
 
     /**
+     * Manually starts a new server instance of a server group (for start command)
+     *
+     * @param group The group of which an instance shall be started
+     * @param base  The base an the server shall be started on
+     * @return The started server
+     */
+    public Server startServerManually(ServerGroup group, Base base) {
+        return startServer(group, base);
+    }
+
+    /**
      * @param group The group the maps shall be searched in
      * @return A list of available map templates
      */
@@ -457,6 +468,17 @@ public class CoreInstanceManager {
         Proxy proxy = new Proxy(name, id, base, group);
         proxy.start();
         return proxy;
+    }
+
+    /**
+     * Manually starts a new proxy instance of a proxy group (for start command)
+     *
+     * @param group The group of which an instance shall be started
+     * @param base  The base an the proxy shall be started on
+     * @return The started proxy
+     */
+    public Proxy startProxyManually(ProxyGroup group, Base base) {
+        return startProxy(group, base);
     }
 
     /**
