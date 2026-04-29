@@ -1,0 +1,46 @@
+name: Build & Test
+
+on:
+  push:
+    branches: [master, "**"]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        java: ["8"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean install --file pom.xml
+
+      - name: Run tests
+        run: mvn -B test --file pom.xml
+
+      - name: Upload TimoCloud.jar artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TimoCloud-jar
+          path: TimoCloud-Universal/target/TimoCloud.jar
+          if-no-files-found: error
+          retention-days: 30
