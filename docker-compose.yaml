@@ -1,0 +1,46 @@
+services:
+  timocloud-core:
+    build: .
+    container_name: TimoCloud-Core
+    command: --module=CORE
+    stdin_open: true
+    tty: true
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data/core:/opt/TimoCloud/core
+    restart: unless-stopped
+    networks:
+      - timocloud
+
+  timocloud-base:
+    build: .
+    container_name: TimoCloud-Base
+    command: --module=BASE
+    ports:
+        - "40000:40000" # Proxy-1
+    volumes:
+      - ./data/base:/opt/TimoCloud/base
+    restart: unless-stopped
+    networks:
+      - timocloud
+    depends_on:
+      - timocloud-core
+
+  timocloud-cord:
+    build: .
+    container_name: TimoCloud-Cord
+    command: --module=CORD
+    ports:
+      - "25565:25565"
+    volumes:
+      - ./data/cord:/opt/TimoCloud/cord
+    restart: unless-stopped
+    networks:
+      - timocloud
+    depends_on:
+      - timocloud-core
+
+networks:
+  timocloud:
+    driver: bridge
