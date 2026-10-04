@@ -2,6 +2,7 @@ package cloud.timo.TimoCloud.core.utils.paperapi;
 
 import cloud.timo.TimoCloud.core.objects.Proxy;
 import cloud.timo.TimoCloud.core.objects.Server;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
@@ -20,11 +21,18 @@ public class PaperAPI {
     public static final String PAPER_API_URL = "https://fill.papermc.io/v3/";
 
     public static List<String> getVersions(Project project) {
-        String requestUrl = PAPER_API_URL + "projects/" + project.getName();
+        String requestUrl = PAPER_API_URL + "projects/" + project.getName() + "/versions";
         List<String> versions = new ArrayList<>();
         try {
             JsonObject json = getJson(requestUrl);
-            json.getAsJsonObject("versions").asMap().forEach((s, jsonElement) -> jsonElement.getAsJsonArray().forEach(jsonElement1 -> versions.add(jsonElement1.getAsString())));
+            json.getAsJsonArray("versions").forEach(jsonElement -> {
+                JsonObject version = jsonElement.getAsJsonObject();
+                // Fill lists versions that have no build yet (e.g. velocity 3.5.0); builds/latest returns 404 for them
+                JsonArray builds = version.getAsJsonArray("builds");
+                if (builds != null && !builds.isEmpty()) {
+                    versions.add(version.getAsJsonObject("version").get("id").getAsString());
+                }
+            });
         } catch (IOException ignored) {
         }
         return versions;
