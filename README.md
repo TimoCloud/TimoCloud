@@ -19,8 +19,6 @@ TimoCloud is full of innovative features. Here is a list of the most important o
 
 Latest stable build: see the [latest release](https://github.com/TimoCloud/TimoCloud/releases/latest).
 
-Latest development build: open the most recent run on the [Build workflow](https://github.com/TimoCloud/TimoCloud/actions/workflows/build.yml) and download the `TimoCloud-jar` artifact.
-
 ## Setup
 See the [Wiki](https://github.com/TimoCloud/TimoCloud/wiki)
 
