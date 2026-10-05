@@ -60,17 +60,13 @@ jobs:
           name: TimoCloud-jar
           path: release-files/ 
 
-      - name: Delete old latest release
-        if: github.ref == 'refs/heads/master'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release delete latest --cleanup-tag -y || true
-
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
           name: ${{ github.ref_type == 'tag' && github.ref_name || 'Development Build (latest)' }}
           prerelease: ${{ github.ref_type != 'tag' }}
           generate_release_notes: true
+          append_body: false
+          make_latest: true
           files: release-files/TimoCloud.jar
