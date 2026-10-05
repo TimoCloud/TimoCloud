@@ -1,20 +1,20 @@
-name: Build & Test
+name: Build & Release
 
 on:
   push:
     branches: [master, "**"]
+    tags: ["v*"]
   pull_request:
     branches: [master]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
     name: Build (Java ${{ matrix.java }})
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         java: ["8"]
@@ -44,3 +44,27 @@ jobs:
           path: TimoCloud-Universal/target/TimoCloud.jar
           if-no-files-found: error
           retention-days: 30
+
+  release:
+    name: Create Release
+    needs: build 
+    runs-on: ubuntu-latest
+    
+
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+
+    steps:
+      - name: Download TimoCloud.jar artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: TimoCloud-jar
+          path: release-files/ 
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || format('build-{0}', github.run_number) }}
+          name: "${{ github.ref_type == 'tag' && github.ref_name || format('Build #{0}', github.run_number) }}"
+          generate_release_notes: true
+          make_latest: true
+          files: release-files/TimoCloud.jar
