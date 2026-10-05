@@ -2,8 +2,10 @@ name: Release
 
 on:
   push:
+    branches:
+      - master      # Triggert bei jedem Push auf den master-Branch
     tags:
-      - "v*"
+      - "v*"        # Triggert weiterhin bei neuen Tags (z.B. v2.0)
   workflow_dispatch:
 
 permissions:
@@ -30,6 +32,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          # Logik: Wenn es ein Tag ist, nutze den Tag-Namen. Ansonsten nenne es "latest"
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Development Build (latest)' }}
+          # Master-Pushes werden automatisch als "Pre-release" markiert
+          prerelease: ${{ github.ref_type != 'tag' }}
           generate_release_notes: true
           files: |
             TimoCloud-Universal/target/TimoCloud.jar
