@@ -45,6 +45,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -313,100 +315,118 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
-    private void sendMotds() {
+    private volatile boolean pingEventUnavailableLogged = false;
+
+    /**
+     * Builds a ServerListPingEvent using whichever constructor the running server provides.
+     * Order: modern Paper (hostname, SocketAddress, Component, int, int), then SocketAddress/String,
+     * then the old InetAddress based ones. Returns null if none match.
+     */
+    private ServerListPingEvent createPingEvent() throws Exception {
+        InetAddress localHost = InetAddressUtil.getLocalHost();
+        String hostname = localHost.getHostAddress();
+        SocketAddress socketAddress = new InetSocketAddress(localHost, 0);
+        String motd = Bukkit.getMotd();
+        int online = Bukkit.getOnlinePlayers().size();
+        int max = Bukkit.getMaxPlayers();
+
+        // Modern Paper (26.x): (String, SocketAddress, Component, int, int)
         try {
-            Constructor<ServerListPingEvent> eventConstructor;
-            try {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
-                getStateByEventManager().setStateByMotd(event.getMotd().trim());
-            } catch (NoSuchMethodException e) {
-                try {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    Bukkit.getPluginManager().callEvent(event);
-                    getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
-                    getStateByEventManager().setStateByMotd(event.getMotd().trim());
-                } catch (NoSuchMethodException e2) {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    Bukkit.getPluginManager().callEvent(event);
-                    getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(event.getMotd()));
-                    getStateByEventManager().setStateByMotd(event.getMotd().trim());
+            Object motdComponent = Bukkit.class.getMethod("motd").invoke(null);
+            for (Constructor<?> c : ServerListPingEvent.class.getConstructors()) {
+                Class<?>[] p = c.getParameterTypes();
+                if (p.length == 5 && p[0] == String.class && p[1] == SocketAddress.class
+                        && p[2].isInstance(motdComponent) && p[3] == int.class && p[4] == int.class) {
+                    return (ServerListPingEvent) c.newInstance(hostname, socketAddress, motdComponent, online, max);
                 }
             }
-        } catch (Exception e) {
-            severe("Error while sending MOTD: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(Bukkit.getMotd()));
+        } catch (NoSuchMethodException ignored) {
+            // Bukkit#motd() does not exist on this server, try the legacy constructors
         }
+
+        // (String, SocketAddress, String, int, int)
+        try {
+            return ServerListPingEvent.class.getConstructor(String.class, SocketAddress.class, String.class, int.class, int.class)
+                    .newInstance(hostname, socketAddress, motd, online, max);
+        } catch (NoSuchMethodException ignored) {
+        }
+
+        // (InetAddress, String, int, int)
+        try {
+            return ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class)
+                    .newInstance(localHost, motd, online, max);
+        } catch (NoSuchMethodException ignored) {
+        }
+
+        // (InetAddress, String, boolean, int, int)
+        try {
+            return ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class)
+                    .newInstance(localHost, motd, false, online, max);
+        } catch (NoSuchMethodException ignored) {
+        }
+
+        // (String, InetAddress, String, int, int)
+        try {
+            return ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class)
+                    .newInstance(hostname, localHost, motd, online, max);
+        } catch (NoSuchMethodException ignored) {
+        }
+
+        return null;
+    }
+
+    /**
+     * Creates and calls a ServerListPingEvent. Returns null (and logs only once) if that is not possible,
+     * so callers can fall back to the plain Bukkit values.
+     */
+    private ServerListPingEvent callPingEvent() {
+        try {
+            ServerListPingEvent event = createPingEvent();
+            if (event == null) {
+                if (!pingEventUnavailableLogged) {
+                    pingEventUnavailableLogged = true;
+                    severe("Could not find a usable ServerListPingEvent constructor. Falling back to plain server values for MOTD and player counts.");
+                }
+                return null;
+            }
+            Bukkit.getPluginManager().callEvent(event);
+            return event;
+        } catch (Exception e) {
+            if (!pingEventUnavailableLogged) {
+                pingEventUnavailableLogged = true;
+                severe("Error while calling ServerListPingEvent, falling back to plain server values: ");
+                TimoCloudBukkit.getInstance().severe(e);
+            }
+            return null;
+        }
+    }
+
+    private void sendMotds() {
+        ServerListPingEvent event = callPingEvent();
+        String motd = event != null ? event.getMotd() : Bukkit.getMotd();
+        if (motd == null) motd = "";
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_MOTD).setData(motd));
+        getStateByEventManager().setStateByMotd(motd.trim());
     }
 
     public int getOnlinePlayersAmount() {
-        try {
-            Constructor<ServerListPingEvent> eventConstructor;
-            try {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                return event.getNumPlayers();
-            } catch (NoSuchMethodException e) {
-                try {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    return event.getNumPlayers();
-                } catch (NoSuchMethodException e2) {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    return event.getNumPlayers();
-                }
-            }
-        } catch (Exception e) {
-            severe("Error while calling ServerListPingEvent: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            return Bukkit.getOnlinePlayers().size();
-        }
+        ServerListPingEvent event = callPingEvent();
+        return event != null ? event.getNumPlayers() : Bukkit.getOnlinePlayers().size();
     }
 
     public int getMaxPlayersAmount() {
-        try {
-            Constructor<ServerListPingEvent> eventConstructor;
-            try {
-                eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, int.class, int.class);
-                ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                Bukkit.getPluginManager().callEvent(event);
-                return event.getMaxPlayers();
-            } catch (NoSuchMethodException e) {
-                try {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(InetAddress.class, String.class, boolean.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance(InetAddressUtil.getLocalHost(), Bukkit.getMotd(), false, Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    return event.getMaxPlayers();
-                } catch (NoSuchMethodException e2) {
-                    eventConstructor = ServerListPingEvent.class.getConstructor(String.class, InetAddress.class, String.class, int.class, int.class);
-                    ServerListPingEvent event = eventConstructor.newInstance("0.0.0.0", InetAddressUtil.getLocalHost(), Bukkit.getMotd(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers());
-                    Bukkit.getPluginManager().callEvent(event);
-                    return event.getMaxPlayers();
-                }
-            }
-        } catch (Exception e) {
-            severe("Error while calling ServerListPingEvent: ");
-            TimoCloudBukkit.getInstance().severe(e);
-            return Bukkit.getMaxPlayers();
-        }
+        ServerListPingEvent event = callPingEvent();
+        return event != null ? event.getMaxPlayers() : Bukkit.getMaxPlayers();
     }
 
     /**
      * Must be called asynchronously
      */
     public void sendPlayers() {
-        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(getOnlinePlayersAmount() + "/" + getMaxPlayersAmount()));
+        ServerListPingEvent event = callPingEvent();
+        int online = event != null ? event.getNumPlayers() : Bukkit.getOnlinePlayers().size();
+        int max = event != null ? event.getMaxPlayers() : Bukkit.getMaxPlayers();
+        getSocketMessageManager().sendMessage(Message.create().setType(MessageType.SERVER_SET_PLAYERS).setData(online + "/" + max));
     }
 
     public String getPrefix() {
