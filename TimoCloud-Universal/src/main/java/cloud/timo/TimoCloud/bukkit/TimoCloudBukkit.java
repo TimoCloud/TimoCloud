@@ -315,8 +315,6 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         getSocketMessageManager().sendMessage(Message.create().setType(MessageType.GET_API_DATA));
     }
 
-    private volatile boolean pingEventUnavailableLogged = false;
-
     /**
      * Builds a ServerListPingEvent using whichever constructor the running server provides.
      * Order: modern Paper (hostname, SocketAddress, Component, int, int), then SocketAddress/String,
@@ -383,20 +381,14 @@ public class TimoCloudBukkit extends JavaPlugin implements TimoCloudLogger {
         try {
             ServerListPingEvent event = createPingEvent();
             if (event == null) {
-                if (!pingEventUnavailableLogged) {
-                    pingEventUnavailableLogged = true;
-                    severe("Could not find a usable ServerListPingEvent constructor. Falling back to plain server values for MOTD and player counts.");
-                }
+                severe("Could not find a usable ServerListPingEvent constructor. Falling back to plain server values for MOTD and player counts.");
                 return null;
             }
             Bukkit.getPluginManager().callEvent(event);
             return event;
         } catch (Exception e) {
-            if (!pingEventUnavailableLogged) {
-                pingEventUnavailableLogged = true;
-                severe("Error while calling ServerListPingEvent, falling back to plain server values: ");
-                TimoCloudBukkit.getInstance().severe(e);
-            }
+            severe("Error while calling ServerListPingEvent, falling back to plain server values: ");
+            TimoCloudBukkit.getInstance().severe(e);
             return null;
         }
     }
